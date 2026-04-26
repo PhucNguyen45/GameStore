@@ -58,6 +58,10 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.MapOpenApi();
+
+// Swagger UI cho /swagger
+app.UseSwaggerUI(c => c.SwaggerEndpoint("/openapi/v1.json", "GameStore API v1"));
+
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();

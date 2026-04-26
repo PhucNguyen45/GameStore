@@ -126,21 +126,18 @@ export default function RegisterPage() {
               value: form.phone,
               key: "phone",
             },
-          ].map(({ icon: Icon, ...field }) => (
-            <div
-              key={field.key}
-              style={{ marginBottom: 12, position: "relative" }}
-            >
+          ].map(({ icon: Icon, key, placeholder, type }) => (
+            <div key={key} style={{ marginBottom: 12, position: "relative" }}>
               <Icon
                 size={18}
                 color="#6b6b8e"
                 style={{ position: "absolute", left: 14, top: 14 }}
               />
               <input
-                {...field}
-                onChange={(e) =>
-                  setForm({ ...form, [field.key]: e.target.value })
-                }
+                type={type || "text"}
+                placeholder={placeholder}
+                value={form[key]}
+                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
                 style={{
                   width: "100%",
                   padding: "14px 14px 14px 42px",
@@ -151,7 +148,7 @@ export default function RegisterPage() {
                   fontSize: 14,
                   outline: "none",
                 }}
-                required={field.placeholder.includes("*")}
+                required={placeholder.includes("*")}
               />
             </div>
           ))}

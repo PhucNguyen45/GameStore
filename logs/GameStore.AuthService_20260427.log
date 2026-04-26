@@ -1,0 +1,205 @@
+Using launch settings from /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.AuthService/Properties/launchSettings.json...
+Building...
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (74ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (34ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      
+      IF EXISTS
+          (SELECT *
+           FROM [sys].[objects] o
+           WHERE [o].[type] = 'U'
+           AND [o].[is_ms_shipped] = 0
+           AND [o].[object_id] NOT IN (SELECT [ep].[major_id]
+              FROM [sys].[extended_properties] AS [ep]
+              WHERE [ep].[minor_id] = 0
+                  AND [ep].[class] = 1
+                  AND [ep].[name] = N'microsoft_database_tools_support'
+          )
+      )
+      SELECT 1 ELSE SELECT 0
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5002
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.AuthService
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (28ms) [Parameters=[@username='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[AvatarUrl], [u].[CreatedAt], [u].[DisplayName], [u].[Email], [u].[IsActive], [u].[Password], [u].[Phone], [u].[Salt], [u].[Username], [u].[Wallet]
+      FROM [Users] AS [u]
+      WHERE [u].[Username] = @username AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@user_Id='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Created], [u].[CreatedBy], [u].[CreatedDateTime], [u].[CreatedUser], [u].[Guid], [u].[IsDeleted], [u].[Modified], [u].[ModifiedBy], [u].[RoleId], [u].[UserId], [r].[Id], [r].[Created], [r].[CreatedBy], [r].[CreatedDateTime], [r].[CreatedUser], [r].[Description], [r].[Guid], [r].[IsActive], [r].[IsDeleted], [r].[Modified], [r].[ModifiedBy], [r].[Name]
+      FROM [UserRoles] AS [u]
+      INNER JOIN [Roles] AS [r] ON [u].[RoleId] = [r].[Id]
+      WHERE [u].[UserId] = @user_Id
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+Using launch settings from /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.AuthService/Properties/launchSettings.json...
+Building...
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (72ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (54ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      
+      IF EXISTS
+          (SELECT *
+           FROM [sys].[objects] o
+           WHERE [o].[type] = 'U'
+           AND [o].[is_ms_shipped] = 0
+           AND [o].[object_id] NOT IN (SELECT [ep].[major_id]
+              FROM [sys].[extended_properties] AS [ep]
+              WHERE [ep].[minor_id] = 0
+                  AND [ep].[class] = 1
+                  AND [ep].[name] = N'microsoft_database_tools_support'
+          )
+      )
+      SELECT 1 ELSE SELECT 0
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5002
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.AuthService
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+Using launch settings from /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.AuthService/Properties/launchSettings.json...
+Building...
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (75ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (32ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      
+      IF EXISTS
+          (SELECT *
+           FROM [sys].[objects] o
+           WHERE [o].[type] = 'U'
+           AND [o].[is_ms_shipped] = 0
+           AND [o].[object_id] NOT IN (SELECT [ep].[major_id]
+              FROM [sys].[extended_properties] AS [ep]
+              WHERE [ep].[minor_id] = 0
+                  AND [ep].[class] = 1
+                  AND [ep].[name] = N'microsoft_database_tools_support'
+          )
+      )
+      SELECT 1 ELSE SELECT 0
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5002
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.AuthService
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+Using launch settings from /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.AuthService/Properties/launchSettings.json...
+Building...
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (54ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (25ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      
+      IF EXISTS
+          (SELECT *
+           FROM [sys].[objects] o
+           WHERE [o].[type] = 'U'
+           AND [o].[is_ms_shipped] = 0
+           AND [o].[object_id] NOT IN (SELECT [ep].[major_id]
+              FROM [sys].[extended_properties] AS [ep]
+              WHERE [ep].[minor_id] = 0
+                  AND [ep].[class] = 1
+                  AND [ep].[name] = N'microsoft_database_tools_support'
+          )
+      )
+      SELECT 1 ELSE SELECT 0
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5002
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.AuthService
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (34ms) [Parameters=[@username='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[AvatarUrl], [u].[CreatedAt], [u].[DisplayName], [u].[Email], [u].[IsActive], [u].[Password], [u].[Phone], [u].[Salt], [u].[Username], [u].[Wallet]
+      FROM [Users] AS [u]
+      WHERE [u].[Username] = @username AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@user_Id='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Created], [u].[CreatedBy], [u].[CreatedDateTime], [u].[CreatedUser], [u].[Guid], [u].[IsDeleted], [u].[Modified], [u].[ModifiedBy], [u].[RoleId], [u].[UserId], [r].[Id], [r].[Created], [r].[CreatedBy], [r].[CreatedDateTime], [r].[CreatedUser], [r].[Description], [r].[Guid], [r].[IsActive], [r].[IsDeleted], [r].[Modified], [r].[ModifiedBy], [r].[Name]
+      FROM [UserRoles] AS [u]
+      INNER JOIN [Roles] AS [r] ON [u].[RoleId] = [r].[Id]
+      WHERE [u].[UserId] = @user_Id
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@username='?' (Size = 450)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[AvatarUrl], [u].[CreatedAt], [u].[DisplayName], [u].[Email], [u].[IsActive], [u].[Password], [u].[Phone], [u].[Salt], [u].[Username], [u].[Wallet]
+      FROM [Users] AS [u]
+      WHERE [u].[Username] = @username AND [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@user_Id='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT TOP(1) [u].[Id], [u].[Created], [u].[CreatedBy], [u].[CreatedDateTime], [u].[CreatedUser], [u].[Guid], [u].[IsDeleted], [u].[Modified], [u].[ModifiedBy], [u].[RoleId], [u].[UserId], [r].[Id], [r].[Created], [r].[CreatedBy], [r].[CreatedDateTime], [r].[CreatedUser], [r].[Description], [r].[Guid], [r].[IsActive], [r].[IsDeleted], [r].[Modified], [r].[ModifiedBy], [r].[Name]
+      FROM [UserRoles] AS [u]
+      INNER JOIN [Roles] AS [r] ON [u].[RoleId] = [r].[Id]
+      WHERE [u].[UserId] = @user_Id
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (10ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Users] AS [u]
+      WHERE [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], [u].[AvatarUrl], [u].[CreatedAt], [u].[DisplayName], [u].[Email], [u].[IsActive], [u].[Password], [u].[Phone], [u].[Salt], [u].[Username], [u].[Wallet]
+      FROM [Users] AS [u]
+      WHERE [u].[IsActive] = CAST(1 AS bit)
+      ORDER BY [u].[CreatedAt] DESC
+      OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Users] AS [u]
+      WHERE [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], [u].[AvatarUrl], [u].[CreatedAt], [u].[DisplayName], [u].[Email], [u].[IsActive], [u].[Password], [u].[Phone], [u].[Salt], [u].[Username], [u].[Wallet]
+      FROM [Users] AS [u]
+      WHERE [u].[IsActive] = CAST(1 AS bit)
+      ORDER BY [u].[CreatedAt] DESC
+      OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Users] AS [u]
+      WHERE [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], [u].[AvatarUrl], [u].[CreatedAt], [u].[DisplayName], [u].[Email], [u].[IsActive], [u].[Password], [u].[Phone], [u].[Salt], [u].[Username], [u].[Wallet]
+      FROM [Users] AS [u]
+      WHERE [u].[IsActive] = CAST(1 AS bit)
+      ORDER BY [u].[CreatedAt] DESC
+      OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Users] AS [u]
+      WHERE [u].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [u].[Id], [u].[AvatarUrl], [u].[CreatedAt], [u].[DisplayName], [u].[Email], [u].[IsActive], [u].[Password], [u].[Phone], [u].[Salt], [u].[Username], [u].[Wallet]
+      FROM [Users] AS [u]
+      WHERE [u].[IsActive] = CAST(1 AS bit)
+      ORDER BY [u].[CreatedAt] DESC
+      OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...

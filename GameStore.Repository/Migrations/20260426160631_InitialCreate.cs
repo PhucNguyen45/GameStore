@@ -408,9 +408,9 @@ namespace GameStore.Repository.Migrations
                 columns: new[] { "Id", "Created", "CreatedBy", "CreatedDateTime", "CreatedUser", "Description", "Guid", "IsActive", "IsDeleted", "Modified", "ModifiedBy", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", new DateTime(2026, 4, 25, 21, 45, 33, 751, DateTimeKind.Local).AddTicks(8849), "", "Administrator", new Guid("10000000-0000-0000-0000-000000000001"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", "Admin" },
-                    { 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", new DateTime(2026, 4, 25, 21, 45, 33, 752, DateTimeKind.Local).AddTicks(1425), "", "Regular User", new Guid("20000000-0000-0000-0000-000000000002"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", "User" },
-                    { 3, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", new DateTime(2026, 4, 25, 21, 45, 33, 752, DateTimeKind.Local).AddTicks(1440), "", "Game Publisher", new Guid("30000000-0000-0000-0000-000000000003"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", "Publisher" }
+                    { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", new DateTime(2026, 4, 26, 23, 6, 30, 987, DateTimeKind.Local).AddTicks(5439), "", "Administrator", new Guid("10000000-0000-0000-0000-000000000001"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", "Admin" },
+                    { 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", new DateTime(2026, 4, 26, 23, 6, 30, 987, DateTimeKind.Local).AddTicks(8833), "", "Regular User", new Guid("20000000-0000-0000-0000-000000000002"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", "User" },
+                    { 3, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", new DateTime(2026, 4, 26, 23, 6, 30, 987, DateTimeKind.Local).AddTicks(8850), "", "Game Publisher", new Guid("30000000-0000-0000-0000-000000000003"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", "Publisher" }
                 });
 
             migrationBuilder.CreateIndex(

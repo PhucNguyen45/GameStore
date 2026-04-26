@@ -1,14 +1,13 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { gameAPI, genreAPI } from "../services/api";
 import GameCard from "../components/games/GameCard";
-import FeaturedSlider from "../components/games/FeaturedSlider";
-import { Gamepad2, TrendingUp, Star, Zap } from "lucide-react";
+import { Gamepad2, TrendingUp, Star, ArrowRight } from "lucide-react";
 
 export default function HomePage() {
   const [games, setGames] = useState([]);
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeGenre, setActiveGenre] = useState(null);
 
   useEffect(() => {
     Promise.all([gameAPI.getFeatured(12), genreAPI.getAll()])
@@ -19,147 +18,146 @@ export default function HomePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const filterByGenre = async (genreId) => {
-    const newGenre = genreId === activeGenre ? null : genreId;
-    setActiveGenre(newGenre);
-    try {
-      const res = newGenre
-        ? await gameAPI.getAll({ genreId: newGenre })
-        : await gameAPI.getFeatured(12);
-      setGames(newGenre ? res.data.data : res.data);
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
   if (loading)
     return (
       <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "60vh",
-        }}
+        className="container"
+        style={{ textAlign: "center", padding: 80, color: "#888" }}
       >
-        <div style={{ textAlign: "center" }}>
-          <Gamepad2
-            size={48}
-            color="#e94560"
-            style={{ animation: "spin 2s linear infinite", marginBottom: 16 }}
-          />
-          <p style={{ color: "#6b6b8e" }}>Loading games...</p>
-        </div>
-        <style>{`@keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }`}</style>
+        Loading...
       </div>
     );
 
-  const featured = games?.slice(0, 6) || [];
-  const trending = games?.filter((g) => g.rating > 4) || [];
-  const newReleases =
-    games?.filter(
-      (g) => new Date(g.releaseDate) > new Date(Date.now() - 30 * 86400000),
-    ) || [];
+  const featured = games.slice(0, 6);
+  const trending = games.filter((g) => g.rating > 4).slice(0, 8);
 
   return (
-    <div className="container" style={{ paddingTop: 30 }}>
-      {/* Hero Slider */}
-      <FeaturedSlider games={featured} />
-
-      {/* Genre Filter */}
+    <div>
+      {/* HERO */}
       <div
         style={{
-          display: "flex",
-          gap: 8,
-          marginBottom: 30,
-          flexWrap: "wrap",
-          justifyContent: "center",
+          background: "linear-gradient(180deg, #0a0a1a 0%, #121212 100%)",
+          padding: "60px 0",
         }}
       >
-        <button
-          onClick={() => filterByGenre(null)}
-          className={!activeGenre ? "btn-primary" : "btn-outline"}
-          style={{ padding: "8px 18px", fontSize: 13, borderRadius: 20 }}
-        >
-          <Zap size={14} style={{ verticalAlign: "middle", marginRight: 4 }} />{" "}
-          All Games
-        </button>
-        {genres.map((g) => (
-          <button
-            key={g.id}
-            onClick={() => filterByGenre(g.id)}
-            className={activeGenre === g.id ? "btn-primary" : "btn-outline"}
-            style={{ padding: "8px 18px", fontSize: 13, borderRadius: 20 }}
-          >
-            {g.name}
-          </button>
-        ))}
+        <div className="container">
+          <div style={{ maxWidth: 600 }}>
+            <h1
+              style={{
+                fontSize: 42,
+                fontWeight: 900,
+                marginBottom: 16,
+                letterSpacing: -1,
+              }}
+            >
+              DISCOVER
+              <br />
+              <span style={{ color: "var(--accent)" }}>YOUR NEXT</span>
+              <br />
+              FAVORITE GAME
+            </h1>
+            <p
+              style={{
+                color: "#888",
+                fontSize: 16,
+                marginBottom: 32,
+                lineHeight: 1.6,
+              }}
+            >
+              Explore a vast library of games from AAA blockbusters to indie
+              gems. Buy once, play forever.
+            </p>
+            <Link to="/store">
+              <button
+                className="btn-primary"
+                style={{
+                  padding: "14px 32px",
+                  fontSize: 15,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                }}
+              >
+                BROWSE STORE <ArrowRight size={18} />
+              </button>
+            </Link>
+          </div>
+        </div>
       </div>
 
-      {/* Trending Section */}
-      {trending.length > 0 && (
-        <>
-          <h2
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              fontSize: 22,
-              fontWeight: 700,
-              marginBottom: 20,
-            }}
-          >
-            <TrendingUp size={24} color="#e94560" /> Trending Now
-          </h2>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-              gap: 20,
-              marginBottom: 40,
-            }}
-          >
-            {trending.slice(0, 4).map((g) => (
-              <GameCard key={g.id} game={g} />
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* All Games */}
-      <h2
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          fontSize: 22,
-          fontWeight: 700,
-          marginBottom: 20,
-        }}
-      >
-        <Gamepad2 size={24} color="#e94560" />{" "}
-        {activeGenre
-          ? genres.find((g) => g.id === activeGenre)?.name + " Games"
-          : "All Games"}
-      </h2>
-      {games.length === 0 ? (
-        <p style={{ textAlign: "center", color: "#6b6b8e", padding: 40 }}>
-          No games found in this category.
-        </p>
-      ) : (
+      {/* FEATURED */}
+      <div className="container" style={{ marginTop: -40 }}>
+        <h2
+          style={{
+            fontSize: 18,
+            fontWeight: 700,
+            marginBottom: 16,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <Star size={20} color="var(--accent)" fill="var(--accent)" /> FEATURED
+          GAMES
+        </h2>
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-            gap: 20,
-            paddingBottom: 40,
+            gap: 16,
           }}
         >
-          {games.map((g) => (
+          {featured.map((g) => (
             <GameCard key={g.id} game={g} />
           ))}
         </div>
-      )}
+      </div>
+
+      {/* TRENDING */}
+      <div className="container" style={{ marginTop: 40 }}>
+        <h2
+          style={{
+            fontSize: 18,
+            fontWeight: 700,
+            marginBottom: 16,
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          <TrendingUp size={20} color="var(--accent)" /> TRENDING NOW
+        </h2>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+            gap: 16,
+          }}
+        >
+          {trending.map((g) => (
+            <GameCard key={g.id} game={g} />
+          ))}
+        </div>
+      </div>
+
+      {/* GENRES */}
+      <div className="container" style={{ marginTop: 40, paddingBottom: 40 }}>
+        <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
+          BROWSE BY GENRE
+        </h2>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          {genres.map((g) => (
+            <Link key={g.id} to={`/store?genre=${g.id}`}>
+              <button
+                className="btn-outline"
+                style={{ padding: "10px 20px", fontSize: 13, borderRadius: 2 }}
+              >
+                {g.name}
+              </button>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

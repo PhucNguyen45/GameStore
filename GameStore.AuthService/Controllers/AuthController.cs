@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using GameStore.Common.Auth;
 using GameStore.Services.Authen;
 using GameStore.Entities.Users;
+using GameStore.Repository;
 
 namespace GameStore.AuthService.Controllers;
 
@@ -15,11 +13,13 @@ public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IConfiguration _configuration;
+    private readonly GameStoreDbContext _context;
 
-    public AuthController(IUserService userService, IConfiguration configuration)
+    public AuthController(IUserService userService, IConfiguration configuration, GameStoreDbContext context)
     {
         _userService = userService;
         _configuration = configuration;
+        _context = context;
     }
 
     [HttpPost("login")]
@@ -31,16 +31,22 @@ public class AuthController : ControllerBase
         var user = await _userService.Authenticate(request.Username, request.Password);
         if (user == null) return Unauthorized(new { message = "Invalid username or password" });
 
+        // Lấy role từ database
+        var userRole = await _context.UserRoles
+            .Include(ur => ur.Role)
+            .FirstOrDefaultAsync(ur => ur.UserId == user.Id);
+        var roleName = userRole?.Role?.Name ?? "User";
+
         var secretKey = _configuration["Jwt:SecretKey"]!;
         var expireMinutes = int.Parse(_configuration["Jwt:ExpireMinutes"] ?? "480");
         var token = TokenHelper.GenerateToken(secretKey, expireMinutes,
-            user.Id.ToString(), user.Username, user.UserRoles?.FirstOrDefault()?.Role?.Name ?? "User");
+            user.Id.ToString(), user.Username, roleName);
 
         return Ok(new
         {
             token, userId = user.Id, username = user.Username,
             displayName = user.DisplayName, email = user.Email,
-            wallet = user.Wallet, expiresIn = expireMinutes * 60
+            wallet = user.Wallet, role = roleName, expiresIn = expireMinutes * 60
         });
     }
 
@@ -51,10 +57,6 @@ public class AuthController : ControllerBase
             return BadRequest(new { message = "Username and password are required" });
         if (request.Password.Length < 6)
             return BadRequest(new { message = "Password must be at least 6 characters" });
-        if (await _userService.IsUsernameExists(request.Username))
-            return BadRequest(new { message = "Username already exists" });
-        if (!string.IsNullOrEmpty(request.Email) && await _userService.IsEmailExists(request.Email))
-            return BadRequest(new { message = "Email already exists" });
 
         var user = new User { Username = request.Username, DisplayName = request.DisplayName ?? request.Username,
             Email = request.Email ?? "", Phone = request.Phone ?? "" };

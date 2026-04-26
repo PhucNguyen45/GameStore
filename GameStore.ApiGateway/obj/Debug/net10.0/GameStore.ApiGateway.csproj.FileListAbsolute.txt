@@ -1,5 +1,6 @@
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/bin/Debug/net10.0/appsettings.Development.json
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/bin/Debug/net10.0/appsettings.json
+/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/bin/Debug/net10.0/ocelot.json
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/bin/Debug/net10.0/GameStore.ApiGateway.staticwebassets.endpoints.json
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/bin/Debug/net10.0/GameStore.ApiGateway
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/bin/Debug/net10.0/GameStore.ApiGateway.deps.json
@@ -25,6 +26,7 @@
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/obj/Debug/net10.0/GameStore.ApiGateway.csproj.CoreCompileInputs.cache
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/obj/Debug/net10.0/GameStore.ApiGateway.MvcApplicationPartsAssemblyInfo.cs
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/obj/Debug/net10.0/GameStore.ApiGateway.MvcApplicationPartsAssemblyInfo.cache
+/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/obj/Debug/net10.0/GameStore.ApiGateway.sourcelink.json
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/obj/Debug/net10.0/rjimswa.dswa.cache.json
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/obj/Debug/net10.0/rjsmrazor.dswa.cache.json
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/obj/Debug/net10.0/rjsmcshtml.dswa.cache.json

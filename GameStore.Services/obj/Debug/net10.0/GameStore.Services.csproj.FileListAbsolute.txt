@@ -12,6 +12,7 @@
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Services/obj/Debug/net10.0/GameStore.Services.AssemblyInfoInputs.cache
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Services/obj/Debug/net10.0/GameStore.Services.AssemblyInfo.cs
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Services/obj/Debug/net10.0/GameStore.Services.csproj.CoreCompileInputs.cache
+/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Services/obj/Debug/net10.0/GameStore.Services.sourcelink.json
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Services/obj/Debug/net10.0/GameStor.7C2FA75F.Up2Date
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Services/obj/Debug/net10.0/GameStore.Services.dll
 /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Services/obj/Debug/net10.0/refint/GameStore.Services.dll

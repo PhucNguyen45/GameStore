@@ -13,12 +13,18 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError("");
     try {
-      await login(form.username, form.password);
-      navigate("/");
-    } catch {
-      setError("Invalid username or password");
+      const data = await login(form.username, form.password);
+      if (data.role === "Admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      // Chỉ set error 1 lần duy nhất
+      if (!error) {
+        setError("Invalid username or password");
+      }
     } finally {
       setLoading(false);
     }
@@ -33,6 +39,64 @@ export default function LoginPage() {
         minHeight: "70vh",
       }}
     >
+      {/* ERROR MODAL */}
+      {error && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.8)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              background: "#1a1a2e",
+              borderRadius: 16,
+              padding: 40,
+              width: 400,
+              border: "2px solid #e94560",
+              textAlign: "center",
+            }}
+          >
+            <AlertCircle
+              size={48}
+              color="#e94560"
+              style={{ marginBottom: 16 }}
+            />
+            <h2 style={{ color: "#fff", marginBottom: 8 }}>Login Failed</h2>
+            <p style={{ color: "#e94560", marginBottom: 24, fontSize: 16 }}>
+              {error}
+            </p>
+            <button
+              onClick={() => {
+                setError(""); // Tắt modal
+                // KHÔNG reset form
+              }}
+              style={{
+                padding: "12px 40px",
+                background: "#e94560",
+                color: "#fff",
+                border: "none",
+                borderRadius: 8,
+                fontSize: 16,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* LOGIN FORM */}
       <div
         style={{
           background: "#16162a",
@@ -63,24 +127,6 @@ export default function LoginPage() {
             Login to your GameStore account
           </p>
         </div>
-
-        {error && (
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: 12,
-              background: "rgba(233,69,96,0.1)",
-              borderRadius: 8,
-              marginBottom: 20,
-              border: "1px solid rgba(233,69,96,0.3)",
-            }}
-          >
-            <AlertCircle size={18} color="#e94560" />
-            <span style={{ color: "#e94560", fontSize: 13 }}>{error}</span>
-          </div>
-        )}
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: 16, position: "relative" }}>

@@ -41,4 +41,7 @@ export const userAPI = {
   getWallet: () => api.get("/users/wallet"),
   topUp: (a) => api.post("/users/wallet/topup", { amount: a }),
 };
+export const libraryAPI = {
+  getMyLibrary: () => api.get("/library"),
+};
 export default api;

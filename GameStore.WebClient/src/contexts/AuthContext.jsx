@@ -25,6 +25,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data));
     setUser(data);
+    return data; // Trả về data để kiểm tra role
   };
 
   const register = async (d) => {
@@ -38,6 +39,7 @@ export function AuthProvider({ children }) {
     window.location.href = "/";
   };
 
+  // Kiểm tra Admin từ token role
   const isAdmin = user?.role === "Admin";
 
   return (

@@ -15,7 +15,8 @@ public class GameRepository : Repository<Game>, IGameRepository
         string? keyword, int? genreId, decimal? maxPrice,
         string? sortBy, bool descending, int page, int pageSize)
     {
-        var query = _dbSet.Include(g => g.GameGenres).ThenInclude(gg => gg.Genre)
+        var query = _dbSet
+            .AsNoTracking()
             .Where(g => g.IsActive);
 
         if (!string.IsNullOrEmpty(keyword))
@@ -44,20 +45,190 @@ public class GameRepository : Repository<Game>, IGameRepository
             _ => query.OrderByDescending(g => g.TotalSales)
         };
 
-        var games = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        var games = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(g => new Game
+            {
+                Id = g.Id,
+                Title = g.Title,
+                Description = g.Description,
+                Price = g.Price,
+                DiscountPrice = g.DiscountPrice,
+                Developer = g.Developer,
+                Publisher = g.Publisher,
+                ReleaseDate = g.ReleaseDate,
+                CoverImageUrl = g.CoverImageUrl,
+                TrailerUrl = g.TrailerUrl,
+                Screenshots = g.Screenshots,
+                TotalSales = g.TotalSales,
+                Rating = g.Rating,
+                RatingCount = g.RatingCount,
+                IsActive = g.IsActive,
+                CreatedAt = g.CreatedAt,
+                MinimumOS = g.MinimumOS,
+                MinimumProcessor = g.MinimumProcessor,
+                MinimumMemory = g.MinimumMemory,
+                MinimumGraphics = g.MinimumGraphics,
+                MinimumStorage = g.MinimumStorage,
+                GameGenres = g.GameGenres.Select(gg => new GameGenre
+                {
+                    Id = gg.Id,
+                    GameId = gg.GameId,
+                    GenreId = gg.GenreId,
+                    Genre = new Genre
+                    {
+                        Id = gg.Genre.Id,
+                        Name = gg.Genre.Name,
+                        Description = gg.Genre.Description,
+                        IconUrl = gg.Genre.IconUrl,
+                        IsActive = gg.Genre.IsActive
+                    }
+                }).ToList()
+            })
+            .ToListAsync();
+
         return (games, totalCount);
     }
 
-    public async Task<List<Game>> GetFeaturedAsync(int count = 10) =>
-        await _dbSet.Include(g => g.GameGenres).ThenInclude(gg => gg.Genre)
-            .Where(g => g.IsActive).OrderByDescending(g => g.TotalSales).Take(count).ToListAsync();
+    public async Task<List<Game>> GetFeaturedAsync(int count = 10)
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .Where(g => g.IsActive)
+            .OrderByDescending(g => g.TotalSales)
+            .Take(count)
+            .Select(g => new Game
+            {
+                Id = g.Id,
+                Title = g.Title,
+                Description = g.Description,
+                Price = g.Price,
+                DiscountPrice = g.DiscountPrice,
+                Developer = g.Developer,
+                Publisher = g.Publisher,
+                ReleaseDate = g.ReleaseDate,
+                CoverImageUrl = g.CoverImageUrl,
+                TrailerUrl = g.TrailerUrl,
+                Screenshots = g.Screenshots,
+                TotalSales = g.TotalSales,
+                Rating = g.Rating,
+                RatingCount = g.RatingCount,
+                IsActive = g.IsActive,
+                CreatedAt = g.CreatedAt,
+                MinimumOS = g.MinimumOS,
+                MinimumProcessor = g.MinimumProcessor,
+                MinimumMemory = g.MinimumMemory,
+                MinimumGraphics = g.MinimumGraphics,
+                MinimumStorage = g.MinimumStorage,
+                GameGenres = g.GameGenres.Select(gg => new GameGenre
+                {
+                    Id = gg.Id,
+                    GameId = gg.GameId,
+                    GenreId = gg.GenreId,
+                    Genre = new Genre
+                    {
+                        Id = gg.Genre.Id,
+                        Name = gg.Genre.Name,
+                        Description = gg.Genre.Description,
+                        IconUrl = gg.Genre.IconUrl,
+                        IsActive = gg.Genre.IsActive
+                    }
+                }).ToList()
+            })
+            .ToListAsync();
+    }
 
-    public async Task<List<Game>> GetByGenreAsync(int genreId) =>
-        await _dbSet.Include(g => g.GameGenres).ThenInclude(gg => gg.Genre)
+    public async Task<List<Game>> GetByGenreAsync(int genreId)
+    {
+        return await _dbSet
+            .AsNoTracking()
             .Where(g => g.IsActive && g.GameGenres.Any(gg => gg.GenreId == genreId))
-            .OrderByDescending(g => g.TotalSales).ToListAsync();
+            .OrderByDescending(g => g.TotalSales)
+            .Select(g => new Game
+            {
+                Id = g.Id,
+                Title = g.Title,
+                Description = g.Description,
+                Price = g.Price,
+                DiscountPrice = g.DiscountPrice,
+                Developer = g.Developer,
+                Publisher = g.Publisher,
+                ReleaseDate = g.ReleaseDate,
+                CoverImageUrl = g.CoverImageUrl,
+                TrailerUrl = g.TrailerUrl,
+                Screenshots = g.Screenshots,
+                TotalSales = g.TotalSales,
+                Rating = g.Rating,
+                RatingCount = g.RatingCount,
+                IsActive = g.IsActive,
+                CreatedAt = g.CreatedAt,
+                MinimumOS = g.MinimumOS,
+                MinimumProcessor = g.MinimumProcessor,
+                MinimumMemory = g.MinimumMemory,
+                MinimumGraphics = g.MinimumGraphics,
+                MinimumStorage = g.MinimumStorage,
+                GameGenres = g.GameGenres.Select(gg => new GameGenre
+                {
+                    Id = gg.Id,
+                    GameId = gg.GameId,
+                    GenreId = gg.GenreId,
+                    Genre = new Genre
+                    {
+                        Id = gg.Genre.Id,
+                        Name = gg.Genre.Name,
+                        Description = gg.Genre.Description,
+                        IconUrl = gg.Genre.IconUrl,
+                        IsActive = gg.Genre.IsActive
+                    }
+                }).ToList()
+            })
+            .ToListAsync();
+    }
 
-    public async Task<Game?> GetWithDetailsAsync(int id) =>
-        await _dbSet.Include(g => g.GameGenres).ThenInclude(gg => gg.Genre)
-            .Include(g => g.Reviews).FirstOrDefaultAsync(g => g.Id == id);
+    public async Task<Game?> GetWithDetailsAsync(int id)
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .Where(g => g.Id == id)
+            .Select(g => new Game
+            {
+                Id = g.Id,
+                Title = g.Title,
+                Description = g.Description,
+                Price = g.Price,
+                DiscountPrice = g.DiscountPrice,
+                Developer = g.Developer,
+                Publisher = g.Publisher,
+                ReleaseDate = g.ReleaseDate,
+                CoverImageUrl = g.CoverImageUrl,
+                TrailerUrl = g.TrailerUrl,
+                Screenshots = g.Screenshots,
+                TotalSales = g.TotalSales,
+                Rating = g.Rating,
+                RatingCount = g.RatingCount,
+                IsActive = g.IsActive,
+                CreatedAt = g.CreatedAt,
+                MinimumOS = g.MinimumOS,
+                MinimumProcessor = g.MinimumProcessor,
+                MinimumMemory = g.MinimumMemory,
+                MinimumGraphics = g.MinimumGraphics,
+                MinimumStorage = g.MinimumStorage,
+                GameGenres = g.GameGenres.Select(gg => new GameGenre
+                {
+                    Id = gg.Id,
+                    GameId = gg.GameId,
+                    GenreId = gg.GenreId,
+                    Genre = new Genre
+                    {
+                        Id = gg.Genre.Id,
+                        Name = gg.Genre.Name,
+                        Description = gg.Genre.Description,
+                        IconUrl = gg.Genre.IconUrl,
+                        IsActive = gg.Genre.IsActive
+                    }
+                }).ToList()
+            })
+            .FirstOrDefaultAsync();
+    }
 }

@@ -1,22 +1,101 @@
-import { Heart } from 'lucide-react'
-import { FaGithub, FaTwitter } from 'react-icons/fa'
-
 export default function Footer() {
   return (
-    <footer style={{ background: '#0a0a15', borderTop: '1px solid #2a2a4a', padding: '30px 0', marginTop: 40 }}>
-      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-        <div style={{ color: '#6b6b8e', fontSize: 13 }}>
-          © 2025 <span className="gradient-text" style={{ fontWeight: 700 }}>GameStore</span>. Built with <Heart size={12} fill="#e94560" color="#e94560" style={{ verticalAlign: 'middle' }} /> + React + .NET 10
+    <footer
+      style={{
+        background: "#0a0a0a",
+        borderTop: "1px solid #222",
+        padding: "40px 0",
+        marginTop: 60,
+      }}
+    >
+      <div
+        className="container"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gap: 40,
+          fontSize: 13,
+          color: "#777",
+        }}
+      >
+        <div>
+          <h4
+            style={{
+              color: "#aaa",
+              marginBottom: 12,
+              fontSize: 12,
+              textTransform: "uppercase",
+              letterSpacing: 1,
+            }}
+          >
+            Resources
+          </h4>
+          <p style={{ marginBottom: 6 }}>Support</p>
+          <p style={{ marginBottom: 6 }}>FAQ</p>
+          <p style={{ marginBottom: 6 }}>Community Rules</p>
         </div>
-        <div style={{ display: 'flex', gap: 16 }}>
-          <a href="https://github.com" target="_blank" style={{ color: '#6b6b8e', transition: 'color 0.3s' }} title="GitHub">
-            <FaGithub size={20} />
-          </a>
-          <a href="https://twitter.com" target="_blank" style={{ color: '#6b6b8e', transition: 'color 0.3s' }} title="Twitter">
-            <FaTwitter size={20} />
-          </a>
+        <div>
+          <h4
+            style={{
+              color: "#aaa",
+              marginBottom: 12,
+              fontSize: 12,
+              textTransform: "uppercase",
+              letterSpacing: 1,
+            }}
+          >
+            Company
+          </h4>
+          <p style={{ marginBottom: 6 }}>About</p>
+          <p style={{ marginBottom: 6 }}>Careers</p>
+          <p style={{ marginBottom: 6 }}>Newsroom</p>
+        </div>
+        <div>
+          <h4
+            style={{
+              color: "#aaa",
+              marginBottom: 12,
+              fontSize: 12,
+              textTransform: "uppercase",
+              letterSpacing: 1,
+            }}
+          >
+            Legal
+          </h4>
+          <p style={{ marginBottom: 6 }}>Terms of Service</p>
+          <p style={{ marginBottom: 6 }}>Privacy Policy</p>
+          <p style={{ marginBottom: 6 }}>Cookie Policy</p>
+        </div>
+        <div>
+          <h4
+            style={{
+              color: "#aaa",
+              marginBottom: 12,
+              fontSize: 12,
+              textTransform: "uppercase",
+              letterSpacing: 1,
+            }}
+          >
+            Follow Us
+          </h4>
+          <p style={{ marginBottom: 6 }}>Twitter</p>
+          <p style={{ marginBottom: 6 }}>Facebook</p>
+          <p style={{ marginBottom: 6 }}>YouTube</p>
         </div>
       </div>
+      <div
+        className="container"
+        style={{
+          marginTop: 40,
+          paddingTop: 20,
+          borderTop: "1px solid #222",
+          textAlign: "center",
+          fontSize: 11,
+          color: "#555",
+        }}
+      >
+        © {new Date().getFullYear()} GameStore. All rights reserved.
+      </div>
     </footer>
-  )
+  );
 }

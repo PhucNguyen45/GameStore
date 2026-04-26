@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
 import { orderAPI } from "../services/api";
+import toast from "react-hot-toast";
 import {
   ShoppingCart,
   Trash2,
@@ -27,9 +28,12 @@ export default function CartPage() {
         items: items.map((i) => ({ gameId: i.id, quantity: i.quantity })),
       });
       clearCart();
-      navigate("/library");
+      toast.success("🎉 Purchase successful! Games added to your library.");
+      setTimeout(() => navigate("/library"), 1000);
     } catch (e) {
-      alert("Checkout failed: " + (e.response?.data?.message || e.message));
+      toast.error(
+        "Checkout failed: " + (e.response?.data?.message || e.message),
+      );
     }
   };
 

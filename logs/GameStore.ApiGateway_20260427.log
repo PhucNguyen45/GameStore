@@ -1,0 +1,2268 @@
+Using launch settings from /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/Properties/launchSettings.json...
+Building...
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK80M:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK80N:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK80M:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK80N:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK80N:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK80M:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK80O:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK80O:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK80P:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK80P:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK80O:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK80P:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK80Q:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/auth/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK80Q:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/auth/login' in the route /api/auth/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK80Q:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5002/api/auth/login
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK80R:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK80R:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK80S:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK80S:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK80S:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK80R:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK80T:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK80T:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK80U:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK80T:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK80U:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK80U:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK80V:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK80V:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/14' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK80V:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/14
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK810:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK810:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/14' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK810:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/14
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK811:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK811:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK812:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK812:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK811:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK812:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK813:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK814:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK814:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK813:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK814:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK813:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK815:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK815:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/11' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK815:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/11
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK816:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK816:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/11' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK816:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/11
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK817:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK817:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK818:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK818:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK817:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK818:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK819:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK819:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81A:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81A:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81A:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK819:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81B:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81B:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/10' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81B:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/10
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81C:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81C:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/10' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81C:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/10
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81D:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81D:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81D:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81E:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81E:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81E:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81F:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81F:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81G:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81G:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81F:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81G:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81H:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81H:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81I:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81I:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81H:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81J:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81J:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81J:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81I:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=24&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81K:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81K:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81K:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=24&sortBy=sales
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3MSKMK81I:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3MSKMK81I:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3MSKMK81K:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3MSKMK81K:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81L:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81L:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81L:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81M:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81M:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81M:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81N:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81O:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81N:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81O:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81O:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81N:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81P:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81P:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/11' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81P:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/11
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81Q:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81Q:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/11' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81Q:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/11
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81R:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81R:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/11' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81R:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/11
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3MSKMK81S:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3MSKMK81S:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/11' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3MSKMK81S:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/11
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+Using launch settings from /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/Properties/launchSettings.json...
+Building...
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCS1:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCS2:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCS2:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCS1:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCS2:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCS1:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCS3:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCS3:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCS4:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCS4:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCS3:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCS4:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+warn: Ocelot.DownstreamRouteFinder.Middleware.DownstreamRouteFinderMiddleware[0]
+      RequestId: 0HNL3NJT3MCS5:00000001, PreviousRequestId: -
+      DownstreamRouteFinderMiddleware setting pipeline errors because DownstreamRouteFinder returned the following ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+warn: Ocelot.Responder.Middleware.ResponderMiddleware[0]
+      RequestId: 0HNL3NJT3MCS5:00000001, PreviousRequestId: -
+      ResponderMiddleware found 1 error ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+      Setting error response for request: GET /api/library
+warn: Ocelot.DownstreamRouteFinder.Middleware.DownstreamRouteFinderMiddleware[0]
+      RequestId: 0HNL3NJT3MCS6:00000001, PreviousRequestId: -
+      DownstreamRouteFinderMiddleware setting pipeline errors because DownstreamRouteFinder returned the following ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+warn: Ocelot.Responder.Middleware.ResponderMiddleware[0]
+      RequestId: 0HNL3NJT3MCS6:00000001, PreviousRequestId: -
+      ResponderMiddleware found 1 error ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+      Setting error response for request: GET /api/library
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCS7:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCS7:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCS8:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCS8:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCS7:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCS9:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCS9:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCS9:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCS8:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=24&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSA:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSA:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSA:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=24&sortBy=sales
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCS8:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCS8:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCSA:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCSA:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+warn: Ocelot.DownstreamRouteFinder.Middleware.DownstreamRouteFinderMiddleware[0]
+      RequestId: 0HNL3NJT3MCSB:00000001, PreviousRequestId: -
+      DownstreamRouteFinderMiddleware setting pipeline errors because DownstreamRouteFinder returned the following ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+warn: Ocelot.Responder.Middleware.ResponderMiddleware[0]
+      RequestId: 0HNL3NJT3MCSB:00000001, PreviousRequestId: -
+      ResponderMiddleware found 1 error ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+      Setting error response for request: GET /api/library
+warn: Ocelot.DownstreamRouteFinder.Middleware.DownstreamRouteFinderMiddleware[0]
+      RequestId: 0HNL3NJT3MCSC:00000001, PreviousRequestId: -
+      DownstreamRouteFinderMiddleware setting pipeline errors because DownstreamRouteFinder returned the following ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+warn: Ocelot.Responder.Middleware.ResponderMiddleware[0]
+      RequestId: 0HNL3NJT3MCSC:00000001, PreviousRequestId: -
+      ResponderMiddleware found 1 error ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+      Setting error response for request: GET /api/library
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSD:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSD:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSE:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSE:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSD:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSF:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSF:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSE:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=24&sortBy=sales
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSF:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSG:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSG:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCSE:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCSE:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSG:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=24&sortBy=sales
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCSG:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCSG:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSH:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSH:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSH:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSI:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSI:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSI:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSJ:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSJ:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSJ:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSK:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSK:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSK:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSL:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSL:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSL:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSM:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSM:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSN:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSN:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSN:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSM:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=24&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSO:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSO:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCSM:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCSM:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSO:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=24&sortBy=sales
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCSO:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCSO:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSP:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSP:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSP:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=24&sortBy=sales
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCSP:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCSP:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSQ:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSQ:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSR:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSR:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSQ:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSR:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSS:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSS:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCST:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCST:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCST:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSS:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=price
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCSS:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCSS:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSU:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSU:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSU:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=price
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCSU:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCSU:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCSV:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCSV:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCSV:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=price
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCT0:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCT0:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCSV:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCSV:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCT0:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCT1:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCT1:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCT1:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=2&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCT2:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCT2:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCT2:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCT3:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCT3:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCT4:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCT4:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCT4:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCT3:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales&genreId=1
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCT3:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCT3:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCT5:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCT5:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCT6:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCT6:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCT5:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales&genreId=1
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCT5:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCT5:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCT6:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCT7:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCT7:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCT8:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCT8:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCT8:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCT7:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=rating
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCT7:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCT7:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCT9:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCT9:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCT9:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=rating
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCT9:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCT9:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCTA:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCTA:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCTA:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=rating
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NJT3MCTB:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NJT3MCTB:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+fail: Ocelot.Errors.Middleware.ExceptionHandlerMiddleware[0]
+      RequestId: 0HNL3NJT3MCTA:00000001, PreviousRequestId: -
+      HttpIOException caught in global error handler!
+      DONE reporting of a total 0 inner exceptions for request 0HNL3NJT3MCTA:00000001 of the original HttpIOException below ->
+      System.Net.Http.HttpIOException: The response ended prematurely. (ResponseEnded)
+         at System.Net.Http.HttpConnection.FillAsync(Boolean async)
+         at System.Net.Http.HttpConnection.ChunkedEncodingReadStream.CopyToAsyncCore(Stream destination, CancellationToken cancellationToken)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.WriteToUpstreamAsync(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.HttpContextResponder.SetResponseOnHttpContext(HttpContext context, DownstreamResponse downstream)
+         at Ocelot.Responder.Middleware.ResponderMiddleware.Invoke(HttpContext context)
+         at Ocelot.Errors.Middleware.ExceptionHandlerMiddleware.Invoke(HttpContext context)
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NJT3MCTB:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+Using launch settings from /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/Properties/launchSettings.json...
+Building...
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURD:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURC:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURD:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURC:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURD:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURC:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURE:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURE:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURF:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURF:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURE:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURF:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURG:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURG:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURH:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURH:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURG:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURI:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURI:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURI:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURH:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURJ:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURJ:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURJ:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURK:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURK:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURL:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURL:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURK:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURL:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=price
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURM:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURM:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURN:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURN:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURM:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=price
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURN:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=rating
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURO:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURO:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURP:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURP:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURO:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=rating
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURP:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURQ:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURQ:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURR:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURR:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURR:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURQ:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=release
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURS:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURS:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPURT:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPURT:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURS:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=release
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPURT:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=price
+warn: Ocelot.DownstreamRouteFinder.Middleware.DownstreamRouteFinderMiddleware[0]
+      RequestId: 0HNL3NPBQPURU:00000001, PreviousRequestId: -
+      DownstreamRouteFinderMiddleware setting pipeline errors because DownstreamRouteFinder returned the following ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+warn: Ocelot.Responder.Middleware.ResponderMiddleware[0]
+      RequestId: 0HNL3NPBQPURU:00000001, PreviousRequestId: -
+      ResponderMiddleware found 1 error ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+      Setting error response for request: GET /api/library
+warn: Ocelot.DownstreamRouteFinder.Middleware.DownstreamRouteFinderMiddleware[0]
+      RequestId: 0HNL3NPBQPURV:00000001, PreviousRequestId: -
+      DownstreamRouteFinderMiddleware setting pipeline errors because DownstreamRouteFinder returned the following ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+warn: Ocelot.Responder.Middleware.ResponderMiddleware[0]
+      RequestId: 0HNL3NPBQPURV:00000001, PreviousRequestId: -
+      ResponderMiddleware found 1 error ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+      Setting error response for request: GET /api/library
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUS0:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUS0:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUS1:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUS1:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUS0:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUS1:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUS2:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUS2:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUS2:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUS3:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUS3:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUS3:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUS4:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUS4:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/2' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUS4:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/2
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUS5:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUS5:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/2' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUS5:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/2
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUS6:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUS6:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUS7:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUS7:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUS6:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUS7:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUS8:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUS8:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUS8:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUS9:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUS9:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUS9:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSA:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSA:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSB:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSB:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSA:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSB:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSC:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSC:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSC:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSD:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSD:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSD:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSE:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSE:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSE:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?genreId=1
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSF:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSF:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSF:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?genreId=7
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSG:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSG:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSG:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?genreId=6
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSH:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSH:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSH:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?genreId=5
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSI:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSI:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSI:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?genreId=2
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSJ:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSJ:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSJ:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?genreId=4
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSK:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSK:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSK:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?genreId=3
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSL:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSL:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSL:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSM:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSM:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSN:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSN:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSM:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSN:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSO:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSO:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSP:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSP:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSO:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSP:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSQ:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSQ:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSQ:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSR:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSR:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSR:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSS:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSS:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUST:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUST:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSS:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUST:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSU:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSU:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUSV:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUSV:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSU:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUSV:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUT0:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUT0:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUT0:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUT1:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUT1:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUT1:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUT2:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUT2:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUT2:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUT3:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUT3:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUT3:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUT4:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUT4:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUT4:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUT5:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUT5:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUT5:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUT6:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUT6:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUT6:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUT7:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUT7:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUT7:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUT8:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUT8:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUT8:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUT9:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUT9:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUT9:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUTA:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUTA:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUTA:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUTB:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUTB:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUTB:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUTC:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUTC:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUTC:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUTD:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUTD:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUTD:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUTE:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUTE:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUTE:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUTF:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUTF:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUTG:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUTG:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUTF:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUTG:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NPBQPUTH:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NPBQPUTH:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NPBQPUTH:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
+Using launch settings from /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/Properties/launchSettings.json...
+Building...
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5000
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD5N:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD5M:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD5N:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD5M:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD5N:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD5M:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD5O:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD5O:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD5P:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD5P:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD5O:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD5P:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD5Q:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD5Q:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD5R:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD5R:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD5R:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD5Q:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD5S:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD5S:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD5T:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD5T:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD5S:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD5U:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD5U:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD5U:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD5T:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD5V:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD5V:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD5V:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+warn: Ocelot.DownstreamRouteFinder.Middleware.DownstreamRouteFinderMiddleware[0]
+      RequestId: 0HNL3NTK4CD60:00000001, PreviousRequestId: -
+      DownstreamRouteFinderMiddleware setting pipeline errors because DownstreamRouteFinder returned the following ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+warn: Ocelot.Responder.Middleware.ResponderMiddleware[0]
+      RequestId: 0HNL3NTK4CD60:00000001, PreviousRequestId: -
+      ResponderMiddleware found 1 error ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+      Setting error response for request: GET /api/library
+warn: Ocelot.DownstreamRouteFinder.Middleware.DownstreamRouteFinderMiddleware[0]
+      RequestId: 0HNL3NTK4CD61:00000001, PreviousRequestId: -
+      DownstreamRouteFinderMiddleware setting pipeline errors because DownstreamRouteFinder returned the following ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+warn: Ocelot.Responder.Middleware.ResponderMiddleware[0]
+      RequestId: 0HNL3NTK4CD61:00000001, PreviousRequestId: -
+      ResponderMiddleware found 1 error ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+      Setting error response for request: GET /api/library
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD62:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD62:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD63:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD63:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD62:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD63:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD64:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD64:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD64:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD65:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD65:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD65:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD66:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD66:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD67:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD67:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD66:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD68:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD68:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD67:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD68:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD69:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD69:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD69:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6A:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6A:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/15' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6A:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/15
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6B:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6B:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/15' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6B:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/15
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6C:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6C:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6C:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6D:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6D:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6E:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6E:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6E:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6D:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6F:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6F:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6F:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6G:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6G:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6H:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6H:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6H:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6G:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6I:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6I:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6I:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6J:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6J:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6J:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6K:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/auth/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6K:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/auth/login' in the route /api/auth/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6K:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5002/api/auth/login
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6L:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6L:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6M:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6M:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6L:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6N:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6N:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6M:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6O:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6O:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6N:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6O:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6P:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6P:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6Q:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6Q:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6P:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6Q:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6R:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6R:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6S:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6S:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6S:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6R:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6T:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/auth/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6T:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/auth/login' in the route /api/auth/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6T:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5002/api/auth/login
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6U:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6U:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6U:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?pageSize=100
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD6V:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD6V:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD6V:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?pageSize=100
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD70:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD70:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD70:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?pageSize=100
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD71:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD71:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD71:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?pageSize=100
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD72:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD72:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD73:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD73:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD72:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD73:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD74:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD74:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD75:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD75:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD74:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD75:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD76:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD76:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD76:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?pageSize=100
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD77:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD77:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD77:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?pageSize=100
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD78:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD78:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD79:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/users/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD79:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/users' in the route /api/users/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD78:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?pageSize=100
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7A:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/orders/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7A:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/orders/all' in the route /api/orders/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7A:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/orders/all
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD79:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5002/api/users
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7B:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7B:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7C:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/users/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7C:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/users' in the route /api/users/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7B:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?pageSize=100
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7D:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/orders/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7D:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/orders/all' in the route /api/orders/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7D:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/orders/all
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7C:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5002/api/users
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7E:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7E:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7E:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7F:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7F:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7F:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7G:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7G:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games/featured' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7G:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games/featured?count=12
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7H:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7H:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7H:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7I:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7I:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7J:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/users/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7J:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/users' in the route /api/users/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7I:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?pageSize=100
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7K:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/orders/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7K:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/orders/all' in the route /api/orders/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7J:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5002/api/users
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7L:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7L:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7K:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/orders/all
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7M:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/users/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7M:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/users' in the route /api/users/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7L:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?pageSize=100
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7M:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5002/api/users
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7N:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/orders/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7N:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/orders/all' in the route /api/orders/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7N:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/orders/all
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7O:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7O:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7O:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7P:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7P:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7Q:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/genres/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7Q:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/genres' in the route /api/genres/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7P:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7Q:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/genres
+info: Ocelot.RateLimiting.RateLimitingMiddleware[0]
+      RequestId: 0HNL3NTK4CD7R:00000001, PreviousRequestId: -
+      Rate limiting is disabled for route '/api/games/{everything}' via the EnableRateLimiting option.
+info: Ocelot.Authentication.AuthenticationMiddleware[0]
+      RequestId: 0HNL3NTK4CD7R:00000001, PreviousRequestId: -
+      No authentication is required for the path '/api/games' in the route /api/games/{everything}.
+info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
+      RequestId: 0HNL3NTK4CD7R:00000001, PreviousRequestId: -
+      200 OK status code of request URI: http://localhost:5001/api/games?page=1&pageSize=12&sortBy=sales
+warn: Ocelot.DownstreamRouteFinder.Middleware.DownstreamRouteFinderMiddleware[0]
+      RequestId: 0HNL3NTK4CD7S:00000001, PreviousRequestId: -
+      DownstreamRouteFinderMiddleware setting pipeline errors because DownstreamRouteFinder returned the following ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+warn: Ocelot.Responder.Middleware.ResponderMiddleware[0]
+      RequestId: 0HNL3NTK4CD7S:00000001, PreviousRequestId: -
+      ResponderMiddleware found 1 error ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+      Setting error response for request: GET /api/library
+warn: Ocelot.DownstreamRouteFinder.Middleware.DownstreamRouteFinderMiddleware[0]
+      RequestId: 0HNL3NTK4CD7T:00000001, PreviousRequestId: -
+      DownstreamRouteFinderMiddleware setting pipeline errors because DownstreamRouteFinder returned the following ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+warn: Ocelot.Responder.Middleware.ResponderMiddleware[0]
+      RequestId: 0HNL3NTK4CD7T:00000001, PreviousRequestId: -
+      ResponderMiddleware found 1 error ->
+      UnableToFindDownstreamRouteError: Failed to match route configuration for upstream: GET /api/library
+      Setting error response for request: GET /api/library
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...

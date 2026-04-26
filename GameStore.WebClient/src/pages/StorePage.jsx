@@ -12,20 +12,30 @@ export default function StorePage() {
   const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState("sales");
   const [showFilters, setShowFilters] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const pageSize = 12;
 
+  // Load genres 1 lần
   useEffect(() => {
     genreAPI.getAll().then((r) => setGenres(r.data));
   }, []);
 
+  // Load games mỗi khi filter thay đổi (bao gồm cả lần đầu)
+  useEffect(() => {
+    fetchGames();
+  }, [page, sort, genreId]);
+
   const fetchGames = async () => {
     setLoading(true);
     try {
-      const params = { page: 1, pageSize: 24, sortBy: sort };
+      const params = { page, pageSize, sortBy: sort };
       if (search) params.keyword = search;
       if (genreId) params.genreId = genreId;
       if (maxPrice) params.maxPrice = maxPrice;
       const res = await gameAPI.getAll(params);
       setGames(res.data.data || []);
+      setTotalPages(res.data.totalPages || 1);
     } catch (e) {
       console.error(e);
     } finally {
@@ -33,12 +43,14 @@ export default function StorePage() {
     }
   };
 
-  useEffect(() => {
-    fetchGames();
-  }, [sort, genreId]);
-
   const handleSearch = (e) => {
     e.preventDefault();
+    setPage(1); // Reset về page 1 khi search
+    fetchGames();
+  };
+
+  const handleFilterChange = () => {
+    setPage(1);
     fetchGames();
   };
 
@@ -65,7 +77,7 @@ export default function StorePage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search games by title or description..."
+            placeholder="Search games..."
             style={{
               flex: 1,
               padding: "14px 0",
@@ -115,7 +127,10 @@ export default function StorePage() {
         >
           <select
             value={genreId}
-            onChange={(e) => setGenreId(e.target.value)}
+            onChange={(e) => {
+              setGenreId(e.target.value);
+              handleFilterChange();
+            }}
             style={selectStyle}
           >
             <option value="">All Genres</option>
@@ -134,7 +149,10 @@ export default function StorePage() {
           />
           <select
             value={sort}
-            onChange={(e) => setSort(e.target.value)}
+            onChange={(e) => {
+              setSort(e.target.value);
+              handleFilterChange();
+            }}
             style={selectStyle}
           >
             <option value="sales">Best Selling</option>
@@ -148,6 +166,7 @@ export default function StorePage() {
               setMaxPrice("");
               setSort("sales");
               setShowFilters(false);
+              handleFilterChange();
             }}
             style={{
               display: "flex",
@@ -158,9 +177,17 @@ export default function StorePage() {
               border: "none",
               cursor: "pointer",
               fontSize: 13,
+              fontWeight: 600,
             }}
           >
-            <X size={14} /> Clear
+            <X size={14} /> Clear All
+          </button>
+          <button
+            onClick={handleFilterChange}
+            className="btn-primary"
+            style={{ padding: "8px 16px", fontSize: 13 }}
+          >
+            Apply Filters
           </button>
         </div>
       )}
@@ -168,25 +195,67 @@ export default function StorePage() {
       {/* Results */}
       {loading ? (
         <p style={{ textAlign: "center", color: "#6b6b8e", padding: 40 }}>
-          Loading...
+          Loading games...
         </p>
       ) : games.length === 0 ? (
         <p style={{ textAlign: "center", color: "#6b6b8e", padding: 40 }}>
           No games found.
         </p>
       ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-            gap: 20,
-            paddingBottom: 40,
-          }}
-        >
-          {games.map((g) => (
-            <GameCard key={g.id} game={g} />
-          ))}
-        </div>
+        <>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+              gap: 20,
+              paddingBottom: 20,
+            }}
+          >
+            {games.map((g) => (
+              <GameCard key={g.id} game={g} />
+            ))}
+          </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: 8,
+                paddingBottom: 40,
+              }}
+            >
+              <button
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+                style={pageBtnStyle}
+              >
+                ← Prev
+              </button>
+              {[...Array(totalPages)].map((_, i) => (
+                <button
+                  key={i + 1}
+                  onClick={() => setPage(i + 1)}
+                  style={{
+                    ...pageBtnStyle,
+                    background: page === i + 1 ? "#e94560" : "#2a2a4a",
+                    color: page === i + 1 ? "#fff" : "#aaa",
+                  }}
+                >
+                  {i + 1}
+                </button>
+              ))}
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+                style={pageBtnStyle}
+              >
+                Next →
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -201,4 +270,12 @@ const selectStyle = {
   fontSize: 14,
   cursor: "pointer",
   outline: "none",
+};
+const pageBtnStyle = {
+  padding: "8px 14px",
+  borderRadius: 8,
+  border: "none",
+  cursor: "pointer",
+  fontSize: 14,
+  fontWeight: 600,
 };
