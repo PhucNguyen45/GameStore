@@ -1,38 +1,35 @@
-# GameStore
+# 🎮 GameStore - Fullstack Game Distribution Platform
 
-## Description
-GameStore là hệ thống bán game đơn giản, cho phép quản lý sản phẩm, danh mục và xử lý đơn hàng.
+> A full-stack game store inspired by **Epic Games** and **Steam**, built with **.NET 10** + **React 19** + **SQL Server**.
 
-## Tech Stack
-- Backend: ASP.NET / C#
-- Frontend: (bổ sung nếu có)
-- Database: SQL Server
+![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)
+![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react)
+![SQL Server](https://img.shields.io/badge/SQL_Server-2022-CC2927?logo=microsoftsqlserver)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-## Features
-- Quản lý sản phẩm
-- Quản lý danh mục
-- Tìm kiếm sản phẩm
-- Xử lý đơn hàng
+---
 
-## Database
-Các bảng chính:
-- Products
-- Categories
-- Orders
+## 🚀 QUICK START
 
-## How to run
+```bash
+# 1. Clone
+git clone https://github.com/yourusername/GameStore.git
+cd GameStore
 
-### Backend
-- Mở bằng Visual Studio
-- Chạy project
+# 2. Update connection strings in:
+#    GameStore.AuthService/appsettings.json
+#    GameStore.APIService/appsettings.json
 
-### Database
-- Import file SQL trong thư mục database
+# 3. Run migration
+dotnet ef database update --project GameStore.Repository --startup-project GameStore.AuthService
 
-## Data Perspective
-- Phân tích sản phẩm bán chạy
-- Thống kê doanh thu theo thời gian
-- Phân tích hành vi người dùng
+# 4. Seed data (run in SSMS)
+#    Open /docs/seed-games.sql and execute
 
-## Author
-PhucNguyen45
+# 5. Install frontend
+cd GameStore.WebClient && npm install && cd ..
+
+# 6. Run all
+chmod +x run-all.sh kill-all.sh
+./run-all.sh
+```
