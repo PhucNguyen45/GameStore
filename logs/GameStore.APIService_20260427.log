@@ -6254,3 +6254,618 @@ info: Microsoft.EntityFrameworkCore.Database.Command[20101]
       ORDER BY [g2].[TotalSales], [g2].[Id], [s].[Id]
 info: Microsoft.Hosting.Lifetime[0]
       Application is shutting down...
+Using launch settings from /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.APIService/Properties/launchSettings.json...
+Building...
+/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Common/Auth/TokenHelper.cs(21,28): warning SYSLIB0060: 'Rfc2898DeriveBytes.Rfc2898DeriveBytes(string, byte[], int, HashAlgorithmName)' is obsolete: 'The constructors on Rfc2898DeriveBytes are obsolete. Use the static Pbkdf2 method instead.' (https://aka.ms/dotnet-warnings/SYSLIB0060) [/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Common/GameStore.Common.csproj]
+/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Common/Auth/TokenHelper.cs(27,28): warning SYSLIB0060: 'Rfc2898DeriveBytes.Rfc2898DeriveBytes(string, byte[], int, HashAlgorithmName)' is obsolete: 'The constructors on Rfc2898DeriveBytes are obsolete. Use the static Pbkdf2 method instead.' (https://aka.ms/dotnet-warnings/SYSLIB0060) [/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Common/GameStore.Common.csproj]
+/usr/lib/dotnet/sdk/10.0.107/Microsoft.Common.CurrentVersion.targets(4903,5): warning MSB3026: Could not copy "obj/Debug/net10.0/GameStore.Repository.dll" to "bin/Debug/net10.0/GameStore.Repository.dll". Beginning retry 1 in 1000ms. The process cannot access the file '/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Repository/obj/Debug/net10.0/GameStore.Repository.dll' because it is being used by another process.  [/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Repository/GameStore.Repository.csproj]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (39ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT 1
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (37ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      
+      IF EXISTS
+          (SELECT *
+           FROM [sys].[objects] o
+           WHERE [o].[type] = 'U'
+           AND [o].[is_ms_shipped] = 0
+           AND [o].[object_id] NOT IN (SELECT [ep].[major_id]
+              FROM [sys].[extended_properties] AS [ep]
+              WHERE [ep].[minor_id] = 0
+                  AND [ep].[class] = 1
+                  AND [ep].[name] = N'microsoft_database_tools_support'
+          )
+      )
+      SELECT 1 ELSE SELECT 0
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://0.0.0.0:5001
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Development
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.APIService
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (38ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (18ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (33ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [g].[Id], [g].[Description], [g].[IconUrl], [g].[IsActive], [g].[Name]
+      FROM [Genres] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+      ORDER BY [g].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (9ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT TOP(@p) [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [g].[Id], [g].[Description], [g].[IconUrl], [g].[IsActive], [g].[Name]
+      FROM [Genres] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+      ORDER BY [g].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT TOP(@p) [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@id='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT TOP(1) [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[Id] = @id
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[@id='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT TOP(1) [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[Id] = @id
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT TOP(@p) [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [g].[Id], [g].[Description], [g].[IconUrl], [g].[IsActive], [g].[Name]
+      FROM [Genres] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+      ORDER BY [g].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT TOP(@p) [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [g].[Id], [g].[Description], [g].[IconUrl], [g].[IsActive], [g].[Name]
+      FROM [Genres] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+      ORDER BY [g].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT TOP(@p) [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [g].[Id], [g].[Description], [g].[IconUrl], [g].[IsActive], [g].[Name]
+      FROM [Genres] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+      ORDER BY [g].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT TOP(@p) [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [g].[Id], [g].[Description], [g].[IconUrl], [g].[IsActive], [g].[Name]
+      FROM [Genres] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+      ORDER BY [g].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (14ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (8ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [g].[Id], [g].[Description], [g].[IconUrl], [g].[IsActive], [g].[Name]
+      FROM [Genres] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+      ORDER BY [g].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [g].[Id], [g].[Description], [g].[IconUrl], [g].[IsActive], [g].[Name]
+      FROM [Genres] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+      ORDER BY [g].[Name]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales]
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales], [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales]
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales], [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (3ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (5ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT COUNT(*)
+      FROM [Games] AS [g]
+      WHERE [g].[IsActive] = CAST(1 AS bit)
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (8ms) [Parameters=[@p='?' (DbType = Int32), @p1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+      SELECT [g2].[Id], [g2].[Title], [g2].[Description], [g2].[Price], [g2].[DiscountPrice], [g2].[Developer], [g2].[Publisher], [g2].[ReleaseDate], [g2].[CoverImageUrl], [g2].[TrailerUrl], [g2].[Screenshots], [g2].[TotalSales], [g2].[Rating], [g2].[RatingCount], [g2].[IsActive], [g2].[CreatedAt], [g2].[MinimumOS], [g2].[MinimumProcessor], [g2].[MinimumMemory], [g2].[MinimumGraphics], [g2].[MinimumStorage], [s].[Id], [s].[GameId], [s].[GenreId], [s].[Id0], [s].[Name], [s].[Description], [s].[IconUrl], [s].[IsActive]
+      FROM (
+          SELECT [g].[Id], [g].[Title], [g].[Description], [g].[Price], [g].[DiscountPrice], [g].[Developer], [g].[Publisher], [g].[ReleaseDate], [g].[CoverImageUrl], [g].[TrailerUrl], [g].[Screenshots], [g].[TotalSales], [g].[Rating], [g].[RatingCount], [g].[IsActive], [g].[CreatedAt], [g].[MinimumOS], [g].[MinimumProcessor], [g].[MinimumMemory], [g].[MinimumGraphics], [g].[MinimumStorage]
+          FROM [Games] AS [g]
+          WHERE [g].[IsActive] = CAST(1 AS bit)
+          ORDER BY [g].[TotalSales] DESC
+          OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+      ) AS [g2]
+      LEFT JOIN (
+          SELECT [g0].[Id], [g0].[GameId], [g0].[GenreId], [g1].[Id] AS [Id0], [g1].[Name], [g1].[Description], [g1].[IconUrl], [g1].[IsActive]
+          FROM [GameGenres] AS [g0]
+          INNER JOIN [Genres] AS [g1] ON [g0].[GenreId] = [g1].[Id]
+      ) AS [s] ON [g2].[Id] = [s].[GameId]
+      ORDER BY [g2].[TotalSales] DESC, [g2].[Id], [s].[Id]
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]
+      Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
+      FROM [Orders] AS [o]
