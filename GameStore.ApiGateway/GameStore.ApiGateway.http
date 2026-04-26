@@ -1,0 +1,6 @@
+@GameStore.ApiGateway_HostAddress = http://localhost:5258
+
+GET {{GameStore.ApiGateway_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
