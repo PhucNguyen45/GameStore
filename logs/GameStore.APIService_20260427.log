@@ -6869,3 +6869,5 @@ info: Microsoft.EntityFrameworkCore.Database.Command[20101]
       Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
       SELECT [o].[Id], [o].[OrderDate], [o].[PaymentMethod], [o].[Status], [o].[TotalAmount], [o].[UserId]
       FROM [Orders] AS [o]
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...

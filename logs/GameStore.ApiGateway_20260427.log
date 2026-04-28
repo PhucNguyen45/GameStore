@@ -2973,3 +2973,5 @@ info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
 info: Ocelot.Requester.Middleware.HttpRequesterMiddleware[0]
       RequestId: 0HNL3OHI6FFF2:00000001, PreviousRequestId: -
       200 OK status code of request URI: http://localhost:5001/api/orders/all
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...

@@ -437,3 +437,5 @@ info: Microsoft.EntityFrameworkCore.Database.Command[20101]
       WHERE [u].[IsActive] = CAST(1 AS bit)
       ORDER BY [u].[CreatedAt] DESC
       OFFSET @p ROWS FETCH NEXT @p1 ROWS ONLY
+info: Microsoft.Hosting.Lifetime[0]
+      Application is shutting down...
