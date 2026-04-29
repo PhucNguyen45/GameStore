@@ -1,16 +1,27 @@
-# .NET
+# Build output
 bin/
 obj/
-.vs/
-*.user
-*.suo
+*.dll
+*.pdb
+*.exe
+
+# Logs
+logs/
 
 # Node
 node_modules/
-.env
-dist/
-build/
+package-lock.json
+
+# IDE
+.vs/
+.vscode/
+.idea/
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Misc
+*.user
+*.suo
+*.cache

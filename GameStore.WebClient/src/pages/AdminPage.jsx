@@ -3,39 +3,256 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { gameAPI } from "../services/api";
 import api from "../services/api";
-import {
-  Gamepad2,
-  Users,
-  ShoppingBag,
-  DollarSign,
-  Plus,
-  Edit,
-  Trash2,
-  Star,
-  ArrowUp,
-  ArrowDown,
-  Search,
-  X,
-  Package,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  LayoutDashboard,
-} from "lucide-react";
+import { Gamepad2, Users, ShoppingBag, DollarSign, Plus, Edit, Trash2, Star, ArrowUp, ArrowDown, Search, X, Package, CheckCircle, XCircle, AlertCircle, LayoutDashboard, } from "lucide-react";
 
-const thStyle = {
-  textAlign: "left",
-  padding: "12px 14px",
-  color: "#888",
-  textTransform: "uppercase",
-  fontSize: 10,
-  fontWeight: 700,
-  letterSpacing: 1,
-  borderBottom: "2px solid #1a1a2e",
-  cursor: "pointer",
-  userSelect: "none",
-  transition: "color 0.2s",
-};
+const thStyle = { textAlign: "left", padding: "12px 14px", color: "#888", textTransform: "uppercase", fontSize: 10, fontWeight: 700, letterSpacing: 1, borderBottom: "2px solid #1a1a2e", cursor: "pointer", userSelect: "none", transition: "color 0.2s",};
+
+// ===== GAME FORM MODAL =====
+function GameFormModal({ game, onClose, onSave }) {
+  const [form, setForm] = useState({
+    title: game?.title || "",
+    description: game?.description || "",
+    price: game?.price || 0,
+    discountPrice: game?.discountPrice || "",
+    developer: game?.developer || "",
+    publisher: game?.publisher || "",
+    releaseDate: game?.releaseDate
+      ? new Date(game.releaseDate).toISOString().split("T")[0]
+      : "",
+    coverImageUrl: game?.coverImageUrl || "",
+    trailerUrl: game?.trailerUrl || "",
+    minimumOS: game?.minimumOS || "",
+    minimumProcessor: game?.minimumProcessor || "",
+    minimumMemory: game?.minimumMemory || "",
+    minimumGraphics: game?.minimumGraphics || "",
+    minimumStorage: game?.minimumStorage || "",
+  });
+  const [saving, setSaving] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      const data = {
+        ...form,
+        price: parseFloat(form.price),
+        discountPrice: form.discountPrice
+          ? parseFloat(form.discountPrice)
+          : null,
+        releaseDate: new Date(form.releaseDate).toISOString(),
+      };
+      if (game) {
+        await gameAPI.update(game.id, data);
+      } else {
+        await gameAPI.create(data);
+      }
+      onSave();
+    } catch (err) {
+      alert("Failed to save: " + (err.response?.data?.message || err.message));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const inputStyle = { width: "100%", padding: "8px 12px", background: "#0a0a10", border: "1px solid #1a1a2e", borderRadius: 6, color: "#fff", fontSize: 13, outline: "none", };
+
+  return (
+    <div
+      style={{position: "fixed",inset: 0,background: "rgba(0,0,0,0.8)",display: "flex",alignItems: "center",justifyContent: "center",zIndex: 9999,}}
+      onClick={onClose}
+    >
+      <div
+        style={{background: "#111118",borderRadius: 12,padding: 30,width: 600,maxHeight: "90vh",overflow: "auto",border: "1px solid #1a1a2e",}}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3
+          style={{color: "#fff",marginBottom: 20,fontSize: 18,fontWeight: 700,}}
+        >
+          {game ? "✏️ Edit Game" : "➕ Add New Game"}
+        </h3>
+        <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
+          >
+            <input
+              placeholder="Title *"
+              value={form.title}
+              onChange={(e) => setForm({ ...form, title: e.target.value })}
+              style={inputStyle}
+              required
+            />
+            <input type="number" step="0.01" placeholder="Price *" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} style={inputStyle} required/>
+            <input type="number" step="0.01" placeholder="Discount Price" value={form.discountPrice} onChange={(e) => setForm({ ...form, discountPrice: e.target.value }) } style={inputStyle} />
+            <input
+              type="date"
+              placeholder="Release Date"
+              value={form.releaseDate}
+              onChange={(e) =>
+                setForm({ ...form, releaseDate: e.target.value })
+              }
+              style={inputStyle}
+            />
+            <input
+              placeholder="Developer"
+              value={form.developer}
+              onChange={(e) => setForm({ ...form, developer: e.target.value })}
+              style={inputStyle}
+            />
+            <input
+              placeholder="Publisher"
+              value={form.publisher}
+              onChange={(e) => setForm({ ...form, publisher: e.target.value })}
+              style={inputStyle}
+            />
+          </div>
+          <textarea
+            placeholder="Description"
+            value={form.description}
+            onChange={(e) => setForm({ ...form, description: e.target.value })}
+            style={{ ...inputStyle, minHeight: 80, resize: "vertical" }}
+          />
+          <div
+            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
+          >
+            <input
+              placeholder="Cover Image URL"
+              value={form.coverImageUrl}
+              onChange={(e) =>
+                setForm({ ...form, coverImageUrl: e.target.value })
+              }
+              style={inputStyle}
+            />
+            <input
+              placeholder="Trailer URL"
+              value={form.trailerUrl}
+              onChange={(e) => setForm({ ...form, trailerUrl: e.target.value })}
+              style={inputStyle}
+            />
+          </div>
+          <fieldset
+            style={{ border: "1px solid #1a1a2e", borderRadius: 6, padding: 12, }}
+          >
+            <legend style={{ color: "#888", fontSize: 12, padding: "0 8px" }}>
+              System Requirements
+            </legend>
+            <div
+              style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, }}
+            >
+              <input
+                placeholder="OS"
+                value={form.minimumOS}
+                onChange={(e) =>
+                  setForm({ ...form, minimumOS: e.target.value })
+                }
+                style={inputStyle}
+              />
+              <input
+                placeholder="Processor"
+                value={form.minimumProcessor}
+                onChange={(e) =>
+                  setForm({ ...form, minimumProcessor: e.target.value })
+                }
+                style={inputStyle}
+              />
+              <input
+                placeholder="Memory"
+                value={form.minimumMemory}
+                onChange={(e) =>
+                  setForm({ ...form, minimumMemory: e.target.value })
+                }
+                style={inputStyle}
+              />
+              <input
+                placeholder="Graphics"
+                value={form.minimumGraphics}
+                onChange={(e) =>
+                  setForm({ ...form, minimumGraphics: e.target.value })
+                }
+                style={inputStyle}
+              />
+              <input
+                placeholder="Storage"
+                value={form.minimumStorage}
+                onChange={(e) =>
+                  setForm({ ...form, minimumStorage: e.target.value })
+                }
+                style={{ ...inputStyle, gridColumn: "1 / -1" }}
+              />
+            </div>
+          </fieldset>
+          <div
+            style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8, }}
+          >
+            <button
+              type="button"
+              onClick={onClose}
+              style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer",}}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              style={{ padding: "8px 20px", background: "var(--accent)", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600, }}
+            >
+              {saving ? "Saving..." : game ? "Update" : "Create"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ===== DELETE CONFIRM MODAL =====
+function DeleteConfirmModal({ game, onClose, onConfirm }) {
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await gameAPI.delete(game.id);
+      onConfirm();
+    } catch (err) {
+      alert(
+        "Failed to delete: " + (err.response?.data?.message || err.message),
+      );
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999, }}
+      onClick={onClose}
+    >
+      <div
+        style={{ background: "#111118", borderRadius: 12, padding: 30, width: 400, textAlign: "center", border: "1px solid #e94560",}}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <Trash2 size={40} color="#e94560" style={{ marginBottom: 12 }} />
+        <h3 style={{ color: "#fff", marginBottom: 8 }}>Delete Game?</h3>
+        <p style={{ color: "#888", fontSize: 14, marginBottom: 20 }}>
+          Are you sure you want to delete{" "}
+          <strong style={{ color: "#fff" }}>"{game.title}"</strong>?
+        </p>
+        <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+          <button
+            onClick={onClose}
+            style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer",}}
+          >
+            Cancel
+          </button>
+          <button onClick={handleDelete} disabled={deleting} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600,}}
+          >
+            {deleting ? "Deleting..." : "Delete"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AdminPage() {
   const { user, isAdmin, loading } = useAuth();
@@ -50,7 +267,9 @@ export default function AdminPage() {
   const [userSort, setUserSort] = useState({ field: "id", dir: "asc" });
   const [orderSort, setOrderSort] = useState({ field: "id", dir: "asc" });
   const [gameSearch, setGameSearch] = useState("");
-
+  const [showGameForm, setShowGameForm] = useState(false);
+  const [editingGame, setEditingGame] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   useEffect(() => {
     loadData();
   }, []);
@@ -87,26 +306,11 @@ export default function AdminPage() {
   };
 
   const calculateMonthlyRevenue = (ordersData) => {
-    const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
-    ];
+    const months = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", ];
     const currentYear = new Date().getFullYear();
     const monthlyMap = {};
 
-    months.forEach((m, i) => {
-      monthlyMap[i] = { month: m, value: 0, count: 0 };
-    });
+    months.forEach((m, i) => { monthlyMap[i] = { month: m, value: 0, count: 0 }; });
 
     ordersData.forEach((order) => {
       if (order.status === "Completed" && order.orderDate) {
@@ -119,28 +323,11 @@ export default function AdminPage() {
       }
     });
 
-    // Nếu không có dữ liệu, thêm dữ liệu mẫu để chart không trống
-    const result = Object.values(monthlyMap);
-    const hasData = result.some((m) => m.value > 0);
-
-    if (!hasData) {
-      return [
-        { month: "Jan", value: 1250 },
-        { month: "Feb", value: 2100 },
-        { month: "Mar", value: 1800 },
-        { month: "Apr", value: 3200 },
-        { month: "May", value: 2500 },
-        { month: "Jun", value: 4100 },
-        { month: "Jul", value: 3800 },
-        { month: "Aug", value: 2900 },
-        { month: "Sep", value: 4500 },
-        { month: "Oct", value: 3500 },
-        { month: "Nov", value: 2800 },
-        { month: "Dec", value: 5200 },
-      ];
-    }
-
-    return result.map((m) => ({ ...m, value: Math.round(m.value) }));
+    // Trả về dữ liệu thật
+    return Object.values(monthlyMap).map((m) => ({
+      ...m,
+      value: Math.round(m.value),
+    }));
   };
 
   const sortFn = (data, field, dir) =>
@@ -184,14 +371,7 @@ export default function AdminPage() {
   if (loading)
     return (
       <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          background: "var(--bg-primary)",
-          color: "#888",
-        }}
+        style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh", background: "var(--bg-primary)", color: "#888", }}
       >
         Loading...
       </div>
@@ -208,6 +388,7 @@ export default function AdminPage() {
   const sortedUsers = sortFn(users, userSort.field, userSort.dir);
   const sortedOrders = sortFn(orders, orderSort.field, orderSort.dir);
   const maxRevenue = Math.max(...monthlyRevenue.map((m) => m.value), 1);
+  const displayMax = maxRevenue > 0 ? maxRevenue : 100;
 
   const tabs = [
     { id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
@@ -218,37 +399,16 @@ export default function AdminPage() {
 
   return (
     <div
-      style={{
-        display: "flex",
-        minHeight: "100vh",
-        background: "var(--bg-primary)",
-      }}
+      style={{ display: "flex", minHeight: "100vh", background: "var(--bg-primary)", }}
     >
       {/* SIDEBAR */}
       <div
-        style={{
-          width: 200,
-          background: "#0d0d14",
-          borderRight: "1px solid #1a1a2e",
-          padding: "20px 0",
-          flexShrink: 0,
-          height: "100vh",
-          position: "sticky",
-          top: 0,
-        }}
+        style={{ width: 200, background: "#0d0d14", borderRight: "1px solid #1a1a2e", padding: "20px 0", flexShrink: 0, height: "100vh", position: "sticky", top: 0, }}
       >
         <div style={{ padding: "0 16px", marginBottom: 24 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <div
-              style={{
-                width: 28,
-                height: 28,
-                borderRadius: 6,
-                background: "var(--accent)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              style={{ width: 28, height: 28, borderRadius: 6, background: "var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", }}
             >
               <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>
                 A
@@ -270,21 +430,7 @@ export default function AdminPage() {
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "9px 16px",
-                border: "none",
-                cursor: "pointer",
-                fontSize: 12,
-                fontWeight: 500,
-                background: activeTab === id ? "var(--accent)" : "transparent",
-                color: activeTab === id ? "#fff" : "#888",
-                textAlign: "left",
-                transition: "all 0.15s",
-                width: "100%",
-              }}
+              style={{ display: "flex", alignItems: "center", gap: 8, padding: "9px 16px", border: "none", cursor: "pointer", fontSize: 12, fontWeight: 500, background: activeTab === id ? "var(--accent)" : "transparent", color: activeTab === id ? "#fff" : "#888", textAlign: "left", transition: "all 0.15s", width: "100%", }}
             >
               <Icon size={14} /> {label}
             </button>
@@ -304,60 +450,24 @@ export default function AdminPage() {
         {activeTab === "dashboard" && (
           <>
             <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                gap: 12,
-                marginBottom: 24,
-              }}
+              style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12, marginBottom: 24, }}
             >
               {[
-                {
-                  icon: Gamepad2,
-                  label: "Total Games",
-                  value: games.length,
-                  color: "var(--accent)",
-                },
-                {
-                  icon: Users,
-                  label: "Users",
-                  value: stats.users,
-                  color: "#00c853",
-                },
-                {
-                  icon: ShoppingBag,
-                  label: "Orders",
-                  value: stats.orders,
-                  color: "#ffc107",
-                },
-                {
-                  icon: DollarSign,
-                  label: "Revenue",
-                  value: `$${Number(stats.revenue).toLocaleString()}`,
-                  color: "#e94560",
-                },
+                { icon: Gamepad2, label: "Total Games", value: games.length, color: "var(--accent)", },
+                { icon: Users, label: "Users", value: stats.users, color: "#00c853", },
+                { icon: ShoppingBag, label: "Orders", value: stats.orders, color: "#ffc107",},
+                { icon: DollarSign, label: "Revenue", value: `$${Number(stats.revenue).toLocaleString()}`, color: "#e94560",},
               ].map(({ icon: Icon, label, value, color }) => (
                 <div
                   key={label}
-                  style={{
-                    background: "#111118",
-                    borderRadius: 10,
-                    padding: 18,
-                    border: "1px solid #1a1a2e",
-                  }}
+                  style={{ background: "#111118", borderRadius: 10, padding: 18, border: "1px solid #1a1a2e", }}
                 >
                   <Icon size={18} color={color} style={{ marginBottom: 10 }} />
                   <p style={{ fontSize: 22, fontWeight: 800, color: "#fff" }}>
                     {value}
                   </p>
                   <p
-                    style={{
-                      fontSize: 11,
-                      color: "#666",
-                      marginTop: 2,
-                      textTransform: "uppercase",
-                      letterSpacing: 1,
-                    }}
+                    style={{ fontSize: 11, color: "#666", marginTop: 2, textTransform: "uppercase", letterSpacing: 1, }}
                   >
                     {label}
                   </p>
@@ -366,28 +476,14 @@ export default function AdminPage() {
             </div>
 
             <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 12,
-              }}
+              style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, }}
             >
               {/* REVENUE CHART WITH ANIMATION */}
               <div
-                style={{
-                  background: "#111118",
-                  borderRadius: 10,
-                  padding: 20,
-                  border: "1px solid #1a1a2e",
-                }}
+                style={{ background: "#111118", borderRadius: 10, padding: 20, border: "1px solid #1a1a2e", }}
               >
                 <h3
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: "#fff",
-                    marginBottom: 4,
-                  }}
+                  style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 4, }}
                 >
                   Revenue ({new Date().getFullYear()})
                 </h3>
@@ -395,63 +491,26 @@ export default function AdminPage() {
                   Total: ${Number(stats.revenue).toLocaleString()}
                 </p>
                 <div
-                  style={{
-                    display: "flex",
-                    alignItems: "flex-end",
-                    gap: 6,
-                    height: 160,
-                  }}
+                  style={{ display: "flex", alignItems: "flex-end", gap: 6, height: 160, }}
                 >
                   {monthlyRevenue.map((item, i, arr) => {
-                    const heightPercent =
-                      maxRevenue > 0 ? (item.value / maxRevenue) * 100 : 0;
+                    const heightPercent = Math.max(
+                      (item.value / displayMax) * 100,
+                      6,
+                    );
                     return (
                       <div
                         key={i}
-                        style={{
-                          flex: 1,
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          gap: 6,
-                          position: "relative",
-                        }}
+                        style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6, position: "relative",}}
                       >
                         <div
-                          style={{
-                            position: "absolute",
-                            top: -30,
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            background: "#1a1a2e",
-                            color: "#fff",
-                            padding: "3px 8px",
-                            borderRadius: 4,
-                            fontSize: 10,
-                            fontWeight: 600,
-                            opacity: 0,
-                            pointerEvents: "none",
-                            transition: "opacity 0.2s",
-                            whiteSpace: "nowrap",
-                            zIndex: 10,
-                            boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
-                          }}
+                          style={{ position: "absolute", top: -30, left: "50%", transform: "translateX(-50%)", background: "#1a1a2e", color: "#fff", padding: "3px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600, opacity: 0, pointerEvents: "none", transition: "opacity 0.2s", whiteSpace: "nowrap", zIndex: 10, boxShadow: "0 2px 8px rgba(0,0,0,0.5)", }}
                           className="bar-tooltip"
                         >
                           ${item.value.toLocaleString()}
                         </div>
                         <div
-                          style={{
-                            width: "100%",
-                            height: `${Math.max(heightPercent, 2)}%`,
-                            minHeight: 4,
-                            background: "var(--accent)",
-                            borderRadius: "4px 4px 0 0",
-                            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                            cursor: "pointer",
-                            position: "relative",
-                            overflow: "hidden",
-                          }}
+                          style={{ width: "100%", height: `${Math.max(heightPercent, 2)}%`, minHeight: 4, background: "var(--accent)", borderRadius: "4px 4px 0 0", transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)", cursor: "pointer", position: "relative", overflow: "hidden", }}
                           onMouseEnter={(e) => {
                             e.currentTarget.style.background =
                               "linear-gradient(180deg, #4fc3f7 0%, var(--accent) 100%)";
@@ -477,32 +536,13 @@ export default function AdminPage() {
                         >
                           <div
                             className="shine"
-                            style={{
-                              position: "absolute",
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              height: "40%",
-                              background:
-                                "linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%)",
-                              borderRadius: "4px 4px 0 0",
-                              opacity: 0,
-                              transition: "opacity 0.3s",
-                            }}
+                            style={{position: "absolute",top: 0,left: 0,right: 0,height: "40%",background: "linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%)",borderRadius: "4px 4px 0 0",opacity: 0,transition: "opacity 0.3s", }}
                           />
                         </div>
                         <span
-                          style={{
-                            fontSize: 9,
-                            color: "#555",
-                            transition: "color 0.2s",
-                          }}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.color = "#fff")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.color = "#555")
-                          }
+                          style={{ fontSize: 9, color: "#555", transition: "color 0.2s", }}
+                          onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
+                          onMouseLeave={(e) => (e.currentTarget.style.color = "#555")}
                         >
                           {item.month}
                         </span>
@@ -514,64 +554,26 @@ export default function AdminPage() {
 
               {/* RECENT ORDERS */}
               <div
-                style={{
-                  background: "#111118",
-                  borderRadius: 10,
-                  padding: 20,
-                  border: "1px solid #1a1a2e",
-                }}
+                style={{background: "#111118",borderRadius: 10,padding: 20,border: "1px solid #1a1a2e",}}
               >
                 <h3
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: "#fff",
-                    marginBottom: 16,
-                  }}
+                  style={{fontSize: 13,fontWeight: 600,color: "#fff",marginBottom: 16,}}
                 >
                   Recent Orders
                 </h3>
                 <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 4,
-                    maxHeight: 200,
-                    overflowY: "auto",
-                  }}
+                  style={{display: "flex",flexDirection: "column",gap: 4,maxHeight: 200,overflowY: "auto",}}
                 >
                   {sortedOrders.slice(0, 10).map((o) => (
                     <div
                       key={o.id}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        padding: "8px 10px",
-                        borderRadius: 6,
-                        background: "#0a0a10",
-                        fontSize: 12,
-                      }}
+                      style={{display: "flex",justifyContent: "space-between",alignItems: "center",padding: "8px 10px",borderRadius: 6,background: "#0a0a10",fontSize: 12,}}
                     >
                       <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
+                        style={{display: "flex",alignItems: "center",gap: 8,}}
                       >
                         <div
-                          style={{
-                            width: 6,
-                            height: 6,
-                            borderRadius: "50%",
-                            background:
-                              o.status === "Completed"
-                                ? "#4caf50"
-                                : o.status === "Cancelled"
-                                  ? "#e94560"
-                                  : "#ffc107",
-                          }}
+                          style={{width: 6,height: 6,borderRadius: "50%",background: o.status === "Completed"? "#4caf50": o.status === "Cancelled"? "#e94560": "#ffc107",}}
                         />
                         <span style={{ color: "#fff", fontWeight: 500 }}>
                           #{o.id}
@@ -579,11 +581,7 @@ export default function AdminPage() {
                         <span style={{ color: "#666" }}>User #{o.userId}</span>
                       </div>
                       <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 12,
-                        }}
+                        style={{ display: "flex", alignItems: "center", gap: 12, }}
                       >
                         <span style={{ color: "#888", fontSize: 10 }}>
                           {o.orderDate
@@ -601,11 +599,7 @@ export default function AdminPage() {
                   ))}
                   {sortedOrders.length === 0 && (
                     <p
-                      style={{
-                        color: "#666",
-                        textAlign: "center",
-                        padding: 20,
-                      }}
+                      style={{ color: "#666", textAlign: "center", padding: 2 }}
                     >
                       No orders yet
                     </p>
@@ -620,12 +614,7 @@ export default function AdminPage() {
         {activeTab === "games" && (
           <div>
             <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: 16,
-                gap: 12,
-              }}
+              style={{ display: "flex", justifyContent: "space-between", marginBottom: 16, gap: 1 }}
             >
               <div style={{ position: "relative", flex: 1, maxWidth: 300 }}>
                 <Search
@@ -637,66 +626,32 @@ export default function AdminPage() {
                   placeholder="Search games..."
                   value={gameSearch}
                   onChange={(e) => setGameSearch(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "7px 12px 7px 30px",
-                    background: "#111118",
-                    border: "1px solid #1a1a2e",
-                    borderRadius: 6,
-                    color: "#fff",
-                    fontSize: 12,
-                    outline: "none",
-                  }}
+                  style={{ width: "100%", padding: "7px 12px 7px 30px", background: "#111118", border: "1px solid #1a1a2e", borderRadius: 6, color: "#fff", fontSize: 12, outline: "none", }}
                 />
                 {gameSearch && (
                   <button
                     onClick={() => setGameSearch("")}
-                    style={{
-                      position: "absolute",
-                      right: 6,
-                      top: 7,
-                      background: "none",
-                      border: "none",
-                      color: "#666",
-                      cursor: "pointer",
-                    }}
+                    style={{ position: "absolute", right: 6, top: 7, background: "none", border: "none", color: "#666", cursor: "pointer", }}
                   >
                     <X size={11} />
                   </button>
                 )}
               </div>
               <button
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 5,
-                  padding: "7px 16px",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 6,
-                  fontSize: 12,
-                  fontWeight: 600,
-                  cursor: "pointer",
+                onClick={() => {
+                  setEditingGame(null);
+                  setShowGameForm(true);
                 }}
+                style={{ display: "flex", alignItems: "center", gap: 5, padding: "7px 16px", background: "var(--accent)", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: "pointer",}}
               >
                 <Plus size={14} /> Add Game
               </button>
             </div>
             <div
-              style={{
-                background: "#111118",
-                borderRadius: 8,
-                border: "1px solid #1a1a2e",
-                overflow: "hidden",
-              }}
+              style={{ background: "#111118", borderRadius: 8, border: "1px solid #1a1a2e", overflow: "hidden", }}
             >
               <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  fontSize: 12,
-                }}
+                style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, }}
               >
                 <thead>
                   <tr style={{ background: "#0a0a10" }}>
@@ -736,11 +691,7 @@ export default function AdminPage() {
                         #{game.id}
                       </td>
                       <td
-                        style={{
-                          padding: "9px 14px",
-                          color: "#fff",
-                          fontWeight: 500,
-                        }}
+                        style={{ padding: "9px 14px", color: "#fff", fontWeight: 500, }}
                       >
                         {game.title}
                       </td>
@@ -748,25 +699,14 @@ export default function AdminPage() {
                         {game.developer?.substring(0, 18)}
                       </td>
                       <td
-                        style={{
-                          padding: "9px 14px",
-                          color: "#4caf50",
-                          fontWeight: 600,
-                        }}
+                        style={{ padding: "9px 14px", color: "#4caf50", fontWeight: 600, }}
                       >
                         ${game.price?.toFixed(2)}
                       </td>
                       <td style={{ padding: "9px 14px" }}>
                         {game.discountPrice ? (
                           <span
-                            style={{
-                              background: "#0078f220",
-                              color: "#0078f2",
-                              padding: "2px 7px",
-                              borderRadius: 8,
-                              fontSize: 10,
-                              fontWeight: 600,
-                            }}
+                            style={{ background: "#0078f220", color: "#0078f2", padding: "2px 7px", borderRadius: 8, fontSize: 10, fontWeight: 600, }}
                           >
                             -
                             {Math.round(
@@ -788,25 +728,15 @@ export default function AdminPage() {
                         style={{ padding: "9px 14px", display: "flex", gap: 5 }}
                       >
                         <button
-                          style={{
-                            padding: "4px 7px",
-                            background: "#1a1a2e",
-                            border: "none",
-                            borderRadius: 4,
-                            cursor: "pointer",
+                          onClick={() => {
+                            setEditingGame(game);
+                            setShowGameForm(true);
                           }}
+                          style={{padding: "4px 7px",background: "#1a1a2e",border: "none",borderRadius: 4,cursor: "pointer",}}
                         >
                           <Edit size={11} color="#0078f2" />
                         </button>
-                        <button
-                          style={{
-                            padding: "4px 7px",
-                            background: "#1a1a2e",
-                            border: "none",
-                            borderRadius: 4,
-                            cursor: "pointer",
-                          }}
-                        >
+                        <button onClick={() => setShowDeleteConfirm(game)} style={{padding: "4px 7px",background: "#1a1a2e",border: "none",borderRadius: 4,cursor: "pointer",}}>
                           <Trash2 size={11} color="#e94560" />
                         </button>
                       </td>
@@ -820,21 +750,8 @@ export default function AdminPage() {
 
         {/* USERS TAB */}
         {activeTab === "users" && (
-          <div
-            style={{
-              background: "#111118",
-              borderRadius: 8,
-              border: "1px solid #1a1a2e",
-              overflow: "hidden",
-            }}
-          >
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                fontSize: 12,
-              }}
-            >
+          <div style={{background: "#111118",borderRadius: 8,border: "1px solid #1a1a2e",overflow: "hidden",}}>
+            <table style={{width: "100%",borderCollapse: "collapse",fontSize: 12,}}>
               <thead>
                 <tr style={{ background: "#0a0a10" }}>
                   <Th field="id" sort={userSort} setSort={setUserSort}>
@@ -865,11 +782,7 @@ export default function AdminPage() {
                       #{u.id}
                     </td>
                     <td
-                      style={{
-                        padding: "9px 14px",
-                        color: "#fff",
-                        fontWeight: 500,
-                      }}
+                      style={{ padding: "9px 14px", color: "#fff", fontWeight: 500, }}
                     >
                       {u.username}
                     </td>
@@ -880,29 +793,16 @@ export default function AdminPage() {
                       {u.email || "-"}
                     </td>
                     <td
-                      style={{
-                        padding: "9px 14px",
-                        color: "#4caf50",
-                        fontWeight: 600,
-                      }}
+                      style={{ padding: "9px 14px", color: "#4caf50", fontWeight: 600, }}
                     >
                       ${u.wallet?.toFixed(2) || "0.00"}
                     </td>
                     <td style={{ padding: "9px 14px" }}>
                       <span
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 5,
-                        }}
+                        style={{ display: "flex", alignItems: "center", gap: 5,}}
                       >
                         <div
-                          style={{
-                            width: 7,
-                            height: 7,
-                            borderRadius: "50%",
-                            background: u.isActive ? "#4caf50" : "#e94560",
-                          }}
+                          style={{ width: 7, height: 7, borderRadius: "50%", background: u.isActive ? "#4caf50" : "#e94560", }}
                         />
                         <span
                           style={{
@@ -929,19 +829,9 @@ export default function AdminPage() {
         {/* ORDERS TAB */}
         {activeTab === "orders" && (
           <div
-            style={{
-              background: "#111118",
-              borderRadius: 8,
-              border: "1px solid #1a1a2e",
-              overflow: "hidden",
-            }}
-          >
+            style={{background: "#111118",borderRadius: 8,border: "1px solid #1a1a2e",overflow: "hidden",}}>
             <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                fontSize: 12,
-              }}
+              style={{width: "100%",borderCollapse: "collapse",fontSize: 12,}}
             >
               <thead>
                 <tr style={{ background: "#0a0a10" }}>
@@ -983,31 +873,13 @@ export default function AdminPage() {
                       User #{o.userId}
                     </td>
                     <td
-                      style={{
-                        padding: "9px 14px",
-                        color: "#4caf50",
-                        fontWeight: 600,
-                      }}
+                      style={{ padding: "9px 14px", color: "#4caf50", fontWeight: 60 }}
                     >
                       ${o.totalAmount?.toFixed(2)}
                     </td>
                     <td style={{ padding: "9px 14px" }}>
                       <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 3,
-                          padding: "2px 8px",
-                          borderRadius: 8,
-                          fontSize: 10,
-                          fontWeight: 600,
-                          background:
-                            o.status === "Completed"
-                              ? "#4caf5020"
-                              : "#e9456020",
-                          color:
-                            o.status === "Completed" ? "#4caf50" : "#e94560",
-                        }}
+                        style={{ display: "inline-flex", alignItems: "center", gap: 3, padding: "2px 8px", borderRadius: 8, fontSize: 10, fontWeight: 600, background: o.status === "Completed" ? "#4caf5020" : "#e9456020", color: o.status === "Completed" ? "#4caf50" : "#e94560",}}
                       >
                         {o.status}
                       </span>
@@ -1027,6 +899,17 @@ export default function AdminPage() {
           </div>
         )}
       </div>
+
+      {/* MODALS */}
+      {showGameForm && (
+        <GameFormModal game={editingGame} onClose={() => {setShowGameForm(false);setEditingGame(null);}}
+          onSave={() => {setShowGameForm(false); setEditingGame(null); loadData();}}
+        />
+      )}
+      {showDeleteConfirm && (
+        <DeleteConfirmModal game={showDeleteConfirm} onClose={() => setShowDeleteConfirm(null)} onConfirm={() => { setShowDeleteConfirm(null); loadData(); }}
+        />
+      )}
     </div>
   );
 }

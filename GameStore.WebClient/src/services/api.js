@@ -30,6 +30,9 @@ export const gameAPI = {
   getFeatured: (n = 12) => api.get("/games/featured", { params: { count: n } }),
   getAll: (p) => api.get("/games", { params: p }),
   getById: (id) => api.get(`/games/${id}`),
+  create: (d) => api.post("/games", d),
+  update: (id, d) => api.put(`/games/${id}`, d),
+  delete: (id) => api.delete(`/games/${id}`),
 };
 export const genreAPI = { getAll: () => api.get("/genres") };
 export const orderAPI = {
