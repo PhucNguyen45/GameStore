@@ -3,37 +3,44 @@
     {
       "DownstreamPathTemplate": "/api/auth/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{"Host": "localhost", "Port": 5002}],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5002 }],
       "UpstreamPathTemplate": "/api/auth/{everything}",
       "UpstreamHttpMethod": ["Get", "Post", "Put", "Delete"]
     },
     {
       "DownstreamPathTemplate": "/api/users/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{"Host": "localhost", "Port": 5002}],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5002 }],
       "UpstreamPathTemplate": "/api/users/{everything}",
       "UpstreamHttpMethod": ["Get", "Post", "Put", "Delete"]
     },
     {
       "DownstreamPathTemplate": "/api/games/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{"Host": "localhost", "Port": 5001}],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5001 }],
       "UpstreamPathTemplate": "/api/games/{everything}",
       "UpstreamHttpMethod": ["Get", "Post", "Put", "Delete"]
     },
     {
       "DownstreamPathTemplate": "/api/genres/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{"Host": "localhost", "Port": 5001}],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5001 }],
       "UpstreamPathTemplate": "/api/genres/{everything}",
       "UpstreamHttpMethod": ["Get", "Post", "Put", "Delete"]
     },
     {
       "DownstreamPathTemplate": "/api/orders/{everything}",
       "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{"Host": "localhost", "Port": 5001}],
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5001 }],
       "UpstreamPathTemplate": "/api/orders/{everything}",
       "UpstreamHttpMethod": ["Get", "Post", "Put", "Delete"]
+    },
+    {
+      "DownstreamPathTemplate": "/api/library/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5001 }],
+      "UpstreamPathTemplate": "/api/library/{everything}",
+      "UpstreamHttpMethod": ["Get"]
     }
   ],
   "GlobalConfiguration": {
