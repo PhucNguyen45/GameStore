@@ -10,7 +10,7 @@ export default function WalletModal({ onClose }) {
   const [customAmount, setCustomAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const { user } = useAuth();
+  const { user, setUser } = useAuth();
 
   const handleTopUp = async () => {
     const finalAmount = customAmount ? parseFloat(customAmount) : amount;
@@ -19,15 +19,19 @@ export default function WalletModal({ onClose }) {
     setLoading(true);
     try {
       await userAPI.topUp(finalAmount);
-      setMessage(
-        `✅ Successfully added $${finalAmount.toFixed(2)} to your wallet!`,
-      );
-      setTimeout(() => {
-        onClose();
-        window.location.reload();
-      }, 1500);
+
+      // Fetch wallet mới từ API thay vì tự cộng
+      const walletRes = await userAPI.getWallet();
+      const newWallet = walletRes.data?.balance || walletRes.data?.wallet || 0;
+
+      const updatedUser = { ...user, wallet: newWallet };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+
+      setMessage(`✅ Added $${finalAmount.toFixed(2)}!`);
+      setTimeout(() => onClose(), 1000);
     } catch (err) {
-      setMessage("❌ Failed to top up. Please try again.");
+      setMessage("❌ Failed to top up");
     } finally {
       setLoading(false);
     }

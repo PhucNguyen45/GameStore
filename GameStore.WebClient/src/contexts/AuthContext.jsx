@@ -8,11 +8,11 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const t = localStorage.getItem("token");
-    const u = localStorage.getItem("user");
-    if (t && u) {
+    const token = localStorage.getItem("token");
+    const savedUser = localStorage.getItem("user");
+    if (token && savedUser) {
       try {
-        setUser(JSON.parse(u));
+        setUser(JSON.parse(savedUser));
       } catch {
         logout();
       }
@@ -25,30 +25,52 @@ export function AuthProvider({ children }) {
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", JSON.stringify(data));
     setUser(data);
-    return data; // Trả về data để kiểm tra role
+    return data;
   };
 
-  const register = async (d) => {
-    const res = await authAPI.register(d);
-    return res.data;
+  const register = async (formData) => {
+    const { data } = await authAPI.register(formData);
+    return data;
   };
 
   const logout = () => {
-    localStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
     window.location.href = "/";
   };
 
-  // Kiểm tra Admin từ token role
+  // 🆕 CẬP NHẬT USER (sau khi nạp tiền, mua game...)
+  const updateUser = (updatedData) => {
+    const newUser = { ...user, ...updatedData };
+    localStorage.setItem("user", JSON.stringify(newUser));
+    setUser(newUser);
+  };
+
   const isAdmin = user?.role === "Admin";
 
   return (
     <AuthContext.Provider
-      value={{ user, login, register, logout, loading, isAdmin }}
+      value={{
+        user,
+        setUser,
+        login,
+        register,
+        logout,
+        updateUser,
+        loading,
+        isAdmin,
+      }}
     >
       {children}
     </AuthContext.Provider>
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
+};

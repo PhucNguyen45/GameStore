@@ -15,7 +15,7 @@ import {
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, total, count } =
     useCartStore();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const navigate = useNavigate();
 
   const handleCheckout = async () => {
@@ -23,17 +23,32 @@ export default function CartPage() {
       navigate("/login");
       return;
     }
+
+    const orderTotal = total();
+
+    // Kiểm tra số dư trước khi gọi API
+    if (user.wallet < orderTotal) {
+      toast.error("Insufficient wallet balance! Please top up.");
+      return;
+    }
+
     try {
       await orderAPI.create({
         items: items.map((i) => ({ gameId: i.id, quantity: i.quantity })),
       });
+
+      // Cập nhật wallet ngay lập tức
+      updateUser({ wallet: user.wallet - orderTotal });
+
       clearCart();
       toast.success("🎉 Purchase successful! Games added to your library.");
-      setTimeout(() => navigate("/library"), 1000);
+      navigate("/library");
     } catch (e) {
-      toast.error(
-        "Checkout failed: " + (e.response?.data?.message || e.message),
-      );
+      if (e.response?.status === 400) {
+        toast.error(e.response?.data?.message || "Insufficient balance");
+      } else {
+        toast.error("Checkout failed. Please try again.");
+      }
     }
   };
 

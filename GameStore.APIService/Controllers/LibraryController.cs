@@ -44,4 +44,17 @@ public class LibraryController : ControllerBase
 
         return Ok(library);
     }
+
+    [HttpGet("check/{gameId}")]
+    public async Task<IActionResult> CheckOwned(int gameId)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        var owned = await _context.OrderDetails
+            .AnyAsync(od => od.Order.UserId == userId
+                        && od.Order.Status == "Completed"
+                        && od.GameId == gameId);
+
+        return Ok(new { owned });
+    }
 }

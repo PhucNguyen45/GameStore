@@ -13,7 +13,8 @@ import {
 } from "lucide-react";
 
 export default function Navbar() {
-  const { user, logout, isAdmin } = useAuth();
+  const auth = useAuth();
+  const { user, logout, isAdmin } = auth || {};
   const { count } = useCartStore();
   const [showWallet, setShowWallet] = useState(false);
   const location = useLocation();

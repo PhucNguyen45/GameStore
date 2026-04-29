@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { gameAPI } from "../services/api";
+import { gameAPI, libraryAPI } from "../services/api";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
@@ -28,6 +28,7 @@ export default function GameDetailPage() {
   const { id } = useParams();
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [owned, setOwned] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
   const { user } = useAuth();
   const addItem = useCartStore((s) => s.addItem);
@@ -39,6 +40,18 @@ export default function GameDetailPage() {
       .then((res) => setGame(res.data))
       .finally(() => setLoading(false));
   }, [id]);
+
+  // KIỂM TRA GAME ĐÃ MUA CHƯA
+  useEffect(() => {
+    if (user && id) {
+      libraryAPI
+        .checkOwned(id)
+        .then((res) => setOwned(res.data.owned))
+        .catch(() => setOwned(false));
+    } else {
+      setOwned(false);
+    }
+  }, [user, id]);
 
   const handleBuyNow = () => {
     if (!user) {
@@ -217,12 +230,44 @@ export default function GameDetailPage() {
               marginTop: 24,
             }}
           >
-            {game.price === 0 ? (
+            {/* 🆕 NẾU ĐÃ MUA → HIỂN THỊ "IN LIBRARY" */}
+            {owned ? (
+              <>
+                <button
+                  style={{
+                    ...epicPrimaryBtn,
+                    background: "#4caf50",
+                    cursor: "default",
+                  }}
+                >
+                  <Check size={16} style={{ marginRight: 6 }} />
+                  IN LIBRARY
+                </button>
+                <button
+                  style={epicSecondaryBtn}
+                  onClick={() => navigate("/library")}
+                >
+                  GO TO LIBRARY
+                </button>
+              </>
+            ) : game.price === 0 ? (
+              /* FREE GAME */
               <button
                 style={epicPrimaryBtn}
-                onClick={() => {
-                  addItem(game);
-                  toast.success("Added to library!");
+                onClick={async () => {
+                  if (!user) {
+                    navigate("/login");
+                    return;
+                  }
+                  try {
+                    await orderAPI.create({
+                      items: [{ gameId: game.id, quantity: 1 }],
+                    });
+                    setOwned(true);
+                    toast.success("Game added to your library!");
+                  } catch (e) {
+                    toast.error(e.response?.data?.message || "Failed");
+                  }
                 }}
               >
                 GET{" "}
@@ -231,6 +276,7 @@ export default function GameDetailPage() {
                 </span>
               </button>
             ) : (
+              /* GAME TRẢ PHÍ */
               <>
                 <button style={epicPrimaryBtn} onClick={handleBuyNow}>
                   BUY NOW
@@ -268,6 +314,7 @@ export default function GameDetailPage() {
                 </button>
               </>
             )}
+
             <button style={epicWishlistBtn}>
               <Heart size={16} />
             </button>

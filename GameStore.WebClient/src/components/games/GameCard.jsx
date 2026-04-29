@@ -1,15 +1,32 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Star, ShoppingCart } from "lucide-react";
+import { Star, ShoppingCart, Check } from "lucide-react";
 import useCartStore from "../../stores/cartStore";
+import { useAuth } from "../../contexts/AuthContext";
+import { libraryAPI } from "../../services/api";
 
 export default function GameCard({ game }) {
   const addItem = useCartStore((s) => s.addItem);
+  const { user } = useAuth();
+  const [owned, setOwned] = useState(false);
+
   const discount = game.discountPrice
     ? Math.round((1 - game.discountPrice / game.price) * 100)
     : 0;
 
+  // 🔍 Kiểm tra game đã mua chưa
+  useEffect(() => {
+    if (user && game.id) {
+      libraryAPI
+        .checkOwned(game.id)
+        .then((res) => setOwned(res.data.owned))
+        .catch(() => setOwned(false));
+    }
+  }, [user, game.id]);
+
   return (
     <div className="card" style={{ position: "relative" }}>
+      {/* Discount Badge */}
       {discount > 0 && (
         <div
           style={{
@@ -28,6 +45,30 @@ export default function GameCard({ game }) {
           -{discount}%
         </div>
       )}
+
+      {/* Owned Badge */}
+      {owned && (
+        <div
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            background: "#4caf50",
+            color: "#fff",
+            padding: "2px 8px",
+            borderRadius: 2,
+            fontSize: 11,
+            fontWeight: 700,
+            zIndex: 2,
+            display: "flex",
+            alignItems: "center",
+            gap: 3,
+          }}
+        >
+          <Check size={12} /> OWNED
+        </div>
+      )}
+
       <Link to={`/game/${game.id}`}>
         <div
           style={{
@@ -51,6 +92,7 @@ export default function GameCard({ game }) {
           )}
         </div>
       </Link>
+
       <div style={{ padding: 12 }}>
         <Link to={`/game/${game.id}`}>
           <h4
@@ -67,6 +109,7 @@ export default function GameCard({ game }) {
             {game.title}
           </h4>
         </Link>
+
         <div
           style={{
             display: "flex",
@@ -78,10 +121,11 @@ export default function GameCard({ game }) {
         >
           <span>{game.developer?.substring(0, 15)}</span>
           <span style={{ display: "flex", alignItems: "center", gap: 3 }}>
-            <Star size={12} fill="#ffd700" color="#ffd700" />{" "}
+            <Star size={12} fill="#ffd700" color="#ffd700" />
             {game.rating?.toFixed(1)}
           </span>
         </div>
+
         <div
           style={{
             display: "flex",
@@ -107,18 +151,43 @@ export default function GameCard({ game }) {
               ${(game.discountPrice || game.price)?.toFixed(2)}
             </span>
           </div>
-          <button
-            onClick={() => addItem(game)}
-            style={{
-              background: "var(--accent)",
-              border: "none",
-              borderRadius: 4,
-              padding: "4px 10px",
-              cursor: "pointer",
-            }}
-          >
-            <ShoppingCart size={14} color="#fff" />
-          </button>
+
+          {/* Nút: Owned / Add to Cart */}
+          {owned ? (
+            <button
+              disabled
+              style={{
+                background: "#4caf5020",
+                border: "1px solid #4caf50",
+                borderRadius: 4,
+                padding: "4px 10px",
+                cursor: "not-allowed",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+              title="Already in your library"
+            >
+              <Check size={14} color="#4caf50" />
+              <span style={{ color: "#4caf50", fontSize: 11, fontWeight: 600 }}>
+                OWNED
+              </span>
+            </button>
+          ) : (
+            <button
+              onClick={() => addItem(game)}
+              style={{
+                background: "var(--accent)",
+                border: "none",
+                borderRadius: 4,
+                padding: "4px 10px",
+                cursor: "pointer",
+              }}
+              title="Add to cart"
+            >
+              <ShoppingCart size={14} color="#fff" />
+            </button>
+          )}
         </div>
       </div>
     </div>

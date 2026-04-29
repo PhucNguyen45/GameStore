@@ -42,9 +42,10 @@ export const orderAPI = {
 };
 export const userAPI = {
   getWallet: () => api.get("/users/wallet"),
-  topUp: (a) => api.post("/users/wallet/topup", { amount: a }),
+  topUp: (amount) => api.post("/users/wallet/topup", { amount }),
 };
 export const libraryAPI = {
   getMyLibrary: () => api.get("/library"),
+  checkOwned: (gameId) => api.get(`/library/check/${gameId}`),
 };
 export default api;

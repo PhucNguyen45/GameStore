@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using GameStore.Entities.Store;
 using GameStore.Entities.Games;
 using GameStore.Repository.EFCore;
@@ -13,12 +14,14 @@ public class OrderService : IOrderService
     private readonly IOrderRepository _orderRepository;
     private readonly IGameRepository _gameRepository;
     private readonly IUserRepository _userRepository;
+    private readonly GameStore.Repository.GameStoreDbContext _context;
 
-    public OrderService(IOrderRepository orderRepository, IGameRepository gameRepository, IUserRepository userRepository)
+    public OrderService(IOrderRepository orderRepository, IGameRepository gameRepository, IUserRepository userRepository, GameStore.Repository.GameStoreDbContext context)
     {
         _orderRepository = orderRepository;
         _gameRepository = gameRepository;
         _userRepository = userRepository;
+        _context = context;
     }
 
     public async Task<Order?> GetById(int id) => await _orderRepository.GetByIdAsync(id);
@@ -30,6 +33,21 @@ public class OrderService : IOrderService
         decimal totalAmount = 0;
         var orderDetails = new List<OrderDetail>();
         var user = await _userRepository.GetByIdAsync(userId);
+
+        // KIỂM TRA GAME ĐÃ MUA CHƯA
+        foreach (var (gameId, _) in items)
+        {
+            var alreadyOwned = await _context.OrderDetails
+                .AnyAsync(od => od.Order.UserId == userId
+                            && od.Order.Status == "Completed"
+                            && od.GameId == gameId);
+
+            if (alreadyOwned)
+            {
+                var game = await _gameRepository.GetByIdAsync(gameId);
+                throw new Exception($"You already own '{game?.Title}'!");
+            }
+        }
 
         foreach (var (gameId, quantity) in items)
         {
@@ -47,26 +65,28 @@ public class OrderService : IOrderService
             });
         }
 
+        // 1. Kiểm tra số dư
         if (user == null || user.Wallet < totalAmount)
             throw new Exception("Insufficient wallet balance");
 
+        // 2. Trừ tiền (CHỈ 1 LẦN)
         user.Wallet -= totalAmount;
-        await _userRepository.UpdateAsync(user);
+        _context.Users.Update(user);  // Dùng trực tiếp context để chắc chắn save
 
+        // 3. Tạo order
         var order = new Order
         {
             UserId = userId,
             TotalAmount = totalAmount,
-            Status = "Pending",
-            OrderDate = DateTime.Now
+            Status = "Completed",
+            OrderDate = DateTime.Now,
+            OrderDetails = orderDetails  // Gán trực tiếp
         };
 
-        await _orderRepository.AddAsync(order);
+        _context.Orders.Add(order);
 
-        foreach (var detail in orderDetails)
-        {
-            detail.OrderId = order.Id;
-        }
+        // 4. Save tất cả trong 1 lần
+        await _context.SaveChangesAsync();
 
         return order;
     }
