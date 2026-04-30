@@ -1,3 +1,4 @@
+<!-- GameStore/GameStore.slnx -->
 <Solution>
   <Project Path="GameStore.ApiGateway/GameStore.ApiGateway.csproj" />
   <Project Path="GameStore.APIService/GameStore.APIService.csproj" />

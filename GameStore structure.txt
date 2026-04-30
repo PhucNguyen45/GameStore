@@ -1,0 +1,136 @@
+.
+├── GameStore structure.txt
+├── GameStore.APIService
+│   ├── Controllers
+│   │   ├── GamesController.cs
+│   │   ├── GenresController.cs
+│   │   ├── LibraryController.cs
+│   │   └── OrdersController.cs
+│   ├── GameStore.APIService.csproj
+│   ├── GameStore.APIService.http
+│   ├── Program.cs
+│   ├── Properties
+│   │   └── launchSettings.json
+│   ├── appsettings.Development.json
+│   └── appsettings.json
+├── GameStore.ApiGateway
+│   ├── GameStore.ApiGateway.csproj
+│   ├── GameStore.ApiGateway.http
+│   ├── Program.cs
+│   ├── Properties
+│   │   └── launchSettings.json
+│   ├── appsettings.Development.json
+│   ├── appsettings.json
+│   └── ocelot.json
+├── GameStore.AuthService
+│   ├── Controllers
+│   │   ├── AuthController.cs
+│   │   └── UserController.cs
+│   ├── GameStore.AuthService.csproj
+│   ├── GameStore.AuthService.http
+│   ├── Program.cs
+│   ├── Properties
+│   │   └── launchSettings.json
+│   ├── appsettings.Development.json
+│   └── appsettings.json
+├── GameStore.Common
+│   ├── Auth
+│   │   └── TokenHelper.cs
+│   ├── Entity.cs
+│   └── GameStore.Common.csproj
+├── GameStore.Entities
+│   ├── Audit
+│   │   └── IAuditable.cs
+│   ├── Auth
+│   │   ├── AccessToken.cs
+│   │   └── Role.cs
+│   ├── GameStore.Entities.csproj
+│   ├── Games
+│   │   ├── Game.cs
+│   │   ├── GameGenre.cs
+│   │   └── Genre.cs
+│   ├── Settings
+│   │   └── Setting.cs
+│   ├── Store
+│   │   ├── GameKey.cs
+│   │   ├── Library.cs
+│   │   ├── Order.cs
+│   │   ├── OrderDetail.cs
+│   │   ├── Review.cs
+│   │   └── Wishlist.cs
+│   └── Users
+│       ├── User.cs
+│       └── UserRole.cs
+├── GameStore.Repository
+│   ├── EFCore
+│   │   ├── GameRepository.cs
+│   │   ├── GenreRepository.cs
+│   │   ├── IGameRepository.cs
+│   │   ├── IGenreRepository.cs
+│   │   ├── IOrderRepository.cs
+│   │   ├── IRepository.cs
+│   │   ├── IUserRepository.cs
+│   │   ├── OrderRepository.cs
+│   │   ├── Repository.cs
+│   │   └── UserRepository.cs
+│   ├── GameStore.Repository.csproj
+│   ├── GameStoreDbContext.cs
+│   ├── GameStoreDbContextFactory.cs
+│   └── Migrations
+│       ├── 20260426160631_InitialCreate.Designer.cs
+│       ├── 20260426160631_InitialCreate.cs
+│       └── GameStoreDbContextModelSnapshot.cs
+├── GameStore.Services
+│   ├── Authen
+│   │   ├── IUserService.cs
+│   │   └── UserService.cs
+│   ├── GameService.cs
+│   ├── GameStore.Services.csproj
+│   ├── GenreService.cs
+│   ├── IGameService.cs
+│   ├── IGenreService.cs
+│   ├── IOrderService.cs
+│   └── OrderService.cs
+├── GameStore.WebClient
+│   ├── GameStore frontend structure.txt
+│   ├── index.html
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── src
+│   │   ├── App.jsx
+│   │   ├── components
+│   │   │   ├── games
+│   │   │   │   ├── FeaturedSlider.jsx
+│   │   │   │   └── GameCard.jsx
+│   │   │   ├── layout
+│   │   │   │   ├── Footer.jsx
+│   │   │   │   ├── MainLayout.jsx
+│   │   │   │   └── Navbar.jsx
+│   │   │   └── wallet
+│   │   │       └── WalletModal.jsx
+│   │   ├── contexts
+│   │   │   └── AuthContext.jsx
+│   │   ├── main.jsx
+│   │   ├── pages
+│   │   │   ├── AdminPage.jsx
+│   │   │   ├── CartPage.jsx
+│   │   │   ├── GameDetailPage.jsx
+│   │   │   ├── HomePage.jsx
+│   │   │   ├── LibraryPage.jsx
+│   │   │   ├── LoginPage.jsx
+│   │   │   ├── RegisterPage.jsx
+│   │   │   └── StorePage.jsx
+│   │   ├── services
+│   │   │   └── api.js
+│   │   ├── stores
+│   │   │   └── cartStore.js
+│   │   └── styles
+│   │       └── global.css
+│   └── vite.config.js
+├── GameStore.slnx
+├── GameStore.sql
+├── README.md
+├── kill-all.sh
+└── run-all.sh
+
+34 directories, 100 files

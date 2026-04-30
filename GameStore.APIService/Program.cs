@@ -1,3 +1,4 @@
+// GameStore/GameStore.APIService/Program.cs
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -21,7 +22,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowAll", policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
 
 builder.Services.AddDbContext<GameStoreDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectedDb")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IGenreRepository, GenreRepository>();
