@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameStore.Repository.Migrations
 {
     [DbContext(typeof(GameStoreDbContext))]
-    [Migration("20260426160631_InitialCreate")]
+    [Migration("20260502084543_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -123,7 +123,7 @@ namespace GameStore.Repository.Migrations
                             Id = 1,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 4, 26, 23, 6, 30, 987, DateTimeKind.Local).AddTicks(5439),
+                            CreatedDateTime = new DateTime(2026, 5, 2, 15, 45, 42, 153, DateTimeKind.Local).AddTicks(543),
                             CreatedUser = "",
                             Description = "Administrator",
                             Guid = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -138,7 +138,7 @@ namespace GameStore.Repository.Migrations
                             Id = 2,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 4, 26, 23, 6, 30, 987, DateTimeKind.Local).AddTicks(8833),
+                            CreatedDateTime = new DateTime(2026, 5, 2, 15, 45, 42, 153, DateTimeKind.Local).AddTicks(6037),
                             CreatedUser = "",
                             Description = "Regular User",
                             Guid = new Guid("20000000-0000-0000-0000-000000000002"),
@@ -153,7 +153,7 @@ namespace GameStore.Repository.Migrations
                             Id = 3,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 4, 26, 23, 6, 30, 987, DateTimeKind.Local).AddTicks(8850),
+                            CreatedDateTime = new DateTime(2026, 5, 2, 15, 45, 42, 153, DateTimeKind.Local).AddTicks(6064),
                             CreatedUser = "",
                             Description = "Game Publisher",
                             Guid = new Guid("30000000-0000-0000-0000-000000000003"),

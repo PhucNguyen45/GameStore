@@ -77,8 +77,8 @@
 │   ├── GameStoreDbContext.cs
 │   ├── GameStoreDbContextFactory.cs
 │   └── Migrations
-│       ├── 20260426160631_InitialCreate.Designer.cs
-│       ├── 20260426160631_InitialCreate.cs
+│       ├── 20260502084543_InitialCreate.Designer.cs
+│       ├── 20260502084543_InitialCreate.cs
 │       └── GameStoreDbContextModelSnapshot.cs
 ├── GameStore.Services
 │   ├── Authen
@@ -130,6 +130,11 @@
 ├── GameStore.sql
 ├── README.md
 ├── kill-all.sh
+├── logs
+│   ├── GameStore.APIService_20260502.log
+│   ├── GameStore.ApiGateway_20260502.log
+│   ├── GameStore.AuthService_20260502.log
+│   └── webclient_20260502.log
 └── run-all.sh
 
-34 directories, 99 files
+35 directories, 103 files
