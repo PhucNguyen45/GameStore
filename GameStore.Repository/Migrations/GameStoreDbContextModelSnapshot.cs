@@ -52,12 +52,15 @@ namespace GameStore.Repository.Migrations
 
                     b.Property<string>("Token")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -94,7 +97,9 @@ namespace GameStore.Repository.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -108,9 +113,12 @@ namespace GameStore.Repository.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Roles");
 
@@ -120,7 +128,7 @@ namespace GameStore.Repository.Migrations
                             Id = 1,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 5, 2, 15, 45, 42, 153, DateTimeKind.Local).AddTicks(543),
+                            CreatedDateTime = new DateTime(2026, 5, 2, 19, 36, 8, 885, DateTimeKind.Local).AddTicks(8376),
                             CreatedUser = "",
                             Description = "Administrator",
                             Guid = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -135,7 +143,7 @@ namespace GameStore.Repository.Migrations
                             Id = 2,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 5, 2, 15, 45, 42, 153, DateTimeKind.Local).AddTicks(6037),
+                            CreatedDateTime = new DateTime(2026, 5, 2, 19, 36, 8, 886, DateTimeKind.Local).AddTicks(1133),
                             CreatedUser = "",
                             Description = "Regular User",
                             Guid = new Guid("20000000-0000-0000-0000-000000000002"),
@@ -150,7 +158,7 @@ namespace GameStore.Repository.Migrations
                             Id = 3,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 5, 2, 15, 45, 42, 153, DateTimeKind.Local).AddTicks(6064),
+                            CreatedDateTime = new DateTime(2026, 5, 2, 19, 36, 8, 886, DateTimeKind.Local).AddTicks(1146),
                             CreatedUser = "",
                             Description = "Game Publisher",
                             Guid = new Guid("30000000-0000-0000-0000-000000000003"),
@@ -189,7 +197,9 @@ namespace GameStore.Repository.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("MinimumGraphics")
                         .IsRequired()
@@ -212,14 +222,18 @@ namespace GameStore.Repository.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
 
                     b.Property<string>("Publisher")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Rating")
-                        .HasColumnType("float");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("float")
+                        .HasDefaultValue(0.0);
 
                     b.Property<int>("RatingCount")
                         .HasColumnType("int");
@@ -233,10 +247,12 @@ namespace GameStore.Repository.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("TotalSales")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<string>("TrailerUrl")
                         .IsRequired()
@@ -244,7 +260,306 @@ namespace GameStore.Repository.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Games");
+                    b.HasIndex("IsActive");
+
+                    b.HasIndex("ReleaseDate");
+
+                    b.HasIndex("Title");
+
+                    b.ToTable("Games", t =>
+                        {
+                            t.HasCheckConstraint("CK_Game_DiscountPrice_NonNegative", "DiscountPrice >= 0");
+
+                            t.HasCheckConstraint("CK_Game_Price_NonNegative", "Price >= 0");
+
+                            t.HasCheckConstraint("CK_Game_Rating_Range", "Rating >= 0 AND Rating <= 5");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 887, DateTimeKind.Local).AddTicks(2391),
+                            Description = "Gray Zone Warfare is an immersive tactical FPS with a maximum focus on realism. Join a Private Military Company and explore a vast MMO open world where every decision matters. Engage in high-stakes PvEvP and PvE combat, uncover the mysteries of Lamang Island, and fight for survival against both human enemies and AI-controlled factions in an unforgiving environment.",
+                            Developer = "MADFINGER Games",
+                            DiscountPrice = 27.99m,
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 1080 / AMD Radeon RX 5700",
+                            MinimumMemory = "16 GB RAM",
+                            MinimumOS = "Windows 10 64-bit",
+                            MinimumProcessor = "Intel Core i5-8600 / AMD Ryzen 5 2600",
+                            MinimumStorage = "40 GB available space",
+                            Price = 34.99m,
+                            Publisher = "MADFINGER Games",
+                            Rating = 4.2000000000000002,
+                            RatingCount = 28500,
+                            ReleaseDate = new DateTime(2024, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_4.jpg\"]",
+                            Title = "Gray Zone Warfare",
+                            TotalSales = 150000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=UlNkVsB56Gw"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(166),
+                            Description = "World of Tanks is a team-based, massively multiplayer online action game dedicated to armored warfare in the mid-20th century. Throw yourself into epic tank battles with over 600 vehicles from 11 nations. Cooperate with your teammates, plan your strategy, and dominate the battlefield with realistic tank physics and strategic gameplay.",
+                            Developer = "Wargaming",
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GT 610 / AMD Radeon HD 6450",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "Windows 7 64-bit",
+                            MinimumProcessor = "Intel Core i3-2100 / AMD Phenom II X4 955",
+                            MinimumStorage = "70 GB available space",
+                            Price = 0m,
+                            Publisher = "Wargaming",
+                            Rating = 4.5,
+                            RatingCount = 350000,
+                            ReleaseDate = new DateTime(2010, 8, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_4.jpg\"]",
+                            Title = "World of Tanks",
+                            TotalSales = 5000000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=6LreDfD7Zds"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/236390/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(187),
+                            Description = "War Thunder is the most comprehensive free-to-play, cross-platform MMO military game dedicated to aviation, armored vehicles, and naval craft from the early 20th century to the most advanced modern combat units. Join now and take part in major battles on land, in the air, and at sea, fighting with millions of players from all over the world in an ever-evolving environment.",
+                            Developer = "Gaijin Entertainment",
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 660 / AMD Radeon HD 7850",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "Windows 10 64-bit",
+                            MinimumProcessor = "Intel Core i5-2500 / AMD FX-8350",
+                            MinimumStorage = "50 GB available space",
+                            Price = 0m,
+                            Publisher = "Gaijin Entertainment",
+                            Rating = 4.2999999999999998,
+                            RatingCount = 520000,
+                            ReleaseDate = new DateTime(2013, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_4.jpg\"]",
+                            Title = "War Thunder",
+                            TotalSales = 8000000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=TtFk6Gnx9M4"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(191),
+                            Description = "Escape from Tarkov is a hardcore and realistic online first-person action RPG/Simulator with MMO features and a story-driven walkthrough. With each passing day the situation in the Norvinsk region grows more complicated. Incessant warfare has exhausted the local population, leaving them divided and vulnerable to exploitation by private military companies.",
+                            Developer = "Battlestate Games",
+                            DiscountPrice = 44.99m,
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 1050 / AMD Radeon RX 560",
+                            MinimumMemory = "12 GB RAM",
+                            MinimumOS = "Windows 10 64-bit",
+                            MinimumProcessor = "Intel Core i5-2500K / AMD Ryzen 3 1200",
+                            MinimumStorage = "35 GB available space",
+                            Price = 49.99m,
+                            Publisher = "Battlestate Games",
+                            Rating = 4.0999999999999996,
+                            RatingCount = 180000,
+                            ReleaseDate = new DateTime(2017, 7, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_4.jpg\"]",
+                            Title = "Escape from Tarkov",
+                            TotalSales = 3000000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=5HEk2sh9Q_o"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/107410/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(197),
+                            Description = "Experience true combat gameplay in a massive military sandbox. Deploying a wide variety of single- and multiplayer content, over 20 vehicles and 40 weapons, and limitless opportunities for content creation, ARMA 3 is the PC's premier military game. Authentic, diverse, open - ARMA 3 sends you to war.",
+                            Developer = "Bohemia Interactive",
+                            DiscountPrice = 9.99m,
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 560 / AMD Radeon HD 7750",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "Windows 7 64-bit",
+                            MinimumProcessor = "Intel Core i5-2300 / AMD Phenom II X4 940",
+                            MinimumStorage = "45 GB available space",
+                            Price = 29.99m,
+                            Publisher = "Bohemia Interactive",
+                            Rating = 4.7000000000000002,
+                            RatingCount = 450000,
+                            ReleaseDate = new DateTime(2013, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_4.jpg\"]",
+                            Title = "ARMA 3",
+                            TotalSales = 10000000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=OU9LWflcI_Y"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/686810/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(201),
+                            Description = "Join the ever-expanding Hell Let Loose experience - a hardcore World War Two first person shooter with epic battles of 100 players with infantry, tanks, artillery, a dynamically shifting front line and a unique resource-based RTS-inspired meta-game. Fight in the most iconic battles of the Western Front, including Omaha Beach, Carentan, and Foy.",
+                            Developer = "Black Matter",
+                            DiscountPrice = 29.99m,
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 960 / AMD Radeon R9 380",
+                            MinimumMemory = "12 GB RAM",
+                            MinimumOS = "Windows 10 64-bit",
+                            MinimumProcessor = "Intel Core i5-6600 / AMD Ryzen 5 1400",
+                            MinimumStorage = "30 GB available space",
+                            Price = 39.99m,
+                            Publisher = "Team17",
+                            Rating = 4.5999999999999996,
+                            RatingCount = 85000,
+                            ReleaseDate = new DateTime(2021, 7, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_4.jpg\"]",
+                            Title = "Hell Let Loose",
+                            TotalSales = 2500000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=mV-ksD1vY5o"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/393380/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(205),
+                            Description = "Squad is a tactical FPS that provides authentic combat experiences through teamwork, communication, and realistic combat. It bridges the gap between arcade shooter and military simulation with large-scale combined arms warfare, base building, and integrated voice communication.",
+                            Developer = "Offworld",
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 770 / AMD Radeon R9 290",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "Windows 10 64-bit",
+                            MinimumProcessor = "Intel Core i5-2500K / AMD FX-6300",
+                            MinimumStorage = "55 GB available space",
+                            Price = 49.99m,
+                            Publisher = "Offworld",
+                            Rating = 4.5,
+                            RatingCount = 150000,
+                            ReleaseDate = new DateTime(2020, 9, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_4.jpg\"]",
+                            Title = "Squad",
+                            TotalSales = 4000000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=YviNkuXLMg4"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(209),
+                            Description = "Ready or Not is an intense, tactical, first-person shooter that depicts a modern-day world in which SWAT police units are called to defuse hostile and confronting situations. Inspired by the SWAT series, Ready or Not brings a level of realism, tactical planning, and team-based coordination rarely seen in modern shooters.",
+                            Developer = "VOID Interactive",
+                            DiscountPrice = 34.99m,
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 960 / AMD Radeon R7 370",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "Windows 10 64-bit",
+                            MinimumProcessor = "Intel Core i5-4430 / AMD FX-6300",
+                            MinimumStorage = "90 GB available space",
+                            Price = 39.99m,
+                            Publisher = "VOID Interactive",
+                            Rating = 4.7999999999999998,
+                            RatingCount = 95000,
+                            ReleaseDate = new DateTime(2023, 12, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_4.jpg\"]",
+                            Title = "Ready or Not",
+                            TotalSales = 1800000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=saKvD9xBRts"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/581320/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(213),
+                            Description = "Insurgency: Sandstorm is a team-based, tactical FPS based on lethal close quarters combat and objective-oriented multiplayer gameplay. Experience the intensity of modern combat where skill is rewarded, and teamwork wins the fight. Sequenced in a fictional contemporary Middle Eastern conflict, featuring both PvP and co-op modes.",
+                            Developer = "New World Interactive",
+                            DiscountPrice = 14.99m,
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 760 / AMD Radeon HD 7970",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "Windows 7 64-bit",
+                            MinimumProcessor = "Intel Core i5-4440 / AMD FX-6300",
+                            MinimumStorage = "40 GB available space",
+                            Price = 29.99m,
+                            Publisher = "Focus Entertainment",
+                            Rating = 4.4000000000000004,
+                            RatingCount = 170000,
+                            ReleaseDate = new DateTime(2018, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_4.jpg\"]",
+                            Title = "Insurgency: Sandstorm",
+                            TotalSales = 3500000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=GwCWgM1JxBs"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/16900/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(219),
+                            Description = "Ground Branch is a realistic tactical first-person shooter from one of the developers behind the original Rainbow Six and Ghost Recon games. Think, plan, and move carefully through highly detailed environments while engaging enemies in realistic firefights where bullets are deadly and every decision counts.",
+                            Developer = "BlackFoot Studios",
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 760 / AMD Radeon HD 7950",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "Windows 10 64-bit",
+                            MinimumProcessor = "Intel Core i5-2500K / AMD FX-8350",
+                            MinimumStorage = "25 GB available space",
+                            Price = 29.99m,
+                            Publisher = "BlackFoot Studios",
+                            Rating = 4.4000000000000004,
+                            RatingCount = 12000,
+                            ReleaseDate = new DateTime(2022, 9, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_4.jpg\"]",
+                            Title = "Ground Branch",
+                            TotalSales = 450000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=QZBmXK-G3-g"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/221100/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(223),
+                            Description = "DayZ is a hardcore open-world survival game with an extreme emphasis on player interaction. You are one of the few who have survived a mysterious zombie outbreak in the post-Soviet Republic of Chernarus. Scavenge for supplies, craft items, build bases, and fight against zombies and other desperate survivors in a sprawling 230km² landscape.",
+                            Developer = "Bohemia Interactive",
+                            DiscountPrice = 29.99m,
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 760 / AMD Radeon R9 270",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "Windows 10 64-bit",
+                            MinimumProcessor = "Intel Core i5-4430 / AMD FX-6300",
+                            MinimumStorage = "25 GB available space",
+                            Price = 49.99m,
+                            Publisher = "Bohemia Interactive",
+                            Rating = 3.8999999999999999,
+                            RatingCount = 290000,
+                            ReleaseDate = new DateTime(2018, 12, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_4.jpg\"]",
+                            Title = "DayZ",
+                            TotalSales = 6000000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=H9PHj4R2l5Y"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/736220/header.jpg",
+                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(227),
+                            Description = "Post Scriptum is a WW2 simulation game, focusing on historical accuracy, large scale battles, the difficulty of coalition warfare and an intense battlefield, with an emphasis on logistics and combined arms. Fight across the Arnhem bridge, the dunes of Normandy, and through the streets of the Netherlands.",
+                            Developer = "Periscope Games",
+                            DiscountPrice = 19.99m,
+                            IsActive = true,
+                            MinimumGraphics = "NVIDIA GeForce GTX 970 / AMD Radeon R9 290",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "Windows 7 64-bit",
+                            MinimumProcessor = "Intel Core i5-2500K / AMD Ryzen 3 1200",
+                            MinimumStorage = "35 GB available space",
+                            Price = 29.99m,
+                            Publisher = "Offworld",
+                            Rating = 4.2000000000000002,
+                            RatingCount = 28000,
+                            ReleaseDate = new DateTime(2018, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_4.jpg\"]",
+                            Title = "Post Scriptum",
+                            TotalSales = 1200000,
+                            TrailerUrl = "https://www.youtube.com/watch?v=gKlJ4VCGmTE"
+                        });
                 });
 
             modelBuilder.Entity("GameStore.Entities.Games.GameGenre", b =>
@@ -269,6 +584,362 @@ namespace GameStore.Repository.Migrations
                         .IsUnique();
 
                     b.ToTable("GameGenres");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            GameId = 1,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 2,
+                            GameId = 1,
+                            GenreId = 11
+                        },
+                        new
+                        {
+                            Id = 3,
+                            GameId = 1,
+                            GenreId = 12
+                        },
+                        new
+                        {
+                            Id = 4,
+                            GameId = 1,
+                            GenreId = 29
+                        },
+                        new
+                        {
+                            Id = 5,
+                            GameId = 1,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 6,
+                            GameId = 1,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 7,
+                            GameId = 2,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 8,
+                            GameId = 2,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 9,
+                            GameId = 2,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 10,
+                            GameId = 2,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            Id = 11,
+                            GameId = 3,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 12,
+                            GameId = 3,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            Id = 13,
+                            GameId = 3,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 14,
+                            GameId = 3,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 15,
+                            GameId = 4,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 16,
+                            GameId = 4,
+                            GenreId = 11
+                        },
+                        new
+                        {
+                            Id = 17,
+                            GameId = 4,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            Id = 18,
+                            GameId = 4,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 19,
+                            GameId = 4,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 20,
+                            GameId = 5,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 21,
+                            GameId = 5,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            Id = 22,
+                            GameId = 5,
+                            GenreId = 12
+                        },
+                        new
+                        {
+                            Id = 23,
+                            GameId = 5,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 24,
+                            GameId = 5,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 25,
+                            GameId = 5,
+                            GenreId = 29
+                        },
+                        new
+                        {
+                            Id = 26,
+                            GameId = 6,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 27,
+                            GameId = 6,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 28,
+                            GameId = 6,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 29,
+                            GameId = 6,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            Id = 30,
+                            GameId = 6,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 31,
+                            GameId = 7,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 32,
+                            GameId = 7,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 33,
+                            GameId = 7,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 34,
+                            GameId = 7,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            Id = 35,
+                            GameId = 7,
+                            GenreId = 29
+                        },
+                        new
+                        {
+                            Id = 36,
+                            GameId = 8,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 37,
+                            GameId = 8,
+                            GenreId = 29
+                        },
+                        new
+                        {
+                            Id = 38,
+                            GameId = 8,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 39,
+                            GameId = 8,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 40,
+                            GameId = 8,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            Id = 41,
+                            GameId = 9,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 42,
+                            GameId = 9,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 43,
+                            GameId = 9,
+                            GenreId = 29
+                        },
+                        new
+                        {
+                            Id = 44,
+                            GameId = 9,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 45,
+                            GameId = 10,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 46,
+                            GameId = 10,
+                            GenreId = 29
+                        },
+                        new
+                        {
+                            Id = 47,
+                            GameId = 10,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 48,
+                            GameId = 10,
+                            GenreId = 13
+                        },
+                        new
+                        {
+                            Id = 49,
+                            GameId = 10,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 50,
+                            GameId = 11,
+                            GenreId = 11
+                        },
+                        new
+                        {
+                            Id = 51,
+                            GameId = 11,
+                            GenreId = 12
+                        },
+                        new
+                        {
+                            Id = 52,
+                            GameId = 11,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 53,
+                            GameId = 11,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 54,
+                            GameId = 11,
+                            GenreId = 10
+                        },
+                        new
+                        {
+                            Id = 55,
+                            GameId = 12,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 56,
+                            GameId = 12,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            Id = 57,
+                            GameId = 12,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 58,
+                            GameId = 12,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 59,
+                            GameId = 12,
+                            GenreId = 29
+                        });
                 });
 
             modelBuilder.Entity("GameStore.Entities.Games.Genre", b =>
@@ -288,7 +959,9 @@ namespace GameStore.Repository.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -357,6 +1030,230 @@ namespace GameStore.Repository.Migrations
                             IconUrl = "",
                             IsActive = true,
                             Name = "Adventure"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Description = "Simulation games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Simulation"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Description = "Puzzle games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Puzzle"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Description = "Horror games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Horror"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Description = "Survival games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Survival"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Description = "Open world games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Open World"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Description = "Stealth games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Stealth"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Description = "Racing games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Racing"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Description = "Fighting games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Fighting"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Description = "Massively Multiplayer Online RPG",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "MMORPG"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Description = "Card-based games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Card Game"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            Description = "Turn-based games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Turn-Based"
+                        },
+                        new
+                        {
+                            Id = 19,
+                            Description = "Tower defense games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Tower Defense"
+                        },
+                        new
+                        {
+                            Id = 20,
+                            Description = "Sandbox games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Sandbox"
+                        },
+                        new
+                        {
+                            Id = 21,
+                            Description = "Story-driven visual novel games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Visual Novel"
+                        },
+                        new
+                        {
+                            Id = 22,
+                            Description = "Music and rhythm-based games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Rhythm"
+                        },
+                        new
+                        {
+                            Id = 23,
+                            Description = "Platform jumping games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Platformer"
+                        },
+                        new
+                        {
+                            Id = 24,
+                            Description = "Exploration-based platformer games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Metroidvania"
+                        },
+                        new
+                        {
+                            Id = 25,
+                            Description = "Roguelike games with permadeath",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Roguelike"
+                        },
+                        new
+                        {
+                            Id = 26,
+                            Description = "Roguelike with progression elements",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Roguelite"
+                        },
+                        new
+                        {
+                            Id = 27,
+                            Description = "Last-man-standing multiplayer games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Battle Royale"
+                        },
+                        new
+                        {
+                            Id = 28,
+                            Description = "Multiplayer Online Battle Arena",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "MOBA"
+                        },
+                        new
+                        {
+                            Id = 29,
+                            Description = "Cooperative multiplayer games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Co-op"
+                        },
+                        new
+                        {
+                            Id = 30,
+                            Description = "Single-player focused games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Singleplayer"
+                        },
+                        new
+                        {
+                            Id = 31,
+                            Description = "Multiplayer focused games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Multiplayer"
+                        },
+                        new
+                        {
+                            Id = 32,
+                            Description = "Educational and learning games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Educational"
+                        },
+                        new
+                        {
+                            Id = 33,
+                            Description = "Casual and easy-to-play games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Casual"
+                        },
+                        new
+                        {
+                            Id = 34,
+                            Description = "Party and social games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Party"
+                        },
+                        new
+                        {
+                            Id = 35,
+                            Description = "Story-rich narrative games",
+                            IconUrl = "",
+                            IsActive = true,
+                            Name = "Narrative"
                         });
                 });
 
@@ -387,7 +1284,9 @@ namespace GameStore.Repository.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -415,45 +1314,6 @@ namespace GameStore.Repository.Migrations
                     b.ToTable("Settings");
                 });
 
-            modelBuilder.Entity("GameStore.Entities.Store.GameKey", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("GameId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("KeyCode")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<int?>("OrderDetailId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("UsedAt")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GameId");
-
-                    b.HasIndex("KeyCode")
-                        .IsUnique();
-
-                    b.HasIndex("OrderDetailId");
-
-                    b.ToTable("GameKeys");
-                });
-
             modelBuilder.Entity("GameStore.Entities.Store.Library", b =>
                 {
                     b.Property<int>("Id")
@@ -475,7 +1335,9 @@ namespace GameStore.Repository.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("TotalPlayTime")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -484,7 +1346,7 @@ namespace GameStore.Repository.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.HasIndex("GameKeyId");
+                    b.HasIndex("UserId");
 
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
@@ -505,11 +1367,15 @@ namespace GameStore.Repository.Migrations
 
                     b.Property<string>("PaymentMethod")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Wallet");
 
                     b.Property<string>("Status")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)")
+                        .HasDefaultValue("Pending");
 
                     b.Property<decimal>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
@@ -519,9 +1385,16 @@ namespace GameStore.Repository.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("OrderDate");
+
+                    b.HasIndex("Status");
+
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", t =>
+                        {
+                            t.HasCheckConstraint("CK_Order_TotalAmount_NonNegative", "TotalAmount >= 0");
+                        });
                 });
 
             modelBuilder.Entity("GameStore.Entities.Store.OrderDetail", b =>
@@ -550,7 +1423,12 @@ namespace GameStore.Repository.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", t =>
+                        {
+                            t.HasCheckConstraint("CK_OrderDetail_Quantity_Positive", "Quantity > 0");
+
+                            t.HasCheckConstraint("CK_OrderDetail_UnitPrice_NonNegative", "UnitPrice >= 0");
+                        });
                 });
 
             modelBuilder.Entity("GameStore.Entities.Store.Review", b =>
@@ -572,10 +1450,14 @@ namespace GameStore.Repository.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("HelpfulCount")
-                        .HasColumnType("int");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<bool>("IsRecommended")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("Rating")
                         .HasColumnType("int");
@@ -588,12 +1470,19 @@ namespace GameStore.Repository.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedAt");
+
                     b.HasIndex("GameId");
 
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", t =>
+                        {
+                            t.HasCheckConstraint("CK_Review_Helpful_NonNegative", "HelpfulCount >= 0");
+
+                            t.HasCheckConstraint("CK_Review_Rating_Range", "Rating >= 1 AND Rating <= 5");
+                        });
                 });
 
             modelBuilder.Entity("GameStore.Entities.Store.Wishlist", b =>
@@ -616,6 +1505,8 @@ namespace GameStore.Repository.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("GameId");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
@@ -644,10 +1535,12 @@ namespace GameStore.Repository.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Password")
                         .IsRequired()
@@ -666,14 +1559,22 @@ namespace GameStore.Repository.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<decimal>("Wallet")
-                        .HasColumnType("decimal(18,2)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValue(0m);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", t =>
+                        {
+                            t.HasCheckConstraint("CK_User_Wallet_NonNegative", "Wallet >= 0");
+                        });
                 });
 
             modelBuilder.Entity("GameStore.Entities.Users.UserRole", b =>
@@ -757,23 +1658,6 @@ namespace GameStore.Repository.Migrations
                     b.Navigation("Genre");
                 });
 
-            modelBuilder.Entity("GameStore.Entities.Store.GameKey", b =>
-                {
-                    b.HasOne("GameStore.Entities.Games.Game", "Game")
-                        .WithMany("GameKeys")
-                        .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("GameStore.Entities.Store.OrderDetail", "OrderDetail")
-                        .WithMany("GameKeys")
-                        .HasForeignKey("OrderDetailId");
-
-                    b.Navigation("Game");
-
-                    b.Navigation("OrderDetail");
-                });
-
             modelBuilder.Entity("GameStore.Entities.Store.Library", b =>
                 {
                     b.HasOne("GameStore.Entities.Games.Game", "Game")
@@ -781,10 +1665,6 @@ namespace GameStore.Repository.Migrations
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("GameStore.Entities.Store.GameKey", "GameKey")
-                        .WithMany()
-                        .HasForeignKey("GameKeyId");
 
                     b.HasOne("GameStore.Entities.Users.User", "User")
                         .WithMany("Libraries")
@@ -794,8 +1674,6 @@ namespace GameStore.Repository.Migrations
 
                     b.Navigation("Game");
 
-                    b.Navigation("GameKey");
-
                     b.Navigation("User");
                 });
 
@@ -804,7 +1682,7 @@ namespace GameStore.Repository.Migrations
                     b.HasOne("GameStore.Entities.Users.User", "User")
                         .WithMany("Orders")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -815,7 +1693,7 @@ namespace GameStore.Repository.Migrations
                     b.HasOne("GameStore.Entities.Games.Game", "Game")
                         .WithMany("OrderDetails")
                         .HasForeignKey("GameId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("GameStore.Entities.Store.Order", "Order")
@@ -895,8 +1773,6 @@ namespace GameStore.Repository.Migrations
                 {
                     b.Navigation("GameGenres");
 
-                    b.Navigation("GameKeys");
-
                     b.Navigation("OrderDetails");
 
                     b.Navigation("Reviews");
@@ -912,11 +1788,6 @@ namespace GameStore.Repository.Migrations
             modelBuilder.Entity("GameStore.Entities.Store.Order", b =>
                 {
                     b.Navigation("OrderDetails");
-                });
-
-            modelBuilder.Entity("GameStore.Entities.Store.OrderDetail", b =>
-                {
-                    b.Navigation("GameKeys");
                 });
 
             modelBuilder.Entity("GameStore.Entities.Users.User", b =>

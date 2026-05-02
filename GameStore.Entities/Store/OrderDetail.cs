@@ -16,5 +16,5 @@ public class OrderDetail
 
     public virtual Order Order { get; set; } = null!;
     public virtual Game Game { get; set; } = null!;
-    public virtual ICollection<GameKey> GameKeys { get; set; } = new HashSet<GameKey>();
+    // public virtual ICollection<GameKey> GameKeys { get; set; } = new HashSet<GameKey>();
 }

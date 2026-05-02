@@ -19,6 +19,6 @@ namespace GameStore.Entities.Store
 
         public virtual User User { get; set; } = null!;
         public virtual Game Game { get; set; } = null!;
-        public virtual GameKey? GameKey { get; set; }
+        // public virtual GameKey? GameKey { get; set; }
     }
 }

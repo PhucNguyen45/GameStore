@@ -34,7 +34,7 @@ namespace GameStore.Entities.Games
 
         // Navigation
         public virtual ICollection<GameGenre> GameGenres { get; set; } = new HashSet<GameGenre>();
-        public virtual ICollection<GameKey> GameKeys { get; set; } = new HashSet<GameKey>();
+        // public virtual ICollection<GameKey> GameKeys { get; set; } = new HashSet<GameKey>();
         public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
         public virtual ICollection<Wishlist> Wishlists { get; set; } = new HashSet<Wishlist>();
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new HashSet<OrderDetail>();
