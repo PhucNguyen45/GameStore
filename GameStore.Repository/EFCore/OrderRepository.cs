@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using GameStore.Entities.Store;
 
 namespace GameStore.Repository.EFCore;
+
 public class OrderRepository : Repository<Order>, IOrderRepository
 {
     public OrderRepository(GameStoreDbContext context) : base(context) { }

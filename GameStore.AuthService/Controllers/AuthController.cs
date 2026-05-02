@@ -44,9 +44,14 @@ public class AuthController : ControllerBase
 
         return Ok(new
         {
-            token, userId = user.Id, username = user.Username,
-            displayName = user.DisplayName, email = user.Email,
-            wallet = user.Wallet, role = roleName, expiresIn = expireMinutes * 60
+            token,
+            userId = user.Id,
+            username = user.Username,
+            displayName = user.DisplayName,
+            email = user.Email,
+            wallet = user.Wallet,
+            role = roleName,
+            expiresIn = expireMinutes * 60
         });
     }
 
@@ -58,13 +63,23 @@ public class AuthController : ControllerBase
         if (request.Password.Length < 6)
             return BadRequest(new { message = "Password must be at least 6 characters" });
 
-        var user = new User { Username = request.Username, DisplayName = request.DisplayName ?? request.Username,
-            Email = request.Email ?? "", Phone = request.Phone ?? "" };
+        var user = new User
+        {
+            Username = request.Username,
+            DisplayName = request.DisplayName ?? request.Username,
+            Email = request.Email ?? "",
+            Phone = request.Phone ?? ""
+        };
         var createdUser = await _userService.Register(user, request.Password);
         return Ok(new { message = "Registration successful", userId = createdUser.Id });
     }
 }
 
 public class LoginRequest { public string Username { get; set; } = ""; public string Password { get; set; } = ""; }
-public class RegisterRequest { public string Username { get; set; } = ""; public string Password { get; set; } = "";
-    public string? DisplayName { get; set; } public string? Email { get; set; } public string? Phone { get; set; } }
+public class RegisterRequest
+{
+    public string Username { get; set; } = ""; public string Password { get; set; } = "";
+    public string? DisplayName { get; set; }
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+}

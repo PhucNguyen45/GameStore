@@ -46,22 +46,35 @@ public class GameStoreDbContext : DbContext
         {
             entity.HasKey(e => e.Id);
             entity.HasIndex(e => e.Username).IsUnique();
-            entity.Property(e => e.Wallet).HasColumnType("decimal(18,2)");
+            entity.HasIndex(e => e.Email).IsUnique();
+            entity.Property(e => e.Wallet).HasColumnType("decimal(18,2)").HasDefaultValue(0m);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+
+            // Check constraints
+            entity.HasCheckConstraint("CK_User_Wallet_NonNegative", "Wallet >= 0");
         });
 
         // ──────────────── ROLE ────────────────
         modelBuilder.Entity<Role>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.Name).IsUnique();
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
         });
 
         // ──────────────── USER ROLE ────────────────
         modelBuilder.Entity<UserRole>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasOne(e => e.User).WithMany(u => u.UserRoles).HasForeignKey(e => e.UserId);
-            entity.HasOne(e => e.Role).WithMany(r => r.UserRoles).HasForeignKey(e => e.RoleId);
-            entity.HasIndex(e => new { e.UserId, e.RoleId }).IsUnique();
+            entity.HasOne(e => e.User)
+                  .WithMany(u => u.UserRoles)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Role)
+                  .WithMany(r => r.UserRoles)
+                  .HasForeignKey(e => e.RoleId);
+            entity.HasIndex(e => new { e.UserId, e.RoleId })
+                  .IsUnique();
         });
 
         // ──────────────── ACCESS TOKEN ────────────────
@@ -158,12 +171,36 @@ public class GameStoreDbContext : DbContext
 
         // ──────────────── SEED DATA ────────────────
         modelBuilder.Entity<Role>().HasData(
-            new Role { Id = 1, Name = "Admin", Description = "Administrator", IsActive = true,
-                Guid = new Guid("10000000-0000-0000-0000-000000000001"), Created = new DateTime(2025, 1, 1), Modified = new DateTime(2025, 1, 1) },
-            new Role { Id = 2, Name = "User", Description = "Regular User", IsActive = true,
-                Guid = new Guid("20000000-0000-0000-0000-000000000002"), Created = new DateTime(2025, 1, 1), Modified = new DateTime(2025, 1, 1) },
-            new Role { Id = 3, Name = "Publisher", Description = "Game Publisher", IsActive = true,
-                Guid = new Guid("30000000-0000-0000-0000-000000000003"), Created = new DateTime(2025, 1, 1), Modified = new DateTime(2025, 1, 1) }
+            new Role
+            {
+                Id = 1,
+                Name = "Admin",
+                Description = "Administrator",
+                IsActive = true,
+                Guid = new Guid("10000000-0000-0000-0000-000000000001"),
+                Created = new DateTime(2025, 1, 1),
+                Modified = new DateTime(2025, 1, 1)
+            },
+            new Role
+            {
+                Id = 2,
+                Name = "User",
+                Description = "Regular User",
+                IsActive = true,
+                Guid = new Guid("20000000-0000-0000-0000-000000000002"),
+                Created = new DateTime(2025, 1, 1),
+                Modified = new DateTime(2025, 1, 1)
+            },
+            new Role
+            {
+                Id = 3,
+                Name = "Publisher",
+                Description = "Game Publisher",
+                IsActive = true,
+                Guid = new Guid("30000000-0000-0000-0000-000000000003"),
+                Created = new DateTime(2025, 1, 1),
+                Modified = new DateTime(2025, 1, 1)
+            }
         );
 
         modelBuilder.Entity<Genre>().HasData(

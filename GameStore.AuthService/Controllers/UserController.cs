@@ -22,8 +22,14 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetAll([FromQuery] string? keyword, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var (users, totalCount) = await _userService.Search(keyword, page, pageSize);
-        return Ok(new { data = users.Select(u => new { u.Id, u.Username, u.DisplayName, u.Email, u.Wallet, u.IsActive, u.CreatedAt }),
-            totalCount, page, pageSize, totalPages = (int)Math.Ceiling((double)totalCount / pageSize) });
+        return Ok(new
+        {
+            data = users.Select(u => new { u.Id, u.Username, u.DisplayName, u.Email, u.Wallet, u.IsActive, u.CreatedAt }),
+            totalCount,
+            page,
+            pageSize,
+            totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+        });
     }
 
     [HttpGet("{id}")]
@@ -74,6 +80,12 @@ public class UserController : ControllerBase
     }
 }
 
-public class UpdateUserRequest { public string? DisplayName { get; set; } public string? Email { get; set; }
-    public string? Phone { get; set; } public string? AvatarUrl { get; set; } public string? Password { get; set; } }
+public class UpdateUserRequest
+{
+    public string? DisplayName { get; set; }
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+    public string? AvatarUrl { get; set; }
+    public string? Password { get; set; }
+}
 public class TopUpRequest { public decimal Amount { get; set; } }
