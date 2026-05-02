@@ -92,7 +92,6 @@
 │   ├── IOrderService.cs
 │   └── OrderService.cs
 ├── GameStore.WebClient
-│   ├── GameStore frontend structure.txt
 │   ├── index.html
 │   ├── package-lock.json
 │   ├── package.json
@@ -133,4 +132,4 @@
 ├── kill-all.sh
 └── run-all.sh
 
-34 directories, 100 files
+34 directories, 99 files

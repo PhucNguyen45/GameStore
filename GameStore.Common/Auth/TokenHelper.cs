@@ -18,20 +18,40 @@ public static class TokenHelper
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(salt);
 
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 100000, HashAlgorithmName.SHA256);
-        return Convert.ToBase64String(pbkdf2.GetBytes(32));
+        var hash = Rfc2898DeriveBytes.Pbkdf2(
+            password: password,
+            salt: salt,
+            iterations: 100000,
+            hashAlgorithm: HashAlgorithmName.SHA256,
+            outputLength: 32
+        );
+
+        return Convert.ToBase64String(hash);
     }
 
     public static bool IsValidPassword(string password, byte[] salt, string hashedPassword)
     {
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 100000, HashAlgorithmName.SHA256);
-        return Convert.ToBase64String(pbkdf2.GetBytes(32)) == hashedPassword;
+        var hash = Rfc2898DeriveBytes.Pbkdf2(
+            password: password,
+            salt: salt,
+            iterations: 100000,
+            hashAlgorithm: HashAlgorithmName.SHA256,
+            outputLength: 32
+        );
+
+        var computedHash = Convert.ToBase64String(hash);
+
+        // so sánh an toàn (tránh timing attack)
+        return CryptographicOperations.FixedTimeEquals(
+            Encoding.UTF8.GetBytes(computedHash),
+            Encoding.UTF8.GetBytes(hashedPassword)
+        );
     }
 
     public static string GenerateToken(string secretKey, int expireMinutes, string userId, string username, string role)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.ASCII.GetBytes(secretKey);
+        var key = Encoding.UTF8.GetBytes(secretKey); // nên dùng UTF8
 
         var claims = new[]
         {
@@ -44,7 +64,10 @@ public static class TokenHelper
         {
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(expireMinutes),
-            SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            SigningCredentials = new SigningCredentials(
+                new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256
+            )
         };
 
         var token = tokenHandler.CreateToken(tokenDescriptor);
