@@ -408,19 +408,19 @@
     ]
   },
   "packageFolders": {
-    "/home/razer_admin/.nuget/packages/": {}
+    "/home/quocanhaly/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/GameStore.ApiGateway.csproj",
+      "projectUniqueName": "/home/quocanhaly/CN_Web/GameStore/GameStore.ApiGateway/GameStore.ApiGateway.csproj",
       "projectName": "GameStore.ApiGateway",
-      "projectPath": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/GameStore.ApiGateway.csproj",
-      "packagesPath": "/home/razer_admin/.nuget/packages/",
-      "outputPath": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.ApiGateway/obj/",
+      "projectPath": "/home/quocanhaly/CN_Web/GameStore/GameStore.ApiGateway/GameStore.ApiGateway.csproj",
+      "packagesPath": "/home/quocanhaly/.nuget/packages/",
+      "outputPath": "/home/quocanhaly/CN_Web/GameStore/GameStore.ApiGateway/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/razer_admin/.nuget/NuGet/NuGet.Config"
+        "/home/quocanhaly/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"

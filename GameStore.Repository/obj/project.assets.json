@@ -3720,19 +3720,19 @@
     ]
   },
   "packageFolders": {
-    "/home/razer_admin/.nuget/packages/": {}
+    "/home/quocanhaly/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Repository/GameStore.Repository.csproj",
+      "projectUniqueName": "/home/quocanhaly/CN_Web/GameStore/GameStore.Repository/GameStore.Repository.csproj",
       "projectName": "GameStore.Repository",
-      "projectPath": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Repository/GameStore.Repository.csproj",
-      "packagesPath": "/home/razer_admin/.nuget/packages/",
-      "outputPath": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Repository/obj/",
+      "projectPath": "/home/quocanhaly/CN_Web/GameStore/GameStore.Repository/GameStore.Repository.csproj",
+      "packagesPath": "/home/quocanhaly/.nuget/packages/",
+      "outputPath": "/home/quocanhaly/CN_Web/GameStore/GameStore.Repository/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "/home/razer_admin/.nuget/NuGet/NuGet.Config"
+        "/home/quocanhaly/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
@@ -3745,11 +3745,11 @@
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Common/GameStore.Common.csproj": {
-              "projectPath": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Common/GameStore.Common.csproj"
+            "/home/quocanhaly/CN_Web/GameStore/GameStore.Common/GameStore.Common.csproj": {
+              "projectPath": "/home/quocanhaly/CN_Web/GameStore/GameStore.Common/GameStore.Common.csproj"
             },
-            "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Entities/GameStore.Entities.csproj": {
-              "projectPath": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Entities/GameStore.Entities.csproj"
+            "/home/quocanhaly/CN_Web/GameStore/GameStore.Entities/GameStore.Entities.csproj": {
+              "projectPath": "/home/quocanhaly/CN_Web/GameStore/GameStore.Entities/GameStore.Entities.csproj"
             }
           }
         }
