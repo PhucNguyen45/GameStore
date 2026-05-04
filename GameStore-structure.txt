@@ -1,5 +1,4 @@
 .
-├── GameStore structure.txt
 ├── GameStore-structure.txt
 ├── GameStore.APIService
 │   ├── Controllers
@@ -148,11 +147,6 @@
 ├── GameStore.slnx
 ├── README.md
 ├── kill-all.sh
-├── logs
-│   ├── GameStore.APIService_20260504.log
-│   ├── GameStore.ApiGateway_20260504.log
-│   ├── GameStore.AuthService_20260504.log
-│   └── webclient_20260504.log
 └── run-all.sh
 
-41 directories, 115 files
+40 directories, 110 files
