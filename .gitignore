@@ -1,15 +1,23 @@
-# Build output
+# .NET
 bin/
 obj/
+*.user
+*.suo
+*.cache
+
+# Build
 *.dll
 *.pdb
 *.exe
 
 # Logs
 logs/
+*.log
 
-# Node
+# Node / React
 node_modules/
+dist/
+build/
 
 # IDE
 .vs/
@@ -19,8 +27,3 @@ node_modules/
 # OS
 .DS_Store
 Thumbs.db
-
-# Misc
-*.user
-*.suo
-*.cache
