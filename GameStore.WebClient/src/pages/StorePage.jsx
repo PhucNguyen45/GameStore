@@ -23,35 +23,36 @@ export default function StorePage() {
 
   // Load games mỗi khi filter thay đổi (bao gồm cả lần đầu)
   useEffect(() => {
-    fetchGames();
-  }, [page, sort, genreId]);
+    const fetchGames = async () => {
+      setLoading(true);
+      try {
+        const params = { page, pageSize, sortBy: sort };
+        if (search) params.keyword = search;
+        if (genreId) params.genreId = genreId;
+        if (maxPrice) params.maxPrice = maxPrice;
+        const res = await gameAPI.getAll(params);
+        setGames(res.data.data || []);
+        setTotalPages(res.data.totalPages || 1);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchGames = async () => {
-    setLoading(true);
-    try {
-      const params = { page, pageSize, sortBy: sort };
-      if (search) params.keyword = search;
-      if (genreId) params.genreId = genreId;
-      if (maxPrice) params.maxPrice = maxPrice;
-      const res = await gameAPI.getAll(params);
-      setGames(res.data.data || []);
-      setTotalPages(res.data.totalPages || 1);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const timer = setTimeout(fetchGames, 300);
+    return () => clearTimeout(timer);
+  }, [page, sort, genreId, search, maxPrice]);
 
   const handleSearch = (e) => {
     e.preventDefault();
     setPage(1); // Reset về page 1 khi search
-    fetchGames();
+    // fetchGames();
   };
 
   const handleFilterChange = () => {
     setPage(1);
-    fetchGames();
+    // fetchGames();
   };
 
   return (

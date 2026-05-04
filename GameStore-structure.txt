@@ -1,7 +1,9 @@
 .
 ├── GameStore structure.txt
+├── GameStore-structure.txt
 ├── GameStore.APIService
 │   ├── Controllers
+│   │   ├── AdminController.cs
 │   │   ├── GamesController.cs
 │   │   ├── GenresController.cs
 │   │   ├── LibraryController.cs
@@ -40,13 +42,20 @@
 │   └── GameStore.Common.csproj
 ├── GameStore.DTOs
 │   ├── Auth
-│   ├── Common
+│   │   ├── LoginRequest.cs
+│   │   └── RegisterRequest.cs
 │   ├── GameStore.DTOs.csproj
 │   ├── Games
+│   │   ├── GameCreateDto.cs
+│   │   └── GameUpdateDto.cs
 │   ├── Genres
-│   ├── Library
+│   │   └── GenreDto.cs
 │   ├── Orders
+│   │   ├── CreateOrderDto.cs
+│   │   └── OrderItemDto.cs
 │   └── Users
+│       ├── TopUpRequest.cs
+│       └── UpdateUserRequest.cs
 ├── GameStore.Entities
 │   ├── Audit
 │   │   └── IAuditable.cs
@@ -86,8 +95,8 @@
 │   ├── GameStoreDbContext.cs
 │   ├── GameStoreDbContextFactory.cs
 │   └── Migrations
-│       ├── 20260502123609_InitialCreate.Designer.cs
-│       ├── 20260502123609_InitialCreate.cs
+│       ├── 20260503151116_InitialCreate.Designer.cs
+│       ├── 20260503151116_InitialCreate.cs
 │       └── GameStoreDbContextModelSnapshot.cs
 ├── GameStore.Services
 │   ├── Authen
@@ -135,9 +144,15 @@
 │   │   └── styles
 │   │       └── global.css
 │   └── vite.config.js
+├── GameStore.sln
 ├── GameStore.slnx
 ├── README.md
 ├── kill-all.sh
+├── logs
+│   ├── GameStore.APIService_20260504.log
+│   ├── GameStore.ApiGateway_20260504.log
+│   ├── GameStore.AuthService_20260504.log
+│   └── webclient_20260504.log
 └── run-all.sh
 
-42 directories, 99 files
+41 directories, 115 files
