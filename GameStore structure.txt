@@ -38,6 +38,15 @@
 │   │   └── TokenHelper.cs
 │   ├── Entity.cs
 │   └── GameStore.Common.csproj
+├── GameStore.DTOs
+│   ├── Auth
+│   ├── Common
+│   ├── GameStore.DTOs.csproj
+│   ├── Games
+│   ├── Genres
+│   ├── Library
+│   ├── Orders
+│   └── Users
 ├── GameStore.Entities
 │   ├── Audit
 │   │   └── IAuditable.cs
@@ -77,8 +86,8 @@
 │   ├── GameStoreDbContext.cs
 │   ├── GameStoreDbContextFactory.cs
 │   └── Migrations
-│       ├── 20260502084543_InitialCreate.Designer.cs
-│       ├── 20260502084543_InitialCreate.cs
+│       ├── 20260502123609_InitialCreate.Designer.cs
+│       ├── 20260502123609_InitialCreate.cs
 │       └── GameStoreDbContextModelSnapshot.cs
 ├── GameStore.Services
 │   ├── Authen
@@ -127,14 +136,8 @@
 │   │       └── global.css
 │   └── vite.config.js
 ├── GameStore.slnx
-├── GameStore.sql
 ├── README.md
 ├── kill-all.sh
-├── logs
-│   ├── GameStore.APIService_20260502.log
-│   ├── GameStore.ApiGateway_20260502.log
-│   ├── GameStore.AuthService_20260502.log
-│   └── webclient_20260502.log
 └── run-all.sh
 
-35 directories, 103 files
+42 directories, 99 files

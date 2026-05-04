@@ -4,6 +4,7 @@
   <Project Path="GameStore.APIService/GameStore.APIService.csproj" />
   <Project Path="GameStore.AuthService/GameStore.AuthService.csproj" />
   <Project Path="GameStore.Common/GameStore.Common.csproj" />
+  <Project Path="GameStore.DTOs/GameStore.DTOs.csproj" />
   <Project Path="GameStore.Entities/GameStore.Entities.csproj" />
   <Project Path="GameStore.Repository/GameStore.Repository.csproj" />
   <Project Path="GameStore.Services/GameStore.Services.csproj" />
