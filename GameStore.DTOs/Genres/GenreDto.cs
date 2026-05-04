@@ -1,3 +1,4 @@
+// GameStore.DTOs/Genres/GenreDto.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,6 @@ namespace GameStore.DTOs.Genres
 {
     public class GenreDto
     {
-        
+
     }
 }

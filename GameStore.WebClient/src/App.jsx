@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/App.jsx
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./contexts/AuthContext";

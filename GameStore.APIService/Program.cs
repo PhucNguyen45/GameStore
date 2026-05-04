@@ -1,4 +1,4 @@
-// GameStore/GameStore.APIService/Program.cs
+// GameStore.APIService/Program.cs
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;

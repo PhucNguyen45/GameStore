@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/stores/cartStore.js
 import { create } from "zustand";
 
 const useCartStore = create((set, get) => ({

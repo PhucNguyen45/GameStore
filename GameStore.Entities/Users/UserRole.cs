@@ -1,4 +1,4 @@
-// GameStore/GameStore.Entities/Users/UserRole.cs
+// GameStore.Entities/Users/UserRole.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;

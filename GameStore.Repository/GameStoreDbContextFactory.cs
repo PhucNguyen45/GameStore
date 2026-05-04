@@ -1,3 +1,4 @@
+// GameStore.Repository/GameStoreDbContextFactory.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ public class GameStoreDbContextFactory : IDesignTimeDbContextFactory<GameStoreDb
     public GameStoreDbContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<GameStoreDbContext>();
-        optionsBuilder.UseSqlServer("Server=localhost,1433;Database=GameStoreDB;User Id=sa;Password=Password123!;TrustServerCertificate=True;");
+        optionsBuilder.UseSqlServer("Server=127.0.0.1,1434;Database=GameStoreDB;User Id=sa;Password=Hoangphuc@040505;Encrypt=True;TrustServerCertificate=True;MultipleActiveResultSets=True;");
 
         return new GameStoreDbContext(optionsBuilder.Options);
     }

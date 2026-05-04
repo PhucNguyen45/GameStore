@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/pages/AdminPage.jsx
 import { useState, useEffect, useMemo } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";

@@ -1,3 +1,4 @@
+// GameStore.DTOs/Auth/RegisterRequest.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,6 @@ namespace GameStore.DTOs.Auth
 {
     public class RegisterRequest
     {
-        
+
     }
 }

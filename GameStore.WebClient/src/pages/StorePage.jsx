@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/pages/StorePage.jsx
 import { useState, useEffect } from "react";
 import { gameAPI, genreAPI } from "../services/api";
 import GameCard from "../components/games/GameCard";
