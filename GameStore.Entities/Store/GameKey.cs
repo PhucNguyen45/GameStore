@@ -1,3 +1,4 @@
+// GameStore.Entities/Store/GameKey.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace GameStore.Entities.Store
         public bool IsUsed { get; set; } = false;
         public int? OrderDetailId { get; set; }
         public DateTime? UsedAt { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual Game Game { get; set; } = null!;
         public virtual OrderDetail? OrderDetail { get; set; }

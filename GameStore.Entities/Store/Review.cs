@@ -1,3 +1,4 @@
+// GameStore.Entities/Store/Review.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,8 +17,8 @@ namespace GameStore.Entities.Store
         public string Content { get; set; } = string.Empty;
         public bool IsRecommended { get; set; }
         public int HelpfulCount { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public virtual User User { get; set; } = null!;
         public virtual Game Game { get; set; } = null!;

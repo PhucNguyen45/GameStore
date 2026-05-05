@@ -1,4 +1,4 @@
-// GameStore/GameStore.WebClient/src/services/api.js
+// GameStore.WebClient/src/services/api.js
 import axios from "axios";
 
 const api = axios.create({

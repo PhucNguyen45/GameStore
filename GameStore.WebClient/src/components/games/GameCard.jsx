@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/games/GameCard.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Star, ShoppingCart, Check } from "lucide-react";
@@ -7,6 +8,8 @@ import { libraryAPI } from "../../services/api";
 
 export default function GameCard({ game }) {
   const addItem = useCartStore((s) => s.addItem);
+  // const hasItem = useCartStore((s) => s.hasItem);
+  // const inCart = hasItem(game.id); // Kiểm tra đã trong giỏ chưa
   const { user } = useAuth();
   const [owned, setOwned] = useState(false);
 

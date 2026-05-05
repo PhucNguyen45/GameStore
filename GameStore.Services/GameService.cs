@@ -1,3 +1,4 @@
+// GameStore.Services/GameService.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,7 +28,7 @@ public class GameService : IGameService
 
     public async Task<Game> Create(Game game)
     {
-        game.CreatedAt = DateTime.Now;
+        game.CreatedAt = DateTime.UtcNow;
         game.IsActive = true;
         await _gameRepository.AddAsync(game);
         return game;
@@ -40,11 +41,6 @@ public class GameService : IGameService
 
     public async Task Delete(int id)
     {
-        var game = await _gameRepository.GetByIdAsync(id);
-        if (game != null)
-        {
-            game.IsActive = false;
-            await _gameRepository.UpdateAsync(game);
-        }
+        await _gameRepository.DeleteByIdAsync(id);
     }
 }

@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/games/FeaturedSlider.jsx
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { Link } from "react-router-dom";

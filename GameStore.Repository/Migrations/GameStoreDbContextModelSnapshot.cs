@@ -64,7 +64,7 @@ namespace GameStore.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AccessTokens");
+                    b.ToTable("AccessTokens", (string)null);
                 });
 
             modelBuilder.Entity("GameStore.Entities.Auth.Role", b =>
@@ -120,7 +120,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -128,7 +128,7 @@ namespace GameStore.Repository.Migrations
                             Id = 1,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 5, 2, 19, 36, 8, 885, DateTimeKind.Local).AddTicks(8376),
+                            CreatedDateTime = new DateTime(2026, 5, 3, 15, 11, 15, 671, DateTimeKind.Local).AddTicks(7805),
                             CreatedUser = "",
                             Description = "Administrator",
                             Guid = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -143,7 +143,7 @@ namespace GameStore.Repository.Migrations
                             Id = 2,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 5, 2, 19, 36, 8, 886, DateTimeKind.Local).AddTicks(1133),
+                            CreatedDateTime = new DateTime(2026, 5, 3, 15, 11, 15, 671, DateTimeKind.Local).AddTicks(9336),
                             CreatedUser = "",
                             Description = "Regular User",
                             Guid = new Guid("20000000-0000-0000-0000-000000000002"),
@@ -158,7 +158,7 @@ namespace GameStore.Repository.Migrations
                             Id = 3,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 5, 2, 19, 36, 8, 886, DateTimeKind.Local).AddTicks(1146),
+                            CreatedDateTime = new DateTime(2026, 5, 3, 15, 11, 15, 671, DateTimeKind.Local).AddTicks(9346),
                             CreatedUser = "",
                             Description = "Game Publisher",
                             Guid = new Guid("30000000-0000-0000-0000-000000000003"),
@@ -266,7 +266,7 @@ namespace GameStore.Repository.Migrations
 
                     b.HasIndex("Title");
 
-                    b.ToTable("Games", t =>
+                    b.ToTable("Games", null, t =>
                         {
                             t.HasCheckConstraint("CK_Game_DiscountPrice_NonNegative", "DiscountPrice >= 0");
 
@@ -280,7 +280,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 1,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 887, DateTimeKind.Local).AddTicks(2391),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(6884),
                             Description = "Gray Zone Warfare is an immersive tactical FPS with a maximum focus on realism. Join a Private Military Company and explore a vast MMO open world where every decision matters. Engage in high-stakes PvEvP and PvE combat, uncover the mysteries of Lamang Island, and fight for survival against both human enemies and AI-controlled factions in an unforgiving environment.",
                             Developer = "MADFINGER Games",
                             DiscountPrice = 27.99m,
@@ -304,7 +304,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 2,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(166),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9945),
                             Description = "World of Tanks is a team-based, massively multiplayer online action game dedicated to armored warfare in the mid-20th century. Throw yourself into epic tank battles with over 600 vehicles from 11 nations. Cooperate with your teammates, plan your strategy, and dominate the battlefield with realistic tank physics and strategic gameplay.",
                             Developer = "Wargaming",
                             IsActive = true,
@@ -327,7 +327,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 3,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/236390/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(187),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9962),
                             Description = "War Thunder is the most comprehensive free-to-play, cross-platform MMO military game dedicated to aviation, armored vehicles, and naval craft from the early 20th century to the most advanced modern combat units. Join now and take part in major battles on land, in the air, and at sea, fighting with millions of players from all over the world in an ever-evolving environment.",
                             Developer = "Gaijin Entertainment",
                             IsActive = true,
@@ -350,7 +350,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 4,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(191),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9966),
                             Description = "Escape from Tarkov is a hardcore and realistic online first-person action RPG/Simulator with MMO features and a story-driven walkthrough. With each passing day the situation in the Norvinsk region grows more complicated. Incessant warfare has exhausted the local population, leaving them divided and vulnerable to exploitation by private military companies.",
                             Developer = "Battlestate Games",
                             DiscountPrice = 44.99m,
@@ -374,7 +374,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 5,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/107410/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(197),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9970),
                             Description = "Experience true combat gameplay in a massive military sandbox. Deploying a wide variety of single- and multiplayer content, over 20 vehicles and 40 weapons, and limitless opportunities for content creation, ARMA 3 is the PC's premier military game. Authentic, diverse, open - ARMA 3 sends you to war.",
                             Developer = "Bohemia Interactive",
                             DiscountPrice = 9.99m,
@@ -398,7 +398,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 6,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/686810/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(201),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9974),
                             Description = "Join the ever-expanding Hell Let Loose experience - a hardcore World War Two first person shooter with epic battles of 100 players with infantry, tanks, artillery, a dynamically shifting front line and a unique resource-based RTS-inspired meta-game. Fight in the most iconic battles of the Western Front, including Omaha Beach, Carentan, and Foy.",
                             Developer = "Black Matter",
                             DiscountPrice = 29.99m,
@@ -422,7 +422,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 7,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/393380/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(205),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9977),
                             Description = "Squad is a tactical FPS that provides authentic combat experiences through teamwork, communication, and realistic combat. It bridges the gap between arcade shooter and military simulation with large-scale combined arms warfare, base building, and integrated voice communication.",
                             Developer = "Offworld",
                             IsActive = true,
@@ -445,7 +445,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 8,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(209),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9980),
                             Description = "Ready or Not is an intense, tactical, first-person shooter that depicts a modern-day world in which SWAT police units are called to defuse hostile and confronting situations. Inspired by the SWAT series, Ready or Not brings a level of realism, tactical planning, and team-based coordination rarely seen in modern shooters.",
                             Developer = "VOID Interactive",
                             DiscountPrice = 34.99m,
@@ -469,7 +469,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 9,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/581320/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(213),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9985),
                             Description = "Insurgency: Sandstorm is a team-based, tactical FPS based on lethal close quarters combat and objective-oriented multiplayer gameplay. Experience the intensity of modern combat where skill is rewarded, and teamwork wins the fight. Sequenced in a fictional contemporary Middle Eastern conflict, featuring both PvP and co-op modes.",
                             Developer = "New World Interactive",
                             DiscountPrice = 14.99m,
@@ -493,7 +493,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 10,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/16900/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(219),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9989),
                             Description = "Ground Branch is a realistic tactical first-person shooter from one of the developers behind the original Rainbow Six and Ghost Recon games. Think, plan, and move carefully through highly detailed environments while engaging enemies in realistic firefights where bullets are deadly and every decision counts.",
                             Developer = "BlackFoot Studios",
                             IsActive = true,
@@ -516,7 +516,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 11,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/221100/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(223),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 673, DateTimeKind.Local).AddTicks(4),
                             Description = "DayZ is a hardcore open-world survival game with an extreme emphasis on player interaction. You are one of the few who have survived a mysterious zombie outbreak in the post-Soviet Republic of Chernarus. Scavenge for supplies, craft items, build bases, and fight against zombies and other desperate survivors in a sprawling 230km² landscape.",
                             Developer = "Bohemia Interactive",
                             DiscountPrice = 29.99m,
@@ -540,7 +540,7 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 12,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/736220/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 2, 19, 36, 8, 888, DateTimeKind.Local).AddTicks(227),
+                            CreatedAt = new DateTime(2026, 5, 3, 15, 11, 15, 673, DateTimeKind.Local).AddTicks(7),
                             Description = "Post Scriptum is a WW2 simulation game, focusing on historical accuracy, large scale battles, the difficulty of coalition warfare and an intense battlefield, with an emphasis on logistics and combined arms. Fight across the Arnhem bridge, the dunes of Normandy, and through the streets of the Netherlands.",
                             Developer = "Periscope Games",
                             DiscountPrice = 19.99m,
@@ -583,7 +583,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("GameId", "GenreId")
                         .IsUnique();
 
-                    b.ToTable("GameGenres");
+                    b.ToTable("GameGenres", (string)null);
 
                     b.HasData(
                         new
@@ -972,7 +972,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Genres");
+                    b.ToTable("Genres", (string)null);
 
                     b.HasData(
                         new
@@ -1311,7 +1311,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Settings");
+                    b.ToTable("Settings", (string)null);
                 });
 
             modelBuilder.Entity("GameStore.Entities.Store.Library", b =>
@@ -1351,7 +1351,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("Libraries");
+                    b.ToTable("Libraries", (string)null);
                 });
 
             modelBuilder.Entity("GameStore.Entities.Store.Order", b =>
@@ -1391,7 +1391,7 @@ namespace GameStore.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", t =>
+                    b.ToTable("Orders", null, t =>
                         {
                             t.HasCheckConstraint("CK_Order_TotalAmount_NonNegative", "TotalAmount >= 0");
                         });
@@ -1423,7 +1423,7 @@ namespace GameStore.Repository.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderDetails", t =>
+                    b.ToTable("OrderDetails", null, t =>
                         {
                             t.HasCheckConstraint("CK_OrderDetail_Quantity_Positive", "Quantity > 0");
 
@@ -1477,7 +1477,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("Reviews", t =>
+                    b.ToTable("Reviews", null, t =>
                         {
                             t.HasCheckConstraint("CK_Review_Helpful_NonNegative", "HelpfulCount >= 0");
 
@@ -1511,7 +1511,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("Wishlists");
+                    b.ToTable("Wishlists", (string)null);
                 });
 
             modelBuilder.Entity("GameStore.Entities.Users.User", b =>
@@ -1571,7 +1571,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users", t =>
+                    b.ToTable("Users", null, t =>
                         {
                             t.HasCheckConstraint("CK_User_Wallet_NonNegative", "Wallet >= 0");
                         });
@@ -1625,7 +1625,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("UserId", "RoleId")
                         .IsUnique();
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("GameStore.Entities.Auth.AccessToken", b =>

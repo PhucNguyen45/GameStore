@@ -1,3 +1,4 @@
+// GameStore.AuthService/Controllers/AuthController.cs
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameStore.Common.Auth;

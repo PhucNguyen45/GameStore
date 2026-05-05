@@ -1,11 +1,14 @@
+// GameStore.WebClient/src/pages/HomePage.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { gameAPI, genreAPI } from "../services/api";
 import GameCard from "../components/games/GameCard";
+import FeartureSlider from "../components/games/FeaturedSlider";
 import { Gamepad2, TrendingUp, Star, ArrowRight } from "lucide-react";
 
 export default function HomePage() {
   const [games, setGames] = useState([]);
+  const [featuredGames, setFeaturedGames] = useState([]);
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -13,6 +16,7 @@ export default function HomePage() {
     Promise.all([gameAPI.getFeatured(12), genreAPI.getAll()])
       .then(([g, gn]) => {
         setGames(g.data);
+        setFeaturedGames(g.data.slice(0, 6));
         setGenres(gn.data);
       })
       .finally(() => setLoading(false));
@@ -33,6 +37,9 @@ export default function HomePage() {
 
   return (
     <div>
+      {/* Featured slider */}
+      <FeaturedSlider games={featuredGames} />
+
       {/* HERO */}
       <div
         style={{
@@ -84,7 +91,6 @@ export default function HomePage() {
           </div>
         </div>
       </div>
-
       {/* FEATURED */}
       <div className="container" style={{ marginTop: -40 }}>
         <h2
@@ -112,7 +118,6 @@ export default function HomePage() {
           ))}
         </div>
       </div>
-
       {/* TRENDING */}
       <div className="container" style={{ marginTop: 40 }}>
         <h2
@@ -139,7 +144,6 @@ export default function HomePage() {
           ))}
         </div>
       </div>
-
       {/* GENRES */}
       <div className="container" style={{ marginTop: 40, paddingBottom: 40 }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>

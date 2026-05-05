@@ -1,3 +1,4 @@
+// GameStore.Entities/Auth/AccessToken.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace GameStore.Entities.Auth
         public string Token { get; set; } = string.Empty;
         public DateTime Expirated { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
-        public DateTime Created { get; set; } = DateTime.Now;
+        public DateTime Created { get; set; } = DateTime.UtcNow;
 
         public virtual User User { get; set; } = null!;
     }

@@ -1,7 +1,8 @@
+// GameStore.WebClient/src/pages/CartPage.jsx
 import { Link, useNavigate } from "react-router-dom";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
-import { orderAPI } from "../services/api";
+import { orderAPI, userAPI } from "../services/api"; // ← THÊM userAPI
 import toast from "react-hot-toast";
 import {
   ShoppingCart,
@@ -37,8 +38,9 @@ export default function CartPage() {
         items: items.map((i) => ({ gameId: i.id, quantity: i.quantity })),
       });
 
-      // Cập nhật wallet ngay lập tức
-      updateUser({ wallet: user.wallet - orderTotal });
+      // Lấy số dư mới từ server (backend đã trừ tiền)
+      const walletRes = await userAPI.getWallet();
+      updateUser({ wallet: walletRes.data.balance });
 
       clearCart();
       toast.success("🎉 Purchase successful! Games added to your library.");
@@ -114,8 +116,10 @@ export default function CartPage() {
               background: "#16162a",
               borderRadius: 12,
               border: "1px solid #2a2a4a",
+              alignItems: "center",
             }}
           >
+            {/* Game Image */}
             <div
               style={{
                 width: 100,
@@ -126,6 +130,7 @@ export default function CartPage() {
                 alignItems: "center",
                 justifyContent: "center",
                 flexShrink: 0,
+                overflow: "hidden",
               }}
             >
               {item.coverImageUrl ? (
@@ -143,14 +148,18 @@ export default function CartPage() {
                 "🎮"
               )}
             </div>
+
+            {/* Game Info */}
             <div style={{ flex: 1 }}>
               <h3 style={{ fontSize: 16, fontWeight: 600 }}>{item.title}</h3>
               <span style={{ color: "#e94560", fontWeight: 700, fontSize: 15 }}>
                 ${(item.discountPrice || item.price)?.toFixed(2)}
               </span>
             </div>
+
+            {/* Quantity Controls + Remove Button */}
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              {/* <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <button
                   onClick={() => updateQuantity(item.id, item.quantity - 1)}
                   style={qtyBtnStyle}
@@ -168,7 +177,9 @@ export default function CartPage() {
                 >
                   <Plus size={14} />
                 </button>
-              </div>
+              </div> */}
+
+              {/* Remove Button */}
               <button
                 onClick={() => removeItem(item.id)}
                 style={{
@@ -186,6 +197,7 @@ export default function CartPage() {
         ))}
       </div>
 
+      {/* Checkout Section */}
       <div
         style={{
           marginTop: 24,

@@ -1,3 +1,4 @@
+// GameStore.Repository/EFCore/UserRepository.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,9 @@ public class UserRepository : Repository<User>, IUserRepository
 
     public async Task<User?> GetByUsernameAsync(string username) =>
         await _dbSet.FirstOrDefaultAsync(u => u.Username == username && u.IsActive);
+
+    public async Task<User?> GetByUsernameForAuthAsync(string username) =>
+    await _dbSet.FirstOrDefaultAsync(u => u.Username == username); // Không filter IsActive - dùng cho Authentication
 
     public async Task<User?> GetByEmailAsync(string email) =>
         await _dbSet.FirstOrDefaultAsync(u => u.Email == email && u.IsActive);

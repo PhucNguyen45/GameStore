@@ -1,3 +1,4 @@
+// GameStore.Entities/Games/Game.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace GameStore.Entities.Games
         public double Rating { get; set; }
         public int RatingCount { get; set; }
         public bool IsActive { get; set; } = true;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         // System Requirements
         public string MinimumOS { get; set; } = string.Empty;

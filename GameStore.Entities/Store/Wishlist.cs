@@ -1,3 +1,4 @@
+// GameStore.Entities/Store/Wishlist.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace GameStore.Entities.Store
         public int Id { get; set; }
         public int UserId { get; set; }
         public int GameId { get; set; }
-        public DateTime AddedAt { get; set; } = DateTime.Now;
+        public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
         public virtual User User { get; set; } = null!;
         public virtual Game Game { get; set; } = null!;
