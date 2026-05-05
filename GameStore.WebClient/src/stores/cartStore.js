@@ -5,6 +5,7 @@ const useCartStore = create((set, get) => ({
   items: [],
   addItem: (game) =>
     set((state) => {
+      // Nếu đã có trong cart thì không thêm nữa
       const exists = state.items.find((i) => i.id === game.id);
       return exists
         ? {
@@ -24,6 +25,7 @@ const useCartStore = create((set, get) => ({
           : state.items.map((i) => (i.id === id ? { ...i, quantity: qty } : i)),
     })),
   clearCart: () => set({ items: [] }),
+  // Tổng tiền = tổng giá từng game (mỗi game 1 lần)
   total: () =>
     get().items.reduce(
       (s, i) => s + (i.discountPrice || i.price) * i.quantity,

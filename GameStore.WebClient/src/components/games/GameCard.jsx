@@ -8,6 +8,8 @@ import { libraryAPI } from "../../services/api";
 
 export default function GameCard({ game }) {
   const addItem = useCartStore((s) => s.addItem);
+  // const hasItem = useCartStore((s) => s.hasItem);
+  // const inCart = hasItem(game.id); // Kiểm tra đã trong giỏ chưa
   const { user } = useAuth();
   const [owned, setOwned] = useState(false);
 
