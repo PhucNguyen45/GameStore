@@ -14,7 +14,7 @@ namespace GameStore.Entities.Store
         public int UserId { get; set; }
         public int GameId { get; set; }
         public int? GameKeyId { get; set; }
-        public DateTime AcquiredAt { get; set; } = DateTime.Now;
+        public DateTime AcquiredAt { get; set; } = DateTime.UtcNow;
         public DateTime? LastPlayedAt { get; set; }
         public int TotalPlayTime { get; set; } = 0; // Minutes
 

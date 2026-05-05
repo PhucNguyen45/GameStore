@@ -10,6 +10,7 @@ namespace GameStore.Repository.EFCore;
 public interface IUserRepository : IRepository<User>
 {
     Task<User?> GetByUsernameAsync(string username);
+    Task<User?> GetByUsernameForAuthAsync(string username);  // THÊM DÒNG NÀY
     Task<User?> GetByEmailAsync(string email);
     Task<(List<User> Users, int TotalCount)> SearchAsync(string? keyword, int page, int pageSize);
     Task<bool> IsUsernameExists(string username);

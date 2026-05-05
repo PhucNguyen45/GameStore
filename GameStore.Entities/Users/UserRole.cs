@@ -15,7 +15,7 @@ namespace GameStore.Entities.Users
         public int UserId { get; set; }
         public int RoleId { get; set; }
         public string CreatedBy { get; set; } = string.Empty;
-        public DateTime Created { get; set; } = DateTime.Now;
+        public DateTime Created { get; set; } = DateTime.UtcNow;
         public string ModifiedBy { get; set; } = string.Empty;
         public DateTime Modified { get; set; }
         public bool IsDeleted { get; set; }

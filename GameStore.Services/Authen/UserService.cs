@@ -23,20 +23,12 @@ public class UserService : IUserService
         if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             return null;
 
-        var user = await _userRepository.GetByUsernameAsync(username);
-        if (user == null) return null;
+        var user = await _userRepository.GetByUsernameForAuthAsync(username);
+        if (user == null || user.Salt == null || user.Salt.Length == 0) return null;
 
-        if (user.Salt != null && user.Salt.Length > 0)
-        {
-            if (!TokenHelper.IsValidPassword(password, user.Salt, user.Password))
-                return null;
-        }
-        else
-        {
-            if (user.Password != password) return null;
-        }
-
-        return user;
+        return TokenHelper.IsValidPassword(password, user.Salt, user.Password)
+        ? user
+        : null;
     }
 
     public async Task<User?> GetById(int id) => await _userRepository.GetByIdAsync(id);
@@ -47,7 +39,7 @@ public class UserService : IUserService
         byte[] salt;
         user.Password = TokenHelper.HashPassword(password, out salt);
         user.Salt = salt;
-        user.CreatedAt = DateTime.Now;
+        user.CreatedAt = DateTime.UtcNow;
         user.IsActive = true;
         await _userRepository.AddAsync(user);
         return user;

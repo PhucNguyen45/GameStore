@@ -28,7 +28,7 @@ public class GameService : IGameService
 
     public async Task<Game> Create(Game game)
     {
-        game.CreatedAt = DateTime.Now;
+        game.CreatedAt = DateTime.UtcNow;
         game.IsActive = true;
         await _gameRepository.AddAsync(game);
         return game;

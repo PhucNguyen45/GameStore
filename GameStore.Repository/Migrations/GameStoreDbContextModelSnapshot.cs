@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using GameStore.Entities.Users;
 
 #nullable disable
 
@@ -65,7 +64,7 @@ namespace GameStore.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AccessTokens");
+                    b.ToTable("AccessTokens", (string)null);
                 });
 
             modelBuilder.Entity("GameStore.Entities.Auth.Role", b =>
@@ -121,7 +120,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
 
                     b.HasData(
                         new
@@ -267,7 +266,7 @@ namespace GameStore.Repository.Migrations
 
                     b.HasIndex("Title");
 
-                    b.ToTable("Games", t =>
+                    b.ToTable("Games", null, t =>
                         {
                             t.HasCheckConstraint("CK_Game_DiscountPrice_NonNegative", "DiscountPrice >= 0");
 
@@ -562,6 +561,7 @@ namespace GameStore.Repository.Migrations
                             TrailerUrl = "https://www.youtube.com/watch?v=gKlJ4VCGmTE"
                         });
                 });
+
             modelBuilder.Entity("GameStore.Entities.Games.GameGenre", b =>
                 {
                     b.Property<int>("Id")
@@ -583,7 +583,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("GameId", "GenreId")
                         .IsUnique();
 
-                    b.ToTable("GameGenres");
+                    b.ToTable("GameGenres", (string)null);
 
                     b.HasData(
                         new
@@ -972,7 +972,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Genres");
+                    b.ToTable("Genres", (string)null);
 
                     b.HasData(
                         new
@@ -1311,7 +1311,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Settings");
+                    b.ToTable("Settings", (string)null);
                 });
 
             modelBuilder.Entity("GameStore.Entities.Store.Library", b =>
@@ -1351,7 +1351,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("Libraries");
+                    b.ToTable("Libraries", (string)null);
                 });
 
             modelBuilder.Entity("GameStore.Entities.Store.Order", b =>
@@ -1391,7 +1391,7 @@ namespace GameStore.Repository.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders", t =>
+                    b.ToTable("Orders", null, t =>
                         {
                             t.HasCheckConstraint("CK_Order_TotalAmount_NonNegative", "TotalAmount >= 0");
                         });
@@ -1423,7 +1423,7 @@ namespace GameStore.Repository.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderDetails", t =>
+                    b.ToTable("OrderDetails", null, t =>
                         {
                             t.HasCheckConstraint("CK_OrderDetail_Quantity_Positive", "Quantity > 0");
 
@@ -1477,7 +1477,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("Reviews", t =>
+                    b.ToTable("Reviews", null, t =>
                         {
                             t.HasCheckConstraint("CK_Review_Helpful_NonNegative", "HelpfulCount >= 0");
 
@@ -1511,7 +1511,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("UserId", "GameId")
                         .IsUnique();
 
-                    b.ToTable("Wishlists");
+                    b.ToTable("Wishlists", (string)null);
                 });
 
             modelBuilder.Entity("GameStore.Entities.Users.User", b =>
@@ -1571,7 +1571,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.ToTable("Users", t =>
+                    b.ToTable("Users", null, t =>
                         {
                             t.HasCheckConstraint("CK_User_Wallet_NonNegative", "Wallet >= 0");
                         });
@@ -1625,7 +1625,7 @@ namespace GameStore.Repository.Migrations
                     b.HasIndex("UserId", "RoleId")
                         .IsUnique();
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("UserRoles", (string)null);
                 });
 
             modelBuilder.Entity("GameStore.Entities.Auth.AccessToken", b =>

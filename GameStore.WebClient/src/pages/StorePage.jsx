@@ -1,8 +1,17 @@
 // GameStore.WebClient/src/pages/StorePage.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { gameAPI, genreAPI } from "../services/api";
 import GameCard from "../components/games/GameCard";
-import { Search, SlidersHorizontal, X } from "lucide-react";
+import {
+  Search,
+  SlidersHorizontal,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
+import { useAsyncError } from "react-router-dom";
 
 export default function StorePage() {
   const [games, setGames] = useState([]);
@@ -15,6 +24,7 @@ export default function StorePage() {
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
   const pageSize = 12;
 
   // Load genres 1 lần

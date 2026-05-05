@@ -109,7 +109,7 @@ public class OrderService : IOrderService
             UserId = userId,
             TotalAmount = totalAmount,
             Status = "Completed",
-            OrderDate = DateTime.Now,
+            OrderDate = DateTime.UtcNow,
             OrderDetails = orderDetails  // Gán trực tiếp
         };
 
