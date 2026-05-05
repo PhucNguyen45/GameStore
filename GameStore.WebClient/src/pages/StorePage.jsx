@@ -20,7 +20,8 @@ export default function StorePage() {
   const [search, setSearch] = useState("");
   const [genreId, setGenreId] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-  const [sort, setSort] = useState("sales");
+  const [sort, setSort] = useState("totalSales"); // sủa
+  const [desc, setDesc] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -37,7 +38,7 @@ export default function StorePage() {
     const fetchGames = async () => {
       setLoading(true);
       try {
-        const params = { page, pageSize, sortBy: sort };
+        const params = { page, pageSize, sortBy: sort, desc }; // thêm desc
         if (search) params.keyword = search;
         if (genreId) params.genreId = genreId;
         if (maxPrice) params.maxPrice = maxPrice;
@@ -53,7 +54,7 @@ export default function StorePage() {
 
     const timer = setTimeout(fetchGames, 300);
     return () => clearTimeout(timer);
-  }, [page, sort, genreId, search, maxPrice]);
+  }, [page, sort, desc, genreId, search, maxPrice]); // thêm desc
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -152,6 +153,8 @@ export default function StorePage() {
               </option>
             ))}
           </select>
+
+          {/* price input */}
           <input
             type="number"
             placeholder="Max Price $"
@@ -159,6 +162,8 @@ export default function StorePage() {
             onChange={(e) => setMaxPrice(e.target.value)}
             style={{ ...selectStyle, width: 120 }}
           />
+
+          {/* sort selection */}
           <select
             value={sort}
             onChange={(e) => {
@@ -167,11 +172,31 @@ export default function StorePage() {
             }}
             style={selectStyle}
           >
-            <option value="sales">Best Selling</option>
+            <option value="totalSales">Best Selling</option>
             <option value="rating">Highest Rated</option>
             <option value="price">Price: Low to High</option>
-            <option value="release">Newest</option>
+            <option value="releaseDate">Newest</option>
+            <option value="title">Name: A-Z</option>
           </select>
+
+          <button
+            onClick={() => {
+              setDesc(!desc);
+              handleFilterChange();
+            }}
+            style={{
+              ...selectStyle,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+            }}
+            title={desc ? "Descending" : "Ascending"}
+          >
+            {desc ? "↓ Desc" : "↑ Asc"}
+          </button>
+
+          {/* clear button */}
           <button
             onClick={() => {
               setGenreId("");
@@ -194,6 +219,8 @@ export default function StorePage() {
           >
             <X size={14} /> Clear All
           </button>
+
+          {/* apply all button */}
           <button
             onClick={handleFilterChange}
             className="btn-primary"

@@ -360,7 +360,12 @@ function GridView({ games }) {
                     color: "#666",
                   }}
                 >
-                  <Clock size={10} /> {game.playTime || 0}h
+                  {game.acquiredAt
+                    ? new Date(game.acquiredAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })
+                    : ""}
                 </span>
               </div>
               {/* Action Buttons */}
