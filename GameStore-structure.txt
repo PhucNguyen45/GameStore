@@ -8,7 +8,6 @@
 │   │   ├── LibraryController.cs
 │   │   └── OrdersController.cs
 │   ├── GameStore.APIService.csproj
-│   ├── GameStore.APIService.http
 │   ├── Program.cs
 │   ├── Properties
 │   │   └── launchSettings.json
@@ -16,7 +15,6 @@
 │   └── appsettings.json
 ├── GameStore.ApiGateway
 │   ├── GameStore.ApiGateway.csproj
-│   ├── GameStore.ApiGateway.http
 │   ├── Program.cs
 │   ├── Properties
 │   │   └── launchSettings.json
@@ -28,7 +26,6 @@
 │   │   ├── AuthController.cs
 │   │   └── UserController.cs
 │   ├── GameStore.AuthService.csproj
-│   ├── GameStore.AuthService.http
 │   ├── Program.cs
 │   ├── Properties
 │   │   └── launchSettings.json
@@ -149,4 +146,4 @@
 ├── kill-all.sh
 └── run-all.sh
 
-40 directories, 110 files
+40 directories, 107 files
