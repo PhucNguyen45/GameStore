@@ -2,6 +2,7 @@
 import { Routes, Route } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./contexts/AuthContext";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 import MainLayout from "./components/layout/MainLayout";
 import HomePage from "./pages/HomePage";
 import StorePage from "./pages/StorePage";
@@ -30,18 +31,20 @@ export default function App() {
         }}
       />
       <AuthProvider>
-        <Routes>
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/store" element={<StorePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/library" element={<LibraryPage />} />
-            <Route path="/admin" element={<AdminPage />} />
-            <Route path="/game/:id" element={<GameDetailPage />} />
-          </Route>
-        </Routes>
+        <ErrorBoundary>
+          <Routes>
+            <Route element={<MainLayout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/store" element={<StorePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path="/library" element={<LibraryPage />} />
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/game/:id" element={<GameDetailPage />} />
+            </Route>
+          </Routes>
+        </ErrorBoundary>
       </AuthProvider>
     </>
   );
