@@ -144,6 +144,11 @@
 ├── GameStore.slnx
 ├── README.md
 ├── kill-all.sh
+├── logs
+│   ├── GameStore.APIService_20260506.log
+│   ├── GameStore.ApiGateway_20260506.log
+│   ├── GameStore.AuthService_20260506.log
+│   └── webclient_20260506.log
 └── run-all.sh
 
-40 directories, 107 files
+41 directories, 111 files
