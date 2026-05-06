@@ -167,7 +167,14 @@ export default function StorePage() {
           <select
             value={sort}
             onChange={(e) => {
-              setSort(e.target.value);
+              const newSort = e.target.value;
+              setSort(newSort);
+              // Tự động đặt desc phù hợp
+              if (newSort === "price" || newSort === "title") {
+                setDesc(false);
+              } else {
+                setDesc(true); // sales, rating, releaseDate mặc định giảm dần
+              }
               handleFilterChange();
             }}
             style={selectStyle}

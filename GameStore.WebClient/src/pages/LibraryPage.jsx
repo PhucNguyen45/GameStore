@@ -40,12 +40,11 @@ export default function LibraryPage() {
 
   const filteredGames = games
     .filter((g) => {
-      if (filter === "installed") return g.installed;
       if (filter === "recent") {
         const d = new Date(g.acquiredAt);
         return d > new Date(Date.now() - 30 * 86400000);
       }
-      return true;
+      return true; // "all" hoặc bất kỳ filter nào khác đều hiển thị tất cả
     })
     .filter((g) => g.title?.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
@@ -135,7 +134,6 @@ export default function LibraryPage() {
             <div style={{ display: "flex", gap: 4 }}>
               {[
                 { id: "all", label: "All" },
-                { id: "installed", label: "Installed" },
                 { id: "recent", label: "Recent" },
               ].map((f) => (
                 <button

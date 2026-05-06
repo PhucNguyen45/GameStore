@@ -1,7 +1,7 @@
 // GameStore.WebClient/src/pages/GameDetailPage.jsx
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { gameAPI, libraryAPI } from "../services/api";
+import { gameAPI, libraryAPI, orderAPI } from "../services/api";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";

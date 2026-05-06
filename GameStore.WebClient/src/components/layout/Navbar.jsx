@@ -1,11 +1,11 @@
 // GameStore.WebClient/src/components/layout/Navbar.jsx
 
-import { Link, useLocation, useNavigate } from "react-router-dom"; // thêm useNavigate
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import { useState, useEffect, useRef } from "react"; // thêm useEffect, useRef
+import { useState, useEffect, useRef } from "react";
 import WalletModal from "../wallet/WalletModal";
 import useCartStore from "../../stores/cartStore";
-import { gameAPI } from "../../services/api"; // THÊM
+import { gameAPI } from "../../services/api";
 import {
   ShoppingCart,
   Gamepad2,
@@ -13,7 +13,9 @@ import {
   LogOut,
   User,
   Search,
-  X, // THÊM
+  X,
+  Wallet,
+  Shield,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -22,7 +24,7 @@ export default function Navbar() {
   const { count } = useCartStore();
   const [showWallet, setShowWallet] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate(); // THÊM
+  const navigate = useNavigate();
 
   // SEARCH STATE
   const [searchOpen, setSearchOpen] = useState(false);
@@ -193,7 +195,7 @@ export default function Navbar() {
                 </form>
               )}
 
-              {/* 🆕 SUGGESTIONS DROPDOWN */}
+              {/* SUGGESTIONS DROPDOWN */}
               {searchOpen && suggestions.length > 0 && (
                 <div
                   style={{
@@ -287,7 +289,7 @@ export default function Navbar() {
               )}
             </div>
 
-            {/* Cart - GIỮ NGUYÊN */}
+            {/* Cart */}
             <Link
               to="/cart"
               style={{
@@ -322,8 +324,102 @@ export default function Navbar() {
               )}
             </Link>
 
-            {/* PHẦN CÒN LẠI GIỮ NGUYÊN */}
-            {/* ... user section, wallet, admin button, logout ... */}
+            {/* ========== USER SECTION (ĐÃ KHÔI PHỤC) ========== */}
+            {user ? (
+              <>
+                {/* Wallet Button */}
+                <button
+                  onClick={() => setShowWallet(true)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 5,
+                    background: "none",
+                    border: "none",
+                    color: "#4fc3f7",
+                    cursor: "pointer",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    padding: "4px 8px",
+                    borderRadius: 4,
+                  }}
+                >
+                  <Wallet size={14} />${user.wallet?.toFixed(2) || "0.00"}
+                </button>
+
+                {/* Admin Button */}
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 5,
+                      color: "#ffd700",
+                      fontSize: 12,
+                      fontWeight: 600,
+                      background: "rgba(255,215,0,0.1)",
+                      padding: "4px 10px",
+                      borderRadius: 4,
+                    }}
+                  >
+                    <Shield size={14} /> ADMIN
+                  </Link>
+                )}
+
+                {/* User Info */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    color: "#ccc",
+                    fontSize: 12,
+                    borderLeft: "1px solid #333",
+                    paddingLeft: 16,
+                  }}
+                >
+                  <User size={16} />
+                  <span style={{ fontWeight: 500 }}>
+                    {user.displayName || user.username}
+                  </span>
+
+                  {/* Logout */}
+                  <button
+                    onClick={logout}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      background: "none",
+                      border: "none",
+                      color: "#999",
+                      cursor: "pointer",
+                      fontSize: 12,
+                    }}
+                  >
+                    <LogOut size={14} />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <Link
+                to="/login"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 5,
+                  color: "#fff",
+                  fontSize: 13,
+                  fontWeight: 600,
+                  background: "var(--accent)",
+                  padding: "6px 14px",
+                  borderRadius: 4,
+                }}
+              >
+                <User size={14} /> SIGN IN
+              </Link>
+            )}
           </div>
         </div>
       </nav>
