@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.Services;
 using System.Security.Claims;
+using GameStore.DTOs.Orders;
 
 namespace GameStore.APIService.Controllers;
 
@@ -77,7 +78,3 @@ public class OrdersController : ControllerBase
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
     }
 }
-
-public class CreateOrderDto { public List<OrderItemDto> Items { get; set; } = new(); }
-public class OrderItemDto { public int GameId { get; set; } public int Quantity { get; set; } = 1; }
-public class UpdateStatusDto { public string Status { get; set; } = ""; }

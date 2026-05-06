@@ -5,6 +5,7 @@ using GameStore.Common.Auth;
 using GameStore.Services.Authen;
 using GameStore.Entities.Users;
 using GameStore.Repository;
+using GameStore.DTOs.Auth;
 
 namespace GameStore.AuthService.Controllers;
 
@@ -74,13 +75,4 @@ public class AuthController : ControllerBase
         var createdUser = await _userService.Register(user, request.Password);
         return Ok(new { message = "Registration successful", userId = createdUser.Id });
     }
-}
-
-public class LoginRequest { public string Username { get; set; } = ""; public string Password { get; set; } = ""; }
-public class RegisterRequest
-{
-    public string Username { get; set; } = ""; public string Password { get; set; } = "";
-    public string? DisplayName { get; set; }
-    public string? Email { get; set; }
-    public string? Phone { get; set; }
 }

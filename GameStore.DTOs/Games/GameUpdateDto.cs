@@ -14,6 +14,5 @@ namespace GameStore.DTOs.Games
         public decimal? DiscountPrice { get; set; }
         public string? TrailerUrl { get; set; }
         public string? CoverImageUrl { get; set; }
-
     }
 }

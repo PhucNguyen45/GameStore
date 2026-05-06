@@ -64,14 +64,11 @@ public class OrderService : IOrderService
         var orderDetails = new List<OrderDetail>();
         var user = await _userRepository.GetByIdAsync(userId);
 
-        // KIỂM TRA GAME ĐÃ MUA CHƯA
+        // KIỂM TRA GAME ĐÃ MUA CHƯA (dùng Library)
         foreach (var (gameId, _) in items)
         {
-            var alreadyOwned = await _context.OrderDetails
-                .AnyAsync(od => od.Order.UserId == userId
-                            && od.Order.Status == "Completed"
-                            && od.GameId == gameId);
-
+            bool alreadyOwned = await _context.Libraries
+                .AnyAsync(l => l.UserId == userId && l.GameId == gameId);
             if (alreadyOwned)
             {
                 var game = await _gameRepository.GetByIdAsync(gameId);
@@ -114,6 +111,22 @@ public class OrderService : IOrderService
         };
 
         _context.Orders.Add(order);
+
+        // Thêm vào library cho từng game
+        foreach (var (gameId, _) in items)
+        {
+            bool alreadyInLibrary = await _context.Libraries
+                .AnyAsync(l => l.UserId == userId && l.GameId == gameId);
+            if (!alreadyInLibrary)
+            {
+                _context.Libraries.Add(new Library
+                {
+                    UserId = userId,
+                    GameId = gameId,
+                    AcquiredAt = DateTime.UtcNow
+                });
+            }
+        }
 
         // 4. Save tất cả trong 1 lần
         await _context.SaveChangesAsync();

@@ -8,7 +8,8 @@ namespace GameStore.DTOs.Games
 {
     public class GameCreateDto
     {
-        public string Title { get; set; } = ""; public string? Description { get; set; }
+        public string Title { get; set; } = "";
+        public string? Description { get; set; }
         public decimal Price { get; set; }
         public decimal? DiscountPrice { get; set; }
         public string? Developer { get; set; }

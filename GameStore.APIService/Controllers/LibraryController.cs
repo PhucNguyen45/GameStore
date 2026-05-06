@@ -28,19 +28,18 @@ public class LibraryController : ControllerBase
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var library = await _context.Orders
-            .Where(o => o.UserId == userId && o.Status == "Completed")
-            .SelectMany(o => o.OrderDetails)
-            .Select(od => new
+        var library = await _context.Libraries
+            .Where(l => l.UserId == userId)
+            .Include(l => l.Game)
+            .Select(l => new
             {
-                od.Game.Id,
-                od.Game.Title,
-                od.Game.CoverImageUrl,
-                od.Game.Developer,
-                od.Game.Rating,
-                AcquiredAt = od.Order.OrderDate
+                l.Game.Id,
+                l.Game.Title,
+                l.Game.CoverImageUrl,
+                l.Game.Developer,
+                l.Game.Rating,
+                AcquiredAt = l.AcquiredAt
             })
-            .Distinct()
             .ToListAsync();
 
         return Ok(library);
@@ -51,10 +50,8 @@ public class LibraryController : ControllerBase
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
-        var owned = await _context.OrderDetails
-            .AnyAsync(od => od.Order.UserId == userId
-                        && od.Order.Status == "Completed"
-                        && od.GameId == gameId);
+        var owned = await _context.Libraries
+            .AnyAsync(l => l.UserId == userId && l.GameId == gameId);
 
         return Ok(new { owned });
     }

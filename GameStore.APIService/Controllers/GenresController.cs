@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.Entities.Games;
 using GameStore.Services;
+using GameStore.DTOs.Genres;
 
 namespace GameStore.APIService.Controllers;
 
@@ -55,5 +56,3 @@ public class GenresController : ControllerBase
         return Ok(new { message = "Genre deleted" });
     }
 }
-
-public class GenreDto { public string Name { get; set; } = ""; public string? Description { get; set; } public string? IconUrl { get; set; } }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.Services.Authen;
+using GameStore.DTOs.Users;
 
 namespace GameStore.AuthService.Controllers;
 
@@ -80,13 +81,3 @@ public class UserController : ControllerBase
         return Ok(new { message = "Wallet topped up", balance });
     }
 }
-
-public class UpdateUserRequest
-{
-    public string? DisplayName { get; set; }
-    public string? Email { get; set; }
-    public string? Phone { get; set; }
-    public string? AvatarUrl { get; set; }
-    public string? Password { get; set; }
-}
-public class TopUpRequest { public decimal Amount { get; set; } }
