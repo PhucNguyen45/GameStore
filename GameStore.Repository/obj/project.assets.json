@@ -3720,36 +3720,46 @@
     ]
   },
   "packageFolders": {
-    "/home/razer_admin/.nuget/packages/": {}
+    "C:\\Users\\ACER\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Repository/GameStore.Repository.csproj",
+      "projectUniqueName": "E:\\Web\\GameStore\\GameStore\\GameStore.Repository\\GameStore.Repository.csproj",
       "projectName": "GameStore.Repository",
-      "projectPath": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Repository/GameStore.Repository.csproj",
-      "packagesPath": "/home/razer_admin/.nuget/packages/",
-      "outputPath": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Repository/obj/",
+      "projectPath": "E:\\Web\\GameStore\\GameStore\\GameStore.Repository\\GameStore.Repository.csproj",
+      "packagesPath": "C:\\Users\\ACER\\.nuget\\packages\\",
+      "outputPath": "E:\\Web\\GameStore\\GameStore\\GameStore.Repository\\obj\\",
       "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
       "configFilePaths": [
-        "/home/razer_admin/.nuget/NuGet/NuGet.Config"
+        "C:\\Users\\ACER\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\DevExpress 19.2.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "net10.0"
       ],
       "sources": {
-        "/usr/lib/dotnet/library-packs": {},
-        "https://api.nuget.org/v3/index.json": {}
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "C:\\Program Files\\dotnet\\library-packs": {},
+        "D:\\HỌC\\cntt\\WinForm\\Components\\System\\Components\\Packages": {},
+        "https://api.nuget.org/v3/index.json": {},
+        "https://nuget.devexpress.com/ZkxU5rFT35CwhhJ6al5Cqz8GdXch4nOgveHF6cIo2rJUoC5gk8/api/v3/index.json": {}
       },
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
           "projectReferences": {
-            "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Common/GameStore.Common.csproj": {
-              "projectPath": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Common/GameStore.Common.csproj"
+            "E:\\Web\\GameStore\\GameStore\\GameStore.Common\\GameStore.Common.csproj": {
+              "projectPath": "E:\\Web\\GameStore\\GameStore\\GameStore.Common\\GameStore.Common.csproj"
             },
-            "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Entities/GameStore.Entities.csproj": {
-              "projectPath": "/home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore/GameStore.Entities/GameStore.Entities.csproj"
+            "E:\\Web\\GameStore\\GameStore\\GameStore.Entities\\GameStore.Entities.csproj": {
+              "projectPath": "E:\\Web\\GameStore\\GameStore\\GameStore.Entities\\GameStore.Entities.csproj"
             }
           }
         }
@@ -3764,7 +3774,7 @@
         "auditLevel": "low",
         "auditMode": "all"
       },
-      "SdkAnalysisLevel": "10.0.100"
+      "SdkAnalysisLevel": "10.0.200"
     },
     "frameworks": {
       "net10.0": {
@@ -3803,7 +3813,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/10.0.107/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.202/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",

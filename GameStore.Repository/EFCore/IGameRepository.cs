@@ -9,7 +9,7 @@ namespace GameStore.Repository.EFCore;
 public interface IGameRepository : IRepository<Game>
 {
     Task<(List<Game> Games, int TotalCount)> SearchAsync(
-        string? keyword, int? genreId, decimal? maxPrice,
+        string? keyword, int? genreId, decimal? minPrice, decimal? maxPrice,
         string? sortBy, bool descending, int page, int pageSize);
     Task<List<Game>> GetFeaturedAsync(int count = 10);
     Task<List<Game>> GetByGenreAsync(int genreId);

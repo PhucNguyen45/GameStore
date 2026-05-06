@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using GameStore.Common;
 using GameStore.Entities.Audit;
 using GameStore.Entities.Users;
+using GameStore.Entities.Store;
 
 namespace GameStore.Entities.Auth
 {
@@ -21,5 +22,6 @@ namespace GameStore.Entities.Auth
         public bool IsActive { get; set; } = true;
 
         public virtual ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
+        public virtual ICollection<RolePermission> RolePermissions { get; set; } = new HashSet<RolePermission>();
     }
 }

@@ -12,7 +12,7 @@ public class GameRepository : Repository<Game>, IGameRepository
     public GameRepository(GameStoreDbContext context) : base(context) { }
 
     public async Task<(List<Game> Games, int TotalCount)> SearchAsync(
-        string? keyword, int? genreId, decimal? maxPrice,
+        string? keyword, int? genreId, decimal? minPrice, decimal? maxPrice,
         string? sortBy, bool descending, int page, int pageSize)
     {
         var query = _dbSet
@@ -27,6 +27,8 @@ public class GameRepository : Repository<Game>, IGameRepository
         }
         if (genreId.HasValue)
             query = query.Where(g => g.GameGenres.Any(gg => gg.GenreId == genreId));
+        if (minPrice.HasValue)
+            query = query.Where(g => (g.DiscountPrice ?? g.Price) >= minPrice);
         if (maxPrice.HasValue)
             query = query.Where(g => (g.DiscountPrice ?? g.Price) <= maxPrice);
 
@@ -34,15 +36,16 @@ public class GameRepository : Repository<Game>, IGameRepository
 
         query = sortBy?.ToLower() switch
         {
-            "price" => descending ? query.OrderByDescending(g => g.DiscountPrice ?? g.Price)
-                                  : query.OrderBy(g => g.DiscountPrice ?? g.Price),
-            "rating" => descending ? query.OrderByDescending(g => g.Rating)
-                                   : query.OrderBy(g => g.Rating),
-            "sales" => descending ? query.OrderByDescending(g => g.TotalSales)
-                                  : query.OrderBy(g => g.TotalSales),
-            "release" => descending ? query.OrderByDescending(g => g.ReleaseDate)
-                                    : query.OrderBy(g => g.ReleaseDate),
-            _ => query.OrderByDescending(g => g.TotalSales)
+            "id" => descending ? query.OrderByDescending(g => g.Id) : query.OrderBy(g => g.Id),
+            "title" => descending ? query.OrderByDescending(g => g.Title) : query.OrderBy(g => g.Title),
+            "developer" => descending ? query.OrderByDescending(g => g.Developer) : query.OrderBy(g => g.Developer),
+            "price" => descending ? query.OrderByDescending(g => g.DiscountPrice ?? g.Price) : query.OrderBy(g => g.DiscountPrice ?? g.Price),
+            "rating" => descending ? query.OrderByDescending(g => g.Rating) : query.OrderBy(g => g.Rating),
+            "totalsales" => descending ? query.OrderByDescending(g => g.TotalSales) : query.OrderBy(g => g.TotalSales),
+            "sales" => descending ? query.OrderByDescending(g => g.TotalSales) : query.OrderBy(g => g.TotalSales),
+            "release" => descending ? query.OrderByDescending(g => g.ReleaseDate) : query.OrderBy(g => g.ReleaseDate),
+            "createdat" => descending ? query.OrderByDescending(g => g.CreatedAt) : query.OrderBy(g => g.CreatedAt),
+            _ => descending ? query.OrderByDescending(g => g.CreatedAt) : query.OrderBy(g => g.CreatedAt)
         };
 
         var games = await query

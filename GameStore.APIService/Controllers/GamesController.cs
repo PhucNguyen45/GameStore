@@ -19,10 +19,10 @@ public class GamesController : ControllerBase
 
     [HttpGet]
     public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId,
-        [FromQuery] decimal? maxPrice, [FromQuery] string? sortBy, [FromQuery] bool desc = false,
+        [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string? sortBy, [FromQuery] bool desc = false,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 12)
     {
-        var (games, totalCount) = await _gameService.Search(keyword, genreId, maxPrice, sortBy, desc, page, pageSize);
+        var (games, totalCount) = await _gameService.Search(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
         return Ok(new { data = games, totalCount, page, pageSize, totalPages = (int)Math.Ceiling((double)totalCount / pageSize) });
     }
 
@@ -79,9 +79,20 @@ public class GamesController : ControllerBase
     {
         var game = await _gameService.GetById(id);
         if (game == null) return NotFound(new { message = "Game not found" });
-        game.Title = dto.Title ?? game.Title; game.Description = dto.Description ?? game.Description;
-        game.Price = dto.Price ?? game.Price; game.DiscountPrice = dto.DiscountPrice ?? game.DiscountPrice;
-        game.CoverImageUrl = dto.CoverImageUrl ?? game.CoverImageUrl; game.TrailerUrl = dto.TrailerUrl ?? game.TrailerUrl;
+        game.Title = dto.Title ?? game.Title;
+        game.Description = dto.Description ?? game.Description;
+        game.Price = dto.Price ?? game.Price;
+        game.DiscountPrice = dto.DiscountPrice ?? game.DiscountPrice;
+        game.Developer = dto.Developer ?? game.Developer;
+        game.Publisher = dto.Publisher ?? game.Publisher;
+        game.ReleaseDate = dto.ReleaseDate ?? game.ReleaseDate;
+        game.CoverImageUrl = dto.CoverImageUrl ?? game.CoverImageUrl;
+        game.TrailerUrl = dto.TrailerUrl ?? game.TrailerUrl;
+        game.MinimumOS = dto.MinimumOS ?? game.MinimumOS;
+        game.MinimumProcessor = dto.MinimumProcessor ?? game.MinimumProcessor;
+        game.MinimumMemory = dto.MinimumMemory ?? game.MinimumMemory;
+        game.MinimumGraphics = dto.MinimumGraphics ?? game.MinimumGraphics;
+        game.MinimumStorage = dto.MinimumStorage ?? game.MinimumStorage;
         await _gameService.Update(game);
         return Ok(game);
     }
@@ -118,6 +129,14 @@ public class GameUpdateDto
     public string? Description { get; set; }
     public decimal? Price { get; set; }
     public decimal? DiscountPrice { get; set; }
+    public string? Developer { get; set; }
+    public string? Publisher { get; set; }
+    public DateTime? ReleaseDate { get; set; }
     public string? TrailerUrl { get; set; }
     public string? CoverImageUrl { get; set; }
+    public string? MinimumOS { get; set; }
+    public string? MinimumProcessor { get; set; }
+    public string? MinimumMemory { get; set; }
+    public string? MinimumGraphics { get; set; }
+    public string? MinimumStorage { get; set; }
 }

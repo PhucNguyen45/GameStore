@@ -23,7 +23,9 @@ public class GameStoreDbContext : DbContext
     public DbSet<Game> Games => Set<Game>();
     public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<GameGenre> GameGenres => Set<GameGenre>();
-    // public DbSet<GameKey> GameKeys => Set<GameKey>();
+    public DbSet<GameKey> GameKeys => Set<GameKey>();
+    public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<Library> Libraries => Set<Library>();
     public DbSet<Wishlist> Wishlists => Set<Wishlist>();
     public DbSet<Review> Reviews => Set<Review>();
@@ -150,24 +152,54 @@ public class GameStoreDbContext : DbContext
         });
 
         // ──────────────── GAME KEY ────────────────
-        // modelBuilder.Entity<GameKey>(entity =>
-        // {
-        //     entity.HasKey(e => e.Id);
-        //     entity.HasIndex(e => e.KeyCode)
-        //           .IsUnique();
-        //     entity.HasOne(e => e.Game)
-        //           .WithMany(g => g.GameKeys)
-        //           .HasForeignKey(e => e.GameId)
-        //           .OnDelete(DeleteBehavior.Cascade);
-        //     entity.HasOne(e => e.OrderDetail)
-        //           .WithMany(o => o.GameKeys)
-        //           .HasForeignKey(e => e.OrderDetailId)
-        //           .OnDelete(DeleteBehavior.Cascade);
-        //     entity.Property(e => e.IsUsed).HasDefaultValue(false);
+        modelBuilder.Entity<GameKey>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.KeyCode)
+                  .IsUnique();
+            entity.HasOne(e => e.Game)
+                  .WithMany()
+                  .HasForeignKey(e => e.GameId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.OrderDetail)
+                  .WithMany()
+                  .HasForeignKey(e => e.OrderDetailId)
+                  .OnDelete(DeleteBehavior.SetNull);
+            entity.Property(e => e.IsUsed).HasDefaultValue(false);
 
-        //     // Index for finding unused keys
-        //     entity.HasIndex(e => new { e.GameId, e.IsUsed });
-        // });
+            // Index for finding unused keys
+            entity.HasIndex(e => new { e.GameId, e.IsUsed });
+        });
+
+        // ──────────────── PAYMENT ────────────────
+        modelBuilder.Entity<Payment>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Amount)
+                  .HasColumnType("decimal(18,2)");
+            entity.HasOne(e => e.Order)
+                  .WithMany()
+                  .HasForeignKey(e => e.OrderId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(e => e.Status)
+                  .HasDefaultValue("Completed");
+            entity.Property(e => e.PaymentMethod)
+                  .HasDefaultValue("Wallet");
+            entity.HasIndex(e => e.OrderId);
+            entity.HasIndex(e => e.Status);
+        });
+
+        // ──────────────── ROLE PERMISSION ────────────────
+        modelBuilder.Entity<RolePermission>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasOne(e => e.Role)
+                  .WithMany(r => r.RolePermissions)
+                  .HasForeignKey(e => e.RoleId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => new { e.RoleId, e.Permission })
+                  .IsUnique();
+        });
 
         // ──────────────── LIBRARY ────────────────
         modelBuilder.Entity<Library>(entity =>

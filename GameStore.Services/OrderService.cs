@@ -28,6 +28,36 @@ public class OrderService : IOrderService
     public async Task<List<Order>> GetByUser(int userId) => await _orderRepository.GetByUserAsync(userId);
     public async Task<List<Order>> GetAll(int page, int pageSize) => (await _orderRepository.GetAllAsync()).ToList();
 
+    public async Task<(List<Order> Items, int TotalCount)> SearchOrders(int page, int pageSize, string? keyword, DateTime? fromDate, DateTime? toDate, string? status)
+    {
+        var query = _context.Orders.Include(o => o.User).AsQueryable();
+
+        if (!string.IsNullOrEmpty(keyword))
+        {
+            var isNumeric = int.TryParse(keyword, out int orderId);
+            query = query.Where(o => o.User.Username.Contains(keyword) || (isNumeric && o.Id == orderId));
+        }
+        if (fromDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate >= fromDate.Value);
+        }
+        if (toDate.HasValue)
+        {
+            query = query.Where(o => o.OrderDate <= toDate.Value);
+        }
+        if (!string.IsNullOrEmpty(status))
+        {
+            query = query.Where(o => o.Status == status);
+        }
+
+        int totalCount = await query.CountAsync();
+        var items = await query.OrderByDescending(o => o.OrderDate)
+                               .Skip((page - 1) * pageSize)
+                               .Take(pageSize)
+                               .ToListAsync();
+        return (items, totalCount);
+    }
+
     public async Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items)
     {
         decimal totalAmount = 0;
