@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { gameAPI, genreAPI } from "../services/api";
 import GameCard from "../components/games/GameCard";
-import FeartureSlider from "../components/games/FeaturedSlider";
+import FeaturedSlider from "../components/games/FeaturedSlider";
 import { Gamepad2, TrendingUp, Star, ArrowRight } from "lucide-react";
 
 export default function HomePage() {
