@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/pages/CartPage.jsx
 import { Link, useNavigate } from "react-router-dom";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";

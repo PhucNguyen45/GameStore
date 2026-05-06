@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/admin/DashboardTab.jsx
 import { useMemo } from "react";
 import { Gamepad2, Users, ShoppingBag, DollarSign, TrendingUp } from "lucide-react";
 

@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/admin/AdminSidebar.jsx
 import { Gamepad2, Users, Package, LayoutDashboard, Tag, Key, CreditCard, Shield } from "lucide-react";
 
 const tabs = [

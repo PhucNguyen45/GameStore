@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/wallet/WalletModal.jsx
 import { useState } from "react";
 import { X, Wallet, DollarSign, CreditCard, Smartphone } from "lucide-react";
 import { userAPI } from "../../services/api";

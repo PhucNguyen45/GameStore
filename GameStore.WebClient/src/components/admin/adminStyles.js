@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/admin/adminStyles.js
 // Shared styles and sort utilities for admin components
 
 export const thStyle = {

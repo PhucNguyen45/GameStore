@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/admin/CategoriesTab.jsx
 import { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, X, Tag } from "lucide-react";
 import SortableHeader from "./SortableHeader";

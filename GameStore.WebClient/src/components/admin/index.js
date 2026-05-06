@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/admin/index.js
 export { default as AdminSidebar, tabs } from "./AdminSidebar";
 export { default as DashboardTab } from "./DashboardTab";
 export { default as GamesTab } from "./GamesTab";
