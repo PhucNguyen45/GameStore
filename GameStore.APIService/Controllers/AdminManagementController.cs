@@ -1,3 +1,4 @@
+// GameStore.APIService/Controllers/AdminManagementController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,7 +47,11 @@ public class AdminManagementController : ControllerBase
             .Take(pageSize)
             .Select(g => new
             {
-                g.Id, g.Name, g.Description, g.IconUrl, g.IsActive,
+                g.Id,
+                g.Name,
+                g.Description,
+                g.IconUrl,
+                g.IsActive,
                 gameCount = _context.GameGenres.Count(gg => gg.GenreId == g.Id)
             })
             .ToListAsync();
@@ -131,9 +136,15 @@ public class AdminManagementController : ControllerBase
             .Take(pageSize)
             .Select(k => new
             {
-                k.Id, k.GameId, gameTitle = k.Game.Title,
-                k.KeyCode, k.IsUsed, k.OrderDetailId,
-                k.UsedAt, k.CreatedAt, k.ExpiresAt
+                k.Id,
+                k.GameId,
+                gameTitle = k.Game.Title,
+                k.KeyCode,
+                k.IsUsed,
+                k.OrderDetailId,
+                k.UsedAt,
+                k.CreatedAt,
+                k.ExpiresAt
             })
             .ToListAsync();
 
@@ -240,8 +251,15 @@ public class AdminManagementController : ControllerBase
             .Take(pageSize)
             .Select(p => new
             {
-                p.Id, p.OrderId, p.Amount, p.PaymentMethod, p.Status,
-                p.TransactionId, p.Note, p.PaidAt, p.CreatedAt,
+                p.Id,
+                p.OrderId,
+                p.Amount,
+                p.PaymentMethod,
+                p.Status,
+                p.TransactionId,
+                p.Note,
+                p.PaidAt,
+                p.CreatedAt,
                 username = p.Order.User.Username,
                 userId = p.Order.UserId
             })
@@ -269,12 +287,20 @@ public class AdminManagementController : ControllerBase
         {
             order = new
             {
-                order.Id, order.UserId, username = order.User.Username,
-                order.TotalAmount, order.Status, order.PaymentMethod, order.OrderDate,
+                order.Id,
+                order.UserId,
+                username = order.User.Username,
+                order.TotalAmount,
+                order.Status,
+                order.PaymentMethod,
+                order.OrderDate,
                 items = order.OrderDetails.Select(od => new
                 {
-                    od.Id, od.GameId, gameTitle = od.Game.Title,
-                    od.Quantity, od.UnitPrice
+                    od.Id,
+                    od.GameId,
+                    gameTitle = od.Game.Title,
+                    od.Quantity,
+                    od.UnitPrice
                 })
             },
             payments
@@ -321,7 +347,11 @@ public class AdminManagementController : ControllerBase
             .Take(pageSize)
             .Select(r => new
             {
-                r.Id, r.Name, r.Description, r.IsActive, r.Created,
+                r.Id,
+                r.Name,
+                r.Description,
+                r.IsActive,
+                r.Created,
                 userCount = _context.UserRoles.Count(ur => ur.RoleId == r.Id && !ur.IsDeleted),
                 permissions = r.RolePermissions.Select(rp => rp.Permission).ToList()
             })
@@ -441,7 +471,12 @@ public class AdminManagementController : ControllerBase
             .Take(pageSize)
             .Select(u => new
             {
-                u.Id, u.Username, u.DisplayName, u.Email, u.IsActive, u.CreatedAt,
+                u.Id,
+                u.Username,
+                u.DisplayName,
+                u.Email,
+                u.IsActive,
+                u.CreatedAt,
                 roles = u.UserRoles.Where(ur => !ur.IsDeleted).Select(ur => new
                 {
                     ur.RoleId,

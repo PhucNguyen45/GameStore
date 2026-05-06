@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- GameStore.Services/GameStore.Services.csproj -->
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\GameStore.Repository\GameStore.Repository.csproj" />

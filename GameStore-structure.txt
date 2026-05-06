@@ -1,13 +1,15 @@
 .
 ├── GameStore structure.txt
+├── GameStore-structure.txt
 ├── GameStore.APIService
 │   ├── Controllers
+│   │   ├── AdminController.cs
+│   │   ├── AdminManagementController.cs
 │   │   ├── GamesController.cs
 │   │   ├── GenresController.cs
 │   │   ├── LibraryController.cs
 │   │   └── OrdersController.cs
 │   ├── GameStore.APIService.csproj
-│   ├── GameStore.APIService.http
 │   ├── Program.cs
 │   ├── Properties
 │   │   └── launchSettings.json
@@ -15,7 +17,6 @@
 │   └── appsettings.json
 ├── GameStore.ApiGateway
 │   ├── GameStore.ApiGateway.csproj
-│   ├── GameStore.ApiGateway.http
 │   ├── Program.cs
 │   ├── Properties
 │   │   └── launchSettings.json
@@ -27,7 +28,6 @@
 │   │   ├── AuthController.cs
 │   │   └── UserController.cs
 │   ├── GameStore.AuthService.csproj
-│   ├── GameStore.AuthService.http
 │   ├── Program.cs
 │   ├── Properties
 │   │   └── launchSettings.json
@@ -56,7 +56,9 @@
 │   │   ├── Library.cs
 │   │   ├── Order.cs
 │   │   ├── OrderDetail.cs
+│   │   ├── Payment.cs
 │   │   ├── Review.cs
+│   │   ├── RolePermission.cs
 │   │   └── Wishlist.cs
 │   └── Users
 │       ├── User.cs
@@ -77,8 +79,8 @@
 │   ├── GameStoreDbContext.cs
 │   ├── GameStoreDbContextFactory.cs
 │   └── Migrations
-│       ├── 20260502084543_InitialCreate.Designer.cs
-│       ├── 20260502084543_InitialCreate.cs
+│       ├── 20260503151116_InitialCreate.Designer.cs
+│       ├── 20260503151116_InitialCreate.cs
 │       └── GameStoreDbContextModelSnapshot.cs
 ├── GameStore.Services
 │   ├── Authen
@@ -98,6 +100,24 @@
 │   ├── src
 │   │   ├── App.jsx
 │   │   ├── components
+│   │   │   ├── admin
+│   │   │   │   ├── AdminSidebar.jsx
+│   │   │   │   ├── CategoriesTab.jsx
+│   │   │   │   ├── DashboardTab.jsx
+│   │   │   │   ├── DeleteConfirmModal.jsx
+│   │   │   │   ├── DeleteUserModal.jsx
+│   │   │   │   ├── GameFormModal.jsx
+│   │   │   │   ├── GameKeysTab.jsx
+│   │   │   │   ├── GamesTab.jsx
+│   │   │   │   ├── OrdersTab.jsx
+│   │   │   │   ├── Pagination.jsx
+│   │   │   │   ├── PaymentsTab.jsx
+│   │   │   │   ├── SortableHeader.jsx
+│   │   │   │   ├── StaffRolesTab.jsx
+│   │   │   │   ├── UserFormModal.jsx
+│   │   │   │   ├── UsersTab.jsx
+│   │   │   │   ├── adminStyles.js
+│   │   │   │   └── index.js
 │   │   │   ├── games
 │   │   │   │   ├── FeaturedSlider.jsx
 │   │   │   │   └── GameCard.jsx
@@ -126,15 +146,13 @@
 │   │   └── styles
 │   │       └── global.css
 │   └── vite.config.js
+├── GameStore.sln
 ├── GameStore.slnx
 ├── GameStore.sql
+├── GameStore.sql.update.sql
+├── GameStoreDB_final.sql
 ├── README.md
 ├── kill-all.sh
-├── logs
-│   ├── GameStore.APIService_20260502.log
-│   ├── GameStore.ApiGateway_20260502.log
-│   ├── GameStore.AuthService_20260502.log
-│   └── webclient_20260502.log
 └── run-all.sh
 
-35 directories, 103 files
+35 directories, 121 files

@@ -1,3 +1,4 @@
+// GameStore.APIService/Controllers/AdminController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -100,7 +101,7 @@ public class AdminController : ControllerBase
             MinimumStorage = dto.MinimumStorage ?? ""
         };
         var created = await _gameService.Create(game);
-        
+
         if (dto.GenreIds != null && dto.GenreIds.Any())
         {
             foreach (var gid in dto.GenreIds)
@@ -219,7 +220,7 @@ public class AdminController : ControllerBase
 
         user.DisplayName = dto.DisplayName ?? user.DisplayName;
         user.Email = dto.Email ?? user.Email;
-        
+
         if (dto.Wallet.HasValue) user.Wallet = dto.Wallet.Value;
         if (dto.IsActive.HasValue) user.IsActive = dto.IsActive.Value;
 

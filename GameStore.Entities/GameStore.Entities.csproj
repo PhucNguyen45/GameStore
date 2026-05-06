@@ -1,4 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<!-- GameStore.Entities/GameStore.Entities.csproj -->
+<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
     <ProjectReference Include="..\GameStore.Common\GameStore.Common.csproj" />
