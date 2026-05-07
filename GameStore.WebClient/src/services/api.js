@@ -39,6 +39,7 @@ export const genreAPI = { getAll: () => api.get("/genres") };
 export const orderAPI = {
   create: (d) => api.post("/orders", d),
   getAll: () => api.get("/orders"),
+  getById: (id) => api.get(`/orders/${id}`),
   cancel: (id) => api.put(`/orders/${id}/cancel`),
 };
 export const userAPI = {

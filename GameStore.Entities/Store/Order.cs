@@ -14,6 +14,8 @@ public class Order
     public decimal TotalAmount { get; set; }
     public string Status { get; set; } = "Pending"; // Pending, Completed, Cancelled, Refunded
     public string PaymentMethod { get; set; } = "Wallet"; // Wallet, CreditCard, PayPal
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
 
     public virtual User User { get; set; } = null!;
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new HashSet<OrderDetail>();

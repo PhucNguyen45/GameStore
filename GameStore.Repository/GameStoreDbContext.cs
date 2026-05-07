@@ -162,7 +162,7 @@ public class GameStoreDbContext : DbContext
                   .HasForeignKey(e => e.GameId)
                   .OnDelete(DeleteBehavior.Cascade);
             entity.HasOne(e => e.OrderDetail)
-                  .WithMany()
+                  .WithMany(e => e.GameKeys)
                   .HasForeignKey(e => e.OrderDetailId)
                   .OnDelete(DeleteBehavior.SetNull);
             entity.Property(e => e.IsUsed).HasDefaultValue(false);

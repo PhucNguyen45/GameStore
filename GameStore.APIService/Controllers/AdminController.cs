@@ -14,11 +14,13 @@ public class AdminController : ControllerBase
 {
     private readonly GameStoreDbContext _context;
     private readonly IGameService _gameService;
+    private readonly IOrderService _orderService;
 
-    public AdminController(GameStoreDbContext context, IGameService gameService)
+    public AdminController(GameStoreDbContext context, IGameService gameService, IOrderService orderService)
     {
         _context = context;
         _gameService = gameService;
+        _orderService = orderService;
     }
 
     // ================= DASHBOARD =================
@@ -320,11 +322,15 @@ public class AdminController : ControllerBase
     [HttpPut("orders/{id}/status")]
     public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] AdminUpdateStatusDto dto)
     {
-        var order = await _context.Orders.FindAsync(id);
-        if (order == null) return NotFound(new { message = "Order not found" });
-        order.Status = dto.Status;
-        await _context.SaveChangesAsync();
-        return Ok(new { message = "Status updated" });
+        try 
+        { 
+            await _orderService.UpdateStatus(id, dto.Status); 
+            return Ok(new { message = "Status updated" }); 
+        }
+        catch (Exception ex) 
+        { 
+            return BadRequest(new { message = ex.Message }); 
+        }
     }
 }
 

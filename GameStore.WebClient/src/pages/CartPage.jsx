@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
@@ -17,39 +18,35 @@ export default function CartPage() {
     useCartStore();
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
+  const [email, setEmail] = useState(user?.email || "");
+  const [phone, setPhone] = useState(user?.phoneNumber || "");
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!user) {
+      toast.error("Please login to continue checkout");
       navigate("/login");
       return;
     }
 
-    const orderTotal = total();
-
-    // Kiểm tra số dư trước khi gọi API
-    if (user.wallet < orderTotal) {
-      toast.error("Insufficient wallet balance! Please top up.");
+    if (!email || !phone) {
+      toast.error("Please provide email and phone number");
       return;
     }
 
-    try {
-      await orderAPI.create({
-        items: items.map((i) => ({ gameId: i.id, quantity: i.quantity })),
-      });
-
-      // Cập nhật wallet ngay lập tức
-      updateUser({ wallet: user.wallet - orderTotal });
-
-      clearCart();
-      toast.success("🎉 Purchase successful! Games added to your library.");
-      navigate("/library");
-    } catch (e) {
-      if (e.response?.status === 400) {
-        toast.error(e.response?.data?.message || "Insufficient balance");
-      } else {
-        toast.error("Checkout failed. Please try again.");
-      }
-    }
+    // Pass data to payment page
+    navigate("/payment", {
+      state: {
+        email,
+        phone,
+        items: items.map((i) => ({
+          gameId: i.id,
+          quantity: i.quantity,
+          title: i.title,
+          price: i.discountPrice || i.price,
+        })),
+        total: total(),
+      },
+    });
   };
 
   if (count() === 0)
@@ -207,7 +204,38 @@ export default function CartPage() {
             ${total().toFixed(2)}
           </span>
         </div>
-        <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
+
+        <div
+          style={{
+            marginTop: 24,
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Gmail</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="example@gmail.com"
+              style={inputStyle}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Phone</label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="0123456789"
+              style={inputStyle}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
           <button
             onClick={clearCart}
             className="btn-outline"
@@ -220,7 +248,7 @@ export default function CartPage() {
             className="btn-primary"
             style={{ flex: 1, padding: 14, fontSize: 16 }}
           >
-            Checkout
+            Proceed to Payment
           </button>
         </div>
         {!user && (
@@ -249,4 +277,16 @@ const qtyBtnStyle = {
   cursor: "pointer",
   display: "flex",
   alignItems: "center",
+};
+
+const inputStyle = {
+  background: "#1a1a3e",
+  border: "1px solid #2a2a4a",
+  borderRadius: 8,
+  padding: "12px 16px",
+  color: "#fff",
+  fontSize: 14,
+  outline: "none",
+  width: "100%",
+  transition: "border-color 0.2s",
 };

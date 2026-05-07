@@ -62,7 +62,7 @@ public class OrdersController : ControllerBase
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         try
         {
-            var order = await _orderService.CreateOrder(userId, dto.Items.Select(i => (i.GameId, i.Quantity)).ToList());
+            var order = await _orderService.CreateOrder(userId, dto.Items.Select(i => (i.GameId, i.Quantity)).ToList(), dto.PaymentMethod, dto.Email, dto.Phone);
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
         }
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
@@ -76,6 +76,12 @@ public class OrdersController : ControllerBase
     }
 }
 
-public class CreateOrderDto { public List<OrderItemDto> Items { get; set; } = new(); }
+public class CreateOrderDto 
+{ 
+    public List<OrderItemDto> Items { get; set; } = new(); 
+    public string PaymentMethod { get; set; } = "Wallet";
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+}
 public class OrderItemDto { public int GameId { get; set; } public int Quantity { get; set; } = 1; }
 public class UpdateStatusDto { public string Status { get; set; } = ""; }

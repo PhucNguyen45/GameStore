@@ -15,7 +15,7 @@ namespace GameStore.Entities.Games
         public decimal? DiscountPrice { get; set; }
         public string Developer { get; set; } = string.Empty;
         public string Publisher { get; set; } = string.Empty;
-        public DateTime ReleaseDate { get; set; }
+        public DateTime? ReleaseDate { get; set; }
         public string TrailerUrl { get; set; } = string.Empty;
         public string CoverImageUrl { get; set; } = string.Empty;
         public string Screenshots { get; set; } = "[]"; // JSON array
