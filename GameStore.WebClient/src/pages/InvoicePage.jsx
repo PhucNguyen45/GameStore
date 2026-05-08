@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/pages/InvoicePage.jsx
 import { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import { orderAPI } from "../services/api";

@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/pages/HomePage.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { gameAPI, genreAPI } from "../services/api";

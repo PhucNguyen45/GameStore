@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/admin/GamesTab.jsx
 import { useState } from "react";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import SortableHeader from "./SortableHeader";
@@ -260,7 +261,7 @@ export default function GamesTab({
                   ⭐ {game.rating?.toFixed(1)}
                 </td>
                 {/* <td style={{ padding: "9px 14px", color: "#888" }}>{game.totalSales?.toLocaleString()}</td> */}
-                
+
                 <td style={{ padding: "9px 14px", display: "flex", gap: 5 }}>
                   <button
                     onClick={() => onEdit(game)}

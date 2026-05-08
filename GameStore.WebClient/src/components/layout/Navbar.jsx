@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/layout/Navbar.jsx
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState } from "react";

@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/admin/GameKeysTab.jsx
 import { useState, useEffect } from "react";
 import { Plus, Trash2, X, Key, Upload } from "lucide-react";
 import SortableHeader from "./SortableHeader";

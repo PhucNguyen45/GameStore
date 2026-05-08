@@ -1,3 +1,4 @@
+// GameStore.WebClient/src/components/games/GameCard.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Star, ShoppingCart, Check } from "lucide-react";
