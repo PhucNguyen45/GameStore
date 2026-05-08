@@ -8,7 +8,7 @@ using GameStore.Entities.Games;
 
 namespace GameStore.APIService.Controllers;
 
-//[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]
 [Route("api/admin")]
 [ApiController]
 public class AdminController : ControllerBase

@@ -15,7 +15,7 @@ namespace GameStore.APIService.Controllers;
 /// </summary>
 [Route("api/admin")]
 [ApiController]
-//[Authorize(Roles = "Admin")]
+[Authorize(Roles = "Admin")]
 public class AdminManagementController : ControllerBase
 {
     private readonly GameStoreDbContext _context;
