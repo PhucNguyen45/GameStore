@@ -1,3 +1,4 @@
+// GameStore.APIService/Controllers/GenresController.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;

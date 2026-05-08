@@ -1,3 +1,4 @@
+// GameStore.Repository/GameStoreDbContext.cs
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using GameStore.Entities.Users;

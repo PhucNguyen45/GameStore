@@ -1,3 +1,4 @@
+// GameStore.APIService/Controllers/OrdersController.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,9 +77,9 @@ public class OrdersController : ControllerBase
     }
 }
 
-public class CreateOrderDto 
-{ 
-    public List<OrderItemDto> Items { get; set; } = new(); 
+public class CreateOrderDto
+{
+    public List<OrderItemDto> Items { get; set; } = new();
     public string PaymentMethod { get; set; } = "Wallet";
     public string? Email { get; set; }
     public string? Phone { get; set; }

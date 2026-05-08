@@ -1,3 +1,4 @@
+// GameStore.APIService/Controllers/AdminController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -102,7 +103,7 @@ public class AdminController : ControllerBase
             MinimumStorage = dto.MinimumStorage ?? ""
         };
         var created = await _gameService.Create(game);
-        
+
         if (dto.GenreIds != null && dto.GenreIds.Any())
         {
             foreach (var gid in dto.GenreIds)
@@ -221,7 +222,7 @@ public class AdminController : ControllerBase
 
         user.DisplayName = dto.DisplayName ?? user.DisplayName;
         user.Email = dto.Email ?? user.Email;
-        
+
         if (dto.Wallet.HasValue) user.Wallet = dto.Wallet.Value;
         if (dto.IsActive.HasValue) user.IsActive = dto.IsActive.Value;
 
@@ -322,14 +323,14 @@ public class AdminController : ControllerBase
     [HttpPut("orders/{id}/status")]
     public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] AdminUpdateStatusDto dto)
     {
-        try 
-        { 
-            await _orderService.UpdateStatus(id, dto.Status); 
-            return Ok(new { message = "Status updated" }); 
+        try
+        {
+            await _orderService.UpdateStatus(id, dto.Status);
+            return Ok(new { message = "Status updated" });
         }
-        catch (Exception ex) 
-        { 
-            return BadRequest(new { message = ex.Message }); 
+        catch (Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
         }
     }
 }

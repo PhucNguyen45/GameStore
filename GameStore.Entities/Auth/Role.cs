@@ -1,3 +1,4 @@
+// GameStore.Entities/Auth/Role.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
