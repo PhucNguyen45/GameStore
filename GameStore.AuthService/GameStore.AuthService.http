@@ -1,3 +1,4 @@
+# GameStore.AuthService/GameStore.AuthService.http
 @GameStore.AuthService_HostAddress = http://localhost:5083
 
 GET {{GameStore.AuthService_HostAddress}}/weatherforecast/

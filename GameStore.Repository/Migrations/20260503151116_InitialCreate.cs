@@ -1,3 +1,4 @@
+// GameStore.Repository/Migrations/20260503151116_InitialCreate.cs
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 

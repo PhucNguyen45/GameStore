@@ -1,3 +1,4 @@
+# README.md
 # 🎮 GameStore - Fullstack Game Distribution Platform
 
 > A full-stack game store inspired by **Epic Games** and **Steam**, built with **.NET 10** + **React 19** + **SQL Server**.

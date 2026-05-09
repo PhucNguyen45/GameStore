@@ -1,3 +1,4 @@
+# GameStore.APIService/GameStore.APIService.http
 @GameStore.APIService_HostAddress = http://localhost:5031
 
 GET {{GameStore.APIService_HostAddress}}/weatherforecast/
