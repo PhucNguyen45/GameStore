@@ -67,7 +67,7 @@ public class AdminService : IAdminService
             DiscountPrice = dto.DiscountPrice,
             Developer = dto.Developer ?? "",
             Publisher = dto.Publisher ?? "",
-            ReleaseDate = dto.ReleaseDate,
+            ReleaseDate = dto.ReleaseDate ?? DateTime.UtcNow,
             TrailerUrl = dto.TrailerUrl ?? "",
             CoverImageUrl = dto.CoverImageUrl ?? "",
             MinimumOS = dto.MinimumOS ?? "",
@@ -100,7 +100,6 @@ public class AdminService : IAdminService
         existing.DiscountPrice = dto.DiscountPrice ?? existing.DiscountPrice;
         existing.Developer = dto.Developer ?? existing.Developer;
         existing.Publisher = dto.Publisher ?? existing.Publisher;
-        existing.ReleaseDate = dto.ReleaseDate ?? existing.ReleaseDate;
         existing.CoverImageUrl = dto.CoverImageUrl ?? existing.CoverImageUrl;
         existing.TrailerUrl = dto.TrailerUrl ?? existing.TrailerUrl;
         existing.MinimumOS = dto.MinimumOS ?? existing.MinimumOS;
@@ -118,6 +117,9 @@ public class AdminService : IAdminService
                 _context.GameGenres.Add(new GameGenre { GameId = id, GenreId = gid });
             }
         }
+
+        if (dto.ReleaseDate.HasValue)
+            existing.ReleaseDate = dto.ReleaseDate.Value;
 
         await _gameService.Update(existing);
         await _context.SaveChangesAsync();

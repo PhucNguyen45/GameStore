@@ -20,11 +20,9 @@ public class GamesController : ControllerBase
     public GamesController(IGameService gameService) => _gameService = gameService;
 
     [HttpGet]
-    public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId,
-        [FromQuery] decimal? maxPrice, [FromQuery] string? sortBy, [FromQuery] bool desc = false,
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 12)
+    public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string? sortBy, [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 12)
     {
-        var (games, totalCount) = await _gameService.Search(keyword, genreId, maxPrice, sortBy, desc, page, pageSize);
+        var (games, totalCount) = await _gameService.Search(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
         return Ok(new { data = games, totalCount, page, pageSize, totalPages = (int)Math.Ceiling((double)totalCount / pageSize) });
     }
 

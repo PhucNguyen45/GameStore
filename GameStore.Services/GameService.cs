@@ -23,8 +23,10 @@ public class GameService : IGameService
     public async Task<List<Game>> GetByGenre(int genreId) => await _gameRepository.GetByGenreAsync(genreId);
 
     public async Task<(List<Game> Games, int TotalCount)> Search(string? keyword, int? genreId,
-        decimal? maxPrice, string? sortBy, bool descending, int page, int pageSize) =>
-        await _gameRepository.SearchAsync(keyword, genreId, maxPrice, sortBy, descending, page, pageSize);
+        decimal? minPrice, decimal? maxPrice, string? sortBy, bool descending, int page, int pageSize)
+    {
+        return await _gameRepository.SearchAsync(keyword, genreId, minPrice, maxPrice, sortBy, descending, page, pageSize);
+    }
 
     public async Task<Game> Create(Game game)
     {

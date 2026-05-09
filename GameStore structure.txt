@@ -34,6 +34,14 @@
 │   ├── Entity.cs
 │   └── GameStore.Common.csproj
 ├── GameStore.DTOs
+│   ├── Admin
+│   │   ├── AdminGameCreateDto.cs
+│   │   ├── AdminGameUpdateDto.cs
+│   │   ├── AdminUserUpdateDto.cs
+│   │   ├── CategoryDto.cs
+│   │   ├── GameKeyDto.cs
+│   │   ├── RefundDto.cs
+│   │   └── RoleDto.cs
 │   ├── Auth
 │   │   ├── LoginRequest.cs
 │   │   └── RegisterRequest.cs
@@ -67,7 +75,9 @@
 │   │   ├── Library.cs
 │   │   ├── Order.cs
 │   │   ├── OrderDetail.cs
+│   │   ├── Payment.cs
 │   │   ├── Review.cs
+│   │   ├── RolePermission.cs
 │   │   └── Wishlist.cs
 │   └── Users
 │       ├── User.cs
@@ -88,15 +98,19 @@
 │   ├── GameStoreDbContext.cs
 │   └── GameStoreDbContextFactory.cs
 ├── GameStore.Services
+│   ├── AdminService.cs
 │   ├── Authen
 │   │   ├── IUserService.cs
 │   │   └── UserService.cs
 │   ├── GameService.cs
 │   ├── GameStore.Services.csproj
 │   ├── GenreService.cs
+│   ├── IAdminService.cs
 │   ├── IGameService.cs
 │   ├── IGenreService.cs
+│   ├── ILibraryService.cs
 │   ├── IOrderService.cs
+│   ├── LibraryService.cs
 │   └── OrderService.cs
 ├── GameStore.WebClient
 │   ├── index.html
@@ -139,4 +153,4 @@
 ├── project_dump.txt
 └── run-all.sh
 
-40 directories, 100 files
+41 directories, 113 files

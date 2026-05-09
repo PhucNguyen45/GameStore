@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using GameStore.Repository;
 using GameStore.Services;
 using GameStore.Entities.Games;
+using GameStore.DTOs.Admin;
 
 namespace GameStore.APIService.Controllers;
 
