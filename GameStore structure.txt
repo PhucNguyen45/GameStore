@@ -135,9 +135,8 @@
 │   └── vite.config.js
 ├── GameStore.sln
 ├── GameStore.slnx
-├── README.md
 ├── kill-all.sh
 ├── project_dump.txt
 └── run-all.sh
 
-40 directories, 101 files
+40 directories, 100 files
