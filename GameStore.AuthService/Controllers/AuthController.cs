@@ -30,7 +30,7 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
             return BadRequest(new { message = "Username and password are required" });
 
-        var user = await _userService.Authenticate(request.Username, request.Password);
+        var user = await _userRepository.GetByUsernameForAuthAsync(username);
         if (user == null) return Unauthorized(new { message = "Invalid username or password" });
 
         // Lấy role từ database

@@ -11,48 +11,26 @@ using System.Security.Claims;
 
 namespace GameStore.APIService.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
-[Authorize]
 public class LibraryController : ControllerBase
 {
-    private readonly GameStoreDbContext _context;
-
-    public LibraryController(GameStoreDbContext context)
-    {
-        _context = context;
-    }
+    private readonly ILibraryService _libraryService;
+    public LibraryController(ILibraryService libraryService) => _libraryService = libraryService;
 
     [HttpGet]
     public async Task<IActionResult> GetMyLibrary()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-        var library = await _context.Libraries
-            .Where(l => l.UserId == userId)
-            .Include(l => l.Game)
-            .Select(l => new
-            {
-                l.Game.Id,
-                l.Game.Title,
-                l.Game.CoverImageUrl,
-                l.Game.Developer,
-                l.Game.Rating,
-                AcquiredAt = l.AcquiredAt
-            })
-            .ToListAsync();
-
-        return Ok(library);
+        return Ok(await _libraryService.GetMyLibraryAsync(userId));
     }
 
     [HttpGet("check/{gameId}")]
     public async Task<IActionResult> CheckOwned(int gameId)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-
-        var owned = await _context.Libraries
-            .AnyAsync(l => l.UserId == userId && l.GameId == gameId);
-
+        var owned = await _libraryService.CheckOwnedAsync(userId, gameId);
         return Ok(new { owned });
     }
 }
