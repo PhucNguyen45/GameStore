@@ -33,11 +33,7 @@ do
     echo "Dumping: $clean_path"
 
     {
-        echo "=================================================="
         echo "FILE: $clean_path"
-        echo "=================================================="
-        echo
-
         if file "$file" | grep -qiE 'text|json|xml|shell script'; then
             cat "$file"
         else
