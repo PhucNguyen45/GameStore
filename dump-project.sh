@@ -15,6 +15,7 @@ find . -type f \
   ! -path "*/Migrations/*" \
   ! -name "*.http" \
   ! -name "*.log" \
+  ! -name "GameStore structure.txt" \
   ! -name "appsettings.Development.json" \
   ! -name "package-lock.json" \
   ! -name "package.json" \
@@ -25,6 +26,8 @@ find . -type f \
   ! -name "*.bak" \
   ! -name "*.md" \
   ! -name "project_dump.txt" \
+  ! -name "GameStore.sln" \
+  ! -name "*.sh" \
 | sort | while read -r file
 do
 
