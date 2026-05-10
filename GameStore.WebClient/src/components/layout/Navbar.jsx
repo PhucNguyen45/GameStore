@@ -161,6 +161,14 @@ export default function Navbar() {
                 WISHLIST
               </Link>
             )}
+            {user && (
+              <Link
+                to="/orders"
+                style={{ padding: "4px 0", ...isActive("/orders") }}
+              >
+                ORDERS
+              </Link>
+            )}
           </div>
 
           <div style={{ flex: 1 }} />

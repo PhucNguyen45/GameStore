@@ -48,7 +48,7 @@ export default function PaymentPage() {
         })),
         email: orderData.email,
         phone: orderData.phone,
-        paymentMethod: paymentMethod,
+        paymentMethod: "Wallet",
       });
 
       const orderId = response.data?.id || Math.floor(Math.random() * 100000);
@@ -179,31 +179,6 @@ export default function PaymentPage() {
                 <div style={{ fontWeight: 600 }}>GameStore Wallet</div>
                 <div style={{ fontSize: 12, color: "#6b6b8e" }}>
                   Balance: ${user?.wallet?.toFixed(2)}
-                </div>
-              </div>
-            </label>
-
-            <label
-              style={{
-                ...methodStyle,
-                borderColor: paymentMethod === "card" ? "#e94560" : "#2a2a4a",
-              }}
-            >
-              <input
-                type="radio"
-                name="payment"
-                checked={paymentMethod === "card"}
-                onChange={() => setPaymentMethod("card")}
-                style={{ display: "none" }}
-              />
-              <CreditCard
-                size={20}
-                color={paymentMethod === "card" ? "#e94560" : "#6b6b8e"}
-              />
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600 }}>Credit / Debit Card</div>
-                <div style={{ fontSize: 12, color: "#6b6b8e" }}>
-                  Visa, Mastercard, Amex
                 </div>
               </div>
             </label>

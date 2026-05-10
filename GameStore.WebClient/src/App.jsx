@@ -15,6 +15,7 @@ import GameDetailPage from "./pages/GameDetailPage";
 import PaymentPage from "./pages/PaymentPage";
 import InvoicePage from "./pages/InvoicePage";
 import WishlistPage from "./pages/WishlistPage";
+import PurchaseHistoryPage from "./pages/PurchaseHistoryPage";
 
 export default function App() {
   return (
@@ -48,6 +49,7 @@ export default function App() {
               <Route path="/payment" element={<PaymentPage />} />
               <Route path="/invoice/:id" element={<InvoicePage />} />
               <Route path="/wishlist" element={<WishlistPage />} />
+              <Route path="/orders" element={<PurchaseHistoryPage />} />
             </Route>
           </Routes>
         </ErrorBoundary>

@@ -80,4 +80,28 @@ public class UserController : ControllerBase
         var balance = await _userService.GetWalletBalance(userId);
         return Ok(new { message = "Wallet topped up", balance });
     }
+
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetProfile()
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var user = await _userService.GetById(userId);
+        if (user == null) return NotFound();
+        return Ok(new { user.Id, user.Username, user.DisplayName, user.Email, user.Phone, user.AvatarUrl, user.Wallet, user.IsActive, user.CreatedAt });
+    }
+
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserRequest request)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var user = await _userService.GetById(userId);
+        if (user == null) return NotFound(new { message = "User not found" });
+
+        user.DisplayName = request.DisplayName ?? user.DisplayName;
+        user.Email = request.Email ?? user.Email;
+        user.Phone = request.Phone ?? user.Phone;
+        user.AvatarUrl = request.AvatarUrl ?? user.AvatarUrl;
+        await _userService.Update(user, request.Password);
+        return Ok(new { message = "Profile updated" });
+    }
 }

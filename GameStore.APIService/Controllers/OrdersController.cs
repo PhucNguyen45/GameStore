@@ -27,6 +27,14 @@ public class OrdersController : ControllerBase
         return Ok(orders);
     }
 
+    [HttpGet("history")]
+    public async Task<IActionResult> GetMyOrderHistory()
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var history = await _orderService.GetOrderHistoryAsync(userId);
+        return Ok(history);
+    }
+
     [HttpGet("all")]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20) =>
