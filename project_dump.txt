@@ -198,7 +198,6 @@ FILE: GameStore structure.txt
 
 45 directories, 151 files
 
-
 FILE: GameStore.APIService/Controllers/AdminController.cs
 // GameStore.APIService/Controllers/AdminController.cs
 using Microsoft.AspNetCore.Authorization;
@@ -432,7 +431,6 @@ public class AdminController : ControllerBase
     }
 }
 
-
 FILE: GameStore.APIService/Controllers/GamesController.cs
 // GameStore.APIService/Controllers/GamesController.cs
 using System;
@@ -531,7 +529,6 @@ public class GamesController : ControllerBase
     }
 }
 
-
 FILE: GameStore.APIService/Controllers/GenresController.cs
 // GameStore.APIService/Controllers/GenresController.cs
 using System;
@@ -592,7 +589,6 @@ public class GenresController : ControllerBase
     }
 }
 
-
 FILE: GameStore.APIService/Controllers/LibraryController.cs
 // GameStore.APIService/Controllers/LibraryController.cs
 using System;
@@ -632,7 +628,6 @@ public class LibraryController : ControllerBase
     }
 }
 
-
 FILE: GameStore.APIService/Controllers/NotificationsController.cs
 // GameStore.APIService/Controllers/NotificationsController.cs
 using System;
@@ -669,7 +664,6 @@ public class NotificationsController : ControllerBase
         return Ok();
     }
 }
-
 
 FILE: GameStore.APIService/Controllers/OrdersController.cs
 // GameStore.APIService/Controllers/OrdersController.cs
@@ -761,7 +755,6 @@ public class OrdersController : ControllerBase
     }
 }
 
-
 FILE: GameStore.APIService/Controllers/ReviewsController.cs
 // GameStore.APIService/Controllers/ReviewsController.cs
 using System;
@@ -826,7 +819,6 @@ public class ReviewsController : ControllerBase
     }
 }
 
-
 FILE: GameStore.APIService/Controllers/WishlistController.cs
 // GameStore.APIService/Controllers/WishlistController.cs
 using System;
@@ -880,7 +872,6 @@ public class WishlistController : ControllerBase
     }
 }
 
-
 FILE: GameStore.APIService/GameStore.APIService.csproj
 <!-- GameStore.APIService/GameStore.APIService.csproj -->
 <Project Sdk="Microsoft.NET.Sdk.Web">
@@ -916,7 +907,6 @@ FILE: GameStore.APIService/GameStore.APIService.csproj
   </ItemGroup>
 
 </Project>
-
 
 FILE: GameStore.APIService/Program.cs
 // GameStore.APIService/Program.cs
@@ -995,7 +985,6 @@ app.UseAuthorization();
 app.MapControllers();
 app.Run();
 
-
 FILE: GameStore.APIService/Properties/launchSettings.json
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
@@ -1021,7 +1010,6 @@ FILE: GameStore.APIService/Properties/launchSettings.json
   }
 }
 
-
 FILE: GameStore.APIService/appsettings.json
 {
   "Logging": {
@@ -1040,7 +1028,6 @@ FILE: GameStore.APIService/appsettings.json
   }
 }
 
-
 FILE: GameStore.ApiGateway/GameStore.ApiGateway.csproj
 <!-- GameStore.ApiGateway/GameStore.ApiGateway.csproj -->
 <Project Sdk="Microsoft.NET.Sdk.Web">
@@ -1057,7 +1044,6 @@ FILE: GameStore.ApiGateway/GameStore.ApiGateway.csproj
   </ItemGroup>
 
 </Project>
-
 
 FILE: GameStore.ApiGateway/Program.cs
 // GameStore.ApiGateway/Program.cs
@@ -1081,7 +1067,6 @@ app.UseCors("AllowAll");
 await app.UseOcelot();
 
 app.Run();
-
 
 FILE: GameStore.ApiGateway/Properties/launchSettings.json
 ﻿{
@@ -1108,7 +1093,6 @@ FILE: GameStore.ApiGateway/Properties/launchSettings.json
   }
 }
 
-
 FILE: GameStore.ApiGateway/appsettings.json
 {
   "Logging": {
@@ -1119,7 +1103,6 @@ FILE: GameStore.ApiGateway/appsettings.json
   },
   "AllowedHosts": "*"
 }
-
 
 FILE: GameStore.ApiGateway/ocelot.json
 {
@@ -1200,7 +1183,6 @@ FILE: GameStore.ApiGateway/ocelot.json
   }
 }
 
-
 FILE: GameStore.AuthService/Controllers/AuthController.cs
 // GameStore.AuthService/Controllers/AuthController.cs
 using Microsoft.AspNetCore.Mvc;
@@ -1279,7 +1261,6 @@ public class AuthController : ControllerBase
         return Ok(new { message = "Registration successful", userId = createdUser.Id });
     }
 }
-
 
 FILE: GameStore.AuthService/Controllers/UserController.cs
 // GameStore.AuthService/Controllers/UserController.cs
@@ -1391,7 +1372,6 @@ public class UserController : ControllerBase
     }
 }
 
-
 FILE: GameStore.AuthService/GameStore.AuthService.csproj
 <!-- GameStore.AuthService/GameStore.AuthService.csproj -->
 <Project Sdk="Microsoft.NET.Sdk.Web">
@@ -1427,7 +1407,6 @@ FILE: GameStore.AuthService/GameStore.AuthService.csproj
   </ItemGroup>
 
 </Project>
-
 
 FILE: GameStore.AuthService/Program.cs
 // GameStore.AuthService/Program.cs
@@ -1500,7 +1479,6 @@ app.MapControllers();
 
 app.Run();
 
-
 FILE: GameStore.AuthService/Properties/launchSettings.json
 ﻿{
   "$schema": "https://json.schemastore.org/launchsettings.json",
@@ -1526,7 +1504,6 @@ FILE: GameStore.AuthService/Properties/launchSettings.json
   }
 }
 
-
 FILE: GameStore.AuthService/appsettings.json
 {
   "Logging": {
@@ -1546,7 +1523,6 @@ FILE: GameStore.AuthService/appsettings.json
     "WithOrigin": "http://localhost:3000"
   }
 }
-
 
 FILE: GameStore.Common/Auth/TokenHelper.cs
 // GameStore.Common/Auth/TokenHelper.cs
@@ -1627,7 +1603,6 @@ public static class TokenHelper
     }
 }
 
-
 FILE: GameStore.Common/Entity.cs
 // GameStore.Common/Entity.cs
 using System;
@@ -1645,7 +1620,6 @@ namespace GameStore.Common
     }
 }
 
-
 FILE: GameStore.Common/GameStore.Common.csproj
 <!-- GameStore.Common/GameStore.Common.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
@@ -1661,7 +1635,6 @@ FILE: GameStore.Common/GameStore.Common.csproj
   </ItemGroup>
 
 </Project>
-
 
 FILE: GameStore.DTOs/Admin/AdminGameCreateDto.cs
 // GameStore.DTOs/Admin/AdminGameCreateDto.cs
@@ -1691,7 +1664,6 @@ public class AdminGameCreateDto
     public List<int>? GenreIds { get; set; }
 }
 
-
 FILE: GameStore.DTOs/Admin/AdminGameUpdateDto.cs
 // GameStore.DTOs/Admin/AdminGameUpdateDto.cs
 using System;
@@ -1720,7 +1692,6 @@ public class AdminGameUpdateDto
     public List<int>? GenreIds { get; set; }
 }
 
-
 FILE: GameStore.DTOs/Admin/AdminUpdateStatusDto.cs
 // GameStore.DTOs/Admin/AdminUpdateStatusDto.cs
 using System;
@@ -1734,7 +1705,6 @@ public class AdminUpdateStatusDto
 {
     public string Status { get; set; } = "";
 }
-
 
 FILE: GameStore.DTOs/Admin/AdminUserUpdateDto.cs
 // GameStore.DTOs/Admin/AdminUserUpdateDto.cs
@@ -1753,7 +1723,6 @@ public class AdminUserUpdateDto
     public bool? IsActive { get; set; }
 }
 
-
 FILE: GameStore.DTOs/Admin/CategoryDto.cs
 // GameStore.DTOs/Admin/CategoryDto.cs
 using System;
@@ -1770,7 +1739,6 @@ public class CategoryDto
     public string? IconUrl { get; set; }
     public bool IsActive { get; set; } = true;
 }
-
 
 FILE: GameStore.DTOs/Admin/GameKeyDto.cs
 // GameStore.DTOs/Admin/GameKeyDto.cs
@@ -1795,7 +1763,6 @@ public class BatchGameKeyDto
     public DateTime? ExpiresAt { get; set; }
 }
 
-
 FILE: GameStore.DTOs/Admin/RefundDto.cs
 // GameStore.DTOs/Admin/RefundDto.cs
 using System;
@@ -1809,7 +1776,6 @@ public class RefundDto
 {
     public string? Note { get; set; }
 }
-
 
 FILE: GameStore.DTOs/Admin/RoleDto.cs
 // GameStore.DTOs/Admin/RoleDto.cs
@@ -1834,7 +1800,6 @@ public class AssignRoleDto
     public int RoleId { get; set; }
 }
 
-
 FILE: GameStore.DTOs/Auth/LoginRequest.cs
 // GameStore.DTOs/Auth/LoginRequest.cs
 using System;
@@ -1849,7 +1814,6 @@ public class LoginRequest
     public string Username { get; set; } = "";
     public string Password { get; set; } = "";
 }
-
 
 FILE: GameStore.DTOs/Auth/RegisterRequest.cs
 // GameStore.DTOs/Auth/RegisterRequest.cs
@@ -1869,7 +1833,6 @@ public class RegisterRequest
     public string? Phone { get; set; }
 }
 
-
 FILE: GameStore.DTOs/GameStore.DTOs.csproj
 <!-- GameStore.DTOs/GameStore.DTOs.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
@@ -1881,7 +1844,6 @@ FILE: GameStore.DTOs/GameStore.DTOs.csproj
   </PropertyGroup>
 
 </Project>
-
 
 FILE: GameStore.DTOs/Games/GameCreateDto.cs
 // GameStore.DTOs/Games/GameCreateDto.cs
@@ -1911,7 +1873,6 @@ namespace GameStore.DTOs.Games
     }
 }
 
-
 FILE: GameStore.DTOs/Games/GameUpdateDto.cs
 // GameStore.DTOs/Games/GameUpdateDto.cs
 using System;
@@ -1932,7 +1893,6 @@ namespace GameStore.DTOs.Games
     }
 }
 
-
 FILE: GameStore.DTOs/Genres/GenreDto.cs
 // GameStore.DTOs/Genres/GenreDto.cs
 using System;
@@ -1948,7 +1908,6 @@ public class GenreDto
     public string? Description { get; set; }
     public string? IconUrl { get; set; }
 }
-
 
 FILE: GameStore.DTOs/Notifications/NotificationDto.cs
 // GameStore.DTOs/Notifications/NotificationDto.cs
@@ -1968,7 +1927,6 @@ public class NotificationDto
     public bool IsRead { get; set; }
     public DateTime CreatedAt { get; set; }
 }
-
 
 FILE: GameStore.DTOs/Orders/CreateOrderDto.cs
 // GameStore.DTOs/Orders/CreateOrderDto.cs
@@ -1992,7 +1950,6 @@ public class OrderItemDto
     public int GameId { get; set; }
     public int Quantity { get; set; } = 1;
 }
-
 
 FILE: GameStore.DTOs/Orders/OrderHistoryDto.cs
 // GameStore.DTOs/Orders/OrderHistoryDto.cs
@@ -2020,7 +1977,6 @@ public class OrderHistoryItemDto
     public decimal UnitPrice { get; set; }
 }
 
-
 FILE: GameStore.DTOs/Orders/UpdateStatusDto.cs
 // GameStore.DTOs/Orders/UpdateStatusDto.cs
 using System;
@@ -2034,7 +1990,6 @@ public class UpdateStatusDto
 {
     public string Status { get; set; } = "";
 }
-
 
 FILE: GameStore.DTOs/Reviews/CreateReviewDto.cs
 // GameStore.DTOs/Reviews/CreateReviewDto.cs
@@ -2052,7 +2007,6 @@ public class CreateReviewDto
     public string Content { get; set; } = string.Empty;
     public bool IsRecommended { get; set; } = true;
 }
-
 
 FILE: GameStore.DTOs/Reviews/ReviewDto.cs
 // GameStore.DTOs/Reviews/ReviewDto.cs
@@ -2075,7 +2029,6 @@ public class ReviewDto
     public DateTime CreatedAt { get; set; }
 }
 
-
 FILE: GameStore.DTOs/Users/TopUpRequest.cs
 // GameStore.DTOs/Users/TopUpRequest.cs
 using System;
@@ -2089,7 +2042,6 @@ public class TopUpRequest
 {
     public decimal Amount { get; set; }
 }
-
 
 FILE: GameStore.DTOs/Users/UpdateUserRequest.cs
 // GameStore.DTOs/Users/UpdateUserRequest.cs
@@ -2108,7 +2060,6 @@ public class UpdateUserRequest
     public string? AvatarUrl { get; set; }
     public string? Password { get; set; }
 }
-
 
 FILE: GameStore.DTOs/Wishlist/WishlistItemDto.cs
 // GameStore.DTOs/Wishlist/WishlistItemDto.cs
@@ -2129,7 +2080,6 @@ public class WishlistItemDto
     public DateTime AddedAt { get; set; }
 }
 
-
 FILE: GameStore.Entities/Audit/IAuditable.cs
 // GameStore.Entities/Audit/IAuditable.cs
 using System;
@@ -2148,7 +2098,6 @@ namespace GameStore.Entities.Audit
         bool IsDeleted { get; set; }
     }
 }
-
 
 FILE: GameStore.Entities/Auth/AccessToken.cs
 // GameStore.Entities/Auth/AccessToken.cs
@@ -2173,7 +2122,6 @@ namespace GameStore.Entities.Auth
         public virtual User User { get; set; } = null!;
     }
 }
-
 
 FILE: GameStore.Entities/Auth/Role.cs
 // GameStore.Entities/Auth/Role.cs
@@ -2205,7 +2153,6 @@ namespace GameStore.Entities.Auth
     }
 }
 
-
 FILE: GameStore.Entities/GameStore.Entities.csproj
 <!-- GameStore.Entities/GameStore.Entities.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
@@ -2221,7 +2168,6 @@ FILE: GameStore.Entities/GameStore.Entities.csproj
   </PropertyGroup>
 
 </Project>
-
 
 FILE: GameStore.Entities/Games/Game.cs
 // GameStore.Entities/Games/Game.cs
@@ -2269,7 +2215,6 @@ namespace GameStore.Entities.Games
     }
 }
 
-
 FILE: GameStore.Entities/Games/GameGenre.cs
 // GameStore.Entities/Games/GameGenre.cs
 using System;
@@ -2289,7 +2234,6 @@ namespace GameStore.Entities.Games
         public virtual Genre Genre { get; set; } = null!;
     }
 }
-
 
 FILE: GameStore.Entities/Games/Genre.cs
 // GameStore.Entities/Games/Genre.cs
@@ -2311,7 +2255,6 @@ namespace GameStore.Entities.Games
         public virtual ICollection<GameGenre> GameGenres { get; set; } = new HashSet<GameGenre>();
     }
 }
-
 
 FILE: GameStore.Entities/Settings/Setting.cs
 // GameStore.Entities/Settings/Setting.cs
@@ -2336,7 +2279,6 @@ public class Setting : Entity, IAuditable
     public bool IsDeleted { get; set; }
     public bool IsActive { get; set; } = true;
 }
-
 
 FILE: GameStore.Entities/Store/GameKey.cs
 // GameStore.Entities/Store/GameKey.cs
@@ -2363,7 +2305,6 @@ namespace GameStore.Entities.Store
         public virtual OrderDetail? OrderDetail { get; set; }
     }
 }
-
 
 FILE: GameStore.Entities/Store/Library.cs
 // GameStore.Entities/Store/Library.cs
@@ -2392,7 +2333,6 @@ namespace GameStore.Entities.Store
     }
 }
 
-
 FILE: GameStore.Entities/Store/Notification.cs
 // GameStore.Entities/Store/Notification.cs
 using System;
@@ -2416,7 +2356,6 @@ namespace GameStore.Entities.Store
         public virtual User User { get; set; } = null!;
     }
 }
-
 
 FILE: GameStore.Entities/Store/Order.cs
 // GameStore.Entities/Store/Order.cs
@@ -2443,7 +2382,6 @@ public class Order
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new HashSet<OrderDetail>();
 }
 
-
 FILE: GameStore.Entities/Store/OrderDetail.cs
 // GameStore.Entities/Store/OrderDetail.cs
 using System;
@@ -2466,7 +2404,6 @@ public class OrderDetail
     public virtual Game Game { get; set; } = null!;
     public virtual ICollection<GameKey> GameKeys { get; set; } = new HashSet<GameKey>();
 }
-
 
 FILE: GameStore.Entities/Store/Payment.cs
 // GameStore.Entities/Store/Payment.cs
@@ -2492,7 +2429,6 @@ namespace GameStore.Entities.Store
         public virtual Order Order { get; set; } = null!;
     }
 }
-
 
 FILE: GameStore.Entities/Store/Review.cs
 // GameStore.Entities/Store/Review.cs
@@ -2522,7 +2458,6 @@ namespace GameStore.Entities.Store
     }
 }
 
-
 FILE: GameStore.Entities/Store/RolePermission.cs
 // GameStore.Entities/Store/RolePermission.cs
 using System;
@@ -2543,7 +2478,6 @@ namespace GameStore.Entities.Store
         public virtual Role Role { get; set; } = null!;
     }
 }
-
 
 FILE: GameStore.Entities/Store/Wishlist.cs
 // GameStore.Entities/Store/Wishlist.cs
@@ -2567,7 +2501,6 @@ namespace GameStore.Entities.Store
         public virtual Game Game { get; set; } = null!;
     }
 }
-
 
 FILE: GameStore.Entities/Users/User.cs
 // GameStore.Entities/Users/User.cs
@@ -2603,7 +2536,6 @@ public class User
     public virtual ICollection<AccessToken> AccessTokens { get; set; } = new HashSet<AccessToken>();
 }
 
-
 FILE: GameStore.Entities/Users/UserRole.cs
 // GameStore.Entities/Users/UserRole.cs
 using System;
@@ -2631,7 +2563,6 @@ namespace GameStore.Entities.Users
         public virtual Role Role { get; set; } = null!;
     }
 }
-
 
 FILE: GameStore.Repository/EFCore/GameRepository.cs
 // GameStore.Repository/EFCore/GameRepository.cs
@@ -2870,7 +2801,6 @@ public class GameRepository : Repository<Game>, IGameRepository
     }
 }
 
-
 FILE: GameStore.Repository/EFCore/GenreRepository.cs
 // GameStore.Repository/EFCore/GenreRepository.cs
 using System;
@@ -2893,7 +2823,6 @@ public class GenreRepository : Repository<Genre>, IGenreRepository
         await _dbSet.Where(g => g.IsActive).OrderBy(g => g.Name).ToListAsync();
 }
 
-
 FILE: GameStore.Repository/EFCore/IGameRepository.cs
 // GameStore.Repository/EFCore/IGameRepository.cs
 using System;
@@ -2912,7 +2841,6 @@ public interface IGameRepository : IRepository<Game>
     Task<Game?> GetWithDetailsAsync(int id);
 }
 
-
 FILE: GameStore.Repository/EFCore/IGenreRepository.cs
 // GameStore.Repository/EFCore/IGenreRepository.cs
 using System;
@@ -2929,7 +2857,6 @@ public interface IGenreRepository : IRepository<Genre>
     Task<List<Genre>> GetActiveGenresAsync();
 }
 
-
 FILE: GameStore.Repository/EFCore/IOrderRepository.cs
 // GameStore.Repository/EFCore/IOrderRepository.cs
 using System;
@@ -2944,7 +2871,6 @@ public interface IOrderRepository : IRepository<Order>
 {
     Task<List<Order>> GetByUserAsync(int userId);
 }
-
 
 FILE: GameStore.Repository/EFCore/IRepository.cs
 // GameStore.Repository/EFCore/IRepository.cs
@@ -2972,7 +2898,6 @@ public interface IRepository<T> where T : class
         Expression<Func<T, object>>? orderBy = null, bool descending = false);
 }
 
-
 FILE: GameStore.Repository/EFCore/IUserRepository.cs
 // GameStore.Repository/EFCore/IUserRepository.cs
 using System;
@@ -2993,7 +2918,6 @@ public interface IUserRepository : IRepository<User>
     Task<bool> IsEmailExists(string email);
 }
 
-
 FILE: GameStore.Repository/EFCore/OrderRepository.cs
 // GameStore.Repository/EFCore/OrderRepository.cs
 using System;
@@ -3011,7 +2935,6 @@ public class OrderRepository : Repository<Order>, IOrderRepository
     public async Task<List<Order>> GetByUserAsync(int userId) =>
         await _dbSet.Where(o => o.UserId == userId).OrderByDescending(o => o.OrderDate).ToListAsync();
 }
-
 
 FILE: GameStore.Repository/EFCore/Repository.cs
 // GameStore.Repository/EFCore/Repository.cs
@@ -3090,7 +3013,6 @@ public class Repository<T> : IRepository<T> where T : class
     }
 }
 
-
 FILE: GameStore.Repository/EFCore/UserRepository.cs
 // GameStore.Repository/EFCore/UserRepository.cs
 using System;
@@ -3138,7 +3060,6 @@ public class UserRepository : Repository<User>, IUserRepository
         await _dbSet.AnyAsync(u => u.Email == email);
 }
 
-
 FILE: GameStore.Repository/GameStore.Repository.csproj
 <!-- GameStore.Repository/GameStore.Repository.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
@@ -3167,7 +3088,6 @@ FILE: GameStore.Repository/GameStore.Repository.csproj
   </PropertyGroup>
 
 </Project>
-
 
 FILE: GameStore.Repository/GameStoreDbContext.cs
 // GameStore.Repository/GameStoreDbContext.cs
@@ -3883,7 +3803,6 @@ public class GameStoreDbContext : DbContext
   }
 }
 
-
 FILE: GameStore.Repository/GameStoreDbContextFactory.cs
 // GameStore.Repository/GameStoreDbContextFactory.cs
 using System;
@@ -3905,7 +3824,6 @@ public class GameStoreDbContextFactory : IDesignTimeDbContextFactory<GameStoreDb
         return new GameStoreDbContext(optionsBuilder.Options);
     }
 }
-
 
 FILE: GameStore.Services/AdminService.cs
 // GameStore.Services/AdminService.cs
@@ -4522,7 +4440,6 @@ public class AdminService : IAdminService
     }
 }
 
-
 FILE: GameStore.Services/Authen/IUserService.cs
 // GameStore.Services/Authen/IUserService.cs
 using System;
@@ -4547,7 +4464,6 @@ public interface IUserService
     Task<decimal> GetWalletBalance(int userId);
     Task AddToWallet(int userId, decimal amount);
 }
-
 
 FILE: GameStore.Services/Authen/UserService.cs
 // GameStore.Services/Authen/UserService.cs
@@ -4644,7 +4560,6 @@ public class UserService : IUserService
     }
 }
 
-
 FILE: GameStore.Services/GameService.cs
 // GameStore.Services/GameService.cs
 using System;
@@ -4695,7 +4610,6 @@ public class GameService : IGameService
     }
 }
 
-
 FILE: GameStore.Services/GameStore.Services.csproj
 <!-- GameStore.Services/GameStore.Services.csproj -->
 <Project Sdk="Microsoft.NET.Sdk">
@@ -4714,7 +4628,6 @@ FILE: GameStore.Services/GameStore.Services.csproj
   </PropertyGroup>
 
 </Project>
-
 
 FILE: GameStore.Services/GenreService.cs
 // GameStore.Services/GenreService.cs
@@ -4757,7 +4670,6 @@ public class GenreService : IGenreService
         }
     }
 }
-
 
 FILE: GameStore.Services/IAdminService.cs
 // GameStore.Services/IAdminService.cs
@@ -4830,7 +4742,6 @@ public interface IAdminService
     IEnumerable<string> GetPermissions();
 }
 
-
 FILE: GameStore.Services/IGameService.cs
 // GameStore.Services/IGameService.cs
 using System;
@@ -4853,7 +4764,6 @@ public interface IGameService
     Task Delete(int id);
 }
 
-
 FILE: GameStore.Services/IGenreService.cs
 // GameStore.Services/IGenreService.cs
 using System;
@@ -4873,7 +4783,6 @@ public interface IGenreService
     Task Delete(int id);
 }
 
-
 FILE: GameStore.Services/ILibraryService.cs
 // GameStore.Services/ILibraryService.cs
 using System;
@@ -4889,7 +4798,6 @@ namespace GameStore.Services
         Task<bool> CheckOwnedAsync(int userId, int gameId);
     }
 }
-
 
 FILE: GameStore.Services/INotificationService.cs
 // GameStore.Services/INotificationService.cs
@@ -4907,7 +4815,6 @@ public interface INotificationService
     Task MarkAsReadAsync(int notificationId, int userId);
     Task CreateNotificationAsync(int userId, string title, string message, string? link = null);
 }
-
 
 FILE: GameStore.Services/IOrderService.cs
 // GameStore.Services/IOrderService.cs
@@ -4937,7 +4844,6 @@ public interface IOrderService
     Task<List<OrderHistoryDto>> GetOrderHistoryAsync(int userId);
 }
 
-
 FILE: GameStore.Services/IReviewService.cs
 // GameStore.Services/IReviewService.cs
 using System;
@@ -4957,7 +4863,6 @@ public interface IReviewService
     Task<bool> HasUserReviewedAsync(int userId, int gameId);
 }
 
-
 FILE: GameStore.Services/IWishlistService.cs
 // GameStore.Services/IWishlistService.cs
 using System;
@@ -4976,7 +4881,6 @@ public interface IWishlistService
     Task RemoveFromWishlistAsync(int userId, int gameId);
     Task<bool> IsInWishlistAsync(int userId, int gameId);
 }
-
 
 FILE: GameStore.Services/LibraryService.cs
 // GameStore.Services/LibraryService.cs
@@ -5020,7 +4924,6 @@ public class LibraryService : ILibraryService
         return await _context.Libraries.AnyAsync(l => l.UserId == userId && l.GameId == gameId);
     }
 }
-
 
 FILE: GameStore.Services/NotificationService.cs
 // GameStore.Services/NotificationService.cs
@@ -5087,7 +4990,6 @@ public class NotificationService : INotificationService
         await _context.SaveChangesAsync();
     }
 }
-
 
 FILE: GameStore.Services/OrderService.cs
 // GameStore.Services/OrderService.cs
@@ -5303,7 +5205,6 @@ public class OrderService : IOrderService
     }
 }
 
-
 FILE: GameStore.Services/ReviewService.cs
 // GameStore.Services/ReviewService.cs
 using System;
@@ -5444,7 +5345,6 @@ public class ReviewService : IReviewService
     }
 }
 
-
 FILE: GameStore.Services/WishlistService.cs
 // GameStore.Services/WishlistService.cs
 using System;
@@ -5515,7 +5415,6 @@ public class WishlistService : IWishlistService
     }
 }
 
-
 FILE: GameStore.WebClient/index.html
 <!-- GameStore.WebClient/index.html -->
 <!doctype html>
@@ -5535,7 +5434,6 @@ FILE: GameStore.WebClient/index.html
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
-
 
 FILE: GameStore.WebClient/src/App.jsx
 // GameStore.WebClient/src/App.jsx
@@ -5597,7 +5495,6 @@ export default function App() {
     </>
   );
 }
-
 
 FILE: GameStore.WebClient/src/components/admin/AdminSidebar.jsx
 // GameStore.WebClient/src/components/admin/AdminSidebar.jsx
@@ -5694,7 +5591,6 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/components/admin/CategoriesTab.jsx
 // GameStore.WebClient/src/components/admin/CategoriesTab.jsx
@@ -6111,7 +6007,6 @@ export default function CategoriesTab() {
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/admin/DashboardTab.jsx
 // GameStore.WebClient/src/components/admin/DashboardTab.jsx
 import { useMemo } from "react";
@@ -6514,7 +6409,6 @@ export default function DashboardTab({
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/admin/DeleteConfirmModal.jsx
 // GameStore.WebClient/src/components/admin/DeleteConfirmModal.jsx
 import { useState } from "react";
@@ -6600,7 +6494,6 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/components/admin/DeleteUserModal.jsx
 // GameStore.WebClient/src/components/admin/DeleteUserModal.jsx
@@ -6690,7 +6583,6 @@ export default function DeleteUserModal({ user, onClose, onConfirm }) {
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/components/admin/GameFormModal.jsx
 // GameStore.WebClient/src/components/admin/GameFormModal.jsx
@@ -7001,7 +6893,6 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/components/admin/GameKeysTab.jsx
 // GameStore.WebClient/src/components/admin/GameKeysTab.jsx
@@ -7624,7 +7515,6 @@ export default function GameKeysTab() {
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/admin/GamesTab.jsx
 // GameStore.WebClient/src/components/admin/GamesTab.jsx
 import { useState } from "react";
@@ -7942,7 +7832,6 @@ export default function GamesTab({
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/components/admin/OrdersTab.jsx
 // GameStore.WebClient/src/components/admin/OrdersTab.jsx
@@ -8290,7 +8179,6 @@ export default function OrdersTab({
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/admin/Pagination.jsx
 // GameStore.WebClient/src/components/admin/Pagination.jsx
 import { useMemo } from "react";
@@ -8482,7 +8370,6 @@ export default function Pagination({
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/components/admin/PaymentsTab.jsx
 // GameStore.WebClient/src/components/admin/PaymentsTab.jsx
@@ -9085,7 +8972,6 @@ export default function PaymentsTab() {
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/admin/SortableHeader.jsx
 // GameStore.WebClient/src/components/admin/SortableHeader.jsx
 import { ArrowUp, ArrowDown } from "lucide-react";
@@ -9112,7 +8998,6 @@ export default function SortableHeader({ field, sort, setSort, children }) {
     </th>
   );
 }
-
 
 FILE: GameStore.WebClient/src/components/admin/StaffRolesTab.jsx
 // GameStore.WebClient/src/components/admin/StaffRolesTab.jsx
@@ -10164,7 +10049,6 @@ export default function StaffRolesTab() {
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/admin/UserFormModal.jsx
 // GameStore.WebClient/src/components/admin/UserFormModal.jsx
 import { useState, useEffect } from "react";
@@ -10348,7 +10232,6 @@ export default function UserFormModal({ user, onClose, onSave }) {
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/admin/UsersTab.jsx
 // GameStore.WebClient/src/components/admin/UsersTab.jsx
 import { useState } from "react";
@@ -10521,7 +10404,6 @@ export default function UsersTab({
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/admin/adminStyles.js
 // GameStore.WebClient/src/components/admin/adminStyles.js
 // Shared styles and sort utilities for admin components
@@ -10589,7 +10471,6 @@ export const actionBtnStyle = {
   justifyContent: "center",
 };
 
-
 FILE: GameStore.WebClient/src/components/admin/index.js
 // GameStore.WebClient/src/components/admin/index.js
 export { default as AdminSidebar, tabs } from "./AdminSidebar";
@@ -10605,7 +10486,6 @@ export { default as GameFormModal } from "./GameFormModal";
 export { default as DeleteConfirmModal } from "./DeleteConfirmModal";
 export { default as Pagination } from "./Pagination";
 export { default as SortableHeader } from "./SortableHeader";
-
 
 FILE: GameStore.WebClient/src/components/common/ErrorBoundary.jsx
 // GameStore.WebClient/src/components/common/ErrorBoundary.jsx
@@ -10688,7 +10568,6 @@ export default class ErrorBoundary extends Component {
     return this.props.children;
   }
 }
-
 
 FILE: GameStore.WebClient/src/components/games/FeaturedSlider.jsx
 // GameStore.WebClient/src/components/games/FeaturedSlider.jsx
@@ -10805,7 +10684,6 @@ export default function FeaturedSlider({ games }) {
     </Swiper>
   );
 }
-
 
 FILE: GameStore.WebClient/src/components/games/GameCard.jsx
 // GameStore.WebClient/src/components/games/GameCard.jsx
@@ -11035,7 +10913,6 @@ export default function GameCard({ game }) {
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/layout/Footer.jsx
 // GameStore.WebClient/src/components/layout/Footer.jsx
 export default function Footer() {
@@ -11140,7 +11017,6 @@ export default function Footer() {
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/layout/MainLayout.jsx
 // GameStore.WebClient/src/components/layout/MainLayout.jsx
 import { Outlet } from "react-router-dom";
@@ -11160,7 +11036,6 @@ export default function MainLayout() {
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/components/layout/Navbar.jsx
 // GameStore.WebClient/src/components/layout/Navbar.jsx
@@ -11784,7 +11659,6 @@ export default function Navbar() {
   );
 }
 
-
 FILE: GameStore.WebClient/src/components/wallet/WalletModal.jsx
 // GameStore.WebClient/src/components/wallet/WalletModal.jsx
 import { useState } from "react";
@@ -12049,7 +11923,6 @@ export default function WalletModal({ onClose }) {
   );
 }
 
-
 FILE: GameStore.WebClient/src/contexts/AuthContext.jsx
 // GameStore.WebClient/src/contexts/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
@@ -12129,7 +12002,6 @@ export const useAuth = () => {
   return context;
 };
 
-
 FILE: GameStore.WebClient/src/main.jsx
 // GameStore.WebClient/src/main.jsx
 import { StrictMode } from "react";
@@ -12145,7 +12017,6 @@ createRoot(document.getElementById("root")).render(
     </BrowserRouter>
   </StrictMode>,
 );
-
 
 FILE: GameStore.WebClient/src/pages/AdminPage.jsx
 // GameStore.WebClient/src/pages/AdminPage.jsx
@@ -14222,7 +14093,6 @@ export default function AdminPage() {
   );
 }
 
-
 FILE: GameStore.WebClient/src/pages/CartPage.jsx
 // GameStore.WebClient/src/pages/CartPage.jsx
 import { useState } from "react";
@@ -14487,7 +14357,6 @@ const inputStyle = {
   width: "100%",
   transition: "border-color 0.2s",
 };
-
 
 FILE: GameStore.WebClient/src/pages/GameDetailPage.jsx
 // GameStore.WebClient/src/pages/GameDetailPage.jsx
@@ -15658,7 +15527,6 @@ function NotFound() {
   );
 }
 
-
 FILE: GameStore.WebClient/src/pages/HomePage.jsx
 // GameStore.WebClient/src/pages/HomePage.jsx
 import { useState, useEffect } from "react";
@@ -15827,7 +15695,6 @@ export default function HomePage() {
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/pages/InvoicePage.jsx
 // GameStore.WebClient/src/pages/InvoicePage.jsx
@@ -16327,7 +16194,6 @@ export default function InvoicePage() {
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/pages/LibraryPage.jsx
 // GameStore.WebClient/src/pages/LibraryPage.jsx
@@ -17019,7 +16885,6 @@ const smallBtnStyle = {
   justifyContent: "center",
 };
 
-
 FILE: GameStore.WebClient/src/pages/LoginPage.jsx
 // GameStore.WebClient/src/pages/LoginPage.jsx
 import { useState } from "react";
@@ -17236,7 +17101,6 @@ export default function LoginPage() {
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/pages/PaymentPage.jsx
 // GameStore.WebClient/src/pages/PaymentPage.jsx
@@ -17467,7 +17331,6 @@ const methodStyle = {
   transition: "all 0.2s ease",
 };
 
-
 FILE: GameStore.WebClient/src/pages/PurchaseHistoryPage.jsx
 // GameStore.WebClient/src/pages/PurchaseHistoryPage.jsx
 import { useState, useEffect } from "react";
@@ -17690,7 +17553,6 @@ export default function PurchaseHistoryPage() {
   );
 }
 
-
 FILE: GameStore.WebClient/src/pages/RegisterPage.jsx
 // GameStore.WebClient/src/pages/RegisterPage.jsx
 import { useState } from "react";
@@ -17873,7 +17735,6 @@ export default function RegisterPage() {
     </div>
   );
 }
-
 
 FILE: GameStore.WebClient/src/pages/StorePage.jsx
 // GameStore.WebClient/src/pages/StorePage.jsx
@@ -18204,7 +18065,6 @@ const pageBtnStyle = {
   fontWeight: 600,
 };
 
-
 FILE: GameStore.WebClient/src/pages/WishlistPage.jsx
 // GameStore.WebClient/src/pages/WishlistPage.jsx
 import { useState, useEffect } from "react";
@@ -18388,7 +18248,6 @@ export default function WishlistPage() {
   );
 }
 
-
 FILE: GameStore.WebClient/src/services/api.js
 // GameStore.WebClient/src/services/api.js
 // src/services/api.js
@@ -18499,7 +18358,6 @@ export const adminAPI = {
 };
 export default api;
 
-
 FILE: GameStore.WebClient/src/stores/cartStore.js
 // GameStore.WebClient/src/stores/cartStore.js
 import { create } from "zustand";
@@ -18538,7 +18396,6 @@ const useCartStore = create((set, get) => ({
 }));
 
 export default useCartStore;
-
 
 FILE: GameStore.WebClient/src/styles/global.css
 /* GameStore.WebClient/src/styles/global.css */
@@ -18682,7 +18539,6 @@ a {
   animation: fadeIn 0.3s ease;
 }
 
-
 FILE: GameStore.WebClient/vite.config.js
 // GameStore.WebClient/vite.config.js
 import { defineConfig } from "vite";
@@ -18695,7 +18551,6 @@ export default defineConfig({
     proxy: { "/api": { target: "http://localhost:5000", changeOrigin: true } },
   },
 });
-
 
 FILE: GameStore.sln
 # GameStore.sln
@@ -18760,7 +18615,6 @@ Global
 	EndGlobalSection
 EndGlobal
 
-
 FILE: GameStore.slnx
 <!-- GameStore/GameStore.slnx -->
 <Solution>
@@ -18773,7 +18627,6 @@ FILE: GameStore.slnx
   <Project Path="GameStore.Repository/GameStore.Repository.csproj" />
   <Project Path="GameStore.Services/GameStore.Services.csproj" />
 </Solution>
-
 
 FILE: dump-project.sh
 #!/usr/bin/env bash
@@ -18819,7 +18672,6 @@ do
         fi
 
         echo
-        echo
     } >> "$OUTPUT_FILE"
 
 done
@@ -18827,7 +18679,6 @@ done
 echo
 echo "Done."
 echo "Saved to: $OUTPUT_FILE"
-
 
 FILE: kill-all.sh
 # kill-all.sh
@@ -18875,7 +18726,6 @@ pkill -f "vite" 2>/dev/null
 echo  "\n${GREEN}${BOLD}╔══════════════════════════════════════════════════════════════╗"
 echo  "║              ✅  ALL SERVICES STOPPED                       ║"
 echo  "╚══════════════════════════════════════════════════════════════╝${NC}"
-
 
 FILE: run-all.sh
 # run-all.sh
@@ -18952,5 +18802,4 @@ echo "║  📝 Logs         : ${LOGS_DIR}                               ║"
 echo "║  🛑 Stop all     : ./kill-all.sh                             ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
 echo "${NC}"
-
 
