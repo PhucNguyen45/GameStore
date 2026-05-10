@@ -1,4 +1,3 @@
-// GameStore.Repository/Migrations/20260503151116_InitialCreate.cs
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -9,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace GameStore.Repository.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class InitialUnified : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -161,6 +160,27 @@ namespace GameStore.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RolePermissions",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    Permission = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RolePermissions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RolePermissions_Roles_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "Roles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AccessTokens",
                 columns: table => new
                 {
@@ -217,6 +237,30 @@ namespace GameStore.Repository.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Link = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsRead = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Orders",
                 columns: table => new
                 {
@@ -226,6 +270,8 @@ namespace GameStore.Repository.Migrations
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(450)", nullable: false, defaultValue: "Pending"),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Phone = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Wallet")
                 },
                 constraints: table =>
@@ -365,18 +411,67 @@ namespace GameStore.Repository.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "Games",
-                columns: new[] { "Id", "CoverImageUrl", "CreatedAt", "Description", "Developer", "DiscountPrice", "IsActive", "MinimumGraphics", "MinimumMemory", "MinimumOS", "MinimumProcessor", "MinimumStorage", "Price", "Publisher", "Rating", "RatingCount", "ReleaseDate", "Screenshots", "Title", "TotalSales", "TrailerUrl" },
-                values: new object[] { 1, "https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(6884), "Gray Zone Warfare is an immersive tactical FPS with a maximum focus on realism. Join a Private Military Company and explore a vast MMO open world where every decision matters. Engage in high-stakes PvEvP and PvE combat, uncover the mysteries of Lamang Island, and fight for survival against both human enemies and AI-controlled factions in an unforgiving environment.", "MADFINGER Games", 27.99m, true, "NVIDIA GeForce GTX 1080 / AMD Radeon RX 5700", "16 GB RAM", "Windows 10 64-bit", "Intel Core i5-8600 / AMD Ryzen 5 2600", "40 GB available space", 34.99m, "MADFINGER Games", 4.2000000000000002, 28500, new DateTime(2024, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_4.jpg\"]", "Gray Zone Warfare", 150000, "https://www.youtube.com/watch?v=UlNkVsB56Gw" });
-
-            migrationBuilder.InsertData(
-                table: "Games",
-                columns: new[] { "Id", "CoverImageUrl", "CreatedAt", "Description", "Developer", "DiscountPrice", "IsActive", "MinimumGraphics", "MinimumMemory", "MinimumOS", "MinimumProcessor", "MinimumStorage", "Publisher", "Rating", "RatingCount", "ReleaseDate", "Screenshots", "Title", "TotalSales", "TrailerUrl" },
-                values: new object[,]
+            migrationBuilder.CreateTable(
+                name: "Payments",
+                columns: table => new
                 {
-                    { 2, "https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9945), "World of Tanks is a team-based, massively multiplayer online action game dedicated to armored warfare in the mid-20th century. Throw yourself into epic tank battles with over 600 vehicles from 11 nations. Cooperate with your teammates, plan your strategy, and dominate the battlefield with realistic tank physics and strategic gameplay.", "Wargaming", null, true, "NVIDIA GeForce GT 610 / AMD Radeon HD 6450", "4 GB RAM", "Windows 7 64-bit", "Intel Core i3-2100 / AMD Phenom II X4 955", "70 GB available space", "Wargaming", 4.5, 350000, new DateTime(2010, 8, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_4.jpg\"]", "World of Tanks", 5000000, "https://www.youtube.com/watch?v=6LreDfD7Zds" },
-                    { 3, "https://cdn.cloudflare.steamstatic.com/steam/apps/236390/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9962), "War Thunder is the most comprehensive free-to-play, cross-platform MMO military game dedicated to aviation, armored vehicles, and naval craft from the early 20th century to the most advanced modern combat units. Join now and take part in major battles on land, in the air, and at sea, fighting with millions of players from all over the world in an ever-evolving environment.", "Gaijin Entertainment", null, true, "NVIDIA GeForce GTX 660 / AMD Radeon HD 7850", "8 GB RAM", "Windows 10 64-bit", "Intel Core i5-2500 / AMD FX-8350", "50 GB available space", "Gaijin Entertainment", 4.2999999999999998, 520000, new DateTime(2013, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_4.jpg\"]", "War Thunder", 8000000, "https://www.youtube.com/watch?v=TtFk6Gnx9M4" }
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    Amount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "Wallet"),
+                    Status = table.Column<string>(type: "nvarchar(450)", nullable: false, defaultValue: "Completed"),
+                    TransactionId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Note = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PaidAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payments_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GameKeys",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    GameId = table.Column<int>(type: "int", nullable: false),
+                    KeyCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    IsUsed = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    OrderDetailId = table.Column<int>(type: "int", nullable: true),
+                    UsedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    GameId1 = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GameKeys", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GameKeys_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GameKeys_Games_GameId1",
+                        column: x => x.GameId1,
+                        principalTable: "Games",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_GameKeys_OrderDetails_OrderDetailId",
+                        column: x => x.OrderDetailId,
+                        principalTable: "OrderDetails",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.SetNull);
                 });
 
             migrationBuilder.InsertData(
@@ -384,15 +479,18 @@ namespace GameStore.Repository.Migrations
                 columns: new[] { "Id", "CoverImageUrl", "CreatedAt", "Description", "Developer", "DiscountPrice", "IsActive", "MinimumGraphics", "MinimumMemory", "MinimumOS", "MinimumProcessor", "MinimumStorage", "Price", "Publisher", "Rating", "RatingCount", "ReleaseDate", "Screenshots", "Title", "TotalSales", "TrailerUrl" },
                 values: new object[,]
                 {
-                    { 4, "https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9966), "Escape from Tarkov is a hardcore and realistic online first-person action RPG/Simulator with MMO features and a story-driven walkthrough. With each passing day the situation in the Norvinsk region grows more complicated. Incessant warfare has exhausted the local population, leaving them divided and vulnerable to exploitation by private military companies.", "Battlestate Games", 44.99m, true, "NVIDIA GeForce GTX 1050 / AMD Radeon RX 560", "12 GB RAM", "Windows 10 64-bit", "Intel Core i5-2500K / AMD Ryzen 3 1200", "35 GB available space", 49.99m, "Battlestate Games", 4.0999999999999996, 180000, new DateTime(2017, 7, 27, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_4.jpg\"]", "Escape from Tarkov", 3000000, "https://www.youtube.com/watch?v=5HEk2sh9Q_o" },
-                    { 5, "https://cdn.cloudflare.steamstatic.com/steam/apps/107410/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9970), "Experience true combat gameplay in a massive military sandbox. Deploying a wide variety of single- and multiplayer content, over 20 vehicles and 40 weapons, and limitless opportunities for content creation, ARMA 3 is the PC's premier military game. Authentic, diverse, open - ARMA 3 sends you to war.", "Bohemia Interactive", 9.99m, true, "NVIDIA GeForce GTX 560 / AMD Radeon HD 7750", "8 GB RAM", "Windows 7 64-bit", "Intel Core i5-2300 / AMD Phenom II X4 940", "45 GB available space", 29.99m, "Bohemia Interactive", 4.7000000000000002, 450000, new DateTime(2013, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_4.jpg\"]", "ARMA 3", 10000000, "https://www.youtube.com/watch?v=OU9LWflcI_Y" },
-                    { 6, "https://cdn.cloudflare.steamstatic.com/steam/apps/686810/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9974), "Join the ever-expanding Hell Let Loose experience - a hardcore World War Two first person shooter with epic battles of 100 players with infantry, tanks, artillery, a dynamically shifting front line and a unique resource-based RTS-inspired meta-game. Fight in the most iconic battles of the Western Front, including Omaha Beach, Carentan, and Foy.", "Black Matter", 29.99m, true, "NVIDIA GeForce GTX 960 / AMD Radeon R9 380", "12 GB RAM", "Windows 10 64-bit", "Intel Core i5-6600 / AMD Ryzen 5 1400", "30 GB available space", 39.99m, "Team17", 4.5999999999999996, 85000, new DateTime(2021, 7, 27, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_4.jpg\"]", "Hell Let Loose", 2500000, "https://www.youtube.com/watch?v=mV-ksD1vY5o" },
-                    { 7, "https://cdn.cloudflare.steamstatic.com/steam/apps/393380/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9977), "Squad is a tactical FPS that provides authentic combat experiences through teamwork, communication, and realistic combat. It bridges the gap between arcade shooter and military simulation with large-scale combined arms warfare, base building, and integrated voice communication.", "Offworld", null, true, "NVIDIA GeForce GTX 770 / AMD Radeon R9 290", "8 GB RAM", "Windows 10 64-bit", "Intel Core i5-2500K / AMD FX-6300", "55 GB available space", 49.99m, "Offworld", 4.5, 150000, new DateTime(2020, 9, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_4.jpg\"]", "Squad", 4000000, "https://www.youtube.com/watch?v=YviNkuXLMg4" },
-                    { 8, "https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9980), "Ready or Not is an intense, tactical, first-person shooter that depicts a modern-day world in which SWAT police units are called to defuse hostile and confronting situations. Inspired by the SWAT series, Ready or Not brings a level of realism, tactical planning, and team-based coordination rarely seen in modern shooters.", "VOID Interactive", 34.99m, true, "NVIDIA GeForce GTX 960 / AMD Radeon R7 370", "8 GB RAM", "Windows 10 64-bit", "Intel Core i5-4430 / AMD FX-6300", "90 GB available space", 39.99m, "VOID Interactive", 4.7999999999999998, 95000, new DateTime(2023, 12, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_4.jpg\"]", "Ready or Not", 1800000, "https://www.youtube.com/watch?v=saKvD9xBRts" },
-                    { 9, "https://cdn.cloudflare.steamstatic.com/steam/apps/581320/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9985), "Insurgency: Sandstorm is a team-based, tactical FPS based on lethal close quarters combat and objective-oriented multiplayer gameplay. Experience the intensity of modern combat where skill is rewarded, and teamwork wins the fight. Sequenced in a fictional contemporary Middle Eastern conflict, featuring both PvP and co-op modes.", "New World Interactive", 14.99m, true, "NVIDIA GeForce GTX 760 / AMD Radeon HD 7970", "8 GB RAM", "Windows 7 64-bit", "Intel Core i5-4440 / AMD FX-6300", "40 GB available space", 29.99m, "Focus Entertainment", 4.4000000000000004, 170000, new DateTime(2018, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_4.jpg\"]", "Insurgency: Sandstorm", 3500000, "https://www.youtube.com/watch?v=GwCWgM1JxBs" },
-                    { 10, "https://cdn.cloudflare.steamstatic.com/steam/apps/16900/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 672, DateTimeKind.Local).AddTicks(9989), "Ground Branch is a realistic tactical first-person shooter from one of the developers behind the original Rainbow Six and Ghost Recon games. Think, plan, and move carefully through highly detailed environments while engaging enemies in realistic firefights where bullets are deadly and every decision counts.", "BlackFoot Studios", null, true, "NVIDIA GeForce GTX 760 / AMD Radeon HD 7950", "8 GB RAM", "Windows 10 64-bit", "Intel Core i5-2500K / AMD FX-8350", "25 GB available space", 29.99m, "BlackFoot Studios", 4.4000000000000004, 12000, new DateTime(2022, 9, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_4.jpg\"]", "Ground Branch", 450000, "https://www.youtube.com/watch?v=QZBmXK-G3-g" },
-                    { 11, "https://cdn.cloudflare.steamstatic.com/steam/apps/221100/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 673, DateTimeKind.Local).AddTicks(4), "DayZ is a hardcore open-world survival game with an extreme emphasis on player interaction. You are one of the few who have survived a mysterious zombie outbreak in the post-Soviet Republic of Chernarus. Scavenge for supplies, craft items, build bases, and fight against zombies and other desperate survivors in a sprawling 230km² landscape.", "Bohemia Interactive", 29.99m, true, "NVIDIA GeForce GTX 760 / AMD Radeon R9 270", "8 GB RAM", "Windows 10 64-bit", "Intel Core i5-4430 / AMD FX-6300", "25 GB available space", 49.99m, "Bohemia Interactive", 3.8999999999999999, 290000, new DateTime(2018, 12, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_4.jpg\"]", "DayZ", 6000000, "https://www.youtube.com/watch?v=H9PHj4R2l5Y" },
-                    { 12, "https://cdn.cloudflare.steamstatic.com/steam/apps/736220/header.jpg", new DateTime(2026, 5, 3, 15, 11, 15, 673, DateTimeKind.Local).AddTicks(7), "Post Scriptum is a WW2 simulation game, focusing on historical accuracy, large scale battles, the difficulty of coalition warfare and an intense battlefield, with an emphasis on logistics and combined arms. Fight across the Arnhem bridge, the dunes of Normandy, and through the streets of the Netherlands.", "Periscope Games", 19.99m, true, "NVIDIA GeForce GTX 970 / AMD Radeon R9 290", "8 GB RAM", "Windows 7 64-bit", "Intel Core i5-2500K / AMD Ryzen 3 1200", "35 GB available space", 29.99m, "Offworld", 4.2000000000000002, 28000, new DateTime(2018, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_4.jpg\"]", "Post Scriptum", 1200000, "https://www.youtube.com/watch?v=gKlJ4VCGmTE" }
+                    { 1, "https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 954, DateTimeKind.Utc).AddTicks(6054), "Gray Zone Warfare is an immersive tactical FPS with a maximum focus on realism. Join a Private Military Company and explore a vast MMO open world where every decision matters. Engage in high-stakes PvEvP and PvE combat, uncover the mysteries of Lamang Island, and fight for survival against both human enemies and AI-controlled factions in an unforgiving environment.", "MADFINGER Games", 27.99m, true, "NVIDIA GeForce GTX 1080 / AMD Radeon RX 5700", "16 GB RAM", "Windows 10 64-bit", "Intel Core i5-8600 / AMD Ryzen 5 2600", "40 GB available space", 34.99m, "MADFINGER Games", 4.2000000000000002, 28500, new DateTime(2024, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_4.jpg\"]", "Gray Zone Warfare", 150000, "https://www.youtube.com/watch?v=UlNkVsB56Gw" },
+                    { 2, "https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5799), "World of Tanks is a team-based, massively multiplayer online action game dedicated to armored warfare in the mid-20th century. Throw yourself into epic tank battles with over 600 vehicles from 11 nations. Cooperate with your teammates, plan your strategy, and dominate the battlefield with realistic tank physics and strategic gameplay.", "Wargaming", 9.99m, true, "NVIDIA GeForce GT 610 / AMD Radeon HD 6450", "4 GB RAM", "Windows 7 64-bit", "Intel Core i3-2100 / AMD Phenom II X4 955", "70 GB available space", 19.99m, "Wargaming", 4.5, 350000, new DateTime(2010, 8, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_4.jpg\"]", "World of Tanks", 5000000, "https://www.youtube.com/watch?v=6LreDfD7Zds" },
+                    { 3, "https://cdn.cloudflare.steamstatic.com/steam/apps/236390/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5816), "War Thunder is the most comprehensive free-to-play, cross-platform MMO military game dedicated to aviation, armored vehicles, and naval craft from the early 20th century to the most advanced modern combat units. Join now and take part in major battles on land, in the air, and at sea, fighting with millions of players from all over the world in an ever-evolving environment.", "Gaijin Entertainment", null, true, "NVIDIA GeForce GTX 660 / AMD Radeon HD 7850", "8 GB RAM", "Windows 10 64-bit", "Intel Core i5-2500 / AMD FX-8350", "50 GB available space", 14.99m, "Gaijin Entertainment", 4.2999999999999998, 520000, new DateTime(2013, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_4.jpg\"]", "War Thunder", 8000000, "https://www.youtube.com/watch?v=TtFk6Gnx9M4" },
+                    { 4, "https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5821), "Escape from Tarkov is a hardcore and realistic online first-person action RPG/Simulator with MMO features and a story-driven walkthrough. With each passing day the situation in the Norvinsk region grows more complicated. Incessant warfare has exhausted the local population, leaving them divided and vulnerable to exploitation by private military companies.", "Battlestate Games", 44.99m, true, "NVIDIA GeForce GTX 1050 / AMD Radeon RX 560", "12 GB RAM", "Windows 10 64-bit", "Intel Core i5-2500K / AMD Ryzen 3 1200", "35 GB available space", 49.99m, "Battlestate Games", 4.0999999999999996, 180000, new DateTime(2017, 7, 27, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_4.jpg\"]", "Escape from Tarkov", 3000000, "https://www.youtube.com/watch?v=5HEk2sh9Q_o" },
+                    { 5, "https://cdn.cloudflare.steamstatic.com/steam/apps/107410/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5825), "Experience true combat gameplay in a massive military sandbox. Deploying a wide variety of single- and multiplayer content, over 20 vehicles and 40 weapons, and limitless opportunities for content creation, ARMA 3 is the PC's premier military game. Authentic, diverse, open - ARMA 3 sends you to war.", "Bohemia Interactive", 9.99m, true, "NVIDIA GeForce GTX 560 / AMD Radeon HD 7750", "8 GB RAM", "Windows 7 64-bit", "Intel Core i5-2300 / AMD Phenom II X4 940", "45 GB available space", 29.99m, "Bohemia Interactive", 4.7000000000000002, 450000, new DateTime(2013, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_4.jpg\"]", "ARMA 3", 10000000, "https://www.youtube.com/watch?v=OU9LWflcI_Y" },
+                    { 6, "https://cdn.cloudflare.steamstatic.com/steam/apps/686810/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5830), "Join the ever-expanding Hell Let Loose experience - a hardcore World War Two first person shooter with epic battles of 100 players with infantry, tanks, artillery, a dynamically shifting front line and a unique resource-based RTS-inspired meta-game. Fight in the most iconic battles of the Western Front, including Omaha Beach, Carentan, and Foy.", "Black Matter", 29.99m, true, "NVIDIA GeForce GTX 960 / AMD Radeon R9 380", "12 GB RAM", "Windows 10 64-bit", "Intel Core i5-6600 / AMD Ryzen 5 1400", "30 GB available space", 39.99m, "Team17", 4.5999999999999996, 85000, new DateTime(2021, 7, 27, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_4.jpg\"]", "Hell Let Loose", 2500000, "https://www.youtube.com/watch?v=mV-ksD1vY5o" },
+                    { 7, "https://cdn.cloudflare.steamstatic.com/steam/apps/393380/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5835), "Squad is a tactical FPS that provides authentic combat experiences through teamwork, communication, and realistic combat. It bridges the gap between arcade shooter and military simulation with large-scale combined arms warfare, base building, and integrated voice communication.", "Offworld", null, true, "NVIDIA GeForce GTX 770 / AMD Radeon R9 290", "8 GB RAM", "Windows 10 64-bit", "Intel Core i5-2500K / AMD FX-6300", "55 GB available space", 49.99m, "Offworld", 4.5, 150000, new DateTime(2020, 9, 23, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_4.jpg\"]", "Squad", 4000000, "https://www.youtube.com/watch?v=YviNkuXLMg4" },
+                    { 8, "https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5841), "Ready or Not is an intense, tactical, first-person shooter that depicts a modern-day world in which SWAT police units are called to defuse hostile and confronting situations. Inspired by the SWAT series, Ready or Not brings a level of realism, tactical planning, and team-based coordination rarely seen in modern shooters.", "VOID Interactive", 34.99m, true, "NVIDIA GeForce GTX 960 / AMD Radeon R7 370", "8 GB RAM", "Windows 10 64-bit", "Intel Core i5-4430 / AMD FX-6300", "90 GB available space", 39.99m, "VOID Interactive", 4.7999999999999998, 95000, new DateTime(2023, 12, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_4.jpg\"]", "Ready or Not", 1800000, "https://www.youtube.com/watch?v=saKvD9xBRts" },
+                    { 9, "https://cdn.cloudflare.steamstatic.com/steam/apps/581320/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5845), "Insurgency: Sandstorm is a team-based, tactical FPS based on lethal close quarters combat and objective-oriented multiplayer gameplay. Experience the intensity of modern combat where skill is rewarded, and teamwork wins the fight. Sequenced in a fictional contemporary Middle Eastern conflict, featuring both PvP and co-op modes.", "New World Interactive", 14.99m, true, "NVIDIA GeForce GTX 760 / AMD Radeon HD 7970", "8 GB RAM", "Windows 7 64-bit", "Intel Core i5-4440 / AMD FX-6300", "40 GB available space", 29.99m, "Focus Entertainment", 4.4000000000000004, 170000, new DateTime(2018, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_4.jpg\"]", "Insurgency: Sandstorm", 3500000, "https://www.youtube.com/watch?v=GwCWgM1JxBs" },
+                    { 10, "https://cdn.cloudflare.steamstatic.com/steam/apps/16900/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5850), "Ground Branch is a realistic tactical first-person shooter from one of the developers behind the original Rainbow Six and Ghost Recon games. Think, plan, and move carefully through highly detailed environments while engaging enemies in realistic firefights where bullets are deadly and every decision counts.", "BlackFoot Studios", null, true, "NVIDIA GeForce GTX 760 / AMD Radeon HD 7950", "8 GB RAM", "Windows 10 64-bit", "Intel Core i5-2500K / AMD FX-8350", "25 GB available space", 29.99m, "BlackFoot Studios", 4.4000000000000004, 12000, new DateTime(2022, 9, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_4.jpg\"]", "Ground Branch", 450000, "https://www.youtube.com/watch?v=QZBmXK-G3-g" },
+                    { 11, "https://cdn.cloudflare.steamstatic.com/steam/apps/221100/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5854), "DayZ is a hardcore open-world survival game with an extreme emphasis on player interaction. You are one of the few who have survived a mysterious zombie outbreak in the post-Soviet Republic of Chernarus. Scavenge for supplies, craft items, build bases, and fight against zombies and other desperate survivors in a sprawling 230km² landscape.", "Bohemia Interactive", 29.99m, true, "NVIDIA GeForce GTX 760 / AMD Radeon R9 270", "8 GB RAM", "Windows 10 64-bit", "Intel Core i5-4430 / AMD FX-6300", "25 GB available space", 49.99m, "Bohemia Interactive", 3.8999999999999999, 290000, new DateTime(2018, 12, 13, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_4.jpg\"]", "DayZ", 6000000, "https://www.youtube.com/watch?v=H9PHj4R2l5Y" },
+                    { 12, "https://cdn.cloudflare.steamstatic.com/steam/apps/736220/header.jpg", new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5858), "Post Scriptum is a WW2 simulation game, focusing on historical accuracy, large scale battles, the difficulty of coalition warfare and an intense battlefield, with an emphasis on logistics and combined arms. Fight across the Arnhem bridge, the dunes of Normandy, and through the streets of the Netherlands.", "Periscope Games", 19.99m, true, "NVIDIA GeForce GTX 970 / AMD Radeon R9 290", "8 GB RAM", "Windows 7 64-bit", "Intel Core i5-2500K / AMD Ryzen 3 1200", "35 GB available space", 29.99m, "Offworld", 4.2000000000000002, 28000, new DateTime(2018, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified), "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_4.jpg\"]", "Post Scriptum", 1200000, "https://www.youtube.com/watch?v=gKlJ4VCGmTE" }
                 });
 
             migrationBuilder.InsertData(
@@ -442,10 +540,15 @@ namespace GameStore.Repository.Migrations
                 columns: new[] { "Id", "Created", "CreatedBy", "CreatedDateTime", "CreatedUser", "Description", "Guid", "IsActive", "IsDeleted", "Modified", "ModifiedBy", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", new DateTime(2026, 5, 3, 15, 11, 15, 671, DateTimeKind.Local).AddTicks(7805), "", "Administrator", new Guid("10000000-0000-0000-0000-000000000001"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", "Admin" },
-                    { 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", new DateTime(2026, 5, 3, 15, 11, 15, 671, DateTimeKind.Local).AddTicks(9336), "", "Regular User", new Guid("20000000-0000-0000-0000-000000000002"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", "User" },
-                    { 3, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", new DateTime(2026, 5, 3, 15, 11, 15, 671, DateTimeKind.Local).AddTicks(9346), "", "Game Publisher", new Guid("30000000-0000-0000-0000-000000000003"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "", "Publisher" }
+                    { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "", new DateTime(2026, 5, 10, 13, 27, 54, 871, DateTimeKind.Utc).AddTicks(9810), "", "Administrator", new Guid("10000000-0000-0000-0000-000000000001"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "", "Admin" },
+                    { 2, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "", new DateTime(2026, 5, 10, 13, 27, 54, 872, DateTimeKind.Utc).AddTicks(2387), "", "Regular User", new Guid("20000000-0000-0000-0000-000000000002"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "", "User" },
+                    { 3, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "", new DateTime(2026, 5, 10, 13, 27, 54, 872, DateTimeKind.Utc).AddTicks(2398), "", "Game Publisher", new Guid("30000000-0000-0000-0000-000000000003"), true, false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "", "Publisher" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "AvatarUrl", "CreatedAt", "DisplayName", "Email", "IsActive", "Password", "Phone", "Salt", "Username", "Wallet" },
+                values: new object[] { 1, "", new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "Administrator", "admin@gamestore.com", true, "fcwIuW5Lwv7Bjf6MJYM4ezTIE078ueJr++1RfTyF3IQ=", "", new byte[] { 188, 220, 162, 68, 4, 15, 3, 34, 226, 185, 189, 70, 81, 84, 71, 0 }, "admin", 9999m });
 
             migrationBuilder.InsertData(
                 table: "GameGenres",
@@ -513,6 +616,11 @@ namespace GameStore.Repository.Migrations
                     { 59, 12, 29 }
                 });
 
+            migrationBuilder.InsertData(
+                table: "UserRoles",
+                columns: new[] { "Id", "Created", "CreatedBy", "CreatedDateTime", "CreatedUser", "Guid", "IsDeleted", "Modified", "ModifiedBy", "RoleId", "UserId" },
+                values: new object[] { 1, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "system", new DateTime(2026, 5, 10, 13, 27, 54, 953, DateTimeKind.Utc).AddTicks(6743), "", new Guid("00000000-0000-0000-0000-000000000001"), false, new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "system", 1, 1 });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AccessTokens_Token",
                 table: "AccessTokens",
@@ -534,6 +642,27 @@ namespace GameStore.Repository.Migrations
                 name: "IX_GameGenres_GenreId",
                 table: "GameGenres",
                 column: "GenreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameKeys_GameId_IsUsed",
+                table: "GameKeys",
+                columns: new[] { "GameId", "IsUsed" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameKeys_GameId1",
+                table: "GameKeys",
+                column: "GameId1");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameKeys_KeyCode",
+                table: "GameKeys",
+                column: "KeyCode",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GameKeys_OrderDetailId",
+                table: "GameKeys",
+                column: "OrderDetailId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Games_IsActive",
@@ -573,6 +702,16 @@ namespace GameStore.Repository.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Notifications_IsRead",
+                table: "Notifications",
+                column: "IsRead");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId",
+                table: "Notifications",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderDetails_GameId",
                 table: "OrderDetails",
                 column: "GameId");
@@ -598,6 +737,16 @@ namespace GameStore.Repository.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Payments_OrderId",
+                table: "Payments",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Payments_Status",
+                table: "Payments",
+                column: "Status");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reviews_CreatedAt",
                 table: "Reviews",
                 column: "CreatedAt");
@@ -611,6 +760,12 @@ namespace GameStore.Repository.Migrations
                 name: "IX_Reviews_UserId_GameId",
                 table: "Reviews",
                 columns: new[] { "UserId", "GameId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RolePermissions_RoleId_Permission",
+                table: "RolePermissions",
+                columns: new[] { "RoleId", "Permission" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -675,13 +830,22 @@ namespace GameStore.Repository.Migrations
                 name: "GameGenres");
 
             migrationBuilder.DropTable(
+                name: "GameKeys");
+
+            migrationBuilder.DropTable(
                 name: "Libraries");
 
             migrationBuilder.DropTable(
-                name: "OrderDetails");
+                name: "Notifications");
+
+            migrationBuilder.DropTable(
+                name: "Payments");
 
             migrationBuilder.DropTable(
                 name: "Reviews");
+
+            migrationBuilder.DropTable(
+                name: "RolePermissions");
 
             migrationBuilder.DropTable(
                 name: "Settings");
@@ -696,13 +860,16 @@ namespace GameStore.Repository.Migrations
                 name: "Genres");
 
             migrationBuilder.DropTable(
-                name: "Orders");
+                name: "OrderDetails");
 
             migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Games");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "Users");
