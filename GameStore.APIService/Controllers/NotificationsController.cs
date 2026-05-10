@@ -12,10 +12,10 @@ namespace GameStore.APIService.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class NotificationController : ControllerBase
+public class NotificationsController : ControllerBase
 {
     private readonly INotificationService _notiService;
-    public NotificationController(INotificationService notiService) => _notiService = notiService;
+    public NotificationsController(INotificationService notiService) => _notiService = notiService;
 
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] bool unread = false)
