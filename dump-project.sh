@@ -41,7 +41,6 @@ do
         fi
 
         echo
-        echo
     } >> "$OUTPUT_FILE"
 
 done
