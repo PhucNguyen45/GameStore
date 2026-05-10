@@ -194,11 +194,12 @@ FILE: GameStore structure.txt
 │   └── vite.config.js
 ├── GameStore.sln
 ├── GameStore.slnx
+├── dump-project.sh
 ├── kill-all.sh
 ├── project_dump.txt
 └── run-all.sh
 
-45 directories, 150 files
+45 directories, 151 files
 
 
 ==================================================
