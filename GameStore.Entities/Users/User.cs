@@ -26,6 +26,7 @@ public class User
     public virtual ICollection<Library> Libraries { get; set; } = new HashSet<Library>();
     public virtual ICollection<Wishlist> Wishlists { get; set; } = new HashSet<Wishlist>();
     public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
+    public virtual ICollection<Notification> Notifications { get; set; } = new HashSet<Notification>();
     public virtual ICollection<Order> Orders { get; set; } = new HashSet<Order>();
     public virtual ICollection<AccessToken> AccessTokens { get; set; } = new HashSet<AccessToken>();
 }

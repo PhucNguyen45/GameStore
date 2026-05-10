@@ -36,6 +36,7 @@ public class GameStoreDbContext : DbContext
   public DbSet<Order> Orders => Set<Order>();
   public DbSet<OrderDetail> OrderDetails => Set<OrderDetail>();
   public DbSet<Payment> Payments => Set<Payment>();
+  public DbSet<Notification> Notifications => Set<Notification>();
 
   // ── Admin ──
   public DbSet<Setting> Settings => Set<Setting>();
@@ -172,6 +173,19 @@ public class GameStoreDbContext : DbContext
           });
       entity.Property(e => e.IsRecommended).HasDefaultValue(false);
       entity.Property(e => e.HelpfulCount).HasDefaultValue(0);
+    });
+
+    // ──────────────── NOTIFICATION ────────────────
+    modelBuilder.Entity<Notification>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.HasOne(e => e.User)
+        .WithMany(u => u.Notifications)
+        .HasForeignKey(e => e.UserId)
+        .OnDelete(DeleteBehavior.Cascade);
+      entity.HasIndex(e => e.UserId);
+      entity.HasIndex(e => e.IsRead);
+      entity.Property(e => e.IsRead).HasDefaultValue(false);
     });
 
     // ──────────────── ORDER ────────────────
