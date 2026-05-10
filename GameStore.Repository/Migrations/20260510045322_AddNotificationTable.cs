@@ -1,3 +1,4 @@
+// GameStore.Repository/Migrations/20260510045322_AddNotificationTable.cs
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 

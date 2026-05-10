@@ -1,3 +1,4 @@
+// GameStore.DTOs/Admin/CategoryDto.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;

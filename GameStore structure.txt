@@ -1,3 +1,4 @@
+# GameStore structure.txt
 .
 ├── GameStore structure.txt
 ├── GameStore.APIService

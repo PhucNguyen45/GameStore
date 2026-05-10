@@ -1,3 +1,4 @@
+// GameStore.Services/IAdminService.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;

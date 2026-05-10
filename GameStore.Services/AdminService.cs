@@ -1,3 +1,4 @@
+// GameStore.Services/AdminService.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ public class AdminService : IAdminService
     private readonly GameStoreDbContext _context;
     private readonly IGameService _gameService;
     private readonly IOrderService _orderService;
-    private readonly INotificationService _notificationService; // thêm
+    private readonly INotificationService _notificationService;
 
     public AdminService(GameStoreDbContext context, IGameService gameService, IOrderService orderService, INotificationService notificationService)
     {
@@ -88,6 +89,22 @@ public class AdminService : IAdminService
             }
             await _context.SaveChangesAsync();
         }
+
+        // Tự động sinh 10-20 game keys, hết hạn sau 1 ngày
+        var random = new Random();
+        int keyCount = random.Next(10, 21);
+        for (int i = 0; i < keyCount; i++)
+        {
+            _context.GameKeys.Add(new GameKey
+            {
+                GameId = created.Id,
+                KeyCode = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper(),
+                ExpiresAt = DateTime.UtcNow.AddDays(1),
+                CreatedAt = DateTime.UtcNow,
+                IsUsed = false
+            });
+        }
+        await _context.SaveChangesAsync();
 
         return created;
     }

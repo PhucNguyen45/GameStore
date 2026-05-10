@@ -391,8 +391,8 @@ export default function GameDetailPage() {
             >
               <Heart
                 size={16}
-                fill={wishlisted ? "#fff" : "none"}
-                color={wishlisted ? "#fff" : "inherit"}
+                fill={wishlisted ? "#ffffff" : "none"}
+                color={wishlisted ? "#ffffff" : "inherit"}
               />
             </button>
           </div>

@@ -10,6 +10,7 @@ using GameStore.Entities.Auth;
 using GameStore.Entities.Games;
 using GameStore.Entities.Store;
 using GameStore.Entities.Settings;
+using GameStore.Common.Auth;
 
 namespace GameStore.Repository;
 
@@ -277,6 +278,35 @@ public class GameStoreDbContext : DbContext
           Modified = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         }
     );
+
+    byte[] adminSalt;
+    var adminPasswordHash = TokenHelper.HashPassword("admin123", out adminSalt);
+
+    modelBuilder.Entity<User>().HasData(new User
+    {
+      Id = 1,
+      Username = "admin",
+      Password = adminPasswordHash,
+      Salt = adminSalt,
+      DisplayName = "Administrator",
+      Email = "admin@gamestore.com",
+      Wallet = 9999m,
+      IsActive = true,
+      CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+    });
+
+    modelBuilder.Entity<UserRole>().HasData(new UserRole
+    {
+      Id = 1,
+      UserId = 1,
+      RoleId = 1, // Admin
+      Guid = Guid.NewGuid(),
+      CreatedBy = "system",
+      Created = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+      ModifiedBy = "system",
+      Modified = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
+      IsDeleted = false
+    });
 
     modelBuilder.Entity<Genre>().HasData(
         new Genre { Id = 1, Name = "Action", Description = "Action games" },

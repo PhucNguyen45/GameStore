@@ -1,3 +1,4 @@
+// GameStore.Repository/Migrations/20260509092230_InitialUnifiedSchema.cs
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
