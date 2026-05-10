@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.Services;
+using System.Security.Claims;
 
 namespace GameStore.APIService.Controllers;
 
@@ -21,8 +21,7 @@ public class WishlistController : ControllerBase
     public async Task<IActionResult> GetMyWishlist()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var items = await _wishlistService.GetUserWishlistAsync(userId);
-        return Ok(items);
+        return Ok(await _wishlistService.GetUserWishlistAsync(userId));
     }
 
     [HttpPost("{gameId}")]
