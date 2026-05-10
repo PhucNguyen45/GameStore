@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using GameStore.Entities.Store;
 using GameStore.Entities.Games;
 using GameStore.Repository.EFCore;
+using GameStore.DTOs.Orders;
 using GameStore.Services;
 
 namespace GameStore.Services;
