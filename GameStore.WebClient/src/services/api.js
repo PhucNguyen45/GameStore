@@ -50,6 +50,26 @@ export const libraryAPI = {
   getMyLibrary: () => api.get("/library"),
   checkOwned: (gameId) => api.get(`/library/check/${gameId}`),
 };
+export const wishlistAPI = {
+  get: () => api.get("/wishlist"),
+  add: (gameId) => api.post(`/wishlist/${gameId}`),
+  remove: (gameId) => api.delete(`/wishlist/${gameId}`),
+  check: (gameId) => api.get(`/wishlist/check/${gameId}`),
+};
+
+export const reviewAPI = {
+  getByGame: (gameId, page = 1) =>
+    api.get(`/reviews/game/${gameId}`, { params: { page, pageSize: 10 } }),
+  create: (data) => api.post("/reviews", data),
+  update: (id, data) => api.put(`/reviews/${id}`, data),
+  delete: (id) => api.delete(`/reviews/${id}`),
+  check: (gameId) => api.get(`/reviews/check/${gameId}`),
+};
+
+export const notificationAPI = {
+  get: (unread = false) => api.get("/notifications", { params: { unread } }),
+  markRead: (id) => api.put(`/notifications/${id}/read`),
+};
 export const adminAPI = {
   getDashboard: () => api.get("/admin/dashboard"),
   // Users
