@@ -1,0 +1,181 @@
+// GameStore.WebClient/src/pages/WishlistPage.jsx
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+import { wishlistAPI } from "../services/api";
+import { Heart, Trash2, ShoppingCart, Star } from "lucide-react";
+import useCartStore from "../stores/cartStore";
+import toast from "react-hot-toast";
+
+export default function WishlistPage() {
+  const { user } = useAuth();
+  const [items, setItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const addItem = useCartStore((s) => s.addItem);
+
+  const load = async () => {
+    try {
+      const { data } = await wishlistAPI.get();
+      setItems(data);
+    } catch {
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const remove = async (gameId) => {
+    await wishlistAPI.remove(gameId);
+    setItems(items.filter((i) => i.gameId !== gameId));
+    toast.success("Removed from wishlist");
+  };
+
+  if (!user)
+    return (
+      <div style={{ textAlign: "center", padding: 80, color: "#888" }}>
+        Sign in to view your wishlist.
+      </div>
+    );
+  if (loading)
+    return (
+      <div style={{ textAlign: "center", padding: 80, color: "#888" }}>
+        Loading...
+      </div>
+    );
+
+  return (
+    <div className="container" style={{ paddingTop: 30 }}>
+      <h1
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          fontSize: 26,
+          fontWeight: 700,
+          marginBottom: 24,
+        }}
+      >
+        <Heart size={28} fill="#e94560" color="#e94560" /> My Wishlist (
+        {items.length})
+      </h1>
+      {items.length === 0 ? (
+        <div style={{ textAlign: "center", padding: 60, color: "#888" }}>
+          <Heart size={48} color="#444" />
+          <p style={{ marginTop: 16 }}>Your wishlist is empty.</p>
+          <Link
+            to="/store"
+            className="btn-primary"
+            style={{ marginTop: 16, display: "inline-block" }}
+          >
+            Browse Games
+          </Link>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
+            gap: 16,
+          }}
+        >
+          {items.map((item) => (
+            <div
+              key={item.gameId}
+              className="card"
+              style={{ position: "relative", padding: 12 }}
+            >
+              <Link to={`/game/${item.gameId}`}>
+                <div
+                  style={{
+                    width: "100%",
+                    aspectRatio: "16/9",
+                    background: "#2a2a2a",
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {item.coverImageUrl ? (
+                    <img
+                      src={item.coverImageUrl}
+                      alt=""
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: 30, opacity: 0.3 }}>🎮</span>
+                  )}
+                </div>
+                <h4
+                  style={{
+                    fontSize: 13,
+                    color: "#ddd",
+                    marginTop: 8,
+                    marginBottom: 4,
+                  }}
+                >
+                  {item.title}
+                </h4>
+                <span
+                  style={{ color: "#e94560", fontWeight: 600, fontSize: 14 }}
+                >
+                  ${(item.discountPrice || item.price)?.toFixed(2)}
+                </span>
+              </Link>
+              <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
+                <button
+                  onClick={() => {
+                    addItem({
+                      id: item.gameId,
+                      title: item.title,
+                      price: item.price,
+                      discountPrice: item.discountPrice,
+                      coverImageUrl: item.coverImageUrl,
+                    });
+                    toast.success("Added to cart");
+                  }}
+                  style={{
+                    flex: 1,
+                    padding: "6px 10px",
+                    background: "var(--accent)",
+                    border: "none",
+                    borderRadius: 4,
+                    color: "#fff",
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 4,
+                  }}
+                >
+                  <ShoppingCart size={14} /> Add to Cart
+                </button>
+                <button
+                  onClick={() => remove(item.gameId)}
+                  style={{
+                    padding: "6px 10px",
+                    background: "#2a2a2a",
+                    border: "none",
+                    borderRadius: 4,
+                    color: "#e94560",
+                    cursor: "pointer",
+                  }}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
