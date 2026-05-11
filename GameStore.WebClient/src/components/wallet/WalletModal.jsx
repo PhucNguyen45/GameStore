@@ -29,10 +29,10 @@ export default function WalletModal({ onClose }) {
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
 
-      setMessage(`✅ Added $${finalAmount.toFixed(2)}!`);
+      setMessage(`✅ Đã nạp $${finalAmount.toFixed(2)} VND!`);
       setTimeout(() => onClose(), 1000);
     } catch (err) {
-      setMessage("❌ Failed to top up");
+      setMessage("❌ Nạp tiền thất bại");
     } finally {
       setLoading(false);
     }
@@ -85,7 +85,7 @@ export default function WalletModal({ onClose }) {
               color: "#fff",
             }}
           >
-            <Wallet size={24} color="#4fc3f7" /> Top Up Wallet
+            <Wallet size={24} color="#4fc3f7" /> Nạp tiền
           </h2>
           <button
             onClick={onClose}
@@ -111,16 +111,16 @@ export default function WalletModal({ onClose }) {
           }}
         >
           <p style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>
-            Current Balance
+            Số dư hiện tại
           </p>
           <p style={{ fontSize: 28, fontWeight: 800, color: "#4fc3f7" }}>
-            ${user?.wallet?.toFixed(2) || "0.00"}
+            VND{user?.wallet?.toFixed(2) || "0.00"}
           </p>
         </div>
 
         {/* Quick Amounts */}
         <p style={{ color: "#888", fontSize: 13, marginBottom: 10 }}>
-          Select Amount
+          Chọn số tiền
         </p>
         <div
           style={{
@@ -167,7 +167,7 @@ export default function WalletModal({ onClose }) {
           />
           <input
             type="number"
-            placeholder="Custom amount"
+            placeholder="Nhập số tiền"
             value={customAmount}
             onChange={(e) => {
               setCustomAmount(e.target.value);
@@ -220,8 +220,8 @@ export default function WalletModal({ onClose }) {
           }}
         >
           {loading
-            ? "Processing..."
-            : `Top Up $${(customAmount || amount || 0).toFixed(2)}`}
+            ? "Đang xử lý..."
+            : `Nạp ${(customAmount || amount || 0).toFixed(2)} VND`}
         </button>
 
         {/* Payment Methods */}
@@ -243,17 +243,6 @@ export default function WalletModal({ onClose }) {
             }}
           >
             <CreditCard size={14} /> Card
-          </span>
-          <span
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              color: "#888",
-              fontSize: 12,
-            }}
-          >
-            <Smartphone size={14} /> Mobile
           </span>
         </div>
       </div>

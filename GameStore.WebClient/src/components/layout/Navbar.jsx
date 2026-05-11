@@ -143,14 +143,14 @@ export default function Navbar() {
               to="/store"
               style={{ padding: "4px 0", ...isActive("/store") }}
             >
-              STORE
+              CỬA HÀNG
             </Link>
             {user && (
               <Link
                 to="/library"
                 style={{ padding: "4px 0", ...isActive("/library") }}
               >
-                LIBRARY
+                THƯ VIỆN
               </Link>
             )}
             {user && (
@@ -158,7 +158,7 @@ export default function Navbar() {
                 to="/wishlist"
                 style={{ padding: "4px 0", ...isActive("/wishlist") }}
               >
-                WISHLIST
+                YÊU THÍCH
               </Link>
             )}
             {user && (
@@ -166,7 +166,7 @@ export default function Navbar() {
                 to="/orders"
                 style={{ padding: "4px 0", ...isActive("/orders") }}
               >
-                ORDERS
+                ĐƠN HÀNG
               </Link>
             )}
           </div>
@@ -208,7 +208,7 @@ export default function Navbar() {
                     autoFocus
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search games..."
+                    placeholder="Tìm kiếm..."
                     style={{
                       width: 200,
                       padding: "6px 32px 6px 12px",
@@ -419,10 +419,10 @@ export default function Navbar() {
                       <span
                         style={{ fontWeight: 600, color: "#fff", fontSize: 13 }}
                       >
-                        Notifications
+                        Thông báo
                       </span>
                       <span style={{ color: "#888", fontSize: 11 }}>
-                        {unreadCount} unread
+                        {unreadCount} Chưa đọc
                       </span>
                     </div>
                     {notifications.length === 0 ? (
@@ -434,7 +434,7 @@ export default function Navbar() {
                           fontSize: 12,
                         }}
                       >
-                        No notifications
+                        Không có thông báo nào
                       </div>
                     ) : (
                       notifications.map((n) => (
@@ -558,7 +558,7 @@ export default function Navbar() {
                       borderRadius: 4,
                     }}
                   >
-                    <Shield size={14} /> ADMIN
+                    <Shield size={14} /> QUẢN TRỊ VIÊN
                   </Link>
                 )}
                 <div
@@ -608,7 +608,7 @@ export default function Navbar() {
                   borderRadius: 4,
                 }}
               >
-                <User size={14} /> SIGN IN
+                <User size={14} /> ĐĂNG NHẬP
               </Link>
             )}
           </div>

@@ -103,28 +103,28 @@ export default function GameDetailPage() {
   // ===== WISHLIST TOGGLE =====
   const toggleWishlist = async () => {
     if (!user) {
-      toast.error("Sign in to add to wishlist");
+      toast.error("Đăng nhập để cho vào Yêu Thích");
       return;
     }
     try {
       if (wishlisted) {
         await wishlistAPI.remove(id);
         setWishlisted(false);
-        toast.success("Removed from wishlist");
+        toast.success("Xóa khỏi Yêu Thích");
       } else {
         await wishlistAPI.add(id);
         setWishlisted(true);
-        toast.success("Added to wishlist");
+        toast.success("Đã thêm vào Yêu Thích");
       }
     } catch {
-      toast.error("Failed to update wishlist");
+      toast.error("Lỗi khi tải Yêu Thích");
     }
   };
 
   // ===== BUY NOW =====
   const handleBuyNow = () => {
     if (!user) {
-      toast.error("Sign in to purchase");
+      toast.error("Đăng nhập để mua");
       navigate("/login");
       return;
     }
@@ -139,7 +139,7 @@ export default function GameDetailPage() {
     setSubmittingReview(true);
     try {
       await reviewAPI.create({ gameId: parseInt(id), ...reviewForm });
-      toast.success("Review submitted!");
+      toast.success("Đã gửi đánh giá!");
       setShowReviewForm(false);
       setReviewForm({ rating: 5, content: "", isRecommended: true });
       setHasReviewed(true);
@@ -147,7 +147,7 @@ export default function GameDetailPage() {
       loadReviews(1);
       gameAPI.getById(id).then((res) => setGame(res.data)); // cập nhật rating mới
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to submit review");
+      toast.error(err.response?.data?.message || "Gửi đánh giá thất bại!");
     } finally {
       setSubmittingReview(false);
     }
@@ -213,7 +213,7 @@ export default function GameDetailPage() {
                 textTransform: "uppercase",
               }}
             >
-              Available Now
+              Sẵn có
             </span>
           </div>
           <h1
@@ -312,13 +312,14 @@ export default function GameDetailPage() {
                     cursor: "default",
                   }}
                 >
-                  <Check size={16} style={{ marginRight: 6 }} /> IN LIBRARY
+                  <Check size={16} style={{ marginRight: 6 }} /> ĐÃ CÓ TRONG THƯ
+                  VIỆN
                 </button>
                 <button
                   style={epicSecondaryBtn}
                   onClick={() => navigate("/library")}
                 >
-                  GO TO LIBRARY
+                  ĐẾN THƯ VIỆN
                 </button>
               </>
             ) : game.price === 0 ? (
@@ -334,18 +335,18 @@ export default function GameDetailPage() {
                       items: [{ gameId: game.id, quantity: 1 }],
                     });
                     setOwned(true);
-                    toast.success("Game added to your library!");
+                    toast.success("Đã thêm game vào thư viện!");
                   } catch (e) {
-                    toast.error(e.response?.data?.message || "Failed");
+                    toast.error(e.response?.data?.message || "Thất bại");
                   }
                 }}
               >
-                FREE
+                MIỄN PHÍ
               </button>
             ) : (
               <>
                 <button style={epicPrimaryBtn} onClick={handleBuyNow}>
-                  BUY NOW
+                  MUA NGAY
                   <span
                     style={{
                       marginLeft: 10,
@@ -376,7 +377,7 @@ export default function GameDetailPage() {
                     toast.success("Added to cart!");
                   }}
                 >
-                  <ShoppingCart size={16} /> ADD TO CART
+                  <ShoppingCart size={16} /> THÊM VÀO GIỎ HÀNG
                 </button>
               </>
             )}
@@ -407,7 +408,7 @@ export default function GameDetailPage() {
                 color: "#aaa",
               }}
             >
-              RATING PENDING
+              CHỜ XẾP HẠNG
             </span>
             <span
               style={{
@@ -444,9 +445,9 @@ export default function GameDetailPage() {
           }}
         >
           {[
-            { id: "overview", label: "OVERVIEW" },
-            { id: "requirements", label: "SYSTEM REQUIREMENTS" },
-            { id: "reviews", label: "REVIEWS" },
+            { id: "overview", label: "TỔNG QUAN" },
+            { id: "requirements", label: "CẤU HÌNH YÊU CẦU" },
+            { id: "reviews", label: "ĐÁNH GIÁ" },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -493,7 +494,7 @@ export default function GameDetailPage() {
                   letterSpacing: -0.5,
                 }}
               >
-                ABOUT {game.title?.toUpperCase()}
+                VỀ {game.title?.toUpperCase()}
               </h2>
               <p
                 style={{
@@ -513,16 +514,16 @@ export default function GameDetailPage() {
                 }}
               >
                 {[
-                  { label: "Developer", value: game.developer },
-                  { label: "Publisher", value: game.publisher },
+                  { label: "Nhà phát triển", value: game.developer },
+                  { label: "Nhà phát hành", value: game.publisher },
                   {
-                    label: "Release Date",
+                    label: "Ngày phát hành",
                     value: new Date(game.releaseDate).toLocaleDateString(
                       "en-US",
                       { year: "numeric", month: "long", day: "numeric" },
                     ),
                   },
-                  { label: "Platform", value: "Windows PC" },
+                  { label: "Nền tảng", value: "Windows PC" },
                 ].map(({ label, value }) => (
                   <div key={label}>
                     <p
@@ -560,7 +561,7 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  EPIC PLAYER RATINGS
+                  ĐÁNH GIÁ CỦA NGƯỜI CHƠI
                 </h3>
                 <div
                   style={{
@@ -624,7 +625,7 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  SEE ALL REVIEWS
+                  XEM TẤT CẢ ĐÁNH GIÁ
                 </button>
               </div>
               <div
@@ -644,23 +645,23 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  SPECIFICATIONS
+                  THÔNG TIN CHI TIẾT
                 </h3>
                 <div
                   style={{ display: "flex", flexDirection: "column", gap: 12 }}
                 >
                   {[
                     [
-                      "Genre",
+                      "Thể loại",
                       game.gameGenres?.map((g) => g.genre?.name).join(", "),
                     ],
                     [
-                      "Release Date",
+                      "Ngày phát hành",
                       new Date(game.releaseDate).toLocaleDateString(),
                     ],
-                    ["Platform", "Windows PC"],
-                    ["Developer", game.developer],
-                    ["Publisher", game.publisher],
+                    ["Nền tảng", "Windows PC"],
+                    ["Nhà phát triển", game.developer],
+                    ["Nhà phát hành", game.publisher],
                   ].map(([label, value]) => (
                     <div
                       key={label}
@@ -701,7 +702,7 @@ export default function GameDetailPage() {
                 letterSpacing: -0.5,
               }}
             >
-              SYSTEM REQUIREMENTS
+              CẤU HÌNH YÊU CẦU
             </h2>
             <div
               style={{
@@ -715,25 +716,29 @@ export default function GameDetailPage() {
                 style={{ display: "flex", flexDirection: "column", gap: 16 }}
               >
                 {[
-                  { icon: Monitor, label: "OS", value: game.minimumOS },
+                  {
+                    icon: Monitor,
+                    label: "Hệ điều hành",
+                    value: game.minimumOS,
+                  },
                   {
                     icon: Cpu,
-                    label: "Processor",
+                    label: "Bộ xử lý",
                     value: game.minimumProcessor,
                   },
                   {
                     icon: HardDrive,
-                    label: "Memory",
+                    label: "Bộ nhớ",
                     value: game.minimumMemory,
                   },
                   {
                     icon: Gamepad2,
-                    label: "Graphics",
+                    label: "Card đồ họa",
                     value: game.minimumGraphics,
                   },
                   {
                     icon: HardDrive,
-                    label: "Storage",
+                    label: "Dung lượng lưu trữ",
                     value: game.minimumStorage,
                   },
                 ]
@@ -779,7 +784,7 @@ export default function GameDetailPage() {
               <h2
                 style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.5 }}
               >
-                PLAYER REVIEWS
+                ĐÁNH GIÁ CỦA NGƯỜI CHƠI
               </h2>
               {owned && !hasReviewed && !showReviewForm && (
                 <button
@@ -796,7 +801,7 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  WRITE A REVIEW
+                  VIẾT ĐÁNH GIÁ
                 </button>
               )}
             </div>
@@ -858,7 +863,7 @@ export default function GameDetailPage() {
                     onChange={(e) =>
                       setReviewForm({ ...reviewForm, content: e.target.value })
                     }
-                    placeholder="Write your experience..."
+                    placeholder="Hãy viết trải nghiệm của bạn..."
                     rows={4}
                     style={{
                       width: "100%",
@@ -895,7 +900,7 @@ export default function GameDetailPage() {
                       })
                     }
                   />
-                  I recommend this game
+                  Tôi đề xuất tựa game này
                 </label>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button
@@ -904,7 +909,7 @@ export default function GameDetailPage() {
                     className="btn-primary"
                     style={{ padding: "10px 20px" }}
                   >
-                    {submittingReview ? "Submitting..." : "Submit Review"}
+                    {submittingReview ? "Đang gửi..." : "Gửi đánh giá"}
                   </button>
                   <button
                     type="button"
@@ -912,7 +917,7 @@ export default function GameDetailPage() {
                     className="btn-outline"
                     style={{ padding: "10px 20px" }}
                   >
-                    Cancel
+                    HỦY
                   </button>
                 </div>
               </form>
@@ -930,7 +935,7 @@ export default function GameDetailPage() {
                     letterSpacing: -0.5,
                   }}
                 >
-                  NO REVIEWS YET
+                  CHƯA CÓ ĐÁNH GIÁ NÀO
                 </h2>
                 <p style={{ color: "#888", marginTop: 8, fontSize: 14 }}>
                   Be the first to review "{game.title}"
@@ -989,7 +994,7 @@ export default function GameDetailPage() {
                       <p
                         style={{ color: "#4caf50", fontSize: 11, marginTop: 8 }}
                       >
-                        👍 Recommended
+                        👍 Được đề xuất
                       </p>
                     )}
                   </div>
@@ -1150,7 +1155,7 @@ function NotFound() {
       }}
     >
       <Gamepad2 size={64} />
-      <h2 style={{ marginTop: 16, color: "#fff" }}>Game Not Found</h2>
+      <h2 style={{ marginTop: 16, color: "#fff" }}>Không có game</h2>
       <Link
         to="/store"
         style={{
@@ -1160,7 +1165,7 @@ function NotFound() {
           textDecoration: "underline",
         }}
       >
-        Back to Store
+        Trở về Cửa Hàng
       </Link>
     </div>
   );

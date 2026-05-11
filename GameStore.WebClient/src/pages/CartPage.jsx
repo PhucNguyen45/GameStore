@@ -23,13 +23,13 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     if (!user) {
-      toast.error("Please login to continue checkout");
+      toast.error("Vui lòng đăng nhập để tiếp tục thanh toán");
       navigate("/login");
       return;
     }
 
     if (!email || !phone) {
-      toast.error("Please provide email and phone number");
+      toast.error("Vui lòng nhập email và số điện thoại");
       return;
     }
 
@@ -61,12 +61,12 @@ export default function CartPage() {
         }}
       >
         <ShoppingCart size={64} color="#6b6b8e" />
-        <h2 style={{ marginTop: 20 }}>Your cart is empty</h2>
+        <h2 style={{ marginTop: 20 }}>Giỏ hàng đang trống</h2>
         <p style={{ color: "#6b6b8e", margin: "8px 0 20px" }}>
-          Start shopping for games!
+          Bắt đầu mua game thôi!
         </p>
         <Link to="/store">
-          <button className="btn-primary">Browse Store</button>
+          <button className="btn-primary">Xem cửa hàng</button>
         </Link>
       </div>
     );
@@ -83,7 +83,7 @@ export default function CartPage() {
           marginBottom: 24,
         }}
       >
-        <ArrowLeft size={16} /> Continue Shopping
+        <ArrowLeft size={16} /> Tiếp tục mua sắm
       </Link>
       <h1
         style={{
@@ -95,8 +95,7 @@ export default function CartPage() {
           marginBottom: 24,
         }}
       >
-        <ShoppingBag size={28} color="#e94560" /> Shopping Cart ({count()}{" "}
-        items)
+        <ShoppingBag size={28} color="#e94560" /> Giỏ hàng ({count()} items)
       </h1>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -196,7 +195,7 @@ export default function CartPage() {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Gmail</label>
+            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Email</label>
             <input
               type="email"
               value={email}
@@ -206,7 +205,9 @@ export default function CartPage() {
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Phone</label>
+            <label style={{ color: "#6b6b8e", fontSize: 14 }}>
+              Số điện thoại
+            </label>
             <input
               type="tel"
               value={phone}
@@ -223,14 +224,14 @@ export default function CartPage() {
             className="btn-outline"
             style={{ flex: 1 }}
           >
-            Clear Cart
+            Xóa giỏ hàng
           </button>
           <button
             onClick={handleCheckout}
             className="btn-primary"
             style={{ flex: 1, padding: 14, fontSize: 16 }}
           >
-            Proceed to Payment
+            Tiến hành thanh toán
           </button>
         </div>
         {!user && (
@@ -242,7 +243,7 @@ export default function CartPage() {
               fontSize: 13,
             }}
           >
-            ⚠ You need to login to checkout
+            ⚠ Bạn cần đăng nhập để thanh toán
           </p>
         )}
       </div>

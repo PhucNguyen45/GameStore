@@ -202,7 +202,7 @@ export default function GameCard({ game }) {
             >
               <Check size={14} color="#4caf50" />
               <span style={{ color: "#4caf50", fontSize: 11, fontWeight: 600 }}>
-                OWNED
+                ĐÃ MUA
               </span>
             </button>
           ) : (

@@ -29,11 +29,11 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Resources
+            TÀI NGUYÊN
           </h4>
-          <p style={{ marginBottom: 6 }}>Support</p>
+          <p style={{ marginBottom: 6 }}>Hỗ Trợ</p>
           <p style={{ marginBottom: 6 }}>FAQ</p>
-          <p style={{ marginBottom: 6 }}>Community Rules</p>
+          <p style={{ marginBottom: 6 }}>Quy định cộng đồng</p>
         </div>
         <div>
           <h4
@@ -45,11 +45,11 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Company
+            Công ty
           </h4>
-          <p style={{ marginBottom: 6 }}>About</p>
-          <p style={{ marginBottom: 6 }}>Careers</p>
-          <p style={{ marginBottom: 6 }}>Newsroom</p>
+          <p style={{ marginBottom: 6 }}>Giới thiệu</p>
+          <p style={{ marginBottom: 6 }}>Tuyển dụng</p>
+          <p style={{ marginBottom: 6 }}>Tin tức</p>
         </div>
         <div>
           <h4
@@ -61,11 +61,11 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Legal
+            Pháp lý
           </h4>
-          <p style={{ marginBottom: 6 }}>Terms of Service</p>
-          <p style={{ marginBottom: 6 }}>Privacy Policy</p>
-          <p style={{ marginBottom: 6 }}>Cookie Policy</p>
+          <p style={{ marginBottom: 6 }}>Điều khoản dịch vụ</p>
+          <p style={{ marginBottom: 6 }}>Chính sách bảo mật</p>
+          <p style={{ marginBottom: 6 }}>Chính sách sử dụng Cookie</p>
         </div>
         <div>
           <h4
@@ -77,7 +77,7 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Follow Us
+            Theo dõi chúng tôi
           </h4>
           <p style={{ marginBottom: 6 }}>Twitter</p>
           <p style={{ marginBottom: 6 }}>Facebook</p>
@@ -95,7 +95,7 @@ export default function Footer() {
           color: "#555",
         }}
       >
-        © {new Date().getFullYear()} GameStore. All rights reserved.
+        © {new Date().getFullYear()} GameStore. Đã đăng ký bản quyền.
       </div>
     </footer>
   );
