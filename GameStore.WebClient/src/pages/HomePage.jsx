@@ -57,11 +57,11 @@ export default function HomePage() {
                 letterSpacing: -1,
               }}
             >
-              DISCOVER
+              KHÁM PHÁ
               <br />
-              <span style={{ color: "var(--accent)" }}>YOUR NEXT</span>
+              <span style={{ color: "var(--accent)" }}>TỰA GAME</span>
               <br />
-              FAVORITE GAME
+              YÊU THÍCH KẾ TIẾP CỦA BẠN
             </h1>
             <p
               style={{
@@ -85,7 +85,7 @@ export default function HomePage() {
                   gap: 8,
                 }}
               >
-                BROWSE STORE <ArrowRight size={18} />
+                VÀO CỬA HÀNG <ArrowRight size={18} />
               </button>
             </Link>
           </div>
@@ -103,8 +103,8 @@ export default function HomePage() {
             gap: 8,
           }}
         >
-          <Star size={20} color="var(--accent)" fill="var(--accent)" /> FEATURED
-          GAMES
+          <Star size={20} color="var(--accent)" fill="var(--accent)" /> GAME NỔI
+          BẬT
         </h2>
         <div
           style={{
@@ -130,7 +130,7 @@ export default function HomePage() {
             gap: 8,
           }}
         >
-          <TrendingUp size={20} color="var(--accent)" /> TRENDING NOW
+          <TrendingUp size={20} color="var(--accent)" /> XU HƯỚNG HIỆN NAY
         </h2>
         <div
           style={{
@@ -147,7 +147,7 @@ export default function HomePage() {
       {/* GENRES */}
       <div className="container" style={{ marginTop: 40, paddingBottom: 40 }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
-          BROWSE BY GENRE
+          TÌM KIẾM THEO THỂ LOẠI
         </h2>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {genres.map((g) => (

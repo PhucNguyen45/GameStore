@@ -1,3 +1,6 @@
+FILE: .git
+gitdir: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore-repo/gamestore-hphuc/.git/worktrees/gamestore-full
+
 FILE: GameStore.APIService/Controllers/AdminController.cs
 // GameStore.APIService/Controllers/AdminController.cs
 using Microsoft.AspNetCore.Authorization;
@@ -56,10 +59,12 @@ public class AdminController : ControllerBase
 
     // Users
     [HttpGet("users")]
-    public async Task<IActionResult> GetUsers([FromQuery] string? keyword, [FromQuery] string? sortBy,
-        [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetUsers([FromQuery] string? keyword,
+        [FromQuery] bool? isActive, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
+        [FromQuery] string? sortBy, [FromQuery] bool desc = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (users, totalCount) = await _adminService.GetUsersAsync(keyword, sortBy, desc, page, pageSize);
+        var (users, totalCount) = await _adminService.GetUsersAsync(keyword, isActive, fromDate, toDate, sortBy, desc, page, pageSize);
         return Ok(new { data = users, totalCount });
     }
 
@@ -97,9 +102,9 @@ public class AdminController : ControllerBase
     // Categories
     [HttpGet("categories")]
     public async Task<IActionResult> GetCategories([FromQuery] string? keyword, [FromQuery] string? status,
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [FromQuery] bool? hasGames, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetCategoriesAsync(keyword, status, page, pageSize));
+        return Ok(await _adminService.GetCategoriesAsync(keyword, status, hasGames, page, pageSize));
     }
 
     [HttpPost("categories")]
@@ -145,6 +150,13 @@ public class AdminController : ControllerBase
         return Ok(new { message = "Batch keys created" });
     }
 
+    [HttpPut("gamekeys/{id}")]
+    public async Task<IActionResult> UpdateGameKey(int id, [FromBody] UpdateGameKeyDto dto)
+    {
+        await _adminService.UpdateGameKeyAsync(id, dto);
+        return Ok(new { message = "Key updated" });
+    }
+
     [HttpDelete("gamekeys/{id}")]
     public async Task<IActionResult> DeleteGameKey(int id)
     {
@@ -176,9 +188,10 @@ public class AdminController : ControllerBase
 
     // Roles
     [HttpGet("roles")]
-    public async Task<IActionResult> GetRoles([FromQuery] string? keyword, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetRoles([FromQuery] string? keyword, [FromQuery] bool? isActive,
+        [FromQuery] bool? hasUsers, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetRolesAsync(keyword, page, pageSize));
+        return Ok(await _adminService.GetRolesAsync(keyword, isActive, hasUsers, page, pageSize));
     }
 
     [HttpPost("roles")]
@@ -205,9 +218,9 @@ public class AdminController : ControllerBase
     // Staff
     [HttpGet("staff")]
     public async Task<IActionResult> GetStaff([FromQuery] string? keyword, [FromQuery] int? roleId,
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [FromQuery] bool? isActive, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetStaffAsync(keyword, roleId, page, pageSize));
+        return Ok(await _adminService.GetStaffAsync(keyword, roleId, isActive, page, pageSize));
     }
 
     [HttpPost("staff/assign")]
@@ -541,12 +554,17 @@ public class OrdersController : ControllerBase
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         try
         {
-            var order = await _orderService.CreateOrder(userId, dto.Items.Select(i => (i.GameId, i.Quantity)).ToList());
+            var order = await _orderService.CreateOrder(
+                userId,
+                dto.Items.Select(i => (i.GameId, i.Quantity)).ToList(),
+                dto.PaymentMethod,   // thêm
+                dto.Email,           // thêm
+                dto.Phone            // thêm
+            );
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
         }
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
     }
-
     [HttpPut("{id}/cancel")]
     public async Task<IActionResult> Cancel(int id)
     {
@@ -1519,6 +1537,8 @@ public class AdminUserUpdateDto
 {
     public string? DisplayName { get; set; }
     public string? Email { get; set; }
+    public string? Phone { get; set; }
+    public string? AvatarUrl { get; set; }
     public decimal? Wallet { get; set; }
     public bool? IsActive { get; set; }
 }
@@ -1561,6 +1581,13 @@ public class BatchGameKeyDto
     public int GameId { get; set; }
     public List<string> KeyCodes { get; set; } = new();
     public DateTime? ExpiresAt { get; set; }
+}
+
+public class UpdateGameKeyDto
+{
+    public string? KeyCode { get; set; }
+    public DateTime? ExpiresAt { get; set; }
+    public bool ClearExpiry { get; set; }
 }
 
 FILE: GameStore.DTOs/Admin/RefundDto.cs
@@ -3666,12 +3693,43 @@ public class AdminService : IAdminService
             .Where(o => o.Status == "Completed")
             .SumAsync(o => o.TotalAmount);
 
+        var currentYear = DateTime.UtcNow.Year;
+        var completedOrders = await _context.Orders
+            .Where(o => o.Status == "Completed" && o.OrderDate.Year == currentYear)
+            .Select(o => new { o.OrderDate, o.TotalAmount })
+            .ToListAsync();
+
+        var monthlyRevenue = Enumerable.Range(0, 12).Select(m => new
+        {
+            month = m + 1,
+            value = (double)completedOrders.Where(o => o.OrderDate.Month == m + 1).Sum(o => o.TotalAmount),
+            count = completedOrders.Count(o => o.OrderDate.Month == m + 1)
+        }).ToList();
+
+        var recentOrders = await _context.Orders
+            .Include(o => o.User)
+            .OrderByDescending(o => o.OrderDate)
+            .Take(20)
+            .Select(o => new
+            {
+                o.Id,
+                o.UserId,
+                username = o.User.Username,
+                o.TotalAmount,
+                o.Status,
+                o.PaymentMethod,
+                o.OrderDate
+            })
+            .ToListAsync();
+
         return new
         {
             totalGames,
             totalUsers,
             totalOrders,
-            totalRevenue = revenue
+            totalRevenue = revenue,
+            monthlyRevenue,
+            recentOrders
         };
     }
 
@@ -3780,12 +3838,19 @@ public class AdminService : IAdminService
 
     // ================= USERS =================
     public async Task<(IEnumerable<User> Users, int TotalCount)> GetUsersAsync(
-        string? keyword, string? sortBy, bool desc, int page, int pageSize)
+        string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
+        string? sortBy, bool desc, int page, int pageSize)
     {
         var query = _context.Users.AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
             query = query.Where(u => u.Username.Contains(keyword) || u.DisplayName.Contains(keyword) || u.Email.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(u => u.IsActive == isActive.Value);
+        if (fromDate.HasValue)
+            query = query.Where(u => u.CreatedAt >= fromDate.Value);
+        if (toDate.HasValue)
+            query = query.Where(u => u.CreatedAt <= toDate.Value.AddDays(1));
 
         var totalCount = await query.CountAsync();
 
@@ -3809,6 +3874,8 @@ public class AdminService : IAdminService
         var user = await _context.Users.FindAsync(id) ?? throw new Exception("User not found");
         user.DisplayName = dto.DisplayName ?? user.DisplayName;
         user.Email = dto.Email ?? user.Email;
+        if (dto.Phone != null) user.Phone = dto.Phone;
+        if (dto.AvatarUrl != null) user.AvatarUrl = dto.AvatarUrl;
         if (dto.Wallet.HasValue) user.Wallet = dto.Wallet.Value;
         if (dto.IsActive.HasValue) user.IsActive = dto.IsActive.Value;
         await _context.SaveChangesAsync();
@@ -3875,7 +3942,7 @@ public class AdminService : IAdminService
     }
 
     // ================= CATEGORIES (Genres) =================
-    public async Task<object> GetCategoriesAsync(string? keyword, string? status, int page, int pageSize)
+    public async Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize)
     {
         var query = _context.Genres.AsQueryable();
 
@@ -3883,6 +3950,10 @@ public class AdminService : IAdminService
             query = query.Where(g => g.Name.Contains(keyword) || g.Description.Contains(keyword));
         if (status == "active") query = query.Where(g => g.IsActive);
         else if (status == "inactive") query = query.Where(g => !g.IsActive);
+        if (hasGames == true)
+            query = query.Where(g => _context.GameGenres.Any(gg => gg.GenreId == g.Id));
+        else if (hasGames == false)
+            query = query.Where(g => !_context.GameGenres.Any(gg => gg.GenreId == g.Id));
 
         var totalCount = await query.CountAsync();
         var data = await query.OrderBy(g => g.Name).Skip((page - 1) * pageSize).Take(pageSize)
@@ -3990,6 +4061,20 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpdateGameKeyAsync(int id, UpdateGameKeyDto dto)
+    {
+        var key = await _context.GameKeys.FindAsync(id) ?? throw new Exception("Key not found");
+        if (key.IsUsed) throw new Exception("Cannot edit a used key");
+        if (!string.IsNullOrWhiteSpace(dto.KeyCode))
+        {
+            if (await _context.GameKeys.AnyAsync(k => k.KeyCode == dto.KeyCode && k.Id != id))
+                throw new Exception("Key code already exists");
+            key.KeyCode = dto.KeyCode;
+        }
+        key.ExpiresAt = dto.ClearExpiry ? null : (dto.ExpiresAt ?? key.ExpiresAt);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task DeleteGameKeyAsync(int id)
     {
         var key = await _context.GameKeys.FindAsync(id) ?? throw new Exception("Key not found");
@@ -4075,10 +4160,16 @@ public class AdminService : IAdminService
     }
 
     // ================= ROLES =================
-    public async Task<object> GetRolesAsync(string? keyword, int page, int pageSize)
+    public async Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize)
     {
         var query = _context.Roles.Where(r => !r.IsDeleted).AsQueryable();
         if (!string.IsNullOrEmpty(keyword)) query = query.Where(r => r.Name.Contains(keyword) || r.Description.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(r => r.IsActive == isActive.Value);
+        if (hasUsers == true)
+            query = query.Where(r => _context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
+        else if (hasUsers == false)
+            query = query.Where(r => !_context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
 
         var totalCount = await query.CountAsync();
         var data = await query.OrderBy(r => r.Name).Skip((page - 1) * pageSize).Take(pageSize)
@@ -4165,11 +4256,15 @@ public class AdminService : IAdminService
     }
 
     // ================= STAFF =================
-    public async Task<object> GetStaffAsync(string? keyword, int? roleId, int page, int pageSize)
+    public async Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive, int page, int pageSize)
     {
-        var query = _context.Users.AsQueryable();
+        var query = _context.Users
+            .Where(u => u.UserRoles.Any(ur => !ur.IsDeleted && ur.Role.Name != "User"))
+            .AsQueryable();
         if (roleId.HasValue) query = query.Where(u => u.UserRoles.Any(ur => ur.RoleId == roleId.Value && !ur.IsDeleted));
         if (!string.IsNullOrEmpty(keyword)) query = query.Where(u => u.Username.Contains(keyword) || u.DisplayName.Contains(keyword) || u.Email.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(u => u.IsActive == isActive.Value);
 
         var totalCount = await query.CountAsync();
         var data = await query.OrderBy(u => u.Username).Skip((page - 1) * pageSize).Take(pageSize)
@@ -4499,7 +4594,8 @@ public interface IAdminService
 
     // Users
     Task<(IEnumerable<User> Users, int TotalCount)> GetUsersAsync(
-        string? keyword, string? sortBy, bool desc, int page, int pageSize);
+        string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
+        string? sortBy, bool desc, int page, int pageSize);
     Task UpdateUserAsync(int id, AdminUserUpdateDto dto);
     Task DeleteUserAsync(int id);
 
@@ -4510,7 +4606,7 @@ public interface IAdminService
     Task UpdateOrderStatusAsync(int orderId, string status);
 
     // Categories (Genres)
-    Task<object> GetCategoriesAsync(string? keyword, string? status, int page, int pageSize);
+    Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize);
     Task CreateCategoryAsync(CategoryDto dto);
     Task UpdateCategoryAsync(int id, CategoryDto dto);
     Task DeleteCategoryAsync(int id);
@@ -4519,6 +4615,7 @@ public interface IAdminService
     Task<object> GetGameKeysAsync(string? keyword, int? gameId, string? status, int page, int pageSize);
     Task CreateGameKeyAsync(GameKeyDto dto);
     Task CreateBatchGameKeysAsync(BatchGameKeyDto dto);
+    Task UpdateGameKeyAsync(int id, UpdateGameKeyDto dto);
     Task DeleteGameKeyAsync(int id);
 
     // Payments
@@ -4528,13 +4625,13 @@ public interface IAdminService
     Task RefundPaymentAsync(int paymentId, RefundDto? dto);
 
     // Roles
-    Task<object> GetRolesAsync(string? keyword, int page, int pageSize);
+    Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize);
     Task CreateRoleAsync(RoleDto dto);
     Task UpdateRoleAsync(int id, RoleDto dto);
     Task DeleteRoleAsync(int id);
 
     // Staff
-    Task<object> GetStaffAsync(string? keyword, int? roleId, int page, int pageSize);
+    Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive, int page, int pageSize);
     Task AssignRoleAsync(AssignRoleDto dto);
     Task RevokeRoleAsync(AssignRoleDto dto);
 
@@ -5305,19 +5402,17 @@ import {
   LayoutDashboard,
   Tag,
   Key,
-  CreditCard,
   Shield,
 } from "lucide-react";
 
 const tabs = [
-  { id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { id: "games", icon: Gamepad2, label: "Games" },
-  { id: "categories", icon: Tag, label: "Categories" },
-  { id: "gamekeys", icon: Key, label: "Game Keys" },
-  { id: "users", icon: Users, label: "Users" },
-  { id: "orders", icon: Package, label: "Orders" },
-  { id: "payments", icon: CreditCard, label: "Payments" },
-  { id: "staffroles", icon: Shield, label: "Staff & Roles" },
+  { id: "dashboard", icon: LayoutDashboard, label: "Tổng quan" },
+  { id: "games", icon: Gamepad2, label: "Trò chơi" },
+  { id: "categories", icon: Tag, label: "Danh mục" },
+  { id: "gamekeys", icon: Key, label: "Mã game" },
+  { id: "users", icon: Users, label: "Người dùng" },
+  { id: "orders", icon: Package, label: "Đơn hàng" },
+  { id: "staffroles", icon: Shield, label: "Nhân viên & Phân quyền" },
 ];
 
 export { tabs };
@@ -5395,6 +5490,7 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
 FILE: GameStore.WebClient/src/components/admin/CategoriesTab.jsx
 // GameStore.WebClient/src/components/admin/CategoriesTab.jsx
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { Plus, Edit, Trash2, X, Tag } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "./Pagination";
@@ -5416,9 +5512,10 @@ function CategoryModal({ category, onClose, onSave }) {
     try {
       if (category) await adminAPI.updateCategory(category.id, form);
       else await adminAPI.createCategory(form);
+      toast.success(category ? "Cập nhật danh mục thành công!" : "Tạo danh mục thành công!");
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -5456,24 +5553,24 @@ function CategoryModal({ category, onClose, onSave }) {
             fontWeight: 700,
           }}
         >
-          {category ? "✏️ Edit Category" : "➕ New Category"}
+          {category ? "✏️ Chỉnh sửa danh mục" : "➕ Thêm danh mục"}
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
           <input
-            placeholder="Name *"
+            placeholder="Tên *"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             style={iStyle}
             required
           />
           <textarea
-            placeholder="Description"
+            placeholder="Mô tả"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             style={{ ...iStyle, minHeight: 60, resize: "vertical" }}
           />
           <input
-            placeholder="Icon URL (optional)"
+            placeholder="URL icon (tùy chọn)"
             value={form.iconUrl}
             onChange={(e) => setForm({ ...form, iconUrl: e.target.value })}
             style={iStyle}
@@ -5492,7 +5589,7 @@ function CategoryModal({ category, onClose, onSave }) {
               checked={form.isActive}
               onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
             />
-            Active
+            Đang hoạt động
           </label>
           <div
             style={{
@@ -5514,7 +5611,7 @@ function CategoryModal({ category, onClose, onSave }) {
                 cursor: "pointer",
               }}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -5529,7 +5626,7 @@ function CategoryModal({ category, onClose, onSave }) {
                 fontWeight: 600,
               }}
             >
-              {saving ? "Saving..." : category ? "Update" : "Create"}
+              {saving ? "Đang lưu..." : category ? "Cập nhật" : "Tạo mới"}
             </button>
           </div>
         </form>
@@ -5543,16 +5640,18 @@ export default function CategoriesTab() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [search, setSearch] = useState({ keyword: "", status: "" });
+  const [search, setSearch] = useState({ keyword: "", status: "", hasGames: "" });
   const [sort, setSort] = useState({ field: "name", dir: "asc" });
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const load = async () => {
     try {
       const params = { page, pageSize };
       if (search.keyword) params.keyword = search.keyword;
       if (search.status) params.status = search.status;
+      if (search.hasGames !== "") params.hasGames = search.hasGames === "yes";
       const res = await adminAPI.getCategories(params);
       setCategories(res.data.data || []);
       setTotal(res.data.totalCount || 0);
@@ -5570,13 +5669,15 @@ export default function CategoriesTab() {
     return () => clearTimeout(t);
   }, [page, pageSize, search]);
 
-  const handleDelete = async (cat) => {
-    if (!confirm(`Delete category "${cat.name}"?`)) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await adminAPI.deleteCategory(cat.id);
+      await adminAPI.deleteCategory(deleteTarget.id);
+      toast.success(`Đã xóa danh mục "${deleteTarget.name}"!`);
+      setDeleteTarget(null);
       load();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
@@ -5589,7 +5690,7 @@ export default function CategoriesTab() {
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Search categories..."
+          placeholder="Tìm danh mục..."
           value={search.keyword}
           onChange={(e) => setSearch({ ...search, keyword: e.target.value })}
           style={{ ...filterInputStyle, flex: 1, maxWidth: 220 }}
@@ -5599,13 +5700,22 @@ export default function CategoriesTab() {
           onChange={(e) => setSearch({ ...search, status: e.target.value })}
           style={filterInputStyle}
         >
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="">Tất cả trạng thái</option>
+          <option value="active">Hoạt động</option>
+          <option value="inactive">Không hoạt động</option>
         </select>
-        {(search.keyword || search.status) && (
+        <select
+          value={search.hasGames}
+          onChange={(e) => setSearch({ ...search, hasGames: e.target.value })}
+          style={filterInputStyle}
+        >
+          <option value="">Tất cả</option>
+          <option value="yes">Có game</option>
+          <option value="no">Chưa có game</option>
+        </select>
+        {(search.keyword || search.status || search.hasGames) && (
           <button
-            onClick={() => setSearch({ keyword: "", status: "" })}
+            onClick={() => setSearch({ keyword: "", status: "", hasGames: "" })}
             style={{
               padding: "7px 12px",
               background: "#2a2a2a",
@@ -5619,7 +5729,7 @@ export default function CategoriesTab() {
               gap: 4,
             }}
           >
-            <X size={12} /> Clear
+            <X size={12} /> Xóa lọc
           </button>
         )}
         <button
@@ -5642,7 +5752,7 @@ export default function CategoriesTab() {
             marginLeft: "auto",
           }}
         >
-          <Plus size={14} /> Add Category
+          <Plus size={14} /> Thêm danh mục
         </button>
       </div>
       <div
@@ -5662,15 +5772,15 @@ export default function CategoriesTab() {
                 #
               </SortableHeader>
               <SortableHeader field="name" sort={sort} setSort={setSort}>
-                Name
+                Tên
               </SortableHeader>
               <SortableHeader field="description" sort={sort} setSort={setSort}>
-                Description
+                Mô tả
               </SortableHeader>
               <SortableHeader field="gameCount" sort={sort} setSort={setSort}>
-                Games
+                Số game
               </SortableHeader>
-              <th style={{ ...thStyle, cursor: "default" }}>Status</th>
+              <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
               <th style={{ ...thStyle, cursor: "default" }}></th>
             </tr>
           </thead>
@@ -5733,7 +5843,7 @@ export default function CategoriesTab() {
                         fontSize: 11,
                       }}
                     >
-                      {cat.isActive ? "Active" : "Inactive"}
+                      {cat.isActive ? "Hoạt động" : "Không hoạt động"}
                     </span>
                   </span>
                 </td>
@@ -5754,7 +5864,7 @@ export default function CategoriesTab() {
                     <Edit size={11} color="#0078f2" />
                   </button>
                   <button
-                    onClick={() => handleDelete(cat)}
+                    onClick={() => setDeleteTarget(cat)}
                     style={{
                       padding: "4px 7px",
                       background: "#1a1a2e",
@@ -5774,7 +5884,7 @@ export default function CategoriesTab() {
                   colSpan="6"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  No categories found
+                  Không tìm thấy danh mục
                 </td>
               </tr>
             )}
@@ -5803,13 +5913,28 @@ export default function CategoriesTab() {
           }}
         />
       )}
+      {deleteTarget && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 360, textAlign: "center", border: "1px solid #e94560" }} onClick={(e) => e.stopPropagation()}>
+            <Trash2 size={36} color="#e94560" style={{ marginBottom: 10 }} />
+            <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>Xóa danh mục?</h3>
+            <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
+              Bạn có chắc muốn xóa <strong style={{ color: "#fff" }}>"{deleteTarget.name}"</strong>?
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button onClick={() => setDeleteTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>Hủy</button>
+              <button onClick={handleDelete} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>Xóa</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 FILE: GameStore.WebClient/src/components/admin/DashboardTab.jsx
 // GameStore.WebClient/src/components/admin/DashboardTab.jsx
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Gamepad2,
   Users,
@@ -5834,30 +5959,40 @@ export default function DashboardTab({
   const maxRevenue = Math.max(...monthlyRevenue.map((m) => m.value), 1);
   const displayMax = maxRevenue > 0 ? maxRevenue : 100;
   const currentMonthIdx = new Date().getMonth();
+  const [hoveredBar, setHoveredBar] = useState(null);
+
+  const CHART_H = 180;
+  const Y_TICKS = 4;
+  const formatYLabel = (v) =>
+    v >= 10000
+      ? `$${(v / 1000).toFixed(0)}k`
+      : v >= 1000
+        ? `$${(v / 1000).toFixed(1)}k`
+        : `$${v}`;
 
   const statCards = [
     {
       icon: Gamepad2,
-      label: "Total Games",
+      label: "Tổng game",
       value: stats.totalGames.toLocaleString(),
       color: "var(--accent)",
     },
     {
       icon: Users,
-      label: "Users",
+      label: "Người dùng",
       value: stats.totalUsers.toLocaleString(),
       color: "#00c853",
     },
     {
       icon: ShoppingBag,
-      label: "Orders",
+      label: "Đơn hàng",
       value: stats.totalOrders.toLocaleString(),
       color: "#ffc107",
     },
     {
       icon: DollarSign,
-      label: "Revenue",
-      value: `$${Number(stats.revenue).toLocaleString()}`,
+      label: "Doanh thu",
+      value: `${Number(stats.revenue).toLocaleString()} VND`,
       color: "#e94560",
     },
   ];
@@ -5873,7 +6008,7 @@ export default function DashboardTab({
         }}
       >
         <h1 style={{ fontSize: 20, fontWeight: 700, color: "#fff" }}>
-          Dashboard
+          Tổng quan
         </h1>
         <button
           onClick={loadDashboard}
@@ -5890,7 +6025,7 @@ export default function DashboardTab({
             gap: 6,
           }}
         >
-          <TrendingUp size={12} /> Refresh
+          <TrendingUp size={12} /> Làm mới
         </button>
       </div>
 
@@ -5942,6 +6077,7 @@ export default function DashboardTab({
             border: "1px solid #1a1a2e",
           }}
         >
+          {/* Header */}
           <div
             style={{
               display: "flex",
@@ -5959,142 +6095,195 @@ export default function DashboardTab({
                   marginBottom: 4,
                 }}
               >
-                Revenue ({new Date().getFullYear()})
+                Doanh thu ({new Date().getFullYear()})
               </h3>
               <p style={{ fontSize: 10, color: "#666" }}>
-                Total:{" "}
-                <span style={{ color: "#4caf50", fontWeight: 600 }}>
-                  ${Number(stats.revenue).toLocaleString()}
+                Tổng năm:
+                <span style={{ color: "#4caf50", fontWeight: 700 }}>
+                  {Number(stats.revenue).toLocaleString("vi-VN")} VND
                 </span>
               </p>
             </div>
-            <div style={{ fontSize: 10, color: "#666" }}>
-              Peak:{" "}
-              <span style={{ color: "#fff", fontWeight: 600 }}>
-                ${maxRevenue.toLocaleString()}
-              </span>
+            <div style={{ textAlign: "right" }}>
+              <p style={{ fontSize: 9, color: "#555", marginBottom: 2 }}>
+                Tháng cao nhất
+              </p>
+              <p style={{ fontSize: 12, color: "#fff", fontWeight: 700 }}>
+                {formatYLabel(maxRevenue)}
+              </p>
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              gap: 6,
-              height: 160,
-            }}
-          >
-            {monthlyRevenue.map((item, i) => {
-              const heightPercent = Math.max(
-                (item.value / displayMax) * 100,
-                6,
-              );
-              const isCurrent = i === currentMonthIdx;
-              return (
-                <div
-                  key={i}
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 6,
-                    position: "relative",
-                  }}
-                >
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: -34,
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      background: "#1a1a2e",
-                      color: "#fff",
-                      padding: "4px 8px",
-                      borderRadius: 4,
-                      fontSize: 10,
-                      fontWeight: 600,
-                      opacity: 0,
-                      pointerEvents: "none",
-                      transition: "opacity 0.2s",
-                      whiteSpace: "nowrap",
-                      zIndex: 10,
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
-                    }}
-                    className="bar-tooltip"
-                  >
-                    ${item.value.toLocaleString()} • {item.count} order
-                    {item.count !== 1 ? "s" : ""}
-                  </div>
-                  <div
-                    style={{
-                      width: "100%",
-                      height: `${Math.max(heightPercent, 2)}%`,
-                      minHeight: 4,
-                      background: isCurrent
-                        ? "linear-gradient(180deg, #4fc3f7 0%, var(--accent) 100%)"
-                        : "var(--accent)",
-                      borderRadius: "4px 4px 0 0",
-                      transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)",
-                      cursor: "pointer",
-                      position: "relative",
-                      overflow: "hidden",
-                      opacity: item.value === 0 ? 0.35 : 1,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "linear-gradient(180deg, #4fc3f7 0%, var(--accent) 100%)";
-                      e.currentTarget.style.transform = "scaleY(1.05)";
-                      e.currentTarget.style.transformOrigin = "bottom";
-                      const shine = e.currentTarget.querySelector(".shine");
-                      const tip =
-                        e.currentTarget.parentElement.querySelector(
-                          ".bar-tooltip",
-                        );
-                      if (shine) shine.style.opacity = 1;
-                      if (tip) tip.style.opacity = 1;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = isCurrent
-                        ? "linear-gradient(180deg, #4fc3f7 0%, var(--accent) 100%)"
-                        : "var(--accent)";
-                      e.currentTarget.style.transform = "scaleY(1)";
-                      const shine = e.currentTarget.querySelector(".shine");
-                      const tip =
-                        e.currentTarget.parentElement.querySelector(
-                          ".bar-tooltip",
-                        );
-                      if (shine) shine.style.opacity = 0;
-                      if (tip) tip.style.opacity = 0;
-                    }}
-                  >
-                    <div
-                      className="shine"
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: "40%",
-                        background:
-                          "linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%)",
-                        borderRadius: "4px 4px 0 0",
-                        opacity: 0,
-                        transition: "opacity 0.3s",
-                      }}
-                    />
-                  </div>
+
+          {/* Chart body: Y-axis + bars */}
+          <div style={{ display: "flex", gap: 0 }}>
+            {/* Y-axis labels */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                width: 44,
+                paddingRight: 6,
+                height: CHART_H + 18,
+                paddingBottom: 18,
+                boxSizing: "border-box",
+                flexShrink: 0,
+              }}
+            >
+              {Array.from({ length: Y_TICKS + 1 }, (_, i) => Y_TICKS - i).map(
+                (level) => (
                   <span
+                    key={level}
                     style={{
                       fontSize: 9,
-                      color: isCurrent ? "#fff" : "#555",
-                      fontWeight: isCurrent ? 700 : 400,
+                      color: "#555",
+                      textAlign: "right",
+                      lineHeight: "14px",
                     }}
                   >
-                    {item.month}
+                    {formatYLabel(Math.round((displayMax * level) / Y_TICKS))}
                   </span>
-                </div>
-              );
-            })}
+                ),
+              )}
+            </div>
+
+            {/* Chart area */}
+            <div
+              style={{ flex: 1, position: "relative", height: CHART_H + 18 }}
+            >
+              {/* Gridlines */}
+              {Array.from({ length: Y_TICKS + 1 }, (_, i) => i).map((level) => (
+                <div
+                  key={level}
+                  style={{
+                    position: "absolute",
+                    top: `${(level / Y_TICKS) * CHART_H}px`,
+                    left: 0,
+                    right: 0,
+                    borderTop: `1px ${level === Y_TICKS ? "solid" : "dashed"} ${level === Y_TICKS ? "#2a2a3e" : "#18181f"}`,
+                    pointerEvents: "none",
+                    zIndex: 0,
+                  }}
+                />
+              ))}
+
+              {/* Bars */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 4,
+                  height: CHART_H,
+                  alignItems: "flex-end",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                {monthlyRevenue.map((item, i) => {
+                  const heightPct =
+                    displayMax > 0 ? (item.value / displayMax) * 100 : 0;
+                  const isCurrent = i === currentMonthIdx;
+                  const isHovered = hoveredBar === i;
+                  const hasValue = item.value > 0;
+                  return (
+                    <div
+                      key={i}
+                      style={{
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        height: "100%",
+                        justifyContent: "flex-end",
+                        position: "relative",
+                      }}
+                    >
+                      {/* Tooltip */}
+                      {isHovered && hasValue && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: "calc(100% + 6px)",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            background: "#1e1e2e",
+                            border: "1px solid #2a2a3e",
+                            color: "#fff",
+                            padding: "6px 10px",
+                            borderRadius: 6,
+                            fontSize: 10,
+                            whiteSpace: "nowrap",
+                            zIndex: 20,
+                            boxShadow: "0 4px 16px rgba(0,0,0,0.6)",
+                            lineHeight: 1.6,
+                            textAlign: "center",
+                          }}
+                        >
+                          <div
+                            style={{
+                              fontWeight: 700,
+                              color: "#4caf50",
+                              fontSize: 11,
+                            }}
+                          >
+                            ${item.value.toLocaleString()}
+                          </div>
+                          <div style={{ color: "#888" }}>{item.count} đơn</div>
+                        </div>
+                      )}
+
+                      {/* Bar */}
+                      <div
+                        onMouseEnter={() => setHoveredBar(i)}
+                        onMouseLeave={() => setHoveredBar(null)}
+                        style={{
+                          width: "100%",
+                          height: hasValue ? `${heightPct}%` : "2px",
+                          minHeight: hasValue ? 4 : 0,
+                          background:
+                            isHovered || isCurrent
+                              ? "linear-gradient(180deg, #4fc3f7 0%, var(--accent) 100%)"
+                              : hasValue
+                                ? "var(--accent)"
+                                : "#1a1a2e",
+                          borderRadius: hasValue ? "3px 3px 0 0" : "1px",
+                          opacity: hasValue ? 1 : 0.4,
+                          transition:
+                            "height 0.4s cubic-bezier(0.4,0,0.2,1), background 0.2s",
+                          cursor: hasValue ? "pointer" : "default",
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Month labels */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 4,
+                  height: 18,
+                  alignItems: "center",
+                }}
+              >
+                {monthlyRevenue.map((item, i) => {
+                  const isCurrent = i === currentMonthIdx;
+                  return (
+                    <div key={i} style={{ flex: 1, textAlign: "center" }}>
+                      <span
+                        style={{
+                          fontSize: 9,
+                          color: isCurrent ? "#fff" : "#555",
+                          fontWeight: isCurrent ? 700 : 400,
+                        }}
+                      >
+                        {item.month}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -6116,7 +6305,7 @@ export default function DashboardTab({
             }}
           >
             <h3 style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>
-              Recent Orders
+              Đơn hàng gần đây
             </h3>
             <button
               onClick={() => setActiveTab("orders")}
@@ -6129,7 +6318,7 @@ export default function DashboardTab({
                 fontWeight: 600,
               }}
             >
-              View all →
+              Xem tất cả →
             </button>
           </div>
           <div
@@ -6173,19 +6362,19 @@ export default function DashboardTab({
                   <span style={{ color: "#fff", fontWeight: 500 }}>
                     #{o.id}
                   </span>
-                  <span style={{ color: "#666" }}>User #{o.userId}</span>
+                  <span style={{ color: "#666" }}>NSD #{o.userId}</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ color: "#888", fontSize: 10 }}>
                     {o.orderDate
-                      ? new Date(o.orderDate).toLocaleDateString("en-US", {
+                      ? new Date(o.orderDate).toLocaleDateString("vi-VN", {
                           month: "short",
                           day: "numeric",
                         })
                       : "-"}
                   </span>
                   <span style={{ color: "#4caf50", fontWeight: 600 }}>
-                    ${o.totalAmount?.toFixed(2)}
+                    {o.totalAmount?.toFixed(2)} VND
                   </span>
                 </div>
               </div>
@@ -6199,7 +6388,7 @@ export default function DashboardTab({
                   fontSize: 12,
                 }}
               >
-                No orders yet
+                Chưa có đơn hàng
               </p>
             )}
           </div>
@@ -6212,6 +6401,7 @@ export default function DashboardTab({
 FILE: GameStore.WebClient/src/components/admin/DeleteConfirmModal.jsx
 // GameStore.WebClient/src/components/admin/DeleteConfirmModal.jsx
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
 import { gameAPI } from "../../services/api";
 
@@ -6221,11 +6411,10 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
     setDeleting(true);
     try {
       await gameAPI.delete(game.id);
+      toast.success(`Đã xóa game "${game.title}"!`);
       onConfirm();
     } catch (err) {
-      alert(
-        "Failed to delete: " + (err.response?.data?.message || err.message),
-      );
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setDeleting(false);
     }
@@ -6255,9 +6444,9 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
         onClick={(e) => e.stopPropagation()}
       >
         <Trash2 size={40} color="#e94560" style={{ marginBottom: 12 }} />
-        <h3 style={{ color: "#fff", marginBottom: 8 }}>Delete Game?</h3>
+        <h3 style={{ color: "#fff", marginBottom: 8 }}>Xóa game?</h3>
         <p style={{ color: "#888", fontSize: 14, marginBottom: 20 }}>
-          Are you sure you want to delete{" "}
+          Bạn có chắc muốn xóa{" "}
           <strong style={{ color: "#fff" }}>"{game.title}"</strong>?
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
@@ -6272,7 +6461,7 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
               cursor: "pointer",
             }}
           >
-            Cancel
+            Hủy
           </button>
           <button
             onClick={handleDelete}
@@ -6287,7 +6476,7 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
               fontWeight: 600,
             }}
           >
-            {deleting ? "Deleting..." : "Delete"}
+            {deleting ? "Đang xóa..." : "Xóa"}
           </button>
         </div>
       </div>
@@ -6298,6 +6487,7 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
 FILE: GameStore.WebClient/src/components/admin/DeleteUserModal.jsx
 // GameStore.WebClient/src/components/admin/DeleteUserModal.jsx
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
 import { adminAPI } from "../../services/api";
 
@@ -6308,12 +6498,10 @@ export default function DeleteUserModal({ user, onClose, onConfirm }) {
     setDeleting(true);
     try {
       await adminAPI.deleteUser(user.id);
+      toast.success(`Đã xóa người dùng "${user.username}"!`);
       onConfirm();
     } catch (err) {
-      alert(
-        "Failed to delete user: " +
-          (err.response?.data?.message || err.message),
-      );
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setDeleting(false);
     }
@@ -6344,9 +6532,9 @@ export default function DeleteUserModal({ user, onClose, onConfirm }) {
         onClick={(e) => e.stopPropagation()}
       >
         <Trash2 size={40} color="#e94560" style={{ marginBottom: 12 }} />
-        <h3 style={{ color: "#fff", marginBottom: 8 }}>Delete User?</h3>
+        <h3 style={{ color: "#fff", marginBottom: 8 }}>Xóa người dùng?</h3>
         <p style={{ color: "#888", fontSize: 14, marginBottom: 20 }}>
-          Are you sure you want to delete user{" "}
+          Bạn có chắc muốn xóa người dùng{" "}
           <strong style={{ color: "#fff" }}>"{user.username}"</strong>?
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
@@ -6361,7 +6549,7 @@ export default function DeleteUserModal({ user, onClose, onConfirm }) {
               cursor: "pointer",
             }}
           >
-            Cancel
+            Hủy
           </button>
           <button
             onClick={handleDelete}
@@ -6376,7 +6564,7 @@ export default function DeleteUserModal({ user, onClose, onConfirm }) {
               fontWeight: 600,
             }}
           >
-            {deleting ? "Deleting..." : "Delete"}
+            {deleting ? "Đang xóa..." : "Xóa"}
           </button>
         </div>
       </div>
@@ -6387,6 +6575,7 @@ export default function DeleteUserModal({ user, onClose, onConfirm }) {
 FILE: GameStore.WebClient/src/components/admin/GameFormModal.jsx
 // GameStore.WebClient/src/components/admin/GameFormModal.jsx
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { gameAPI } from "../../services/api";
 import { inputStyle } from "./adminStyles";
 
@@ -6437,9 +6626,10 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
       };
       if (game) await gameAPI.update(game.id, data);
       else await gameAPI.create(data);
+      toast.success(game ? "Cập nhật game thành công!" : "Tạo game thành công!");
       onSave();
     } catch (err) {
-      alert("Failed to save: " + (err.response?.data?.message || err.message));
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -6478,14 +6668,14 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             fontWeight: 700,
           }}
         >
-          {game ? "✏️ Edit Game" : "➕ Add New Game"}
+          {game ? "✏️ Chỉnh sửa game" : "➕ Thêm game mới"}
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
           <div
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
           >
             <input
-              placeholder="Title *"
+              placeholder="Tên game *"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               style={inputStyle}
@@ -6494,7 +6684,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             <input
               type="number"
               step="0.01"
-              placeholder="Price *"
+              placeholder="Giá *"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
               style={inputStyle}
@@ -6503,7 +6693,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             <input
               type="number"
               step="0.01"
-              placeholder="Discount Price"
+              placeholder="Giá giảm"
               value={form.discountPrice}
               onChange={(e) =>
                 setForm({ ...form, discountPrice: e.target.value })
@@ -6520,20 +6710,20 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               style={inputStyle}
             />
             <input
-              placeholder="Developer"
+              placeholder="Nhà phát triển"
               value={form.developer}
               onChange={(e) => setForm({ ...form, developer: e.target.value })}
               style={inputStyle}
             />
             <input
-              placeholder="Publisher"
+              placeholder="Nhà phát hành"
               value={form.publisher}
               onChange={(e) => setForm({ ...form, publisher: e.target.value })}
               style={inputStyle}
             />
           </div>
           <textarea
-            placeholder="Description"
+            placeholder="Mô tả"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             style={{ ...inputStyle, minHeight: 80, resize: "vertical" }}
@@ -6542,7 +6732,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
           >
             <input
-              placeholder="Cover Image URL"
+              placeholder="URL ảnh bìa"
               value={form.coverImageUrl}
               onChange={(e) =>
                 setForm({ ...form, coverImageUrl: e.target.value })
@@ -6550,7 +6740,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               style={inputStyle}
             />
             <input
-              placeholder="Trailer URL"
+              placeholder="URL trailer"
               value={form.trailerUrl}
               onChange={(e) => setForm({ ...form, trailerUrl: e.target.value })}
               style={inputStyle}
@@ -6564,7 +6754,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             }}
           >
             <legend style={{ color: "#888", fontSize: 12, padding: "0 8px" }}>
-              System Requirements
+              Cấu hình yêu cầu
             </legend>
             <div
               style={{
@@ -6574,7 +6764,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               }}
             >
               <input
-                placeholder="OS"
+                placeholder="Hệ điều hành"
                 value={form.minimumOS}
                 onChange={(e) =>
                   setForm({ ...form, minimumOS: e.target.value })
@@ -6582,7 +6772,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 style={inputStyle}
               />
               <input
-                placeholder="Processor"
+                placeholder="Bộ xử lý"
                 value={form.minimumProcessor}
                 onChange={(e) =>
                   setForm({ ...form, minimumProcessor: e.target.value })
@@ -6590,7 +6780,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 style={inputStyle}
               />
               <input
-                placeholder="Memory"
+                placeholder="RAM"
                 value={form.minimumMemory}
                 onChange={(e) =>
                   setForm({ ...form, minimumMemory: e.target.value })
@@ -6598,7 +6788,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 style={inputStyle}
               />
               <input
-                placeholder="Graphics"
+                placeholder="Card đồ họa"
                 value={form.minimumGraphics}
                 onChange={(e) =>
                   setForm({ ...form, minimumGraphics: e.target.value })
@@ -6606,7 +6796,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 style={inputStyle}
               />
               <input
-                placeholder="Storage"
+                placeholder="Ổ cứng"
                 value={form.minimumStorage}
                 onChange={(e) =>
                   setForm({ ...form, minimumStorage: e.target.value })
@@ -6623,7 +6813,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             }}
           >
             <legend style={{ color: "#888", fontSize: 12, padding: "0 8px" }}>
-              Categories (Genres)
+              Danh mục (Thể loại)
             </legend>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
               {genres &&
@@ -6670,7 +6860,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 cursor: "pointer",
               }}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -6685,7 +6875,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 fontWeight: 600,
               }}
             >
-              {saving ? "Saving..." : game ? "Update" : "Create"}
+              {saving ? "Đang lưu..." : game ? "Cập nhật" : "Tạo mới"}
             </button>
           </div>
         </form>
@@ -6697,7 +6887,8 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
 FILE: GameStore.WebClient/src/components/admin/GameKeysTab.jsx
 // GameStore.WebClient/src/components/admin/GameKeysTab.jsx
 import { useState, useEffect } from "react";
-import { Plus, Trash2, X, Key, Upload } from "lucide-react";
+import toast from "react-hot-toast";
+import { Plus, Trash2, X, Key, Upload, Edit } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "./Pagination";
 import { thStyle, sortFn, filterInputStyle } from "./adminStyles";
@@ -6725,9 +6916,10 @@ function AddKeyModal({ onClose, onSave, games }) {
         keyCode: form.keyCode,
         expiresAt: form.expiresAt || null,
       });
+      toast.success("Thêm mã game thành công!");
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -6746,10 +6938,10 @@ function AddKeyModal({ onClose, onSave, games }) {
         keyCodes: codes,
         expiresAt: batchForm.expiresAt || null,
       });
-      alert(res.data.message);
+      toast.success(res.data.message || `Nhập thành công ${codes.length} mã!`);
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -6788,7 +6980,7 @@ function AddKeyModal({ onClose, onSave, games }) {
             fontWeight: 700,
           }}
         >
-          🔑 Add Game Keys
+          🔑 Thêm mã game
         </h3>
         <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
           {["single", "batch"].map((m) => (
@@ -6806,7 +6998,7 @@ function AddKeyModal({ onClose, onSave, games }) {
                 color: "#fff",
               }}
             >
-              {m === "single" ? "Single Key" : "Batch Import"}
+              {m === "single" ? "Mã đơn lẻ" : "Nhập hàng loạt"}
             </button>
           ))}
         </div>
@@ -6819,7 +7011,7 @@ function AddKeyModal({ onClose, onSave, games }) {
               style={iStyle}
               required
             >
-              <option value="">Select Game *</option>
+              <option value="">Chọn game *</option>
               {games.map((g) => (
                 <option key={g.id} value={g.id}>
                   {g.title}
@@ -6827,14 +7019,14 @@ function AddKeyModal({ onClose, onSave, games }) {
               ))}
             </select>
             <input
-              placeholder="Key Code *"
+              placeholder="Mã key *"
               value={form.keyCode}
               onChange={(e) => setForm({ ...form, keyCode: e.target.value })}
               style={iStyle}
               required
             />
             <div style={{ color: "#888", fontSize: 11 }}>
-              Expires At (optional):
+              Ngày hết hạn (tùy chọn):
               <input
                 type="datetime-local"
                 value={form.expiresAt}
@@ -6859,7 +7051,7 @@ function AddKeyModal({ onClose, onSave, games }) {
                   cursor: "pointer",
                 }}
               >
-                Cancel
+                Hủy
               </button>
               <button
                 type="submit"
@@ -6874,7 +7066,7 @@ function AddKeyModal({ onClose, onSave, games }) {
                   fontWeight: 600,
                 }}
               >
-                {saving ? "Adding..." : "Add Key"}
+                {saving ? "Đang thêm..." : "Thêm mã"}
               </button>
             </div>
           </form>
@@ -6888,7 +7080,7 @@ function AddKeyModal({ onClose, onSave, games }) {
               style={iStyle}
               required
             >
-              <option value="">Select Game *</option>
+              <option value="">Chọn game *</option>
               {games.map((g) => (
                 <option key={g.id} value={g.id}>
                   {g.title}
@@ -6896,7 +7088,7 @@ function AddKeyModal({ onClose, onSave, games }) {
               ))}
             </select>
             <textarea
-              placeholder="Paste keys, one per line..."
+              placeholder="Dán mã, mỗi dòng một mã..."
               value={batchForm.keyCodes}
               onChange={(e) =>
                 setBatchForm({ ...batchForm, keyCodes: e.target.value })
@@ -6912,10 +7104,10 @@ function AddKeyModal({ onClose, onSave, games }) {
             />
             <p style={{ color: "#666", fontSize: 10, margin: 0 }}>
               {batchForm.keyCodes.split("\n").filter((s) => s.trim()).length}{" "}
-              keys detected
+              mã được phát hiện
             </p>
             <div style={{ color: "#888", fontSize: 11 }}>
-              Expires At (optional):
+              Ngày hết hạn (tùy chọn):
               <input
                 type="datetime-local"
                 value={batchForm.expiresAt}
@@ -6940,7 +7132,7 @@ function AddKeyModal({ onClose, onSave, games }) {
                   cursor: "pointer",
                 }}
               >
-                Cancel
+                Hủy
               </button>
               <button
                 type="submit"
@@ -6956,11 +7148,106 @@ function AddKeyModal({ onClose, onSave, games }) {
                 }}
               >
                 <Upload size={12} style={{ marginRight: 4 }} />{" "}
-                {saving ? "Importing..." : "Import Keys"}
+                {saving ? "Đang nhập..." : "Nhập mã"}
               </button>
             </div>
           </form>
         )}
+      </div>
+    </div>
+  );
+}
+
+function EditKeyModal({ keyData, onClose, onSave }) {
+  const [form, setForm] = useState({
+    keyCode: keyData.keyCode || "",
+    expiresAt: keyData.expiresAt
+      ? new Date(keyData.expiresAt).toISOString().slice(0, 16)
+      : "",
+    clearExpiry: false,
+  });
+  const [saving, setSaving] = useState(false);
+  const iStyle = { ...filterInputStyle, width: "100%" };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await adminAPI.updateGameKey(keyData.id, {
+        keyCode: form.keyCode,
+        expiresAt: form.clearExpiry ? null : (form.expiresAt || null),
+        clearExpiry: form.clearExpiry,
+      });
+      toast.success("Cập nhật mã game thành công!");
+      onSave();
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}
+      onClick={onClose}
+    >
+      <div
+        style={{ background: "#111118", borderRadius: 12, padding: 30, width: 460, border: "1px solid #1a1a2e" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 style={{ color: "#fff", marginBottom: 16, fontSize: 16, fontWeight: 700 }}>
+          ✏️ Chỉnh sửa mã game
+        </h3>
+        <p style={{ color: "#888", fontSize: 11, marginBottom: 14 }}>
+          Game: <strong style={{ color: "#ccc" }}>{keyData.gameTitle}</strong>
+        </p>
+        <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
+          <div>
+            <p style={{ color: "#888", fontSize: 11, marginBottom: 4 }}>Mã key *</p>
+            <input
+              placeholder="Nhập mã key..."
+              value={form.keyCode}
+              onChange={(e) => setForm({ ...form, keyCode: e.target.value })}
+              style={{ ...iStyle, fontFamily: "monospace" }}
+              required
+            />
+          </div>
+          <div>
+            <p style={{ color: "#888", fontSize: 11, marginBottom: 4 }}>Ngày hết hạn (tùy chọn)</p>
+            <input
+              type="datetime-local"
+              value={form.expiresAt}
+              onChange={(e) => setForm({ ...form, expiresAt: e.target.value, clearExpiry: false })}
+              style={iStyle}
+              disabled={form.clearExpiry}
+            />
+          </div>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc", fontSize: 13, cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={form.clearExpiry}
+              onChange={(e) => setForm({ ...form, clearExpiry: e.target.checked, expiresAt: "" })}
+            />
+            Xóa ngày hết hạn (không giới hạn)
+          </label>
+          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8 }}>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              style={{ padding: "8px 20px", background: "var(--accent)", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}
+            >
+              {saving ? "Đang lưu..." : "Cập nhật"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -6980,6 +7267,8 @@ export default function GameKeysTab() {
   const [search, setSearch] = useState({ keyword: "", gameId: "", status: "" });
   const [sort, setSort] = useState({ field: "createdAt", dir: "desc" });
   const [showModal, setShowModal] = useState(false);
+  const [editingKey, setEditingKey] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [games, setGames] = useState([]);
 
   useEffect(() => {
@@ -7013,13 +7302,15 @@ export default function GameKeysTab() {
     return () => clearTimeout(t);
   }, [page, pageSize, search]);
 
-  const handleDelete = async (key) => {
-    if (!confirm(`Delete key "${key.keyCode}"?`)) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await adminAPI.deleteGameKey(key.id);
+      await adminAPI.deleteGameKey(deleteTarget.id);
+      toast.success("Đã xóa mã thành công!");
+      setDeleteTarget(null);
       load();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
@@ -7027,17 +7318,17 @@ export default function GameKeysTab() {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   const statCards = [
-    { label: "Total Keys", value: stats.totalKeys, color: "var(--accent)" },
-    { label: "Available", value: stats.availableKeys, color: "#4caf50" },
-    { label: "Used", value: stats.usedKeys, color: "#ffc107" },
-    { label: "Expired", value: stats.expiredKeys, color: "#e94560" },
+    { label: "Tổng mã", value: stats.totalKeys, color: "var(--accent)" },
+    { label: "Khả dụng", value: stats.availableKeys, color: "#4caf50" },
+    { label: "Đã dùng", value: stats.usedKeys, color: "#ffc107" },
+    { label: "Hết hạn", value: stats.expiredKeys, color: "#e94560" },
   ];
 
   const getKeyStatus = (k) => {
-    if (k.isUsed) return { text: "Sold", color: "#ff9800" };
+    if (k.isUsed) return { text: "Đã bán", color: "#ff9800" };
     if (k.expiresAt && new Date(k.expiresAt) <= new Date())
-      return { text: "Expired", color: "#e94560" };
-    return { text: "Available", color: "#4caf50" };
+      return { text: "Hết hạn", color: "#e94560" };
+    return { text: "Khả dụng", color: "#4caf50" };
   };
 
   return (
@@ -7083,7 +7374,7 @@ export default function GameKeysTab() {
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Search key or game..."
+          placeholder="Tìm mã hoặc game..."
           value={search.keyword}
           onChange={(e) => setSearch({ ...search, keyword: e.target.value })}
           style={{ ...filterInputStyle, flex: 1, maxWidth: 200 }}
@@ -7093,7 +7384,7 @@ export default function GameKeysTab() {
           onChange={(e) => setSearch({ ...search, gameId: e.target.value })}
           style={filterInputStyle}
         >
-          <option value="">All Games</option>
+          <option value="">Tất cả game</option>
           {games.map((g) => (
             <option key={g.id} value={g.id}>
               {g.title}
@@ -7105,10 +7396,10 @@ export default function GameKeysTab() {
           onChange={(e) => setSearch({ ...search, status: e.target.value })}
           style={filterInputStyle}
         >
-          <option value="">All Status</option>
-          <option value="available">Available</option>
-          <option value="used">Used</option>
-          <option value="expired">Expired</option>
+          <option value="">Tất cả trạng thái</option>
+          <option value="available">Khả dụng</option>
+          <option value="used">Đã dùng</option>
+          <option value="expired">Hết hạn</option>
         </select>
         {(search.keyword || search.gameId || search.status) && (
           <button
@@ -7126,7 +7417,7 @@ export default function GameKeysTab() {
               gap: 4,
             }}
           >
-            <X size={12} /> Clear
+            <X size={12} /> Xóa lọc
           </button>
         )}
         <button
@@ -7146,7 +7437,7 @@ export default function GameKeysTab() {
             marginLeft: "auto",
           }}
         >
-          <Plus size={14} /> Add Keys
+          <Plus size={14} /> Thêm mã
         </button>
       </div>
 
@@ -7170,14 +7461,14 @@ export default function GameKeysTab() {
                 Game
               </SortableHeader>
               <SortableHeader field="keyCode" sort={sort} setSort={setSort}>
-                Key Code
+                Mã key
               </SortableHeader>
-              <th style={{ ...thStyle, cursor: "default" }}>Status</th>
+              <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
               <SortableHeader field="createdAt" sort={sort} setSort={setSort}>
-                Created
+                Ngày tạo
               </SortableHeader>
               <SortableHeader field="expiresAt" sort={sort} setSort={setSort}>
-                Expires
+                Hết hạn
               </SortableHeader>
               <th style={{ ...thStyle, cursor: "default" }}></th>
             </tr>
@@ -7253,25 +7544,25 @@ export default function GameKeysTab() {
                       ? new Date(k.expiresAt).toLocaleDateString()
                       : "-"}
                   </td>
-                  <td style={{ padding: "9px 14px", textAlign: "center" }}>
+                  <td style={{ padding: "9px 14px", display: "flex", gap: 5, justifyContent: "center" }}>
                     {!k.isUsed ? (
-                      <button
-                        onClick={() => handleDelete(k)}
-                        style={{
-                          padding: "4px 7px",
-                          background: "#1a1a2e",
-                          border: "none",
-                          borderRadius: 4,
-                          cursor: "pointer",
-                        }}
-                      >
-                        <Trash2 size={11} color="#e94560" />
-                      </button>
+                      <>
+                        <button
+                          onClick={() => setEditingKey(k)}
+                          style={{ padding: "4px 7px", background: "#1a1a2e", border: "none", borderRadius: 4, cursor: "pointer" }}
+                          title="Chỉnh sửa"
+                        >
+                          <Edit size={11} color="#0078f2" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(k)}
+                          style={{ padding: "4px 7px", background: "#1a1a2e", border: "none", borderRadius: 4, cursor: "pointer" }}
+                        >
+                          <Trash2 size={11} color="#e94560" />
+                        </button>
+                      </>
                     ) : (
-                      <span
-                        title="Sold keys cannot be deleted"
-                        style={{ opacity: 0.3 }}
-                      >
+                      <span title="Mã đã bán không thể chỉnh sửa hoặc xóa" style={{ opacity: 0.3 }}>
                         <Trash2 size={11} color="#888" />
                       </span>
                     )}
@@ -7285,7 +7576,7 @@ export default function GameKeysTab() {
                   colSpan="7"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  No keys found
+                  Không tìm thấy mã
                 </td>
               </tr>
             )}
@@ -7310,6 +7601,34 @@ export default function GameKeysTab() {
             load();
           }}
         />
+      )}
+      {editingKey && (
+        <EditKeyModal
+          keyData={editingKey}
+          onClose={() => setEditingKey(null)}
+          onSave={() => {
+            setEditingKey(null);
+            load();
+          }}
+        />
+      )}
+      {deleteTarget && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 380, textAlign: "center", border: "1px solid #e94560" }} onClick={(e) => e.stopPropagation()}>
+            <Trash2 size={36} color="#e94560" style={{ marginBottom: 10 }} />
+            <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>Xóa mã game?</h3>
+            <p style={{ color: "#888", fontSize: 13, marginBottom: 8 }}>
+              Bạn có chắc muốn xóa mã này?
+            </p>
+            <code style={{ display: "block", background: "#0a0a10", padding: "6px 12px", borderRadius: 4, color: "#4fc3f7", fontSize: 12, marginBottom: 20 }}>
+              {deleteTarget.keyCode}
+            </code>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button onClick={() => setDeleteTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>Hủy</button>
+              <button onClick={handleDelete} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>Xóa</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -7346,7 +7665,7 @@ export default function GamesTab({
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Search by Title or Developer..."
+          placeholder="Tìm theo tên hoặc nhà phát triển..."
           value={gameSearch.keyword}
           onChange={(e) =>
             setGameSearch({ ...gameSearch, keyword: e.target.value })
@@ -7360,7 +7679,7 @@ export default function GamesTab({
           }
           style={filterInputStyle}
         >
-          <option value="">All Genres</option>
+          <option value="">Tất cả thể loại</option>
           {genres.map((g) => (
             <option key={g.id} value={g.id}>
               {g.name}
@@ -7376,7 +7695,7 @@ export default function GamesTab({
             fontSize: 12,
           }}
         >
-          Price: $
+          Giá: $
           <input
             type="number"
             min="0"
@@ -7386,7 +7705,7 @@ export default function GamesTab({
               setGameSearch({ ...gameSearch, minPrice: e.target.value })
             }
             style={{ ...filterInputStyle, width: 60 }}
-            placeholder="Min"
+            placeholder="Từ"
           />
           - $
           <input
@@ -7398,7 +7717,7 @@ export default function GamesTab({
               setGameSearch({ ...gameSearch, maxPrice: e.target.value })
             }
             style={{ ...filterInputStyle, width: 60 }}
-            placeholder="Max"
+            placeholder="Đến"
           />
         </div>
         {(gameSearch.keyword ||
@@ -7427,7 +7746,7 @@ export default function GamesTab({
               gap: 4,
             }}
           >
-            <X size={12} /> Clear
+            <X size={12} /> Xóa lọc
           </button>
         )}
         <button
@@ -7447,7 +7766,7 @@ export default function GamesTab({
             marginLeft: "auto",
           }}
         >
-          <Plus size={14} /> Add Game
+          <Plus size={14} /> Thêm game
         </button>
       </div>
       <div
@@ -7471,37 +7790,37 @@ export default function GamesTab({
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Title
+                Tên game
               </SortableHeader>
               <SortableHeader
                 field="developer"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Developer
+                Nhà phát triển
               </SortableHeader>
-              <th style={{ ...thStyle, cursor: "default" }}>Categories</th>
+              <th style={{ ...thStyle, cursor: "default" }}>Danh mục</th>
               <SortableHeader
                 field="price"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Price
+                Giá
               </SortableHeader>
-              <th style={thStyle}>Sale</th>
+              <th style={thStyle}>Giảm giá</th>
               <SortableHeader
                 field="rating"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Rating
+                Đánh giá
               </SortableHeader>
               <SortableHeader
                 field="totalSales"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Sales
+                Đã bán
               </SortableHeader>
               <th style={{ ...thStyle, cursor: "default" }}></th>
             </tr>
@@ -7614,7 +7933,7 @@ export default function GamesTab({
                   colSpan="9"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  No games found
+                  Không tìm thấy game
                 </td>
               </tr>
             )}
@@ -7642,8 +7961,72 @@ import Pagination from "./Pagination";
 import { thStyle, sortFn, filterInputStyle } from "./adminStyles";
 import api from "../../services/api";
 import { Link } from "react-router-dom";
-import { Eye, Check, XCircle } from "lucide-react";
+import { Eye, Check, XCircle, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
+
+function OrderActionModal({ action, order, onClose, onConfirm, loading }) {
+  const isApprove = action === "approve";
+  const accent = isApprove ? "#4caf50" : "#e94560";
+  const accentBg = isApprove ? "#4caf5018" : "#e9456018";
+  return (
+    <div style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)",
+      display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999,
+    }}>
+      <div style={{
+        background: "#111118", borderRadius: 12, padding: "28px 32px",
+        width: 400, border: "1px solid #1a1a2e", boxShadow: "0 8px 40px rgba(0,0,0,0.6)",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: "50%",
+            background: accentBg, display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <AlertTriangle size={20} color={accent} />
+          </div>
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#fff" }}>
+            {isApprove ? "Duyệt đơn hàng?" : "Hủy đơn hàng?"}
+          </h3>
+        </div>
+        <p style={{ margin: "0 0 6px", color: "#aaa", fontSize: 13 }}>
+          {isApprove
+            ? "Xác nhận duyệt và gửi key game cho khách hàng."
+            : "Đơn hàng sẽ bị hủy và hoàn tiền vào ví người dùng (nếu có)."}
+        </p>
+        <p style={{ margin: "0 0 24px", color: "#666", fontSize: 12 }}>
+          Đơn #{order.id} — {order.username || `NSD #${order.userId}`} —{" "}
+          <span style={{ color: "#4caf50", fontWeight: 600 }}>${order.totalAmount?.toFixed(2)}</span>
+        </p>
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <button
+            onClick={onClose}
+            disabled={loading}
+            style={{
+              padding: "9px 20px", background: "transparent",
+              border: "1px solid #333", color: "#ccc", borderRadius: 6,
+              cursor: "pointer", fontSize: 13,
+            }}
+          >
+            Hủy bỏ
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            style={{
+              padding: "9px 20px", background: accent,
+              border: "none", color: "#fff", borderRadius: 6,
+              cursor: loading ? "not-allowed" : "pointer", fontSize: 13,
+              fontWeight: 600, opacity: loading ? 0.7 : 1,
+              display: "flex", alignItems: "center", gap: 6,
+            }}
+          >
+            {loading ? "Đang xử lý..." : isApprove ? <><Check size={14} /> Xác nhận duyệt</> : <><XCircle size={14} /> Xác nhận hủy</>}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function OrdersTab({
   orders,
@@ -7661,6 +8044,29 @@ export default function OrdersTab({
   loadDashboard,
   activeTab,
 }) {
+  const statusVN = { Pending: "Chờ xử lý", Completed: "Hoàn thành", Cancelled: "Đã hủy", Refunded: "Hoàn tiền" };
+
+  const [confirmAction, setConfirmAction] = useState(null); // { action: "approve"|"cancel", order }
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const handleConfirm = async () => {
+    if (!confirmAction) return;
+    setActionLoading(true);
+    const { action, order } = confirmAction;
+    try {
+      await api.put(`/admin/orders/${order.id}/status`, {
+        status: action === "approve" ? "Completed" : "Cancelled",
+      });
+      toast.success(action === "approve" ? "Đơn hàng đã duyệt & gửi key!" : "Đã hủy đơn hàng!");
+      setConfirmAction(null);
+      loadOrders();
+    } catch (e) {
+      toast.error(e.response?.data?.message || (action === "approve" ? "Duyệt thất bại" : "Hủy đơn thất bại"));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const hasFilters =
     orderSearch.keyword ||
     orderSearch.fromDate ||
@@ -7673,7 +8079,7 @@ export default function OrdersTab({
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Search Username or Order ID"
+          placeholder="Tìm tên người dùng hoặc mã đơn..."
           value={orderSearch.keyword}
           onChange={(e) =>
             setOrderSearch({ ...orderSearch, keyword: e.target.value })
@@ -7689,7 +8095,7 @@ export default function OrdersTab({
             fontSize: 12,
           }}
         >
-          From:{" "}
+          Từ ngày:{" "}
           <input
             type="date"
             value={orderSearch.fromDate}
@@ -7708,7 +8114,7 @@ export default function OrdersTab({
             fontSize: 12,
           }}
         >
-          To:{" "}
+          Đến ngày:{" "}
           <input
             type="date"
             value={orderSearch.toDate}
@@ -7725,11 +8131,11 @@ export default function OrdersTab({
           }
           style={filterInputStyle}
         >
-          <option value="">All Statuses</option>
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-          <option value="Refunded">Refunded</option>
+          <option value="">Tất cả trạng thái</option>
+          <option value="Pending">Chờ xử lý</option>
+          <option value="Completed">Hoàn thành</option>
+          <option value="Cancelled">Đã hủy</option>
+          <option value="Refunded">Hoàn tiền</option>
         </select>
         {hasFilters && (
           <button
@@ -7754,7 +8160,7 @@ export default function OrdersTab({
               gap: 4,
             }}
           >
-            <X size={12} /> Clear
+            <X size={12} /> Xóa lọc
           </button>
         )}
       </div>
@@ -7783,38 +8189,38 @@ export default function OrdersTab({
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                User
+                Người dùng
               </SortableHeader>
               <SortableHeader
                 field="totalAmount"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Total
+                Tổng tiền
               </SortableHeader>
               <SortableHeader
                 field="status"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Status
+                Trạng thái
               </SortableHeader>
               <SortableHeader
                 field="paymentMethod"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Method
+                Phương thức
               </SortableHeader>
               <SortableHeader
                 field="orderDate"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Date
+                Ngày đặt
               </SortableHeader>
-              <th style={thStyle}>Action</th>
-              <th style={thStyle}>Process</th>
+              <th style={thStyle}>Xem</th>
+              <th style={thStyle}>Xử lý</th>
             </tr>
           </thead>
           <tbody>
@@ -7824,7 +8230,7 @@ export default function OrdersTab({
                 <td style={{ padding: "9px 14px", color: "#fff" }}>
                   {o.username
                     ? `${o.username} (#${o.userId})`
-                    : `User #${o.userId}`}
+                    : `NSD #${o.userId}`}
                 </td>
                 <td
                   style={{
@@ -7861,11 +8267,11 @@ export default function OrdersTab({
                       border: "1px solid currentColor",
                     }}
                   >
-                    {o.status}
+                    {statusVN[o.status] || o.status}
                   </span>
                 </td>
                 <td style={{ padding: "9px 14px", color: "#888" }}>
-                  {o.paymentMethod || "Wallet"}
+                  {o.paymentMethod || "Ví"}
                 </td>
                 <td style={{ padding: "9px 14px", color: "#888" }}>
                   {o.orderDate
@@ -7884,29 +8290,14 @@ export default function OrdersTab({
                       textDecoration: "none",
                     }}
                   >
-                    <Eye size={14} /> Detail
+                    <Eye size={14} /> Chi tiết
                   </Link>
                 </td>
                 <td style={{ padding: "9px 14px" }}>
                   {o.status === "Pending" && (
                     <div style={{ display: "flex", gap: 8 }}>
                       <button
-                        onClick={async () => {
-                          if (window.confirm("Approve this order?")) {
-                            try {
-                              await api.put(`/admin/orders/${o.id}/status`, {
-                                status: "Completed",
-                              });
-                              toast.success("Order Approved & Keys Sent");
-                              loadOrders();
-                            } catch (e) {
-                              toast.error(
-                                e.response?.data?.message ||
-                                  "Failed to approve",
-                              );
-                            }
-                          }
-                        }}
+                        onClick={() => setConfirmAction({ action: "approve", order: o })}
                         style={{
                           background: "#4caf50",
                           color: "#fff",
@@ -7917,24 +8308,13 @@ export default function OrdersTab({
                           display: "flex",
                           alignItems: "center",
                           gap: 4,
+                          fontSize: 12,
                         }}
                       >
-                        <Check size={14} /> Approve
+                        <Check size={13} /> Duyệt
                       </button>
                       <button
-                        onClick={async () => {
-                          if (window.confirm("Cancel this order?")) {
-                            try {
-                              await api.put(`/admin/orders/${o.id}/status`, {
-                                status: "Cancelled",
-                              });
-                              toast.success("Order Cancelled");
-                              loadOrders();
-                            } catch (e) {
-                              toast.error("Failed to cancel");
-                            }
-                          }
-                        }}
+                        onClick={() => setConfirmAction({ action: "cancel", order: o })}
                         style={{
                           background: "#e94560",
                           color: "#fff",
@@ -7945,9 +8325,10 @@ export default function OrdersTab({
                           display: "flex",
                           alignItems: "center",
                           gap: 4,
+                          fontSize: 12,
                         }}
                       >
-                        <XCircle size={14} /> Cancel
+                        <XCircle size={13} /> Hủy
                       </button>
                     </div>
                   )}
@@ -7960,7 +8341,7 @@ export default function OrdersTab({
                   colSpan="8"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  No orders found
+                  Không tìm thấy đơn hàng
                 </td>
               </tr>
             )}
@@ -7975,6 +8356,15 @@ export default function OrdersTab({
           setPageSize={setOrdersPageSize}
         />
       </div>
+      {confirmAction && (
+        <OrderActionModal
+          action={confirmAction.action}
+          order={confirmAction.order}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={handleConfirm}
+          loading={actionLoading}
+        />
+      )}
     </div>
   );
 }
@@ -8074,19 +8464,19 @@ export default function Pagination({
         <span>
           {totalItems > 0 ? (
             <>
-              Showing <strong style={{ color: "#fff" }}>{from}</strong>–
-              <strong style={{ color: "#fff" }}>{to}</strong> of{" "}
+              Hiển thị <strong style={{ color: "#fff" }}>{from}</strong>–
+              <strong style={{ color: "#fff" }}>{to}</strong> trong{" "}
               <strong style={{ color: "#fff" }}>{totalItems}</strong>
             </>
           ) : (
-            <>No records</>
+            <>Không có dữ liệu</>
           )}
         </span>
         {setPageSize && (
           <>
             <span style={{ color: "#444" }}>|</span>
             <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              Rows per page:
+              Hàng mỗi trang:
               <select
                 value={pageSize}
                 onChange={(e) => {
@@ -8121,7 +8511,7 @@ export default function Pagination({
           onClick={() => setPage(1)}
           disabled={page === 1}
           style={{ ...btnBase, ...(page === 1 ? disabledStyle : {}) }}
-          title="First page"
+          title="Trang đầu"
         >
           <ChevronsLeft size={14} />
         </button>
@@ -8129,7 +8519,7 @@ export default function Pagination({
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1}
           style={{ ...btnBase, ...(page === 1 ? disabledStyle : {}) }}
-          title="Previous page"
+          title="Trang trước"
         >
           <ChevronLeft size={14} />
         </button>
@@ -8154,7 +8544,7 @@ export default function Pagination({
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           disabled={page === totalPages}
           style={{ ...btnBase, ...(page === totalPages ? disabledStyle : {}) }}
-          title="Next page"
+          title="Trang tiếp"
         >
           <ChevronRight size={14} />
         </button>
@@ -8162,7 +8552,7 @@ export default function Pagination({
           onClick={() => setPage(totalPages)}
           disabled={page === totalPages}
           style={{ ...btnBase, ...(page === totalPages ? disabledStyle : {}) }}
-          title="Last page"
+          title="Trang cuối"
         >
           <ChevronsRight size={14} />
         </button>
@@ -8802,6 +9192,7 @@ export default function SortableHeader({ field, sort, setSort, children }) {
 FILE: GameStore.WebClient/src/components/admin/StaffRolesTab.jsx
 // GameStore.WebClient/src/components/admin/StaffRolesTab.jsx
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import {
   Plus,
   Edit,
@@ -8818,13 +9209,13 @@ import { adminAPI } from "../../services/api";
 
 const ALL_PERMISSIONS = [
   {
-    group: "Games",
+    group: "Trò chơi",
     perms: ["games.view", "games.create", "games.edit", "games.delete"],
   },
-  { group: "Users", perms: ["users.view", "users.edit", "users.ban"] },
-  { group: "Orders", perms: ["orders.view", "orders.edit"] },
+  { group: "Người dùng", perms: ["users.view", "users.edit", "users.ban"] },
+  { group: "Đơn hàng", perms: ["orders.view", "orders.edit"] },
   {
-    group: "Categories",
+    group: "Danh mục",
     perms: [
       "categories.view",
       "categories.create",
@@ -8833,15 +9224,15 @@ const ALL_PERMISSIONS = [
     ],
   },
   {
-    group: "Game Keys",
+    group: "Mã game",
     perms: ["gamekeys.view", "gamekeys.create", "gamekeys.delete"],
   },
-  { group: "Payments", perms: ["payments.view", "payments.refund"] },
+  { group: "Thanh toán", perms: ["payments.view", "payments.refund"] },
   {
-    group: "Roles",
+    group: "Vai trò",
     perms: ["roles.view", "roles.create", "roles.edit", "roles.delete"],
   },
-  { group: "Staff", perms: ["staff.view", "staff.assign"] },
+  { group: "Nhân viên", perms: ["staff.view", "staff.assign"] },
 ];
 
 function RoleModal({ role, onClose, onSave }) {
@@ -8878,9 +9269,10 @@ function RoleModal({ role, onClose, onSave }) {
     try {
       if (role) await adminAPI.updateRole(role.id, form);
       else await adminAPI.createRole(form);
+      toast.success(role ? "Cập nhật vai trò thành công!" : "Tạo vai trò thành công!");
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -8920,18 +9312,18 @@ function RoleModal({ role, onClose, onSave }) {
             fontWeight: 700,
           }}
         >
-          {role ? "✏️ Edit Role" : "➕ New Role"}
+          {role ? "✏️ Chỉnh sửa vai trò" : "➕ Thêm vai trò"}
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
           <input
-            placeholder="Role Name *"
+            placeholder="Tên vai trò *"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             style={iStyle}
             required
           />
           <textarea
-            placeholder="Description"
+            placeholder="Mô tả"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             style={{ ...iStyle, minHeight: 50, resize: "vertical" }}
@@ -8950,7 +9342,7 @@ function RoleModal({ role, onClose, onSave }) {
               checked={form.isActive}
               onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
             />{" "}
-            Active
+            Đang hoạt động
           </label>
           <div>
             <p
@@ -8962,7 +9354,7 @@ function RoleModal({ role, onClose, onSave }) {
                 marginBottom: 8,
               }}
             >
-              Permissions
+              Quyền hạn
             </p>
             <div style={{ display: "grid", gap: 10 }}>
               {ALL_PERMISSIONS.map(({ group, perms }) => (
@@ -9048,7 +9440,7 @@ function RoleModal({ role, onClose, onSave }) {
                 cursor: "pointer",
               }}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -9063,7 +9455,7 @@ function RoleModal({ role, onClose, onSave }) {
                 fontWeight: 600,
               }}
             >
-              {saving ? "Saving..." : role ? "Update" : "Create"}
+              {saving ? "Đang lưu..." : role ? "Cập nhật" : "Tạo mới"}
             </button>
           </div>
         </form>
@@ -9072,8 +9464,11 @@ function RoleModal({ role, onClose, onSave }) {
   );
 }
 
-function AssignRoleModal({ onClose, onSave, roles }) {
-  const [form, setForm] = useState({ userId: "", roleId: "" });
+function AssignRoleModal({ onClose, onSave, roles, presetUser }) {
+  const [form, setForm] = useState({
+    userId: presetUser ? String(presetUser.id) : "",
+    roleId: "",
+  });
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -9084,9 +9479,10 @@ function AssignRoleModal({ onClose, onSave, roles }) {
         userId: parseInt(form.userId),
         roleId: parseInt(form.roleId),
       });
+      toast.success("Phân vai trò thành công!");
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -9116,32 +9512,47 @@ function AssignRoleModal({ onClose, onSave, roles }) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3
-          style={{
-            color: "#fff",
-            marginBottom: 16,
-            fontSize: 16,
-            fontWeight: 700,
-          }}
-        >
-          👤 Assign Role
+        <h3 style={{ color: "#fff", marginBottom: 16, fontSize: 16, fontWeight: 700 }}>
+          👤 Phân vai trò
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
-          <input
-            type="number"
-            placeholder="User ID *"
-            value={form.userId}
-            onChange={(e) => setForm({ ...form, userId: e.target.value })}
-            style={iStyle}
-            required
-          />
+          {/* User field */}
+          {presetUser ? (
+            <div
+              style={{
+                ...iStyle,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                background: "#0a0a10",
+                cursor: "default",
+                borderRadius: 6,
+                padding: "10px 14px",
+              }}
+            >
+              <UserPlus size={14} color="#4caf50" />
+              <span style={{ color: "#fff", fontWeight: 600 }}>{presetUser.username}</span>
+              <span style={{ color: "#555", fontSize: 11 }}>#{presetUser.id}</span>
+            </div>
+          ) : (
+            <input
+              type="number"
+              placeholder="ID người dùng *"
+              value={form.userId}
+              onChange={(e) => setForm({ ...form, userId: e.target.value })}
+              style={iStyle}
+              required
+              min={1}
+            />
+          )}
+
           <select
             value={form.roleId}
             onChange={(e) => setForm({ ...form, roleId: e.target.value })}
             style={iStyle}
             required
           >
-            <option value="">Select Role *</option>
+            <option value="">Chọn vai trò *</option>
             {roles.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.name}
@@ -9161,7 +9572,7 @@ function AssignRoleModal({ onClose, onSave, roles }) {
                 cursor: "pointer",
               }}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -9176,7 +9587,7 @@ function AssignRoleModal({ onClose, onSave, roles }) {
                 fontWeight: 600,
               }}
             >
-              {saving ? "Assigning..." : "Assign"}
+              {saving ? "Đang xử lý..." : "Phân quyền"}
             </button>
           </div>
         </form>
@@ -9193,24 +9604,28 @@ export default function StaffRolesTab() {
   const [rolesTotal, setRolesTotal] = useState(0);
   const [rolesPage, setRolesPage] = useState(1);
   const [rolesPageSize, setRolesPageSize] = useState(10);
-  const [roleSearch, setRoleSearch] = useState("");
+  const [roleSearch, setRoleSearch] = useState({ keyword: "", isActive: "", hasUsers: "" });
   const [roleSort, setRoleSort] = useState({ field: "name", dir: "asc" });
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [editingRole, setEditingRole] = useState(null);
+  const [deleteRoleTarget, setDeleteRoleTarget] = useState(null);
 
   // Staff state
   const [staff, setStaff] = useState([]);
   const [staffTotal, setStaffTotal] = useState(0);
   const [staffPage, setStaffPage] = useState(1);
   const [staffPageSize, setStaffPageSize] = useState(10);
-  const [staffSearch, setStaffSearch] = useState({ keyword: "", roleId: "" });
+  const [staffSearch, setStaffSearch] = useState({ keyword: "", roleId: "", isActive: "" });
   const [staffSort, setStaffSort] = useState({ field: "username", dir: "asc" });
-  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(null); // null | { presetUser?: {id, username} }
+  const [revokeTarget, setRevokeTarget] = useState(null);
 
   const loadRoles = async () => {
     try {
       const params = { page: rolesPage, pageSize: rolesPageSize };
-      if (roleSearch) params.keyword = roleSearch;
+      if (roleSearch.keyword) params.keyword = roleSearch.keyword;
+      if (roleSearch.isActive !== "") params.isActive = roleSearch.isActive === "active";
+      if (roleSearch.hasUsers !== "") params.hasUsers = roleSearch.hasUsers === "yes";
       const res = await adminAPI.getRoles(params);
       setRoles(res.data.data || []);
       setRolesTotal(res.data.totalCount || 0);
@@ -9225,6 +9640,7 @@ export default function StaffRolesTab() {
       const params = { page: staffPage, pageSize: staffPageSize };
       if (staffSearch.keyword) params.keyword = staffSearch.keyword;
       if (staffSearch.roleId) params.roleId = staffSearch.roleId;
+      if (staffSearch.isActive !== "") params.isActive = staffSearch.isActive === "active";
       const res = await adminAPI.getStaff(params);
       setStaff(res.data.data || []);
       setStaffTotal(res.data.totalCount || 0);
@@ -9249,23 +9665,27 @@ export default function StaffRolesTab() {
     return () => clearTimeout(t);
   }, [staffPage, staffPageSize, staffSearch]);
 
-  const handleDeleteRole = async (r) => {
-    if (!confirm(`Delete role "${r.name}"?`)) return;
+  const handleDeleteRole = async () => {
+    if (!deleteRoleTarget) return;
     try {
-      await adminAPI.deleteRole(r.id);
+      await adminAPI.deleteRole(deleteRoleTarget.id);
+      toast.success(`Đã xóa vai trò "${deleteRoleTarget.name}"!`);
+      setDeleteRoleTarget(null);
       loadRoles();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
-  const handleRevokeRole = async (userId, roleId, roleName) => {
-    if (!confirm(`Revoke role "${roleName}" from user #${userId}?`)) return;
+  const handleRevokeRole = async () => {
+    if (!revokeTarget) return;
     try {
-      await adminAPI.revokeRole({ userId, roleId });
+      await adminAPI.revokeRole({ userId: revokeTarget.userId, roleId: revokeTarget.roleId });
+      toast.success(`Đã thu hồi vai trò "${revokeTarget.roleName}"!`);
+      setRevokeTarget(null);
       loadStaff();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
@@ -9279,8 +9699,8 @@ export default function StaffRolesTab() {
       {/* Section switcher */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         {[
-          { id: "roles", icon: Shield, label: "Roles & Permissions" },
-          { id: "staff", icon: UserPlus, label: "Staff Members" },
+          { id: "roles", icon: Shield, label: "Vai trò & Quyền hạn" },
+          { id: "staff", icon: UserPlus, label: "Nhân viên" },
         ].map(({ id, icon: Icon, label }) => (
           <button
             key={id}
@@ -9316,14 +9736,32 @@ export default function StaffRolesTab() {
             }}
           >
             <input
-              placeholder="Search roles..."
-              value={roleSearch}
-              onChange={(e) => setRoleSearch(e.target.value)}
+              placeholder="Tìm vai trò..."
+              value={roleSearch.keyword}
+              onChange={(e) => setRoleSearch({ ...roleSearch, keyword: e.target.value })}
               style={{ ...filterInputStyle, flex: 1, maxWidth: 220 }}
             />
-            {roleSearch && (
+            <select
+              value={roleSearch.isActive}
+              onChange={(e) => setRoleSearch({ ...roleSearch, isActive: e.target.value })}
+              style={filterInputStyle}
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="active">Hoạt động</option>
+              <option value="inactive">Không hoạt động</option>
+            </select>
+            <select
+              value={roleSearch.hasUsers}
+              onChange={(e) => setRoleSearch({ ...roleSearch, hasUsers: e.target.value })}
+              style={filterInputStyle}
+            >
+              <option value="">Tất cả</option>
+              <option value="yes">Có nhân viên</option>
+              <option value="no">Chưa có nhân viên</option>
+            </select>
+            {(roleSearch.keyword || roleSearch.isActive || roleSearch.hasUsers) && (
               <button
-                onClick={() => setRoleSearch("")}
+                onClick={() => setRoleSearch({ keyword: "", isActive: "", hasUsers: "" })}
                 style={{
                   padding: "7px 12px",
                   background: "#2a2a2a",
@@ -9337,7 +9775,7 @@ export default function StaffRolesTab() {
                   gap: 4,
                 }}
               >
-                <X size={12} /> Clear
+                <X size={12} /> Xóa lọc
               </button>
             )}
             <button
@@ -9360,7 +9798,7 @@ export default function StaffRolesTab() {
                 marginLeft: "auto",
               }}
             >
-              <Plus size={14} /> Add Role
+              <Plus size={14} /> Thêm vai trò
             </button>
           </div>
           <div
@@ -9392,24 +9830,24 @@ export default function StaffRolesTab() {
                     sort={roleSort}
                     setSort={setRoleSort}
                   >
-                    Name
+                    Tên
                   </SortableHeader>
                   <SortableHeader
                     field="description"
                     sort={roleSort}
                     setSort={setRoleSort}
                   >
-                    Description
+                    Mô tả
                   </SortableHeader>
                   <SortableHeader
                     field="userCount"
                     sort={roleSort}
                     setSort={setRoleSort}
                   >
-                    Users
+                    Số người dùng
                   </SortableHeader>
-                  <th style={{ ...thStyle, cursor: "default" }}>Permissions</th>
-                  <th style={{ ...thStyle, cursor: "default" }}>Status</th>
+                  <th style={{ ...thStyle, cursor: "default" }}>Quyền hạn</th>
+                  <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
                   <th style={{ ...thStyle, cursor: "default" }}></th>
                 </tr>
               </thead>
@@ -9492,7 +9930,7 @@ export default function StaffRolesTab() {
                             fontSize: 11,
                           }}
                         >
-                          {r.isActive ? "Active" : "Inactive"}
+                          {r.isActive ? "Hoạt động" : "Không hoạt động"}
                         </span>
                       </span>
                     </td>
@@ -9516,7 +9954,7 @@ export default function StaffRolesTab() {
                       </button>
                       {r.name !== "Admin" && r.name !== "User" && (
                         <button
-                          onClick={() => handleDeleteRole(r)}
+                          onClick={() => setDeleteRoleTarget(r)}
                           style={{
                             padding: "4px 7px",
                             background: "#1a1a2e",
@@ -9541,7 +9979,7 @@ export default function StaffRolesTab() {
                         color: "#666",
                       }}
                     >
-                      No roles found
+                      Không tìm thấy vai trò
                     </td>
                   </tr>
                 )}
@@ -9571,7 +10009,7 @@ export default function StaffRolesTab() {
             }}
           >
             <input
-              placeholder="Search username, name, email..."
+              placeholder="Tìm tên đăng nhập, tên, email..."
               value={staffSearch.keyword}
               onChange={(e) =>
                 setStaffSearch({ ...staffSearch, keyword: e.target.value })
@@ -9585,16 +10023,25 @@ export default function StaffRolesTab() {
               }
               style={filterInputStyle}
             >
-              <option value="">All Roles</option>
+              <option value="">Tất cả vai trò</option>
               {roles.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.name}
                 </option>
               ))}
             </select>
-            {(staffSearch.keyword || staffSearch.roleId) && (
+            <select
+              value={staffSearch.isActive}
+              onChange={(e) => setStaffSearch({ ...staffSearch, isActive: e.target.value })}
+              style={filterInputStyle}
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="active">Hoạt động</option>
+              <option value="locked">Bị khóa</option>
+            </select>
+            {(staffSearch.keyword || staffSearch.roleId || staffSearch.isActive) && (
               <button
-                onClick={() => setStaffSearch({ keyword: "", roleId: "" })}
+                onClick={() => setStaffSearch({ keyword: "", roleId: "", isActive: "" })}
                 style={{
                   padding: "7px 12px",
                   background: "#2a2a2a",
@@ -9608,11 +10055,11 @@ export default function StaffRolesTab() {
                   gap: 4,
                 }}
               >
-                <X size={12} /> Clear
+                <X size={12} /> Xóa lọc
               </button>
             )}
             <button
-              onClick={() => setShowAssignModal(true)}
+              onClick={() => setShowAssignModal({})}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -9628,7 +10075,7 @@ export default function StaffRolesTab() {
                 marginLeft: "auto",
               }}
             >
-              <UserPlus size={14} /> Assign Role
+              <UserPlus size={14} /> Phân vai trò
             </button>
           </div>
           <div
@@ -9660,14 +10107,14 @@ export default function StaffRolesTab() {
                     sort={staffSort}
                     setSort={setStaffSort}
                   >
-                    Username
+                    Tên đăng nhập
                   </SortableHeader>
                   <SortableHeader
                     field="displayName"
                     sort={staffSort}
                     setSort={setStaffSort}
                   >
-                    Name
+                    Tên hiển thị
                   </SortableHeader>
                   <SortableHeader
                     field="email"
@@ -9676,8 +10123,8 @@ export default function StaffRolesTab() {
                   >
                     Email
                   </SortableHeader>
-                  <th style={{ ...thStyle, cursor: "default" }}>Roles</th>
-                  <th style={{ ...thStyle, cursor: "default" }}>Status</th>
+                  <th style={{ ...thStyle, cursor: "default" }}>Vai trò</th>
+                  <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
                   <th style={{ ...thStyle, cursor: "default" }}></th>
                 </tr>
               </thead>
@@ -9728,7 +10175,7 @@ export default function StaffRolesTab() {
                             {r.roleName}
                             <button
                               onClick={() =>
-                                handleRevokeRole(u.id, r.roleId, r.roleName)
+                                setRevokeTarget({ userId: u.id, roleId: r.roleId, roleName: r.roleName })
                               }
                               style={{
                                 background: "none",
@@ -9744,7 +10191,7 @@ export default function StaffRolesTab() {
                         ))}
                         {(u.roles || []).length === 0 && (
                           <span style={{ color: "#555", fontSize: 10 }}>
-                            No roles
+                            Không có vai trò
                           </span>
                         )}
                       </div>
@@ -9771,13 +10218,13 @@ export default function StaffRolesTab() {
                             fontSize: 11,
                           }}
                         >
-                          {u.isActive ? "Active" : "Banned"}
+                          {u.isActive ? "Hoạt động" : "Bị khóa"}
                         </span>
                       </span>
                     </td>
                     <td style={{ padding: "9px 14px" }}>
                       <button
-                        onClick={() => setShowAssignModal(true)}
+                        onClick={() => setShowAssignModal({ presetUser: { id: u.id, username: u.username } })}
                         style={{
                           padding: "4px 7px",
                           background: "#1a1a2e",
@@ -9785,7 +10232,7 @@ export default function StaffRolesTab() {
                           borderRadius: 4,
                           cursor: "pointer",
                         }}
-                        title="Assign Role"
+                        title="Thêm vai trò cho nhân viên này"
                       >
                         <UserPlus size={11} color="#4caf50" />
                       </button>
@@ -9802,7 +10249,7 @@ export default function StaffRolesTab() {
                         color: "#666",
                       }}
                     >
-                      No staff found
+                      Không tìm thấy nhân viên
                     </td>
                   </tr>
                 )}
@@ -9835,15 +10282,46 @@ export default function StaffRolesTab() {
           }}
         />
       )}
-      {showAssignModal && (
+      {showAssignModal !== null && (
         <AssignRoleModal
           roles={roles}
-          onClose={() => setShowAssignModal(false)}
+          presetUser={showAssignModal.presetUser || null}
+          onClose={() => setShowAssignModal(null)}
           onSave={() => {
-            setShowAssignModal(false);
+            setShowAssignModal(null);
             loadStaff();
           }}
         />
+      )}
+      {deleteRoleTarget && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 360, textAlign: "center", border: "1px solid #e94560" }} onClick={(e) => e.stopPropagation()}>
+            <Trash2 size={36} color="#e94560" style={{ marginBottom: 10 }} />
+            <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>Xóa vai trò?</h3>
+            <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
+              Bạn có chắc muốn xóa vai trò <strong style={{ color: "#fff" }}>"{deleteRoleTarget.name}"</strong>?
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button onClick={() => setDeleteRoleTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>Hủy</button>
+              <button onClick={handleDeleteRole} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>Xóa</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {revokeTarget && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 360, textAlign: "center", border: "1px solid #ff9800" }} onClick={(e) => e.stopPropagation()}>
+            <UserMinus size={36} color="#ff9800" style={{ marginBottom: 10 }} />
+            <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>Thu hồi vai trò?</h3>
+            <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
+              Xóa vai trò <strong style={{ color: "#fff" }}>"{revokeTarget.roleName}"</strong> khỏi người dùng #{revokeTarget.userId}?
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button onClick={() => setRevokeTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>Hủy</button>
+              <button onClick={handleRevokeRole} style={{ padding: "8px 20px", background: "#ff9800", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>Thu hồi</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -9858,6 +10336,8 @@ export default function UserFormModal({ user, onClose, onSave }) {
   const [form, setForm] = useState({
     displayName: "",
     email: "",
+    phone: "",
+    avatarUrl: "",
     wallet: 0,
     isActive: true,
   });
@@ -9867,6 +10347,8 @@ export default function UserFormModal({ user, onClose, onSave }) {
       setForm({
         displayName: user.displayName || "",
         email: user.email || "",
+        phone: user.phone || "",
+        avatarUrl: user.avatarUrl || "",
         wallet: user.wallet || 0,
         isActive: user.isActive ?? true,
       });
@@ -9930,7 +10412,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
           }}
         >
           <h2 style={{ fontSize: 18, margin: 0, color: "#fff" }}>
-            Edit User: {user?.username}
+            Chỉnh sửa: {user?.username}
           </h2>
           <button
             onClick={onClose}
@@ -9947,7 +10429,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
 
         <form onSubmit={handleSubmit}>
           <div>
-            <label style={labelStyle}>Display Name</label>
+            <label style={labelStyle}>Tên hiển thị</label>
             <input
               style={inputStyle}
               value={form.displayName}
@@ -9968,7 +10450,28 @@ export default function UserFormModal({ user, onClose, onSave }) {
           </div>
 
           <div>
-            <label style={labelStyle}>Wallet Balance ($)</label>
+            <label style={labelStyle}>Số điện thoại</label>
+            <input
+              type="tel"
+              style={inputStyle}
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="Nhập số điện thoại..."
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>URL ảnh đại diện</label>
+            <input
+              style={inputStyle}
+              value={form.avatarUrl}
+              onChange={(e) => setForm({ ...form, avatarUrl: e.target.value })}
+              placeholder="Nhập URL ảnh đại diện..."
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Số dư ví ($)</label>
             <input
               type="number"
               step="0.01"
@@ -9999,7 +10502,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
               htmlFor="isActive"
               style={{ color: "#ccc", fontSize: 13, cursor: "pointer" }}
             >
-              Active (Uncheck to Ban)
+              Đang hoạt động (Bỏ chọn để khóa)
             </label>
           </div>
 
@@ -10016,14 +10519,14 @@ export default function UserFormModal({ user, onClose, onSave }) {
                 cursor: "pointer",
               }}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
               className="btn-primary"
               style={{ padding: "10px 20px", borderRadius: 6 }}
             >
-              Save Changes
+              Lưu thay đổi
             </button>
           </div>
         </form>
@@ -10035,10 +10538,10 @@ export default function UserFormModal({ user, onClose, onSave }) {
 FILE: GameStore.WebClient/src/components/admin/UsersTab.jsx
 // GameStore.WebClient/src/components/admin/UsersTab.jsx
 import { useState } from "react";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2, Trash2, X } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "./Pagination";
-import { thStyle, sortFn, actionBtnStyle } from "./adminStyles";
+import { thStyle, sortFn, actionBtnStyle, filterInputStyle } from "./adminStyles";
 
 export default function UsersTab({
   users,
@@ -10056,6 +10559,50 @@ export default function UsersTab({
   onDelete,
 }) {
   return (
+    <div>
+      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+        <input
+          placeholder="Tìm tên đăng nhập, tên, email..."
+          value={userSearch.keyword}
+          onChange={(e) => setUserSearch({ ...userSearch, keyword: e.target.value })}
+          style={{ ...filterInputStyle, flex: 1, maxWidth: 220 }}
+        />
+        <select
+          value={userSearch.status}
+          onChange={(e) => setUserSearch({ ...userSearch, status: e.target.value })}
+          style={filterInputStyle}
+        >
+          <option value="">Tất cả trạng thái</option>
+          <option value="active">Hoạt động</option>
+          <option value="locked">Bị khóa</option>
+        </select>
+        <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#888", fontSize: 12 }}>
+          Từ ngày:{" "}
+          <input
+            type="date"
+            value={userSearch.fromDate}
+            onChange={(e) => setUserSearch({ ...userSearch, fromDate: e.target.value })}
+            style={filterInputStyle}
+          />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#888", fontSize: 12 }}>
+          Đến ngày:{" "}
+          <input
+            type="date"
+            value={userSearch.toDate}
+            onChange={(e) => setUserSearch({ ...userSearch, toDate: e.target.value })}
+            style={filterInputStyle}
+          />
+        </div>
+        {(userSearch.keyword || userSearch.status || userSearch.fromDate || userSearch.toDate) && (
+          <button
+            onClick={() => setUserSearch({ keyword: "", status: "", fromDate: "", toDate: "" })}
+            style={{ padding: "7px 12px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
+          >
+            <X size={12} /> Xóa lọc
+          </button>
+        )}
+      </div>
     <div
       style={{
         background: "#111118",
@@ -10077,14 +10624,14 @@ export default function UsersTab({
               sort={userSort}
               setSort={setUserSort}
             >
-              Username
+              Tên đăng nhập
             </SortableHeader>
             <SortableHeader
               field="displayName"
               sort={userSort}
               setSort={setUserSort}
             >
-              Name
+              Tên hiển thị
             </SortableHeader>
             <SortableHeader field="email" sort={userSort} setSort={setUserSort}>
               Email
@@ -10094,17 +10641,17 @@ export default function UsersTab({
               sort={userSort}
               setSort={setUserSort}
             >
-              Wallet
+              Ví
             </SortableHeader>
-            <th style={{ ...thStyle, cursor: "default" }}>Status</th>
+            <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
             <SortableHeader
               field="createdAt"
               sort={userSort}
               setSort={setUserSort}
             >
-              Joined
+              Ngày tham gia
             </SortableHeader>
-            <th style={{ ...thStyle, textAlign: "right" }}>Actions</th>
+            <th style={{ ...thStyle, textAlign: "right" }}>Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -10147,7 +10694,7 @@ export default function UsersTab({
                       fontSize: 11,
                     }}
                   >
-                    {u.isActive ? "Active" : "Banned"}
+                    {u.isActive ? "Hoạt động" : "Bị khóa"}
                   </span>
                 </span>
               </td>
@@ -10165,14 +10712,14 @@ export default function UsersTab({
                   <button
                     style={actionBtnStyle}
                     onClick={() => onEdit && onEdit(u)}
-                    title="Edit User"
+                    title="Chỉnh sửa"
                   >
                     <Edit2 size={14} color="#3498db" />
                   </button>
                   <button
                     style={actionBtnStyle}
                     onClick={() => onDelete && onDelete(u)}
-                    title="Delete User"
+                    title="Xóa người dùng"
                   >
                     <Trash2 size={14} color="#e94560" />
                   </button>
@@ -10186,7 +10733,7 @@ export default function UsersTab({
                 colSpan="8"
                 style={{ padding: 20, textAlign: "center", color: "#666" }}
               >
-                No users found
+                Không tìm thấy người dùng
               </td>
             </tr>
           )}
@@ -10200,6 +10747,7 @@ export default function UsersTab({
         setPage={setUsersPage}
         setPageSize={setUsersPageSize}
       />
+    </div>
     </div>
   );
 }
@@ -10280,7 +10828,6 @@ export { default as UsersTab } from "./UsersTab";
 export { default as OrdersTab } from "./OrdersTab";
 export { default as CategoriesTab } from "./CategoriesTab";
 export { default as GameKeysTab } from "./GameKeysTab";
-export { default as PaymentsTab } from "./PaymentsTab";
 export { default as StaffRolesTab } from "./StaffRolesTab";
 export { default as GameFormModal } from "./GameFormModal";
 export { default as DeleteConfirmModal } from "./DeleteConfirmModal";
@@ -10473,7 +11020,7 @@ export default function FeaturedSlider({ games }) {
                       border: "1px solid rgba(255,255,255,0.2)",
                     }}
                   >
-                    View Details →
+                    Xem Chi Tiết →
                   </span>
                 </div>
               </div>
@@ -10690,7 +11237,7 @@ export default function GameCard({ game }) {
             >
               <Check size={14} color="#4caf50" />
               <span style={{ color: "#4caf50", fontSize: 11, fontWeight: 600 }}>
-                OWNED
+                ĐÃ MUA
               </span>
             </button>
           ) : (
@@ -10745,11 +11292,11 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Resources
+            TÀI NGUYÊN
           </h4>
-          <p style={{ marginBottom: 6 }}>Support</p>
+          <p style={{ marginBottom: 6 }}>Hỗ Trợ</p>
           <p style={{ marginBottom: 6 }}>FAQ</p>
-          <p style={{ marginBottom: 6 }}>Community Rules</p>
+          <p style={{ marginBottom: 6 }}>Quy định cộng đồng</p>
         </div>
         <div>
           <h4
@@ -10761,11 +11308,11 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Company
+            Công ty
           </h4>
-          <p style={{ marginBottom: 6 }}>About</p>
-          <p style={{ marginBottom: 6 }}>Careers</p>
-          <p style={{ marginBottom: 6 }}>Newsroom</p>
+          <p style={{ marginBottom: 6 }}>Giới thiệu</p>
+          <p style={{ marginBottom: 6 }}>Tuyển dụng</p>
+          <p style={{ marginBottom: 6 }}>Tin tức</p>
         </div>
         <div>
           <h4
@@ -10777,11 +11324,11 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Legal
+            Pháp lý
           </h4>
-          <p style={{ marginBottom: 6 }}>Terms of Service</p>
-          <p style={{ marginBottom: 6 }}>Privacy Policy</p>
-          <p style={{ marginBottom: 6 }}>Cookie Policy</p>
+          <p style={{ marginBottom: 6 }}>Điều khoản dịch vụ</p>
+          <p style={{ marginBottom: 6 }}>Chính sách bảo mật</p>
+          <p style={{ marginBottom: 6 }}>Chính sách sử dụng Cookie</p>
         </div>
         <div>
           <h4
@@ -10793,7 +11340,7 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Follow Us
+            Theo dõi chúng tôi
           </h4>
           <p style={{ marginBottom: 6 }}>Twitter</p>
           <p style={{ marginBottom: 6 }}>Facebook</p>
@@ -10811,7 +11358,7 @@ export default function Footer() {
           color: "#555",
         }}
       >
-        © {new Date().getFullYear()} GameStore. All rights reserved.
+        © {new Date().getFullYear()} GameStore. Đã đăng ký bản quyền.
       </div>
     </footer>
   );
@@ -10983,14 +11530,14 @@ export default function Navbar() {
               to="/store"
               style={{ padding: "4px 0", ...isActive("/store") }}
             >
-              STORE
+              CỬA HÀNG
             </Link>
             {user && (
               <Link
                 to="/library"
                 style={{ padding: "4px 0", ...isActive("/library") }}
               >
-                LIBRARY
+                THƯ VIỆN
               </Link>
             )}
             {user && (
@@ -10998,7 +11545,7 @@ export default function Navbar() {
                 to="/wishlist"
                 style={{ padding: "4px 0", ...isActive("/wishlist") }}
               >
-                WISHLIST
+                YÊU THÍCH
               </Link>
             )}
             {user && (
@@ -11006,7 +11553,7 @@ export default function Navbar() {
                 to="/orders"
                 style={{ padding: "4px 0", ...isActive("/orders") }}
               >
-                ORDERS
+                ĐƠN HÀNG
               </Link>
             )}
           </div>
@@ -11048,7 +11595,7 @@ export default function Navbar() {
                     autoFocus
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search games..."
+                    placeholder="Tìm kiếm..."
                     style={{
                       width: 200,
                       padding: "6px 32px 6px 12px",
@@ -11259,10 +11806,10 @@ export default function Navbar() {
                       <span
                         style={{ fontWeight: 600, color: "#fff", fontSize: 13 }}
                       >
-                        Notifications
+                        Thông báo
                       </span>
                       <span style={{ color: "#888", fontSize: 11 }}>
-                        {unreadCount} unread
+                        {unreadCount} Chưa đọc
                       </span>
                     </div>
                     {notifications.length === 0 ? (
@@ -11274,7 +11821,7 @@ export default function Navbar() {
                           fontSize: 12,
                         }}
                       >
-                        No notifications
+                        Không có thông báo nào
                       </div>
                     ) : (
                       notifications.map((n) => (
@@ -11398,7 +11945,7 @@ export default function Navbar() {
                       borderRadius: 4,
                     }}
                   >
-                    <Shield size={14} /> ADMIN
+                    <Shield size={14} /> QUẢN TRỊ VIÊN
                   </Link>
                 )}
                 <div
@@ -11448,7 +11995,7 @@ export default function Navbar() {
                   borderRadius: 4,
                 }}
               >
-                <User size={14} /> SIGN IN
+                <User size={14} /> ĐĂNG NHẬP
               </Link>
             )}
           </div>
@@ -11491,10 +12038,10 @@ export default function WalletModal({ onClose }) {
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
 
-      setMessage(`✅ Added $${finalAmount.toFixed(2)}!`);
+      setMessage(`✅ Đã nạp $${finalAmount.toFixed(2)} VND!`);
       setTimeout(() => onClose(), 1000);
     } catch (err) {
-      setMessage("❌ Failed to top up");
+      setMessage("❌ Nạp tiền thất bại");
     } finally {
       setLoading(false);
     }
@@ -11547,7 +12094,7 @@ export default function WalletModal({ onClose }) {
               color: "#fff",
             }}
           >
-            <Wallet size={24} color="#4fc3f7" /> Top Up Wallet
+            <Wallet size={24} color="#4fc3f7" /> Nạp tiền
           </h2>
           <button
             onClick={onClose}
@@ -11573,16 +12120,16 @@ export default function WalletModal({ onClose }) {
           }}
         >
           <p style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>
-            Current Balance
+            Số dư hiện tại
           </p>
           <p style={{ fontSize: 28, fontWeight: 800, color: "#4fc3f7" }}>
-            ${user?.wallet?.toFixed(2) || "0.00"}
+            VND{user?.wallet?.toFixed(2) || "0.00"}
           </p>
         </div>
 
         {/* Quick Amounts */}
         <p style={{ color: "#888", fontSize: 13, marginBottom: 10 }}>
-          Select Amount
+          Chọn số tiền
         </p>
         <div
           style={{
@@ -11629,7 +12176,7 @@ export default function WalletModal({ onClose }) {
           />
           <input
             type="number"
-            placeholder="Custom amount"
+            placeholder="Nhập số tiền"
             value={customAmount}
             onChange={(e) => {
               setCustomAmount(e.target.value);
@@ -11682,8 +12229,8 @@ export default function WalletModal({ onClose }) {
           }}
         >
           {loading
-            ? "Processing..."
-            : `Top Up $${(customAmount || amount || 0).toFixed(2)}`}
+            ? "Đang xử lý..."
+            : `Nạp ${(customAmount || amount || 0).toFixed(2)} VND`}
         </button>
 
         {/* Payment Methods */}
@@ -11705,17 +12252,6 @@ export default function WalletModal({ onClose }) {
             }}
           >
             <CreditCard size={14} /> Card
-          </span>
-          <span
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              color: "#888",
-              fontSize: 12,
-            }}
-          >
-            <Smartphone size={14} /> Mobile
           </span>
         </div>
       </div>
@@ -11820,8 +12356,9 @@ createRoot(document.getElementById("root")).render(
 
 FILE: GameStore.WebClient/src/pages/AdminPage.jsx
 // GameStore.WebClient/src/pages/AdminPage.jsx
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../services/api";
 import { adminAPI } from "../services/api";
@@ -11833,7 +12370,6 @@ import UsersTab from "../components/admin/UsersTab";
 import OrdersTab from "../components/admin/OrdersTab";
 import CategoriesTab from "../components/admin/CategoriesTab";
 import GameKeysTab from "../components/admin/GameKeysTab";
-import PaymentsTab from "../components/admin/PaymentsTab";
 import StaffRolesTab from "../components/admin/StaffRolesTab";
 import GameFormModal from "../components/admin/GameFormModal";
 import DeleteConfirmModal from "../components/admin/DeleteConfirmModal";
@@ -11886,7 +12422,12 @@ export default function AdminPage() {
     minPrice: "",
     maxPrice: "",
   });
-  const [userSearch, setUserSearch] = useState("");
+  const [userSearch, setUserSearch] = useState({
+    keyword: "",
+    status: "",
+    fromDate: "",
+    toDate: "",
+  });
   const [genres, setGenres] = useState([]);
 
   // ===== Sorting =====
@@ -11930,18 +12471,18 @@ export default function AdminPage() {
   // ===== Tính doanh thu theo tháng =====
   const calculateMonthlyRevenue = (ordersData) => {
     const months = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      "T1",
+      "T2",
+      "T3",
+      "T4",
+      "T5",
+      "T6",
+      "T7",
+      "T8",
+      "T9",
+      "T10",
+      "T11",
+      "T12",
     ];
     const currentYear = new Date().getFullYear();
     const map = months.map((m) => ({ month: m, value: 0, count: 0 }));
@@ -11986,7 +12527,10 @@ export default function AdminPage() {
       sortBy: userSort.field,
       desc: userSort.dir === "desc",
     };
-    if (userSearch) params.keyword = userSearch;
+    if (userSearch.keyword) params.keyword = userSearch.keyword;
+    if (userSearch.status) params.isActive = userSearch.status === "active";
+    if (userSearch.fromDate) params.fromDate = userSearch.fromDate;
+    if (userSearch.toDate) params.toDate = userSearch.toDate;
     try {
       const res = await api.get("/admin/users", { params });
       setUsers(res.data?.data || []);
@@ -12020,22 +12564,40 @@ export default function AdminPage() {
 
   const loadDashboard = async () => {
     try {
-      const [dashRes, allOrdersRes] = await Promise.all([
-        api.get("/admin/dashboard").catch(() => ({ data: {} })),
-        api.get("/admin/orders/all").catch(() => ({ data: [] })),
-      ]);
-      const dashboard = dashRes.data || {};
-      const orderList = allOrdersRes.data || [];
-      setAllOrders(orderList);
+      const res = await api.get("/admin/dashboard");
+      const dashboard = res.data || {};
+      const recentOrders = dashboard.recentOrders || [];
+      setAllOrders(recentOrders);
       setStats({
         totalGames: dashboard.totalGames ?? 0,
         totalUsers: dashboard.totalUsers ?? 0,
-        totalOrders: dashboard.totalOrders ?? orderList.length,
+        totalOrders: dashboard.totalOrders ?? 0,
         revenue: (dashboard.totalRevenue ?? 0).toFixed(2),
       });
-      setMonthlyRevenue(calculateMonthlyRevenue(orderList));
+      const months = [
+        "T1",
+        "T2",
+        "T3",
+        "T4",
+        "T5",
+        "T6",
+        "T7",
+        "T8",
+        "T9",
+        "T10",
+        "T11",
+        "T12",
+      ];
+      const monthly = (dashboard.monthlyRevenue || []).map((m, i) => ({
+        month: months[i],
+        value: Math.round(m.value ?? 0),
+        count: m.count ?? 0,
+      }));
+      setMonthlyRevenue(
+        monthly.length === 12 ? monthly : calculateMonthlyRevenue(recentOrders),
+      );
     } catch (e) {
-      console.error("Dashboard load error:", e);
+      console.error("Lỗi tải bảng:", e);
     }
   };
 
@@ -12068,7 +12630,7 @@ export default function AdminPage() {
           color: "#888",
         }}
       >
-        Loading...
+        Đang tải...
       </div>
     );
   }
@@ -12175,7 +12737,6 @@ export default function AdminPage() {
 
         {activeTab === "categories" && <CategoriesTab />}
         {activeTab === "gamekeys" && <GameKeysTab />}
-        {activeTab === "payments" && <PaymentsTab />}
         {activeTab === "staffroles" && <StaffRolesTab />}
       </div>
 
@@ -12217,11 +12778,12 @@ export default function AdminPage() {
             try {
               if (editingUser)
                 await adminAPI.updateUser(editingUser.id, formData);
+              toast.success("Cập nhật người dùng thành công!");
               setShowUserForm(false);
               setEditingUser(null);
               loadUsers();
             } catch (e) {
-              console.error(e);
+              toast.error(e.response?.data?.message || e.message);
             }
           }}
         />
@@ -12267,13 +12829,13 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     if (!user) {
-      toast.error("Please login to continue checkout");
+      toast.error("Vui lòng đăng nhập để tiếp tục thanh toán");
       navigate("/login");
       return;
     }
 
     if (!email || !phone) {
-      toast.error("Please provide email and phone number");
+      toast.error("Vui lòng nhập email và số điện thoại");
       return;
     }
 
@@ -12305,12 +12867,12 @@ export default function CartPage() {
         }}
       >
         <ShoppingCart size={64} color="#6b6b8e" />
-        <h2 style={{ marginTop: 20 }}>Your cart is empty</h2>
+        <h2 style={{ marginTop: 20 }}>Giỏ hàng đang trống</h2>
         <p style={{ color: "#6b6b8e", margin: "8px 0 20px" }}>
-          Start shopping for games!
+          Bắt đầu mua game thôi!
         </p>
         <Link to="/store">
-          <button className="btn-primary">Browse Store</button>
+          <button className="btn-primary">Xem cửa hàng</button>
         </Link>
       </div>
     );
@@ -12327,7 +12889,7 @@ export default function CartPage() {
           marginBottom: 24,
         }}
       >
-        <ArrowLeft size={16} /> Continue Shopping
+        <ArrowLeft size={16} /> Tiếp tục mua sắm
       </Link>
       <h1
         style={{
@@ -12339,8 +12901,7 @@ export default function CartPage() {
           marginBottom: 24,
         }}
       >
-        <ShoppingBag size={28} color="#e94560" /> Shopping Cart ({count()}{" "}
-        items)
+        <ShoppingBag size={28} color="#e94560" /> Giỏ hàng ({count()} items)
       </h1>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -12440,7 +13001,7 @@ export default function CartPage() {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Gmail</label>
+            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Email</label>
             <input
               type="email"
               value={email}
@@ -12450,7 +13011,9 @@ export default function CartPage() {
             />
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Phone</label>
+            <label style={{ color: "#6b6b8e", fontSize: 14 }}>
+              Số điện thoại
+            </label>
             <input
               type="tel"
               value={phone}
@@ -12467,14 +13030,14 @@ export default function CartPage() {
             className="btn-outline"
             style={{ flex: 1 }}
           >
-            Clear Cart
+            Xóa giỏ hàng
           </button>
           <button
             onClick={handleCheckout}
             className="btn-primary"
             style={{ flex: 1, padding: 14, fontSize: 16 }}
           >
-            Proceed to Payment
+            Tiến hành thanh toán
           </button>
         </div>
         {!user && (
@@ -12486,7 +13049,7 @@ export default function CartPage() {
               fontSize: 13,
             }}
           >
-            ⚠ You need to login to checkout
+            ⚠ Bạn cần đăng nhập để thanh toán
           </p>
         )}
       </div>
@@ -12612,28 +13175,28 @@ export default function GameDetailPage() {
   // ===== WISHLIST TOGGLE =====
   const toggleWishlist = async () => {
     if (!user) {
-      toast.error("Sign in to add to wishlist");
+      toast.error("Đăng nhập để cho vào Yêu Thích");
       return;
     }
     try {
       if (wishlisted) {
         await wishlistAPI.remove(id);
         setWishlisted(false);
-        toast.success("Removed from wishlist");
+        toast.success("Xóa khỏi Yêu Thích");
       } else {
         await wishlistAPI.add(id);
         setWishlisted(true);
-        toast.success("Added to wishlist");
+        toast.success("Đã thêm vào Yêu Thích");
       }
     } catch {
-      toast.error("Failed to update wishlist");
+      toast.error("Lỗi khi tải Yêu Thích");
     }
   };
 
   // ===== BUY NOW =====
   const handleBuyNow = () => {
     if (!user) {
-      toast.error("Sign in to purchase");
+      toast.error("Đăng nhập để mua");
       navigate("/login");
       return;
     }
@@ -12648,7 +13211,7 @@ export default function GameDetailPage() {
     setSubmittingReview(true);
     try {
       await reviewAPI.create({ gameId: parseInt(id), ...reviewForm });
-      toast.success("Review submitted!");
+      toast.success("Đã gửi đánh giá!");
       setShowReviewForm(false);
       setReviewForm({ rating: 5, content: "", isRecommended: true });
       setHasReviewed(true);
@@ -12656,7 +13219,7 @@ export default function GameDetailPage() {
       loadReviews(1);
       gameAPI.getById(id).then((res) => setGame(res.data)); // cập nhật rating mới
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to submit review");
+      toast.error(err.response?.data?.message || "Gửi đánh giá thất bại!");
     } finally {
       setSubmittingReview(false);
     }
@@ -12722,7 +13285,7 @@ export default function GameDetailPage() {
                 textTransform: "uppercase",
               }}
             >
-              Available Now
+              Sẵn có
             </span>
           </div>
           <h1
@@ -12821,13 +13384,14 @@ export default function GameDetailPage() {
                     cursor: "default",
                   }}
                 >
-                  <Check size={16} style={{ marginRight: 6 }} /> IN LIBRARY
+                  <Check size={16} style={{ marginRight: 6 }} /> ĐÃ CÓ TRONG THƯ
+                  VIỆN
                 </button>
                 <button
                   style={epicSecondaryBtn}
                   onClick={() => navigate("/library")}
                 >
-                  GO TO LIBRARY
+                  ĐẾN THƯ VIỆN
                 </button>
               </>
             ) : game.price === 0 ? (
@@ -12843,18 +13407,18 @@ export default function GameDetailPage() {
                       items: [{ gameId: game.id, quantity: 1 }],
                     });
                     setOwned(true);
-                    toast.success("Game added to your library!");
+                    toast.success("Đã thêm game vào thư viện!");
                   } catch (e) {
-                    toast.error(e.response?.data?.message || "Failed");
+                    toast.error(e.response?.data?.message || "Thất bại");
                   }
                 }}
               >
-                FREE
+                MIỄN PHÍ
               </button>
             ) : (
               <>
                 <button style={epicPrimaryBtn} onClick={handleBuyNow}>
-                  BUY NOW
+                  MUA NGAY
                   <span
                     style={{
                       marginLeft: 10,
@@ -12885,7 +13449,7 @@ export default function GameDetailPage() {
                     toast.success("Added to cart!");
                   }}
                 >
-                  <ShoppingCart size={16} /> ADD TO CART
+                  <ShoppingCart size={16} /> THÊM VÀO GIỎ HÀNG
                 </button>
               </>
             )}
@@ -12916,7 +13480,7 @@ export default function GameDetailPage() {
                 color: "#aaa",
               }}
             >
-              RATING PENDING
+              CHỜ XẾP HẠNG
             </span>
             <span
               style={{
@@ -12953,9 +13517,9 @@ export default function GameDetailPage() {
           }}
         >
           {[
-            { id: "overview", label: "OVERVIEW" },
-            { id: "requirements", label: "SYSTEM REQUIREMENTS" },
-            { id: "reviews", label: "REVIEWS" },
+            { id: "overview", label: "TỔNG QUAN" },
+            { id: "requirements", label: "CẤU HÌNH YÊU CẦU" },
+            { id: "reviews", label: "ĐÁNH GIÁ" },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -13002,7 +13566,7 @@ export default function GameDetailPage() {
                   letterSpacing: -0.5,
                 }}
               >
-                ABOUT {game.title?.toUpperCase()}
+                VỀ {game.title?.toUpperCase()}
               </h2>
               <p
                 style={{
@@ -13022,16 +13586,16 @@ export default function GameDetailPage() {
                 }}
               >
                 {[
-                  { label: "Developer", value: game.developer },
-                  { label: "Publisher", value: game.publisher },
+                  { label: "Nhà phát triển", value: game.developer },
+                  { label: "Nhà phát hành", value: game.publisher },
                   {
-                    label: "Release Date",
+                    label: "Ngày phát hành",
                     value: new Date(game.releaseDate).toLocaleDateString(
                       "en-US",
                       { year: "numeric", month: "long", day: "numeric" },
                     ),
                   },
-                  { label: "Platform", value: "Windows PC" },
+                  { label: "Nền tảng", value: "Windows PC" },
                 ].map(({ label, value }) => (
                   <div key={label}>
                     <p
@@ -13069,7 +13633,7 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  EPIC PLAYER RATINGS
+                  ĐÁNH GIÁ CỦA NGƯỜI CHƠI
                 </h3>
                 <div
                   style={{
@@ -13133,7 +13697,7 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  SEE ALL REVIEWS
+                  XEM TẤT CẢ ĐÁNH GIÁ
                 </button>
               </div>
               <div
@@ -13153,23 +13717,23 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  SPECIFICATIONS
+                  THÔNG TIN CHI TIẾT
                 </h3>
                 <div
                   style={{ display: "flex", flexDirection: "column", gap: 12 }}
                 >
                   {[
                     [
-                      "Genre",
+                      "Thể loại",
                       game.gameGenres?.map((g) => g.genre?.name).join(", "),
                     ],
                     [
-                      "Release Date",
+                      "Ngày phát hành",
                       new Date(game.releaseDate).toLocaleDateString(),
                     ],
-                    ["Platform", "Windows PC"],
-                    ["Developer", game.developer],
-                    ["Publisher", game.publisher],
+                    ["Nền tảng", "Windows PC"],
+                    ["Nhà phát triển", game.developer],
+                    ["Nhà phát hành", game.publisher],
                   ].map(([label, value]) => (
                     <div
                       key={label}
@@ -13210,7 +13774,7 @@ export default function GameDetailPage() {
                 letterSpacing: -0.5,
               }}
             >
-              SYSTEM REQUIREMENTS
+              CẤU HÌNH YÊU CẦU
             </h2>
             <div
               style={{
@@ -13224,25 +13788,29 @@ export default function GameDetailPage() {
                 style={{ display: "flex", flexDirection: "column", gap: 16 }}
               >
                 {[
-                  { icon: Monitor, label: "OS", value: game.minimumOS },
+                  {
+                    icon: Monitor,
+                    label: "Hệ điều hành",
+                    value: game.minimumOS,
+                  },
                   {
                     icon: Cpu,
-                    label: "Processor",
+                    label: "Bộ xử lý",
                     value: game.minimumProcessor,
                   },
                   {
                     icon: HardDrive,
-                    label: "Memory",
+                    label: "Bộ nhớ",
                     value: game.minimumMemory,
                   },
                   {
                     icon: Gamepad2,
-                    label: "Graphics",
+                    label: "Card đồ họa",
                     value: game.minimumGraphics,
                   },
                   {
                     icon: HardDrive,
-                    label: "Storage",
+                    label: "Dung lượng lưu trữ",
                     value: game.minimumStorage,
                   },
                 ]
@@ -13288,7 +13856,7 @@ export default function GameDetailPage() {
               <h2
                 style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.5 }}
               >
-                PLAYER REVIEWS
+                ĐÁNH GIÁ CỦA NGƯỜI CHƠI
               </h2>
               {owned && !hasReviewed && !showReviewForm && (
                 <button
@@ -13305,7 +13873,7 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  WRITE A REVIEW
+                  VIẾT ĐÁNH GIÁ
                 </button>
               )}
             </div>
@@ -13367,7 +13935,7 @@ export default function GameDetailPage() {
                     onChange={(e) =>
                       setReviewForm({ ...reviewForm, content: e.target.value })
                     }
-                    placeholder="Write your experience..."
+                    placeholder="Hãy viết trải nghiệm của bạn..."
                     rows={4}
                     style={{
                       width: "100%",
@@ -13404,7 +13972,7 @@ export default function GameDetailPage() {
                       })
                     }
                   />
-                  I recommend this game
+                  Tôi đề xuất tựa game này
                 </label>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button
@@ -13413,7 +13981,7 @@ export default function GameDetailPage() {
                     className="btn-primary"
                     style={{ padding: "10px 20px" }}
                   >
-                    {submittingReview ? "Submitting..." : "Submit Review"}
+                    {submittingReview ? "Đang gửi..." : "Gửi đánh giá"}
                   </button>
                   <button
                     type="button"
@@ -13421,7 +13989,7 @@ export default function GameDetailPage() {
                     className="btn-outline"
                     style={{ padding: "10px 20px" }}
                   >
-                    Cancel
+                    HỦY
                   </button>
                 </div>
               </form>
@@ -13439,7 +14007,7 @@ export default function GameDetailPage() {
                     letterSpacing: -0.5,
                   }}
                 >
-                  NO REVIEWS YET
+                  CHƯA CÓ ĐÁNH GIÁ NÀO
                 </h2>
                 <p style={{ color: "#888", marginTop: 8, fontSize: 14 }}>
                   Be the first to review "{game.title}"
@@ -13498,7 +14066,7 @@ export default function GameDetailPage() {
                       <p
                         style={{ color: "#4caf50", fontSize: 11, marginTop: 8 }}
                       >
-                        👍 Recommended
+                        👍 Được đề xuất
                       </p>
                     )}
                   </div>
@@ -13659,7 +14227,7 @@ function NotFound() {
       }}
     >
       <Gamepad2 size={64} />
-      <h2 style={{ marginTop: 16, color: "#fff" }}>Game Not Found</h2>
+      <h2 style={{ marginTop: 16, color: "#fff" }}>Không có game</h2>
       <Link
         to="/store"
         style={{
@@ -13669,7 +14237,7 @@ function NotFound() {
           textDecoration: "underline",
         }}
       >
-        Back to Store
+        Trở về Cửa Hàng
       </Link>
     </div>
   );
@@ -13735,11 +14303,11 @@ export default function HomePage() {
                 letterSpacing: -1,
               }}
             >
-              DISCOVER
+              KHÁM PHÁ
               <br />
-              <span style={{ color: "var(--accent)" }}>YOUR NEXT</span>
+              <span style={{ color: "var(--accent)" }}>TỰA GAME</span>
               <br />
-              FAVORITE GAME
+              YÊU THÍCH KẾ TIẾP CỦA BẠN
             </h1>
             <p
               style={{
@@ -13763,7 +14331,7 @@ export default function HomePage() {
                   gap: 8,
                 }}
               >
-                BROWSE STORE <ArrowRight size={18} />
+                VÀO CỬA HÀNG <ArrowRight size={18} />
               </button>
             </Link>
           </div>
@@ -13781,8 +14349,8 @@ export default function HomePage() {
             gap: 8,
           }}
         >
-          <Star size={20} color="var(--accent)" fill="var(--accent)" /> FEATURED
-          GAMES
+          <Star size={20} color="var(--accent)" fill="var(--accent)" /> GAME NỔI
+          BẬT
         </h2>
         <div
           style={{
@@ -13808,7 +14376,7 @@ export default function HomePage() {
             gap: 8,
           }}
         >
-          <TrendingUp size={20} color="var(--accent)" /> TRENDING NOW
+          <TrendingUp size={20} color="var(--accent)" /> XU HƯỚNG HIỆN NAY
         </h2>
         <div
           style={{
@@ -13825,7 +14393,7 @@ export default function HomePage() {
       {/* GENRES */}
       <div className="container" style={{ marginTop: 40, paddingBottom: 40 }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
-          BROWSE BY GENRE
+          TÌM KIẾM THEO THỂ LOẠI
         </h2>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {genres.map((g) => (
@@ -16487,6 +17055,7 @@ export const adminAPI = {
   getGameKeys: (p) => api.get("/admin/gamekeys", { params: p }),
   createGameKey: (d) => api.post("/admin/gamekeys", d),
   createBatchGameKeys: (d) => api.post("/admin/gamekeys/batch", d),
+  updateGameKey: (id, d) => api.put(`/admin/gamekeys/${id}`, d),
   deleteGameKey: (id) => api.delete(`/admin/gamekeys/${id}`),
   // Payments
   getPayments: (p) => api.get("/admin/payments", { params: p }),
