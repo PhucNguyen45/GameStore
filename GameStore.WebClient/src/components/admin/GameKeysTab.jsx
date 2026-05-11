@@ -1,5 +1,6 @@
 // GameStore.WebClient/src/components/admin/GameKeysTab.jsx
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { Plus, Trash2, X, Key, Upload } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "./Pagination";
@@ -28,9 +29,10 @@ function AddKeyModal({ onClose, onSave, games }) {
         keyCode: form.keyCode,
         expiresAt: form.expiresAt || null,
       });
+      toast.success("Thêm mã game thành công!");
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -49,10 +51,10 @@ function AddKeyModal({ onClose, onSave, games }) {
         keyCodes: codes,
         expiresAt: batchForm.expiresAt || null,
       });
-      alert(res.data.message);
+      toast.success(res.data.message || `Nhập thành công ${codes.length} mã!`);
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -91,7 +93,7 @@ function AddKeyModal({ onClose, onSave, games }) {
             fontWeight: 700,
           }}
         >
-          🔑 Add Game Keys
+          🔑 Thêm mã game
         </h3>
         <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
           {["single", "batch"].map((m) => (
@@ -109,7 +111,7 @@ function AddKeyModal({ onClose, onSave, games }) {
                 color: "#fff",
               }}
             >
-              {m === "single" ? "Single Key" : "Batch Import"}
+              {m === "single" ? "Mã đơn lẻ" : "Nhập hàng loạt"}
             </button>
           ))}
         </div>
@@ -122,7 +124,7 @@ function AddKeyModal({ onClose, onSave, games }) {
               style={iStyle}
               required
             >
-              <option value="">Select Game *</option>
+              <option value="">Chọn game *</option>
               {games.map((g) => (
                 <option key={g.id} value={g.id}>
                   {g.title}
@@ -130,14 +132,14 @@ function AddKeyModal({ onClose, onSave, games }) {
               ))}
             </select>
             <input
-              placeholder="Key Code *"
+              placeholder="Mã key *"
               value={form.keyCode}
               onChange={(e) => setForm({ ...form, keyCode: e.target.value })}
               style={iStyle}
               required
             />
             <div style={{ color: "#888", fontSize: 11 }}>
-              Expires At (optional):
+              Ngày hết hạn (tùy chọn):
               <input
                 type="datetime-local"
                 value={form.expiresAt}
@@ -162,7 +164,7 @@ function AddKeyModal({ onClose, onSave, games }) {
                   cursor: "pointer",
                 }}
               >
-                Cancel
+                Hủy
               </button>
               <button
                 type="submit"
@@ -177,7 +179,7 @@ function AddKeyModal({ onClose, onSave, games }) {
                   fontWeight: 600,
                 }}
               >
-                {saving ? "Adding..." : "Add Key"}
+                {saving ? "Đang thêm..." : "Thêm mã"}
               </button>
             </div>
           </form>
@@ -191,7 +193,7 @@ function AddKeyModal({ onClose, onSave, games }) {
               style={iStyle}
               required
             >
-              <option value="">Select Game *</option>
+              <option value="">Chọn game *</option>
               {games.map((g) => (
                 <option key={g.id} value={g.id}>
                   {g.title}
@@ -199,7 +201,7 @@ function AddKeyModal({ onClose, onSave, games }) {
               ))}
             </select>
             <textarea
-              placeholder="Paste keys, one per line..."
+              placeholder="Dán mã, mỗi dòng một mã..."
               value={batchForm.keyCodes}
               onChange={(e) =>
                 setBatchForm({ ...batchForm, keyCodes: e.target.value })
@@ -215,10 +217,10 @@ function AddKeyModal({ onClose, onSave, games }) {
             />
             <p style={{ color: "#666", fontSize: 10, margin: 0 }}>
               {batchForm.keyCodes.split("\n").filter((s) => s.trim()).length}{" "}
-              keys detected
+              mã được phát hiện
             </p>
             <div style={{ color: "#888", fontSize: 11 }}>
-              Expires At (optional):
+              Ngày hết hạn (tùy chọn):
               <input
                 type="datetime-local"
                 value={batchForm.expiresAt}
@@ -243,7 +245,7 @@ function AddKeyModal({ onClose, onSave, games }) {
                   cursor: "pointer",
                 }}
               >
-                Cancel
+                Hủy
               </button>
               <button
                 type="submit"
@@ -259,7 +261,7 @@ function AddKeyModal({ onClose, onSave, games }) {
                 }}
               >
                 <Upload size={12} style={{ marginRight: 4 }} />{" "}
-                {saving ? "Importing..." : "Import Keys"}
+                {saving ? "Đang nhập..." : "Nhập mã"}
               </button>
             </div>
           </form>
@@ -283,6 +285,7 @@ export default function GameKeysTab() {
   const [search, setSearch] = useState({ keyword: "", gameId: "", status: "" });
   const [sort, setSort] = useState({ field: "createdAt", dir: "desc" });
   const [showModal, setShowModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState(null);
   const [games, setGames] = useState([]);
 
   useEffect(() => {
@@ -316,13 +319,15 @@ export default function GameKeysTab() {
     return () => clearTimeout(t);
   }, [page, pageSize, search]);
 
-  const handleDelete = async (key) => {
-    if (!confirm(`Delete key "${key.keyCode}"?`)) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await adminAPI.deleteGameKey(key.id);
+      await adminAPI.deleteGameKey(deleteTarget.id);
+      toast.success("Đã xóa mã thành công!");
+      setDeleteTarget(null);
       load();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
@@ -330,17 +335,17 @@ export default function GameKeysTab() {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   const statCards = [
-    { label: "Total Keys", value: stats.totalKeys, color: "var(--accent)" },
-    { label: "Available", value: stats.availableKeys, color: "#4caf50" },
-    { label: "Used", value: stats.usedKeys, color: "#ffc107" },
-    { label: "Expired", value: stats.expiredKeys, color: "#e94560" },
+    { label: "Tổng mã", value: stats.totalKeys, color: "var(--accent)" },
+    { label: "Khả dụng", value: stats.availableKeys, color: "#4caf50" },
+    { label: "Đã dùng", value: stats.usedKeys, color: "#ffc107" },
+    { label: "Hết hạn", value: stats.expiredKeys, color: "#e94560" },
   ];
 
   const getKeyStatus = (k) => {
-    if (k.isUsed) return { text: "Sold", color: "#ff9800" };
+    if (k.isUsed) return { text: "Đã bán", color: "#ff9800" };
     if (k.expiresAt && new Date(k.expiresAt) <= new Date())
-      return { text: "Expired", color: "#e94560" };
-    return { text: "Available", color: "#4caf50" };
+      return { text: "Hết hạn", color: "#e94560" };
+    return { text: "Khả dụng", color: "#4caf50" };
   };
 
   return (
@@ -386,7 +391,7 @@ export default function GameKeysTab() {
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Search key or game..."
+          placeholder="Tìm mã hoặc game..."
           value={search.keyword}
           onChange={(e) => setSearch({ ...search, keyword: e.target.value })}
           style={{ ...filterInputStyle, flex: 1, maxWidth: 200 }}
@@ -396,7 +401,7 @@ export default function GameKeysTab() {
           onChange={(e) => setSearch({ ...search, gameId: e.target.value })}
           style={filterInputStyle}
         >
-          <option value="">All Games</option>
+          <option value="">Tất cả game</option>
           {games.map((g) => (
             <option key={g.id} value={g.id}>
               {g.title}
@@ -408,10 +413,10 @@ export default function GameKeysTab() {
           onChange={(e) => setSearch({ ...search, status: e.target.value })}
           style={filterInputStyle}
         >
-          <option value="">All Status</option>
-          <option value="available">Available</option>
-          <option value="used">Used</option>
-          <option value="expired">Expired</option>
+          <option value="">Tất cả trạng thái</option>
+          <option value="available">Khả dụng</option>
+          <option value="used">Đã dùng</option>
+          <option value="expired">Hết hạn</option>
         </select>
         {(search.keyword || search.gameId || search.status) && (
           <button
@@ -429,7 +434,7 @@ export default function GameKeysTab() {
               gap: 4,
             }}
           >
-            <X size={12} /> Clear
+            <X size={12} /> Xóa lọc
           </button>
         )}
         <button
@@ -449,7 +454,7 @@ export default function GameKeysTab() {
             marginLeft: "auto",
           }}
         >
-          <Plus size={14} /> Add Keys
+          <Plus size={14} /> Thêm mã
         </button>
       </div>
 
@@ -473,14 +478,14 @@ export default function GameKeysTab() {
                 Game
               </SortableHeader>
               <SortableHeader field="keyCode" sort={sort} setSort={setSort}>
-                Key Code
+                Mã key
               </SortableHeader>
-              <th style={{ ...thStyle, cursor: "default" }}>Status</th>
+              <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
               <SortableHeader field="createdAt" sort={sort} setSort={setSort}>
-                Created
+                Ngày tạo
               </SortableHeader>
               <SortableHeader field="expiresAt" sort={sort} setSort={setSort}>
-                Expires
+                Hết hạn
               </SortableHeader>
               <th style={{ ...thStyle, cursor: "default" }}></th>
             </tr>
@@ -559,7 +564,7 @@ export default function GameKeysTab() {
                   <td style={{ padding: "9px 14px", textAlign: "center" }}>
                     {!k.isUsed ? (
                       <button
-                        onClick={() => handleDelete(k)}
+                        onClick={() => setDeleteTarget(k)}
                         style={{
                           padding: "4px 7px",
                           background: "#1a1a2e",
@@ -572,7 +577,7 @@ export default function GameKeysTab() {
                       </button>
                     ) : (
                       <span
-                        title="Sold keys cannot be deleted"
+                        title="Mã đã bán không thể xóa"
                         style={{ opacity: 0.3 }}
                       >
                         <Trash2 size={11} color="#888" />
@@ -588,7 +593,7 @@ export default function GameKeysTab() {
                   colSpan="7"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  No keys found
+                  Không tìm thấy mã
                 </td>
               </tr>
             )}
@@ -613,6 +618,24 @@ export default function GameKeysTab() {
             load();
           }}
         />
+      )}
+      {deleteTarget && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 380, textAlign: "center", border: "1px solid #e94560" }} onClick={(e) => e.stopPropagation()}>
+            <Trash2 size={36} color="#e94560" style={{ marginBottom: 10 }} />
+            <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>Xóa mã game?</h3>
+            <p style={{ color: "#888", fontSize: 13, marginBottom: 8 }}>
+              Bạn có chắc muốn xóa mã này?
+            </p>
+            <code style={{ display: "block", background: "#0a0a10", padding: "6px 12px", borderRadius: 4, color: "#4fc3f7", fontSize: 12, marginBottom: 20 }}>
+              {deleteTarget.keyCode}
+            </code>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button onClick={() => setDeleteTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>Hủy</button>
+              <button onClick={handleDelete} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>Xóa</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

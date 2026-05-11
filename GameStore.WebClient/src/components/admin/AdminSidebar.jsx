@@ -6,19 +6,17 @@ import {
   LayoutDashboard,
   Tag,
   Key,
-  CreditCard,
   Shield,
 } from "lucide-react";
 
 const tabs = [
-  { id: "dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { id: "games", icon: Gamepad2, label: "Games" },
-  { id: "categories", icon: Tag, label: "Categories" },
-  { id: "gamekeys", icon: Key, label: "Game Keys" },
-  { id: "users", icon: Users, label: "Users" },
-  { id: "orders", icon: Package, label: "Orders" },
-  { id: "payments", icon: CreditCard, label: "Payments" },
-  { id: "staffroles", icon: Shield, label: "Staff & Roles" },
+  { id: "dashboard", icon: LayoutDashboard, label: "Tổng quan" },
+  { id: "games", icon: Gamepad2, label: "Trò chơi" },
+  { id: "categories", icon: Tag, label: "Danh mục" },
+  { id: "gamekeys", icon: Key, label: "Mã game" },
+  { id: "users", icon: Users, label: "Người dùng" },
+  { id: "orders", icon: Package, label: "Đơn hàng" },
+  { id: "staffroles", icon: Shield, label: "Nhân viên & Phân quyền" },
 ];
 
 export { tabs };

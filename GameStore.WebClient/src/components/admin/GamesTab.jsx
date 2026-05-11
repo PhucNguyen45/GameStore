@@ -28,7 +28,7 @@ export default function GamesTab({
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Search by Title or Developer..."
+          placeholder="Tìm theo tên hoặc nhà phát triển..."
           value={gameSearch.keyword}
           onChange={(e) =>
             setGameSearch({ ...gameSearch, keyword: e.target.value })
@@ -42,7 +42,7 @@ export default function GamesTab({
           }
           style={filterInputStyle}
         >
-          <option value="">All Genres</option>
+          <option value="">Tất cả thể loại</option>
           {genres.map((g) => (
             <option key={g.id} value={g.id}>
               {g.name}
@@ -58,7 +58,7 @@ export default function GamesTab({
             fontSize: 12,
           }}
         >
-          Price: $
+          Giá: $
           <input
             type="number"
             min="0"
@@ -68,7 +68,7 @@ export default function GamesTab({
               setGameSearch({ ...gameSearch, minPrice: e.target.value })
             }
             style={{ ...filterInputStyle, width: 60 }}
-            placeholder="Min"
+            placeholder="Từ"
           />
           - $
           <input
@@ -80,7 +80,7 @@ export default function GamesTab({
               setGameSearch({ ...gameSearch, maxPrice: e.target.value })
             }
             style={{ ...filterInputStyle, width: 60 }}
-            placeholder="Max"
+            placeholder="Đến"
           />
         </div>
         {(gameSearch.keyword ||
@@ -109,7 +109,7 @@ export default function GamesTab({
               gap: 4,
             }}
           >
-            <X size={12} /> Clear
+            <X size={12} /> Xóa lọc
           </button>
         )}
         <button
@@ -129,7 +129,7 @@ export default function GamesTab({
             marginLeft: "auto",
           }}
         >
-          <Plus size={14} /> Add Game
+          <Plus size={14} /> Thêm game
         </button>
       </div>
       <div
@@ -153,37 +153,37 @@ export default function GamesTab({
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Title
+                Tên game
               </SortableHeader>
               <SortableHeader
                 field="developer"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Developer
+                Nhà phát triển
               </SortableHeader>
-              <th style={{ ...thStyle, cursor: "default" }}>Categories</th>
+              <th style={{ ...thStyle, cursor: "default" }}>Danh mục</th>
               <SortableHeader
                 field="price"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Price
+                Giá
               </SortableHeader>
-              <th style={thStyle}>Sale</th>
+              <th style={thStyle}>Giảm giá</th>
               <SortableHeader
                 field="rating"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Rating
+                Đánh giá
               </SortableHeader>
               <SortableHeader
                 field="totalSales"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Sales
+                Đã bán
               </SortableHeader>
               <th style={{ ...thStyle, cursor: "default" }}></th>
             </tr>
@@ -296,7 +296,7 @@ export default function GamesTab({
                   colSpan="9"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  No games found
+                  Không tìm thấy game
                 </td>
               </tr>
             )}

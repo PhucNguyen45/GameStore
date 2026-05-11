@@ -78,7 +78,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
           }}
         >
           <h2 style={{ fontSize: 18, margin: 0, color: "#fff" }}>
-            Edit User: {user?.username}
+            Chỉnh sửa: {user?.username}
           </h2>
           <button
             onClick={onClose}
@@ -95,7 +95,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
 
         <form onSubmit={handleSubmit}>
           <div>
-            <label style={labelStyle}>Display Name</label>
+            <label style={labelStyle}>Tên hiển thị</label>
             <input
               style={inputStyle}
               value={form.displayName}
@@ -116,7 +116,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
           </div>
 
           <div>
-            <label style={labelStyle}>Wallet Balance ($)</label>
+            <label style={labelStyle}>Số dư ví ($)</label>
             <input
               type="number"
               step="0.01"
@@ -147,7 +147,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
               htmlFor="isActive"
               style={{ color: "#ccc", fontSize: 13, cursor: "pointer" }}
             >
-              Active (Uncheck to Ban)
+              Đang hoạt động (Bỏ chọn để khóa)
             </label>
           </div>
 
@@ -164,14 +164,14 @@ export default function UserFormModal({ user, onClose, onSave }) {
                 cursor: "pointer",
               }}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
               className="btn-primary"
               style={{ padding: "10px 20px", borderRadius: 6 }}
             >
-              Save Changes
+              Lưu thay đổi
             </button>
           </div>
         </form>

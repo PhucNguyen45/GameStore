@@ -42,14 +42,14 @@ export default function UsersTab({
               sort={userSort}
               setSort={setUserSort}
             >
-              Username
+              Tên đăng nhập
             </SortableHeader>
             <SortableHeader
               field="displayName"
               sort={userSort}
               setSort={setUserSort}
             >
-              Name
+              Tên hiển thị
             </SortableHeader>
             <SortableHeader field="email" sort={userSort} setSort={setUserSort}>
               Email
@@ -59,17 +59,17 @@ export default function UsersTab({
               sort={userSort}
               setSort={setUserSort}
             >
-              Wallet
+              Ví
             </SortableHeader>
-            <th style={{ ...thStyle, cursor: "default" }}>Status</th>
+            <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
             <SortableHeader
               field="createdAt"
               sort={userSort}
               setSort={setUserSort}
             >
-              Joined
+              Ngày tham gia
             </SortableHeader>
-            <th style={{ ...thStyle, textAlign: "right" }}>Actions</th>
+            <th style={{ ...thStyle, textAlign: "right" }}>Thao tác</th>
           </tr>
         </thead>
         <tbody>
@@ -112,7 +112,7 @@ export default function UsersTab({
                       fontSize: 11,
                     }}
                   >
-                    {u.isActive ? "Active" : "Banned"}
+                    {u.isActive ? "Hoạt động" : "Bị khóa"}
                   </span>
                 </span>
               </td>
@@ -130,14 +130,14 @@ export default function UsersTab({
                   <button
                     style={actionBtnStyle}
                     onClick={() => onEdit && onEdit(u)}
-                    title="Edit User"
+                    title="Chỉnh sửa"
                   >
                     <Edit2 size={14} color="#3498db" />
                   </button>
                   <button
                     style={actionBtnStyle}
                     onClick={() => onDelete && onDelete(u)}
-                    title="Delete User"
+                    title="Xóa người dùng"
                   >
                     <Trash2 size={14} color="#e94560" />
                   </button>
@@ -151,7 +151,7 @@ export default function UsersTab({
                 colSpan="8"
                 style={{ padding: 20, textAlign: "center", color: "#666" }}
               >
-                No users found
+                Không tìm thấy người dùng
               </td>
             </tr>
           )}
