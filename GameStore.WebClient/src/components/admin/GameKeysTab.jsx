@@ -1,7 +1,7 @@
 // GameStore.WebClient/src/components/admin/GameKeysTab.jsx
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import { Plus, Trash2, X, Key, Upload } from "lucide-react";
+import { Plus, Trash2, X, Key, Upload, Edit } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "./Pagination";
 import { thStyle, sortFn, filterInputStyle } from "./adminStyles";
@@ -271,6 +271,101 @@ function AddKeyModal({ onClose, onSave, games }) {
   );
 }
 
+function EditKeyModal({ keyData, onClose, onSave }) {
+  const [form, setForm] = useState({
+    keyCode: keyData.keyCode || "",
+    expiresAt: keyData.expiresAt
+      ? new Date(keyData.expiresAt).toISOString().slice(0, 16)
+      : "",
+    clearExpiry: false,
+  });
+  const [saving, setSaving] = useState(false);
+  const iStyle = { ...filterInputStyle, width: "100%" };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await adminAPI.updateGameKey(keyData.id, {
+        keyCode: form.keyCode,
+        expiresAt: form.clearExpiry ? null : (form.expiresAt || null),
+        clearExpiry: form.clearExpiry,
+      });
+      toast.success("Cập nhật mã game thành công!");
+      onSave();
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div
+      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}
+      onClick={onClose}
+    >
+      <div
+        style={{ background: "#111118", borderRadius: 12, padding: 30, width: 460, border: "1px solid #1a1a2e" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 style={{ color: "#fff", marginBottom: 16, fontSize: 16, fontWeight: 700 }}>
+          ✏️ Chỉnh sửa mã game
+        </h3>
+        <p style={{ color: "#888", fontSize: 11, marginBottom: 14 }}>
+          Game: <strong style={{ color: "#ccc" }}>{keyData.gameTitle}</strong>
+        </p>
+        <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
+          <div>
+            <p style={{ color: "#888", fontSize: 11, marginBottom: 4 }}>Mã key *</p>
+            <input
+              placeholder="Nhập mã key..."
+              value={form.keyCode}
+              onChange={(e) => setForm({ ...form, keyCode: e.target.value })}
+              style={{ ...iStyle, fontFamily: "monospace" }}
+              required
+            />
+          </div>
+          <div>
+            <p style={{ color: "#888", fontSize: 11, marginBottom: 4 }}>Ngày hết hạn (tùy chọn)</p>
+            <input
+              type="datetime-local"
+              value={form.expiresAt}
+              onChange={(e) => setForm({ ...form, expiresAt: e.target.value, clearExpiry: false })}
+              style={iStyle}
+              disabled={form.clearExpiry}
+            />
+          </div>
+          <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc", fontSize: 13, cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={form.clearExpiry}
+              onChange={(e) => setForm({ ...form, clearExpiry: e.target.checked, expiresAt: "" })}
+            />
+            Xóa ngày hết hạn (không giới hạn)
+          </label>
+          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 8 }}>
+            <button
+              type="button"
+              onClick={onClose}
+              style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              style={{ padding: "8px 20px", background: "var(--accent)", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}
+            >
+              {saving ? "Đang lưu..." : "Cập nhật"}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function GameKeysTab() {
   const [keys, setKeys] = useState([]);
   const [total, setTotal] = useState(0);
@@ -285,6 +380,7 @@ export default function GameKeysTab() {
   const [search, setSearch] = useState({ keyword: "", gameId: "", status: "" });
   const [sort, setSort] = useState({ field: "createdAt", dir: "desc" });
   const [showModal, setShowModal] = useState(false);
+  const [editingKey, setEditingKey] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [games, setGames] = useState([]);
 
@@ -561,25 +657,25 @@ export default function GameKeysTab() {
                       ? new Date(k.expiresAt).toLocaleDateString()
                       : "-"}
                   </td>
-                  <td style={{ padding: "9px 14px", textAlign: "center" }}>
+                  <td style={{ padding: "9px 14px", display: "flex", gap: 5, justifyContent: "center" }}>
                     {!k.isUsed ? (
-                      <button
-                        onClick={() => setDeleteTarget(k)}
-                        style={{
-                          padding: "4px 7px",
-                          background: "#1a1a2e",
-                          border: "none",
-                          borderRadius: 4,
-                          cursor: "pointer",
-                        }}
-                      >
-                        <Trash2 size={11} color="#e94560" />
-                      </button>
+                      <>
+                        <button
+                          onClick={() => setEditingKey(k)}
+                          style={{ padding: "4px 7px", background: "#1a1a2e", border: "none", borderRadius: 4, cursor: "pointer" }}
+                          title="Chỉnh sửa"
+                        >
+                          <Edit size={11} color="#0078f2" />
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(k)}
+                          style={{ padding: "4px 7px", background: "#1a1a2e", border: "none", borderRadius: 4, cursor: "pointer" }}
+                        >
+                          <Trash2 size={11} color="#e94560" />
+                        </button>
+                      </>
                     ) : (
-                      <span
-                        title="Mã đã bán không thể xóa"
-                        style={{ opacity: 0.3 }}
-                      >
+                      <span title="Mã đã bán không thể chỉnh sửa hoặc xóa" style={{ opacity: 0.3 }}>
                         <Trash2 size={11} color="#888" />
                       </span>
                     )}
@@ -615,6 +711,16 @@ export default function GameKeysTab() {
           onClose={() => setShowModal(false)}
           onSave={() => {
             setShowModal(false);
+            load();
+          }}
+        />
+      )}
+      {editingKey && (
+        <EditKeyModal
+          keyData={editingKey}
+          onClose={() => setEditingKey(null)}
+          onSave={() => {
+            setEditingKey(null);
             load();
           }}
         />

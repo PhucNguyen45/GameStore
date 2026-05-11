@@ -6,8 +6,72 @@ import Pagination from "./Pagination";
 import { thStyle, sortFn, filterInputStyle } from "./adminStyles";
 import api from "../../services/api";
 import { Link } from "react-router-dom";
-import { Eye, Check, XCircle } from "lucide-react";
+import { Eye, Check, XCircle, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
+
+function OrderActionModal({ action, order, onClose, onConfirm, loading }) {
+  const isApprove = action === "approve";
+  const accent = isApprove ? "#4caf50" : "#e94560";
+  const accentBg = isApprove ? "#4caf5018" : "#e9456018";
+  return (
+    <div style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)",
+      display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999,
+    }}>
+      <div style={{
+        background: "#111118", borderRadius: 12, padding: "28px 32px",
+        width: 400, border: "1px solid #1a1a2e", boxShadow: "0 8px 40px rgba(0,0,0,0.6)",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: "50%",
+            background: accentBg, display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <AlertTriangle size={20} color={accent} />
+          </div>
+          <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#fff" }}>
+            {isApprove ? "Duyệt đơn hàng?" : "Hủy đơn hàng?"}
+          </h3>
+        </div>
+        <p style={{ margin: "0 0 6px", color: "#aaa", fontSize: 13 }}>
+          {isApprove
+            ? "Xác nhận duyệt và gửi key game cho khách hàng."
+            : "Đơn hàng sẽ bị hủy và hoàn tiền vào ví người dùng (nếu có)."}
+        </p>
+        <p style={{ margin: "0 0 24px", color: "#666", fontSize: 12 }}>
+          Đơn #{order.id} — {order.username || `NSD #${order.userId}`} —{" "}
+          <span style={{ color: "#4caf50", fontWeight: 600 }}>${order.totalAmount?.toFixed(2)}</span>
+        </p>
+        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <button
+            onClick={onClose}
+            disabled={loading}
+            style={{
+              padding: "9px 20px", background: "transparent",
+              border: "1px solid #333", color: "#ccc", borderRadius: 6,
+              cursor: "pointer", fontSize: 13,
+            }}
+          >
+            Hủy bỏ
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            style={{
+              padding: "9px 20px", background: accent,
+              border: "none", color: "#fff", borderRadius: 6,
+              cursor: loading ? "not-allowed" : "pointer", fontSize: 13,
+              fontWeight: 600, opacity: loading ? 0.7 : 1,
+              display: "flex", alignItems: "center", gap: 6,
+            }}
+          >
+            {loading ? "Đang xử lý..." : isApprove ? <><Check size={14} /> Xác nhận duyệt</> : <><XCircle size={14} /> Xác nhận hủy</>}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function OrdersTab({
   orders,
@@ -26,6 +90,27 @@ export default function OrdersTab({
   activeTab,
 }) {
   const statusVN = { Pending: "Chờ xử lý", Completed: "Hoàn thành", Cancelled: "Đã hủy", Refunded: "Hoàn tiền" };
+
+  const [confirmAction, setConfirmAction] = useState(null); // { action: "approve"|"cancel", order }
+  const [actionLoading, setActionLoading] = useState(false);
+
+  const handleConfirm = async () => {
+    if (!confirmAction) return;
+    setActionLoading(true);
+    const { action, order } = confirmAction;
+    try {
+      await api.put(`/admin/orders/${order.id}/status`, {
+        status: action === "approve" ? "Completed" : "Cancelled",
+      });
+      toast.success(action === "approve" ? "Đơn hàng đã duyệt & gửi key!" : "Đã hủy đơn hàng!");
+      setConfirmAction(null);
+      loadOrders();
+    } catch (e) {
+      toast.error(e.response?.data?.message || (action === "approve" ? "Duyệt thất bại" : "Hủy đơn thất bại"));
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   const hasFilters =
     orderSearch.keyword ||
@@ -257,22 +342,7 @@ export default function OrdersTab({
                   {o.status === "Pending" && (
                     <div style={{ display: "flex", gap: 8 }}>
                       <button
-                        onClick={async () => {
-                          if (window.confirm("Duyệt đơn hàng này?")) {
-                            try {
-                              await api.put(`/admin/orders/${o.id}/status`, {
-                                status: "Completed",
-                              });
-                              toast.success("Đơn hàng đã duyệt & gửi key!");
-                              loadOrders();
-                            } catch (e) {
-                              toast.error(
-                                e.response?.data?.message ||
-                                  "Duyệt thất bại",
-                              );
-                            }
-                          }
-                        }}
+                        onClick={() => setConfirmAction({ action: "approve", order: o })}
                         style={{
                           background: "#4caf50",
                           color: "#fff",
@@ -283,24 +353,13 @@ export default function OrdersTab({
                           display: "flex",
                           alignItems: "center",
                           gap: 4,
+                          fontSize: 12,
                         }}
                       >
-                        <Check size={14} /> Duyệt
+                        <Check size={13} /> Duyệt
                       </button>
                       <button
-                        onClick={async () => {
-                          if (window.confirm("Hủy đơn hàng này?")) {
-                            try {
-                              await api.put(`/admin/orders/${o.id}/status`, {
-                                status: "Cancelled",
-                              });
-                              toast.success("Đã hủy đơn hàng!");
-                              loadOrders();
-                            } catch (e) {
-                              toast.error("Hủy đơn thất bại");
-                            }
-                          }
-                        }}
+                        onClick={() => setConfirmAction({ action: "cancel", order: o })}
                         style={{
                           background: "#e94560",
                           color: "#fff",
@@ -311,9 +370,10 @@ export default function OrdersTab({
                           display: "flex",
                           alignItems: "center",
                           gap: 4,
+                          fontSize: 12,
                         }}
                       >
-                        <XCircle size={14} /> Hủy
+                        <XCircle size={13} /> Hủy
                       </button>
                     </div>
                   )}
@@ -341,6 +401,15 @@ export default function OrdersTab({
           setPageSize={setOrdersPageSize}
         />
       </div>
+      {confirmAction && (
+        <OrderActionModal
+          action={confirmAction.action}
+          order={confirmAction.order}
+          onClose={() => setConfirmAction(null)}
+          onConfirm={handleConfirm}
+          loading={actionLoading}
+        />
+      )}
     </div>
   );
 }

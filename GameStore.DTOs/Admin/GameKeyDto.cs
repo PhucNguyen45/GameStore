@@ -19,3 +19,10 @@ public class BatchGameKeyDto
     public List<string> KeyCodes { get; set; } = new();
     public DateTime? ExpiresAt { get; set; }
 }
+
+public class UpdateGameKeyDto
+{
+    public string? KeyCode { get; set; }
+    public DateTime? ExpiresAt { get; set; }
+    public bool ClearExpiry { get; set; }
+}

@@ -65,7 +65,7 @@ export default function AdminPage() {
     minPrice: "",
     maxPrice: "",
   });
-  const [userSearch, setUserSearch] = useState("");
+  const [userSearch, setUserSearch] = useState({ keyword: "", status: "", fromDate: "", toDate: "" });
   const [genres, setGenres] = useState([]);
 
   // ===== Sorting =====
@@ -165,7 +165,10 @@ export default function AdminPage() {
       sortBy: userSort.field,
       desc: userSort.dir === "desc",
     };
-    if (userSearch) params.keyword = userSearch;
+    if (userSearch.keyword) params.keyword = userSearch.keyword;
+    if (userSearch.status) params.isActive = userSearch.status === "active";
+    if (userSearch.fromDate) params.fromDate = userSearch.fromDate;
+    if (userSearch.toDate) params.toDate = userSearch.toDate;
     try {
       const res = await api.get("/admin/users", { params });
       setUsers(res.data?.data || []);
@@ -199,20 +202,23 @@ export default function AdminPage() {
 
   const loadDashboard = async () => {
     try {
-      const [dashRes, allOrdersRes] = await Promise.all([
-        api.get("/admin/dashboard").catch(() => ({ data: {} })),
-        api.get("/admin/orders/all").catch(() => ({ data: [] })),
-      ]);
-      const dashboard = dashRes.data || {};
-      const orderList = allOrdersRes.data || [];
-      setAllOrders(orderList);
+      const res = await api.get("/admin/dashboard");
+      const dashboard = res.data || {};
+      const recentOrders = dashboard.recentOrders || [];
+      setAllOrders(recentOrders);
       setStats({
         totalGames: dashboard.totalGames ?? 0,
         totalUsers: dashboard.totalUsers ?? 0,
-        totalOrders: dashboard.totalOrders ?? orderList.length,
+        totalOrders: dashboard.totalOrders ?? 0,
         revenue: (dashboard.totalRevenue ?? 0).toFixed(2),
       });
-      setMonthlyRevenue(calculateMonthlyRevenue(orderList));
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      const monthly = (dashboard.monthlyRevenue || []).map((m, i) => ({
+        month: months[i],
+        value: Math.round(m.value ?? 0),
+        count: m.count ?? 0,
+      }));
+      setMonthlyRevenue(monthly.length === 12 ? monthly : calculateMonthlyRevenue(recentOrders));
     } catch (e) {
       console.error("Dashboard load error:", e);
     }

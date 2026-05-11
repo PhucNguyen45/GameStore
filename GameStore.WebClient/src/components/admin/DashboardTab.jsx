@@ -1,5 +1,5 @@
 // GameStore.WebClient/src/components/admin/DashboardTab.jsx
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   Gamepad2,
   Users,
@@ -24,6 +24,14 @@ export default function DashboardTab({
   const maxRevenue = Math.max(...monthlyRevenue.map((m) => m.value), 1);
   const displayMax = maxRevenue > 0 ? maxRevenue : 100;
   const currentMonthIdx = new Date().getMonth();
+  const [hoveredBar, setHoveredBar] = useState(null);
+
+  const CHART_H = 180;
+  const Y_TICKS = 4;
+  const formatYLabel = (v) =>
+    v >= 10000 ? `$${(v / 1000).toFixed(0)}k`
+    : v >= 1000 ? `$${(v / 1000).toFixed(1)}k`
+    : `$${v}`;
 
   const statCards = [
     {
@@ -132,158 +140,170 @@ export default function DashboardTab({
             border: "1px solid #1a1a2e",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "flex-start",
-              marginBottom: 16,
-            }}
-          >
+          {/* Header */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
             <div>
-              <h3
-                style={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: "#fff",
-                  marginBottom: 4,
-                }}
-              >
+              <h3 style={{ fontSize: 13, fontWeight: 600, color: "#fff", marginBottom: 4 }}>
                 Doanh thu ({new Date().getFullYear()})
               </h3>
               <p style={{ fontSize: 10, color: "#666" }}>
-                Tổng:{" "}
-                <span style={{ color: "#4caf50", fontWeight: 600 }}>
+                Tổng năm:{" "}
+                <span style={{ color: "#4caf50", fontWeight: 700 }}>
                   ${Number(stats.revenue).toLocaleString()}
                 </span>
               </p>
             </div>
-            <div style={{ fontSize: 10, color: "#666" }}>
-              Cao nhất:{" "}
-              <span style={{ color: "#fff", fontWeight: 600 }}>
-                ${maxRevenue.toLocaleString()}
-              </span>
+            <div style={{ textAlign: "right" }}>
+              <p style={{ fontSize: 9, color: "#555", marginBottom: 2 }}>Tháng cao nhất</p>
+              <p style={{ fontSize: 12, color: "#fff", fontWeight: 700 }}>
+                {formatYLabel(maxRevenue)}
+              </p>
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              gap: 6,
-              height: 160,
-            }}
-          >
-            {monthlyRevenue.map((item, i) => {
-              const heightPercent = Math.max(
-                (item.value / displayMax) * 100,
-                6,
-              );
-              const isCurrent = i === currentMonthIdx;
-              return (
+
+          {/* Chart body: Y-axis + bars */}
+          <div style={{ display: "flex", gap: 0 }}>
+            {/* Y-axis labels */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                width: 44,
+                paddingRight: 6,
+                height: CHART_H + 18,
+                paddingBottom: 18,
+                boxSizing: "border-box",
+                flexShrink: 0,
+              }}
+            >
+              {Array.from({ length: Y_TICKS + 1 }, (_, i) => Y_TICKS - i).map((level) => (
+                <span key={level} style={{ fontSize: 9, color: "#555", textAlign: "right", lineHeight: "14px" }}>
+                  {formatYLabel(Math.round((displayMax * level) / Y_TICKS))}
+                </span>
+              ))}
+            </div>
+
+            {/* Chart area */}
+            <div style={{ flex: 1, position: "relative", height: CHART_H + 18 }}>
+              {/* Gridlines */}
+              {Array.from({ length: Y_TICKS + 1 }, (_, i) => i).map((level) => (
                 <div
-                  key={i}
+                  key={level}
                   style={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: 6,
-                    position: "relative",
+                    position: "absolute",
+                    top: `${(level / Y_TICKS) * CHART_H}px`,
+                    left: 0,
+                    right: 0,
+                    borderTop: `1px ${level === Y_TICKS ? "solid" : "dashed"} ${level === Y_TICKS ? "#2a2a3e" : "#18181f"}`,
+                    pointerEvents: "none",
+                    zIndex: 0,
                   }}
-                >
-                  <div
-                    style={{
-                      position: "absolute",
-                      top: -34,
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      background: "#1a1a2e",
-                      color: "#fff",
-                      padding: "4px 8px",
-                      borderRadius: 4,
-                      fontSize: 10,
-                      fontWeight: 600,
-                      opacity: 0,
-                      pointerEvents: "none",
-                      transition: "opacity 0.2s",
-                      whiteSpace: "nowrap",
-                      zIndex: 10,
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.5)",
-                    }}
-                    className="bar-tooltip"
-                  >
-                    ${item.value.toLocaleString()} • {item.count} đơn
-                  </div>
-                  <div
-                    style={{
-                      width: "100%",
-                      height: `${Math.max(heightPercent, 2)}%`,
-                      minHeight: 4,
-                      background: isCurrent
-                        ? "linear-gradient(180deg, #4fc3f7 0%, var(--accent) 100%)"
-                        : "var(--accent)",
-                      borderRadius: "4px 4px 0 0",
-                      transition: "all 0.3s cubic-bezier(0.4,0,0.2,1)",
-                      cursor: "pointer",
-                      position: "relative",
-                      overflow: "hidden",
-                      opacity: item.value === 0 ? 0.35 : 1,
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.background =
-                        "linear-gradient(180deg, #4fc3f7 0%, var(--accent) 100%)";
-                      e.currentTarget.style.transform = "scaleY(1.05)";
-                      e.currentTarget.style.transformOrigin = "bottom";
-                      const shine = e.currentTarget.querySelector(".shine");
-                      const tip =
-                        e.currentTarget.parentElement.querySelector(
-                          ".bar-tooltip",
-                        );
-                      if (shine) shine.style.opacity = 1;
-                      if (tip) tip.style.opacity = 1;
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.background = isCurrent
-                        ? "linear-gradient(180deg, #4fc3f7 0%, var(--accent) 100%)"
-                        : "var(--accent)";
-                      e.currentTarget.style.transform = "scaleY(1)";
-                      const shine = e.currentTarget.querySelector(".shine");
-                      const tip =
-                        e.currentTarget.parentElement.querySelector(
-                          ".bar-tooltip",
-                        );
-                      if (shine) shine.style.opacity = 0;
-                      if (tip) tip.style.opacity = 0;
-                    }}
-                  >
+                />
+              ))}
+
+              {/* Bars */}
+              <div
+                style={{
+                  display: "flex",
+                  gap: 4,
+                  height: CHART_H,
+                  alignItems: "flex-end",
+                  position: "relative",
+                  zIndex: 1,
+                }}
+              >
+                {monthlyRevenue.map((item, i) => {
+                  const heightPct = displayMax > 0 ? (item.value / displayMax) * 100 : 0;
+                  const isCurrent = i === currentMonthIdx;
+                  const isHovered = hoveredBar === i;
+                  const hasValue = item.value > 0;
+                  return (
                     <div
-                      className="shine"
+                      key={i}
                       style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: "40%",
-                        background:
-                          "linear-gradient(180deg, rgba(255,255,255,0.25) 0%, transparent 100%)",
-                        borderRadius: "4px 4px 0 0",
-                        opacity: 0,
-                        transition: "opacity 0.3s",
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        height: "100%",
+                        justifyContent: "flex-end",
+                        position: "relative",
                       }}
-                    />
-                  </div>
-                  <span
-                    style={{
-                      fontSize: 9,
-                      color: isCurrent ? "#fff" : "#555",
-                      fontWeight: isCurrent ? 700 : 400,
-                    }}
-                  >
-                    {item.month}
-                  </span>
-                </div>
-              );
-            })}
+                    >
+                      {/* Tooltip */}
+                      {isHovered && hasValue && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: "calc(100% + 6px)",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            background: "#1e1e2e",
+                            border: "1px solid #2a2a3e",
+                            color: "#fff",
+                            padding: "6px 10px",
+                            borderRadius: 6,
+                            fontSize: 10,
+                            whiteSpace: "nowrap",
+                            zIndex: 20,
+                            boxShadow: "0 4px 16px rgba(0,0,0,0.6)",
+                            lineHeight: 1.6,
+                            textAlign: "center",
+                          }}
+                        >
+                          <div style={{ fontWeight: 700, color: "#4caf50", fontSize: 11 }}>
+                            ${item.value.toLocaleString()}
+                          </div>
+                          <div style={{ color: "#888" }}>{item.count} đơn</div>
+                        </div>
+                      )}
+
+                      {/* Bar */}
+                      <div
+                        onMouseEnter={() => setHoveredBar(i)}
+                        onMouseLeave={() => setHoveredBar(null)}
+                        style={{
+                          width: "100%",
+                          height: hasValue ? `${heightPct}%` : "2px",
+                          minHeight: hasValue ? 4 : 0,
+                          background:
+                            isHovered || isCurrent
+                              ? "linear-gradient(180deg, #4fc3f7 0%, var(--accent) 100%)"
+                              : hasValue
+                                ? "var(--accent)"
+                                : "#1a1a2e",
+                          borderRadius: hasValue ? "3px 3px 0 0" : "1px",
+                          opacity: hasValue ? 1 : 0.4,
+                          transition: "height 0.4s cubic-bezier(0.4,0,0.2,1), background 0.2s",
+                          cursor: hasValue ? "pointer" : "default",
+                        }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Month labels */}
+              <div style={{ display: "flex", gap: 4, height: 18, alignItems: "center" }}>
+                {monthlyRevenue.map((item, i) => {
+                  const isCurrent = i === currentMonthIdx;
+                  return (
+                    <div key={i} style={{ flex: 1, textAlign: "center" }}>
+                      <span
+                        style={{
+                          fontSize: 9,
+                          color: isCurrent ? "#fff" : "#555",
+                          fontWeight: isCurrent ? 700 : 400,
+                        }}
+                      >
+                        {item.month}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
 

@@ -6,6 +6,8 @@ export default function UserFormModal({ user, onClose, onSave }) {
   const [form, setForm] = useState({
     displayName: "",
     email: "",
+    phone: "",
+    avatarUrl: "",
     wallet: 0,
     isActive: true,
   });
@@ -15,6 +17,8 @@ export default function UserFormModal({ user, onClose, onSave }) {
       setForm({
         displayName: user.displayName || "",
         email: user.email || "",
+        phone: user.phone || "",
+        avatarUrl: user.avatarUrl || "",
         wallet: user.wallet || 0,
         isActive: user.isActive ?? true,
       });
@@ -112,6 +116,27 @@ export default function UserFormModal({ user, onClose, onSave }) {
               style={inputStyle}
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>Số điện thoại</label>
+            <input
+              type="tel"
+              style={inputStyle}
+              value={form.phone}
+              onChange={(e) => setForm({ ...form, phone: e.target.value })}
+              placeholder="Nhập số điện thoại..."
+            />
+          </div>
+
+          <div>
+            <label style={labelStyle}>URL ảnh đại diện</label>
+            <input
+              style={inputStyle}
+              value={form.avatarUrl}
+              onChange={(e) => setForm({ ...form, avatarUrl: e.target.value })}
+              placeholder="Nhập URL ảnh đại diện..."
             />
           </div>
 

@@ -272,8 +272,11 @@ function RoleModal({ role, onClose, onSave }) {
   );
 }
 
-function AssignRoleModal({ onClose, onSave, roles }) {
-  const [form, setForm] = useState({ userId: "", roleId: "" });
+function AssignRoleModal({ onClose, onSave, roles, presetUser }) {
+  const [form, setForm] = useState({
+    userId: presetUser ? String(presetUser.id) : "",
+    roleId: "",
+  });
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -317,25 +320,40 @@ function AssignRoleModal({ onClose, onSave, roles }) {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h3
-          style={{
-            color: "#fff",
-            marginBottom: 16,
-            fontSize: 16,
-            fontWeight: 700,
-          }}
-        >
+        <h3 style={{ color: "#fff", marginBottom: 16, fontSize: 16, fontWeight: 700 }}>
           👤 Phân vai trò
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
-          <input
-            type="number"
-            placeholder="ID người dùng *"
-            value={form.userId}
-            onChange={(e) => setForm({ ...form, userId: e.target.value })}
-            style={iStyle}
-            required
-          />
+          {/* User field */}
+          {presetUser ? (
+            <div
+              style={{
+                ...iStyle,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                background: "#0a0a10",
+                cursor: "default",
+                borderRadius: 6,
+                padding: "10px 14px",
+              }}
+            >
+              <UserPlus size={14} color="#4caf50" />
+              <span style={{ color: "#fff", fontWeight: 600 }}>{presetUser.username}</span>
+              <span style={{ color: "#555", fontSize: 11 }}>#{presetUser.id}</span>
+            </div>
+          ) : (
+            <input
+              type="number"
+              placeholder="ID người dùng *"
+              value={form.userId}
+              onChange={(e) => setForm({ ...form, userId: e.target.value })}
+              style={iStyle}
+              required
+              min={1}
+            />
+          )}
+
           <select
             value={form.roleId}
             onChange={(e) => setForm({ ...form, roleId: e.target.value })}
@@ -394,7 +412,7 @@ export default function StaffRolesTab() {
   const [rolesTotal, setRolesTotal] = useState(0);
   const [rolesPage, setRolesPage] = useState(1);
   const [rolesPageSize, setRolesPageSize] = useState(10);
-  const [roleSearch, setRoleSearch] = useState("");
+  const [roleSearch, setRoleSearch] = useState({ keyword: "", isActive: "", hasUsers: "" });
   const [roleSort, setRoleSort] = useState({ field: "name", dir: "asc" });
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [editingRole, setEditingRole] = useState(null);
@@ -405,15 +423,17 @@ export default function StaffRolesTab() {
   const [staffTotal, setStaffTotal] = useState(0);
   const [staffPage, setStaffPage] = useState(1);
   const [staffPageSize, setStaffPageSize] = useState(10);
-  const [staffSearch, setStaffSearch] = useState({ keyword: "", roleId: "" });
+  const [staffSearch, setStaffSearch] = useState({ keyword: "", roleId: "", isActive: "" });
   const [staffSort, setStaffSort] = useState({ field: "username", dir: "asc" });
-  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(null); // null | { presetUser?: {id, username} }
   const [revokeTarget, setRevokeTarget] = useState(null);
 
   const loadRoles = async () => {
     try {
       const params = { page: rolesPage, pageSize: rolesPageSize };
-      if (roleSearch) params.keyword = roleSearch;
+      if (roleSearch.keyword) params.keyword = roleSearch.keyword;
+      if (roleSearch.isActive !== "") params.isActive = roleSearch.isActive === "active";
+      if (roleSearch.hasUsers !== "") params.hasUsers = roleSearch.hasUsers === "yes";
       const res = await adminAPI.getRoles(params);
       setRoles(res.data.data || []);
       setRolesTotal(res.data.totalCount || 0);
@@ -428,6 +448,7 @@ export default function StaffRolesTab() {
       const params = { page: staffPage, pageSize: staffPageSize };
       if (staffSearch.keyword) params.keyword = staffSearch.keyword;
       if (staffSearch.roleId) params.roleId = staffSearch.roleId;
+      if (staffSearch.isActive !== "") params.isActive = staffSearch.isActive === "active";
       const res = await adminAPI.getStaff(params);
       setStaff(res.data.data || []);
       setStaffTotal(res.data.totalCount || 0);
@@ -524,13 +545,31 @@ export default function StaffRolesTab() {
           >
             <input
               placeholder="Tìm vai trò..."
-              value={roleSearch}
-              onChange={(e) => setRoleSearch(e.target.value)}
+              value={roleSearch.keyword}
+              onChange={(e) => setRoleSearch({ ...roleSearch, keyword: e.target.value })}
               style={{ ...filterInputStyle, flex: 1, maxWidth: 220 }}
             />
-            {roleSearch && (
+            <select
+              value={roleSearch.isActive}
+              onChange={(e) => setRoleSearch({ ...roleSearch, isActive: e.target.value })}
+              style={filterInputStyle}
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="active">Hoạt động</option>
+              <option value="inactive">Không hoạt động</option>
+            </select>
+            <select
+              value={roleSearch.hasUsers}
+              onChange={(e) => setRoleSearch({ ...roleSearch, hasUsers: e.target.value })}
+              style={filterInputStyle}
+            >
+              <option value="">Tất cả</option>
+              <option value="yes">Có nhân viên</option>
+              <option value="no">Chưa có nhân viên</option>
+            </select>
+            {(roleSearch.keyword || roleSearch.isActive || roleSearch.hasUsers) && (
               <button
-                onClick={() => setRoleSearch("")}
+                onClick={() => setRoleSearch({ keyword: "", isActive: "", hasUsers: "" })}
                 style={{
                   padding: "7px 12px",
                   background: "#2a2a2a",
@@ -799,9 +838,18 @@ export default function StaffRolesTab() {
                 </option>
               ))}
             </select>
-            {(staffSearch.keyword || staffSearch.roleId) && (
+            <select
+              value={staffSearch.isActive}
+              onChange={(e) => setStaffSearch({ ...staffSearch, isActive: e.target.value })}
+              style={filterInputStyle}
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="active">Hoạt động</option>
+              <option value="locked">Bị khóa</option>
+            </select>
+            {(staffSearch.keyword || staffSearch.roleId || staffSearch.isActive) && (
               <button
-                onClick={() => setStaffSearch({ keyword: "", roleId: "" })}
+                onClick={() => setStaffSearch({ keyword: "", roleId: "", isActive: "" })}
                 style={{
                   padding: "7px 12px",
                   background: "#2a2a2a",
@@ -819,7 +867,7 @@ export default function StaffRolesTab() {
               </button>
             )}
             <button
-              onClick={() => setShowAssignModal(true)}
+              onClick={() => setShowAssignModal({})}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -984,7 +1032,7 @@ export default function StaffRolesTab() {
                     </td>
                     <td style={{ padding: "9px 14px" }}>
                       <button
-                        onClick={() => setShowAssignModal(true)}
+                        onClick={() => setShowAssignModal({ presetUser: { id: u.id, username: u.username } })}
                         style={{
                           padding: "4px 7px",
                           background: "#1a1a2e",
@@ -992,7 +1040,7 @@ export default function StaffRolesTab() {
                           borderRadius: 4,
                           cursor: "pointer",
                         }}
-                        title="Phân vai trò"
+                        title="Thêm vai trò cho nhân viên này"
                       >
                         <UserPlus size={11} color="#4caf50" />
                       </button>
@@ -1042,12 +1090,13 @@ export default function StaffRolesTab() {
           }}
         />
       )}
-      {showAssignModal && (
+      {showAssignModal !== null && (
         <AssignRoleModal
           roles={roles}
-          onClose={() => setShowAssignModal(false)}
+          presetUser={showAssignModal.presetUser || null}
+          onClose={() => setShowAssignModal(null)}
           onSave={() => {
-            setShowAssignModal(false);
+            setShowAssignModal(null);
             loadStaff();
           }}
         />

@@ -38,12 +38,43 @@ public class AdminService : IAdminService
             .Where(o => o.Status == "Completed")
             .SumAsync(o => o.TotalAmount);
 
+        var currentYear = DateTime.UtcNow.Year;
+        var completedOrders = await _context.Orders
+            .Where(o => o.Status == "Completed" && o.OrderDate.Year == currentYear)
+            .Select(o => new { o.OrderDate, o.TotalAmount })
+            .ToListAsync();
+
+        var monthlyRevenue = Enumerable.Range(0, 12).Select(m => new
+        {
+            month = m + 1,
+            value = (double)completedOrders.Where(o => o.OrderDate.Month == m + 1).Sum(o => o.TotalAmount),
+            count = completedOrders.Count(o => o.OrderDate.Month == m + 1)
+        }).ToList();
+
+        var recentOrders = await _context.Orders
+            .Include(o => o.User)
+            .OrderByDescending(o => o.OrderDate)
+            .Take(20)
+            .Select(o => new
+            {
+                o.Id,
+                o.UserId,
+                username = o.User.Username,
+                o.TotalAmount,
+                o.Status,
+                o.PaymentMethod,
+                o.OrderDate
+            })
+            .ToListAsync();
+
         return new
         {
             totalGames,
             totalUsers,
             totalOrders,
-            totalRevenue = revenue
+            totalRevenue = revenue,
+            monthlyRevenue,
+            recentOrders
         };
     }
 
@@ -152,12 +183,19 @@ public class AdminService : IAdminService
 
     // ================= USERS =================
     public async Task<(IEnumerable<User> Users, int TotalCount)> GetUsersAsync(
-        string? keyword, string? sortBy, bool desc, int page, int pageSize)
+        string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
+        string? sortBy, bool desc, int page, int pageSize)
     {
         var query = _context.Users.AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
             query = query.Where(u => u.Username.Contains(keyword) || u.DisplayName.Contains(keyword) || u.Email.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(u => u.IsActive == isActive.Value);
+        if (fromDate.HasValue)
+            query = query.Where(u => u.CreatedAt >= fromDate.Value);
+        if (toDate.HasValue)
+            query = query.Where(u => u.CreatedAt <= toDate.Value.AddDays(1));
 
         var totalCount = await query.CountAsync();
 
@@ -181,6 +219,8 @@ public class AdminService : IAdminService
         var user = await _context.Users.FindAsync(id) ?? throw new Exception("User not found");
         user.DisplayName = dto.DisplayName ?? user.DisplayName;
         user.Email = dto.Email ?? user.Email;
+        if (dto.Phone != null) user.Phone = dto.Phone;
+        if (dto.AvatarUrl != null) user.AvatarUrl = dto.AvatarUrl;
         if (dto.Wallet.HasValue) user.Wallet = dto.Wallet.Value;
         if (dto.IsActive.HasValue) user.IsActive = dto.IsActive.Value;
         await _context.SaveChangesAsync();
@@ -247,7 +287,7 @@ public class AdminService : IAdminService
     }
 
     // ================= CATEGORIES (Genres) =================
-    public async Task<object> GetCategoriesAsync(string? keyword, string? status, int page, int pageSize)
+    public async Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize)
     {
         var query = _context.Genres.AsQueryable();
 
@@ -255,6 +295,10 @@ public class AdminService : IAdminService
             query = query.Where(g => g.Name.Contains(keyword) || g.Description.Contains(keyword));
         if (status == "active") query = query.Where(g => g.IsActive);
         else if (status == "inactive") query = query.Where(g => !g.IsActive);
+        if (hasGames == true)
+            query = query.Where(g => _context.GameGenres.Any(gg => gg.GenreId == g.Id));
+        else if (hasGames == false)
+            query = query.Where(g => !_context.GameGenres.Any(gg => gg.GenreId == g.Id));
 
         var totalCount = await query.CountAsync();
         var data = await query.OrderBy(g => g.Name).Skip((page - 1) * pageSize).Take(pageSize)
@@ -362,6 +406,20 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    public async Task UpdateGameKeyAsync(int id, UpdateGameKeyDto dto)
+    {
+        var key = await _context.GameKeys.FindAsync(id) ?? throw new Exception("Key not found");
+        if (key.IsUsed) throw new Exception("Cannot edit a used key");
+        if (!string.IsNullOrWhiteSpace(dto.KeyCode))
+        {
+            if (await _context.GameKeys.AnyAsync(k => k.KeyCode == dto.KeyCode && k.Id != id))
+                throw new Exception("Key code already exists");
+            key.KeyCode = dto.KeyCode;
+        }
+        key.ExpiresAt = dto.ClearExpiry ? null : (dto.ExpiresAt ?? key.ExpiresAt);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task DeleteGameKeyAsync(int id)
     {
         var key = await _context.GameKeys.FindAsync(id) ?? throw new Exception("Key not found");
@@ -447,10 +505,16 @@ public class AdminService : IAdminService
     }
 
     // ================= ROLES =================
-    public async Task<object> GetRolesAsync(string? keyword, int page, int pageSize)
+    public async Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize)
     {
         var query = _context.Roles.Where(r => !r.IsDeleted).AsQueryable();
         if (!string.IsNullOrEmpty(keyword)) query = query.Where(r => r.Name.Contains(keyword) || r.Description.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(r => r.IsActive == isActive.Value);
+        if (hasUsers == true)
+            query = query.Where(r => _context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
+        else if (hasUsers == false)
+            query = query.Where(r => !_context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
 
         var totalCount = await query.CountAsync();
         var data = await query.OrderBy(r => r.Name).Skip((page - 1) * pageSize).Take(pageSize)
@@ -537,11 +601,15 @@ public class AdminService : IAdminService
     }
 
     // ================= STAFF =================
-    public async Task<object> GetStaffAsync(string? keyword, int? roleId, int page, int pageSize)
+    public async Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive, int page, int pageSize)
     {
-        var query = _context.Users.AsQueryable();
+        var query = _context.Users
+            .Where(u => u.UserRoles.Any(ur => !ur.IsDeleted && ur.Role.Name != "User"))
+            .AsQueryable();
         if (roleId.HasValue) query = query.Where(u => u.UserRoles.Any(ur => ur.RoleId == roleId.Value && !ur.IsDeleted));
         if (!string.IsNullOrEmpty(keyword)) query = query.Where(u => u.Username.Contains(keyword) || u.DisplayName.Contains(keyword) || u.Email.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(u => u.IsActive == isActive.Value);
 
         var totalCount = await query.CountAsync();
         var data = await query.OrderBy(u => u.Username).Skip((page - 1) * pageSize).Take(pageSize)

@@ -88,6 +88,7 @@ export const adminAPI = {
   getGameKeys: (p) => api.get("/admin/gamekeys", { params: p }),
   createGameKey: (d) => api.post("/admin/gamekeys", d),
   createBatchGameKeys: (d) => api.post("/admin/gamekeys/batch", d),
+  updateGameKey: (id, d) => api.put(`/admin/gamekeys/${id}`, d),
   deleteGameKey: (id) => api.delete(`/admin/gamekeys/${id}`),
   // Payments
   getPayments: (p) => api.get("/admin/payments", { params: p }),

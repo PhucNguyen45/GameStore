@@ -25,7 +25,8 @@ public interface IAdminService
 
     // Users
     Task<(IEnumerable<User> Users, int TotalCount)> GetUsersAsync(
-        string? keyword, string? sortBy, bool desc, int page, int pageSize);
+        string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
+        string? sortBy, bool desc, int page, int pageSize);
     Task UpdateUserAsync(int id, AdminUserUpdateDto dto);
     Task DeleteUserAsync(int id);
 
@@ -36,7 +37,7 @@ public interface IAdminService
     Task UpdateOrderStatusAsync(int orderId, string status);
 
     // Categories (Genres)
-    Task<object> GetCategoriesAsync(string? keyword, string? status, int page, int pageSize);
+    Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize);
     Task CreateCategoryAsync(CategoryDto dto);
     Task UpdateCategoryAsync(int id, CategoryDto dto);
     Task DeleteCategoryAsync(int id);
@@ -45,6 +46,7 @@ public interface IAdminService
     Task<object> GetGameKeysAsync(string? keyword, int? gameId, string? status, int page, int pageSize);
     Task CreateGameKeyAsync(GameKeyDto dto);
     Task CreateBatchGameKeysAsync(BatchGameKeyDto dto);
+    Task UpdateGameKeyAsync(int id, UpdateGameKeyDto dto);
     Task DeleteGameKeyAsync(int id);
 
     // Payments
@@ -54,13 +56,13 @@ public interface IAdminService
     Task RefundPaymentAsync(int paymentId, RefundDto? dto);
 
     // Roles
-    Task<object> GetRolesAsync(string? keyword, int page, int pageSize);
+    Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize);
     Task CreateRoleAsync(RoleDto dto);
     Task UpdateRoleAsync(int id, RoleDto dto);
     Task DeleteRoleAsync(int id);
 
     // Staff
-    Task<object> GetStaffAsync(string? keyword, int? roleId, int page, int pageSize);
+    Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive, int page, int pageSize);
     Task AssignRoleAsync(AssignRoleDto dto);
     Task RevokeRoleAsync(AssignRoleDto dto);
 

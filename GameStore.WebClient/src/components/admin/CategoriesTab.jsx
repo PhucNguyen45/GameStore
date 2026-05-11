@@ -150,7 +150,7 @@ export default function CategoriesTab() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [search, setSearch] = useState({ keyword: "", status: "" });
+  const [search, setSearch] = useState({ keyword: "", status: "", hasGames: "" });
   const [sort, setSort] = useState({ field: "name", dir: "asc" });
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -161,6 +161,7 @@ export default function CategoriesTab() {
       const params = { page, pageSize };
       if (search.keyword) params.keyword = search.keyword;
       if (search.status) params.status = search.status;
+      if (search.hasGames !== "") params.hasGames = search.hasGames === "yes";
       const res = await adminAPI.getCategories(params);
       setCategories(res.data.data || []);
       setTotal(res.data.totalCount || 0);
@@ -199,7 +200,7 @@ export default function CategoriesTab() {
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Search categories..."
+          placeholder="Tìm danh mục..."
           value={search.keyword}
           onChange={(e) => setSearch({ ...search, keyword: e.target.value })}
           style={{ ...filterInputStyle, flex: 1, maxWidth: 220 }}
@@ -213,9 +214,18 @@ export default function CategoriesTab() {
           <option value="active">Hoạt động</option>
           <option value="inactive">Không hoạt động</option>
         </select>
-        {(search.keyword || search.status) && (
+        <select
+          value={search.hasGames}
+          onChange={(e) => setSearch({ ...search, hasGames: e.target.value })}
+          style={filterInputStyle}
+        >
+          <option value="">Tất cả</option>
+          <option value="yes">Có game</option>
+          <option value="no">Chưa có game</option>
+        </select>
+        {(search.keyword || search.status || search.hasGames) && (
           <button
-            onClick={() => setSearch({ keyword: "", status: "" })}
+            onClick={() => setSearch({ keyword: "", status: "", hasGames: "" })}
             style={{
               padding: "7px 12px",
               background: "#2a2a2a",
@@ -272,15 +282,15 @@ export default function CategoriesTab() {
                 #
               </SortableHeader>
               <SortableHeader field="name" sort={sort} setSort={setSort}>
-                Name
+                Tên
               </SortableHeader>
               <SortableHeader field="description" sort={sort} setSort={setSort}>
-                Description
+                Mô tả
               </SortableHeader>
               <SortableHeader field="gameCount" sort={sort} setSort={setSort}>
-                Games
+                Số game
               </SortableHeader>
-              <th style={{ ...thStyle, cursor: "default" }}>Status</th>
+              <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
               <th style={{ ...thStyle, cursor: "default" }}></th>
             </tr>
           </thead>

@@ -55,10 +55,12 @@ public class AdminController : ControllerBase
 
     // Users
     [HttpGet("users")]
-    public async Task<IActionResult> GetUsers([FromQuery] string? keyword, [FromQuery] string? sortBy,
-        [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetUsers([FromQuery] string? keyword,
+        [FromQuery] bool? isActive, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
+        [FromQuery] string? sortBy, [FromQuery] bool desc = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (users, totalCount) = await _adminService.GetUsersAsync(keyword, sortBy, desc, page, pageSize);
+        var (users, totalCount) = await _adminService.GetUsersAsync(keyword, isActive, fromDate, toDate, sortBy, desc, page, pageSize);
         return Ok(new { data = users, totalCount });
     }
 
@@ -96,9 +98,9 @@ public class AdminController : ControllerBase
     // Categories
     [HttpGet("categories")]
     public async Task<IActionResult> GetCategories([FromQuery] string? keyword, [FromQuery] string? status,
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [FromQuery] bool? hasGames, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetCategoriesAsync(keyword, status, page, pageSize));
+        return Ok(await _adminService.GetCategoriesAsync(keyword, status, hasGames, page, pageSize));
     }
 
     [HttpPost("categories")]
@@ -144,6 +146,13 @@ public class AdminController : ControllerBase
         return Ok(new { message = "Batch keys created" });
     }
 
+    [HttpPut("gamekeys/{id}")]
+    public async Task<IActionResult> UpdateGameKey(int id, [FromBody] UpdateGameKeyDto dto)
+    {
+        await _adminService.UpdateGameKeyAsync(id, dto);
+        return Ok(new { message = "Key updated" });
+    }
+
     [HttpDelete("gamekeys/{id}")]
     public async Task<IActionResult> DeleteGameKey(int id)
     {
@@ -175,9 +184,10 @@ public class AdminController : ControllerBase
 
     // Roles
     [HttpGet("roles")]
-    public async Task<IActionResult> GetRoles([FromQuery] string? keyword, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    public async Task<IActionResult> GetRoles([FromQuery] string? keyword, [FromQuery] bool? isActive,
+        [FromQuery] bool? hasUsers, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetRolesAsync(keyword, page, pageSize));
+        return Ok(await _adminService.GetRolesAsync(keyword, isActive, hasUsers, page, pageSize));
     }
 
     [HttpPost("roles")]
@@ -204,9 +214,9 @@ public class AdminController : ControllerBase
     // Staff
     [HttpGet("staff")]
     public async Task<IActionResult> GetStaff([FromQuery] string? keyword, [FromQuery] int? roleId,
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [FromQuery] bool? isActive, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetStaffAsync(keyword, roleId, page, pageSize));
+        return Ok(await _adminService.GetStaffAsync(keyword, roleId, isActive, page, pageSize));
     }
 
     [HttpPost("staff/assign")]

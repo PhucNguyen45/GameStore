@@ -1,9 +1,9 @@
 // GameStore.WebClient/src/components/admin/UsersTab.jsx
 import { useState } from "react";
-import { Edit2, Trash2 } from "lucide-react";
+import { Edit2, Trash2, X } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "./Pagination";
-import { thStyle, sortFn, actionBtnStyle } from "./adminStyles";
+import { thStyle, sortFn, actionBtnStyle, filterInputStyle } from "./adminStyles";
 
 export default function UsersTab({
   users,
@@ -21,6 +21,50 @@ export default function UsersTab({
   onDelete,
 }) {
   return (
+    <div>
+      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+        <input
+          placeholder="Tìm tên đăng nhập, tên, email..."
+          value={userSearch.keyword}
+          onChange={(e) => setUserSearch({ ...userSearch, keyword: e.target.value })}
+          style={{ ...filterInputStyle, flex: 1, maxWidth: 220 }}
+        />
+        <select
+          value={userSearch.status}
+          onChange={(e) => setUserSearch({ ...userSearch, status: e.target.value })}
+          style={filterInputStyle}
+        >
+          <option value="">Tất cả trạng thái</option>
+          <option value="active">Hoạt động</option>
+          <option value="locked">Bị khóa</option>
+        </select>
+        <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#888", fontSize: 12 }}>
+          Từ ngày:{" "}
+          <input
+            type="date"
+            value={userSearch.fromDate}
+            onChange={(e) => setUserSearch({ ...userSearch, fromDate: e.target.value })}
+            style={filterInputStyle}
+          />
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#888", fontSize: 12 }}>
+          Đến ngày:{" "}
+          <input
+            type="date"
+            value={userSearch.toDate}
+            onChange={(e) => setUserSearch({ ...userSearch, toDate: e.target.value })}
+            style={filterInputStyle}
+          />
+        </div>
+        {(userSearch.keyword || userSearch.status || userSearch.fromDate || userSearch.toDate) && (
+          <button
+            onClick={() => setUserSearch({ keyword: "", status: "", fromDate: "", toDate: "" })}
+            style={{ padding: "7px 12px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
+          >
+            <X size={12} /> Xóa lọc
+          </button>
+        )}
+      </div>
     <div
       style={{
         background: "#111118",
@@ -165,6 +209,7 @@ export default function UsersTab({
         setPage={setUsersPage}
         setPageSize={setUsersPageSize}
       />
+    </div>
     </div>
   );
 }
