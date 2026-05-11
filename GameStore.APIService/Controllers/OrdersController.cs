@@ -73,12 +73,17 @@ public class OrdersController : ControllerBase
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         try
         {
-            var order = await _orderService.CreateOrder(userId, dto.Items.Select(i => (i.GameId, i.Quantity)).ToList());
+            var order = await _orderService.CreateOrder(
+                userId,
+                dto.Items.Select(i => (i.GameId, i.Quantity)).ToList(),
+                dto.PaymentMethod,   // thêm
+                dto.Email,           // thêm
+                dto.Phone            // thêm
+            );
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
         }
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
     }
-
     [HttpPut("{id}/cancel")]
     public async Task<IActionResult> Cancel(int id)
     {
