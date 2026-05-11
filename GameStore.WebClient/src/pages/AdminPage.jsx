@@ -1,6 +1,7 @@
 // GameStore.WebClient/src/pages/AdminPage.jsx
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import api from "../services/api";
 import { adminAPI } from "../services/api";
@@ -12,7 +13,6 @@ import UsersTab from "../components/admin/UsersTab";
 import OrdersTab from "../components/admin/OrdersTab";
 import CategoriesTab from "../components/admin/CategoriesTab";
 import GameKeysTab from "../components/admin/GameKeysTab";
-import PaymentsTab from "../components/admin/PaymentsTab";
 import StaffRolesTab from "../components/admin/StaffRolesTab";
 import GameFormModal from "../components/admin/GameFormModal";
 import DeleteConfirmModal from "../components/admin/DeleteConfirmModal";
@@ -247,7 +247,7 @@ export default function AdminPage() {
           color: "#888",
         }}
       >
-        Loading...
+        Đang tải...
       </div>
     );
   }
@@ -354,7 +354,6 @@ export default function AdminPage() {
 
         {activeTab === "categories" && <CategoriesTab />}
         {activeTab === "gamekeys" && <GameKeysTab />}
-        {activeTab === "payments" && <PaymentsTab />}
         {activeTab === "staffroles" && <StaffRolesTab />}
       </div>
 
@@ -396,11 +395,12 @@ export default function AdminPage() {
             try {
               if (editingUser)
                 await adminAPI.updateUser(editingUser.id, formData);
+              toast.success("Cập nhật người dùng thành công!");
               setShowUserForm(false);
               setEditingUser(null);
               loadUsers();
             } catch (e) {
-              console.error(e);
+              toast.error(e.response?.data?.message || e.message);
             }
           }}
         />

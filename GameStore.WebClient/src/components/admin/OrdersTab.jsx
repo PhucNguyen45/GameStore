@@ -25,6 +25,8 @@ export default function OrdersTab({
   loadDashboard,
   activeTab,
 }) {
+  const statusVN = { Pending: "Chờ xử lý", Completed: "Hoàn thành", Cancelled: "Đã hủy", Refunded: "Hoàn tiền" };
+
   const hasFilters =
     orderSearch.keyword ||
     orderSearch.fromDate ||
@@ -37,7 +39,7 @@ export default function OrdersTab({
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Search Username or Order ID"
+          placeholder="Tìm tên người dùng hoặc mã đơn..."
           value={orderSearch.keyword}
           onChange={(e) =>
             setOrderSearch({ ...orderSearch, keyword: e.target.value })
@@ -53,7 +55,7 @@ export default function OrdersTab({
             fontSize: 12,
           }}
         >
-          From:{" "}
+          Từ ngày:{" "}
           <input
             type="date"
             value={orderSearch.fromDate}
@@ -72,7 +74,7 @@ export default function OrdersTab({
             fontSize: 12,
           }}
         >
-          To:{" "}
+          Đến ngày:{" "}
           <input
             type="date"
             value={orderSearch.toDate}
@@ -89,11 +91,11 @@ export default function OrdersTab({
           }
           style={filterInputStyle}
         >
-          <option value="">All Statuses</option>
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-          <option value="Cancelled">Cancelled</option>
-          <option value="Refunded">Refunded</option>
+          <option value="">Tất cả trạng thái</option>
+          <option value="Pending">Chờ xử lý</option>
+          <option value="Completed">Hoàn thành</option>
+          <option value="Cancelled">Đã hủy</option>
+          <option value="Refunded">Hoàn tiền</option>
         </select>
         {hasFilters && (
           <button
@@ -118,7 +120,7 @@ export default function OrdersTab({
               gap: 4,
             }}
           >
-            <X size={12} /> Clear
+            <X size={12} /> Xóa lọc
           </button>
         )}
       </div>
@@ -147,38 +149,38 @@ export default function OrdersTab({
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                User
+                Người dùng
               </SortableHeader>
               <SortableHeader
                 field="totalAmount"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Total
+                Tổng tiền
               </SortableHeader>
               <SortableHeader
                 field="status"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Status
+                Trạng thái
               </SortableHeader>
               <SortableHeader
                 field="paymentMethod"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Method
+                Phương thức
               </SortableHeader>
               <SortableHeader
                 field="orderDate"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Date
+                Ngày đặt
               </SortableHeader>
-              <th style={thStyle}>Action</th>
-              <th style={thStyle}>Process</th>
+              <th style={thStyle}>Xem</th>
+              <th style={thStyle}>Xử lý</th>
             </tr>
           </thead>
           <tbody>
@@ -188,7 +190,7 @@ export default function OrdersTab({
                 <td style={{ padding: "9px 14px", color: "#fff" }}>
                   {o.username
                     ? `${o.username} (#${o.userId})`
-                    : `User #${o.userId}`}
+                    : `NSD #${o.userId}`}
                 </td>
                 <td
                   style={{
@@ -225,11 +227,11 @@ export default function OrdersTab({
                       border: "1px solid currentColor",
                     }}
                   >
-                    {o.status}
+                    {statusVN[o.status] || o.status}
                   </span>
                 </td>
                 <td style={{ padding: "9px 14px", color: "#888" }}>
-                  {o.paymentMethod || "Wallet"}
+                  {o.paymentMethod || "Ví"}
                 </td>
                 <td style={{ padding: "9px 14px", color: "#888" }}>
                   {o.orderDate
@@ -248,7 +250,7 @@ export default function OrdersTab({
                       textDecoration: "none",
                     }}
                   >
-                    <Eye size={14} /> Detail
+                    <Eye size={14} /> Chi tiết
                   </Link>
                 </td>
                 <td style={{ padding: "9px 14px" }}>
@@ -256,17 +258,17 @@ export default function OrdersTab({
                     <div style={{ display: "flex", gap: 8 }}>
                       <button
                         onClick={async () => {
-                          if (window.confirm("Approve this order?")) {
+                          if (window.confirm("Duyệt đơn hàng này?")) {
                             try {
                               await api.put(`/admin/orders/${o.id}/status`, {
                                 status: "Completed",
                               });
-                              toast.success("Order Approved & Keys Sent");
+                              toast.success("Đơn hàng đã duyệt & gửi key!");
                               loadOrders();
                             } catch (e) {
                               toast.error(
                                 e.response?.data?.message ||
-                                  "Failed to approve",
+                                  "Duyệt thất bại",
                               );
                             }
                           }
@@ -283,19 +285,19 @@ export default function OrdersTab({
                           gap: 4,
                         }}
                       >
-                        <Check size={14} /> Approve
+                        <Check size={14} /> Duyệt
                       </button>
                       <button
                         onClick={async () => {
-                          if (window.confirm("Cancel this order?")) {
+                          if (window.confirm("Hủy đơn hàng này?")) {
                             try {
                               await api.put(`/admin/orders/${o.id}/status`, {
                                 status: "Cancelled",
                               });
-                              toast.success("Order Cancelled");
+                              toast.success("Đã hủy đơn hàng!");
                               loadOrders();
                             } catch (e) {
-                              toast.error("Failed to cancel");
+                              toast.error("Hủy đơn thất bại");
                             }
                           }
                         }}
@@ -311,7 +313,7 @@ export default function OrdersTab({
                           gap: 4,
                         }}
                       >
-                        <XCircle size={14} /> Cancel
+                        <XCircle size={14} /> Hủy
                       </button>
                     </div>
                   )}
@@ -324,7 +326,7 @@ export default function OrdersTab({
                   colSpan="8"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  No orders found
+                  Không tìm thấy đơn hàng
                 </td>
               </tr>
             )}

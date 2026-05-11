@@ -28,25 +28,25 @@ export default function DashboardTab({
   const statCards = [
     {
       icon: Gamepad2,
-      label: "Total Games",
+      label: "Tổng game",
       value: stats.totalGames.toLocaleString(),
       color: "var(--accent)",
     },
     {
       icon: Users,
-      label: "Users",
+      label: "Người dùng",
       value: stats.totalUsers.toLocaleString(),
       color: "#00c853",
     },
     {
       icon: ShoppingBag,
-      label: "Orders",
+      label: "Đơn hàng",
       value: stats.totalOrders.toLocaleString(),
       color: "#ffc107",
     },
     {
       icon: DollarSign,
-      label: "Revenue",
+      label: "Doanh thu",
       value: `$${Number(stats.revenue).toLocaleString()}`,
       color: "#e94560",
     },
@@ -63,7 +63,7 @@ export default function DashboardTab({
         }}
       >
         <h1 style={{ fontSize: 20, fontWeight: 700, color: "#fff" }}>
-          Dashboard
+          Tổng quan
         </h1>
         <button
           onClick={loadDashboard}
@@ -80,7 +80,7 @@ export default function DashboardTab({
             gap: 6,
           }}
         >
-          <TrendingUp size={12} /> Refresh
+          <TrendingUp size={12} /> Làm mới
         </button>
       </div>
 
@@ -149,17 +149,17 @@ export default function DashboardTab({
                   marginBottom: 4,
                 }}
               >
-                Revenue ({new Date().getFullYear()})
+                Doanh thu ({new Date().getFullYear()})
               </h3>
               <p style={{ fontSize: 10, color: "#666" }}>
-                Total:{" "}
+                Tổng:{" "}
                 <span style={{ color: "#4caf50", fontWeight: 600 }}>
                   ${Number(stats.revenue).toLocaleString()}
                 </span>
               </p>
             </div>
             <div style={{ fontSize: 10, color: "#666" }}>
-              Peak:{" "}
+              Cao nhất:{" "}
               <span style={{ color: "#fff", fontWeight: 600 }}>
                 ${maxRevenue.toLocaleString()}
               </span>
@@ -212,8 +212,7 @@ export default function DashboardTab({
                     }}
                     className="bar-tooltip"
                   >
-                    ${item.value.toLocaleString()} • {item.count} order
-                    {item.count !== 1 ? "s" : ""}
+                    ${item.value.toLocaleString()} • {item.count} đơn
                   </div>
                   <div
                     style={{
@@ -306,7 +305,7 @@ export default function DashboardTab({
             }}
           >
             <h3 style={{ fontSize: 13, fontWeight: 600, color: "#fff" }}>
-              Recent Orders
+              Đơn hàng gần đây
             </h3>
             <button
               onClick={() => setActiveTab("orders")}
@@ -319,7 +318,7 @@ export default function DashboardTab({
                 fontWeight: 600,
               }}
             >
-              View all →
+              Xem tất cả →
             </button>
           </div>
           <div
@@ -363,7 +362,7 @@ export default function DashboardTab({
                   <span style={{ color: "#fff", fontWeight: 500 }}>
                     #{o.id}
                   </span>
-                  <span style={{ color: "#666" }}>User #{o.userId}</span>
+                  <span style={{ color: "#666" }}>NSD #{o.userId}</span>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                   <span style={{ color: "#888", fontSize: 10 }}>
@@ -389,7 +388,7 @@ export default function DashboardTab({
                   fontSize: 12,
                 }}
               >
-                No orders yet
+                Chưa có đơn hàng
               </p>
             )}
           </div>

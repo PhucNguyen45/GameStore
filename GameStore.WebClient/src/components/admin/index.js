@@ -6,7 +6,6 @@ export { default as UsersTab } from "./UsersTab";
 export { default as OrdersTab } from "./OrdersTab";
 export { default as CategoriesTab } from "./CategoriesTab";
 export { default as GameKeysTab } from "./GameKeysTab";
-export { default as PaymentsTab } from "./PaymentsTab";
 export { default as StaffRolesTab } from "./StaffRolesTab";
 export { default as GameFormModal } from "./GameFormModal";
 export { default as DeleteConfirmModal } from "./DeleteConfirmModal";

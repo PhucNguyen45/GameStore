@@ -92,19 +92,19 @@ export default function Pagination({
         <span>
           {totalItems > 0 ? (
             <>
-              Showing <strong style={{ color: "#fff" }}>{from}</strong>–
-              <strong style={{ color: "#fff" }}>{to}</strong> of{" "}
+              Hiển thị <strong style={{ color: "#fff" }}>{from}</strong>–
+              <strong style={{ color: "#fff" }}>{to}</strong> trong{" "}
               <strong style={{ color: "#fff" }}>{totalItems}</strong>
             </>
           ) : (
-            <>No records</>
+            <>Không có dữ liệu</>
           )}
         </span>
         {setPageSize && (
           <>
             <span style={{ color: "#444" }}>|</span>
             <label style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              Rows per page:
+              Hàng mỗi trang:
               <select
                 value={pageSize}
                 onChange={(e) => {
@@ -139,7 +139,7 @@ export default function Pagination({
           onClick={() => setPage(1)}
           disabled={page === 1}
           style={{ ...btnBase, ...(page === 1 ? disabledStyle : {}) }}
-          title="First page"
+          title="Trang đầu"
         >
           <ChevronsLeft size={14} />
         </button>
@@ -147,7 +147,7 @@ export default function Pagination({
           onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1}
           style={{ ...btnBase, ...(page === 1 ? disabledStyle : {}) }}
-          title="Previous page"
+          title="Trang trước"
         >
           <ChevronLeft size={14} />
         </button>
@@ -172,7 +172,7 @@ export default function Pagination({
           onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
           disabled={page === totalPages}
           style={{ ...btnBase, ...(page === totalPages ? disabledStyle : {}) }}
-          title="Next page"
+          title="Trang tiếp"
         >
           <ChevronRight size={14} />
         </button>
@@ -180,7 +180,7 @@ export default function Pagination({
           onClick={() => setPage(totalPages)}
           disabled={page === totalPages}
           style={{ ...btnBase, ...(page === totalPages ? disabledStyle : {}) }}
-          title="Last page"
+          title="Trang cuối"
         >
           <ChevronsRight size={14} />
         </button>

@@ -1,5 +1,6 @@
 // GameStore.WebClient/src/components/admin/StaffRolesTab.jsx
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import {
   Plus,
   Edit,
@@ -16,13 +17,13 @@ import { adminAPI } from "../../services/api";
 
 const ALL_PERMISSIONS = [
   {
-    group: "Games",
+    group: "Trò chơi",
     perms: ["games.view", "games.create", "games.edit", "games.delete"],
   },
-  { group: "Users", perms: ["users.view", "users.edit", "users.ban"] },
-  { group: "Orders", perms: ["orders.view", "orders.edit"] },
+  { group: "Người dùng", perms: ["users.view", "users.edit", "users.ban"] },
+  { group: "Đơn hàng", perms: ["orders.view", "orders.edit"] },
   {
-    group: "Categories",
+    group: "Danh mục",
     perms: [
       "categories.view",
       "categories.create",
@@ -31,15 +32,15 @@ const ALL_PERMISSIONS = [
     ],
   },
   {
-    group: "Game Keys",
+    group: "Mã game",
     perms: ["gamekeys.view", "gamekeys.create", "gamekeys.delete"],
   },
-  { group: "Payments", perms: ["payments.view", "payments.refund"] },
+  { group: "Thanh toán", perms: ["payments.view", "payments.refund"] },
   {
-    group: "Roles",
+    group: "Vai trò",
     perms: ["roles.view", "roles.create", "roles.edit", "roles.delete"],
   },
-  { group: "Staff", perms: ["staff.view", "staff.assign"] },
+  { group: "Nhân viên", perms: ["staff.view", "staff.assign"] },
 ];
 
 function RoleModal({ role, onClose, onSave }) {
@@ -76,9 +77,10 @@ function RoleModal({ role, onClose, onSave }) {
     try {
       if (role) await adminAPI.updateRole(role.id, form);
       else await adminAPI.createRole(form);
+      toast.success(role ? "Cập nhật vai trò thành công!" : "Tạo vai trò thành công!");
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -118,18 +120,18 @@ function RoleModal({ role, onClose, onSave }) {
             fontWeight: 700,
           }}
         >
-          {role ? "✏️ Edit Role" : "➕ New Role"}
+          {role ? "✏️ Chỉnh sửa vai trò" : "➕ Thêm vai trò"}
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
           <input
-            placeholder="Role Name *"
+            placeholder="Tên vai trò *"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             style={iStyle}
             required
           />
           <textarea
-            placeholder="Description"
+            placeholder="Mô tả"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             style={{ ...iStyle, minHeight: 50, resize: "vertical" }}
@@ -148,7 +150,7 @@ function RoleModal({ role, onClose, onSave }) {
               checked={form.isActive}
               onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
             />{" "}
-            Active
+            Đang hoạt động
           </label>
           <div>
             <p
@@ -160,7 +162,7 @@ function RoleModal({ role, onClose, onSave }) {
                 marginBottom: 8,
               }}
             >
-              Permissions
+              Quyền hạn
             </p>
             <div style={{ display: "grid", gap: 10 }}>
               {ALL_PERMISSIONS.map(({ group, perms }) => (
@@ -246,7 +248,7 @@ function RoleModal({ role, onClose, onSave }) {
                 cursor: "pointer",
               }}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -261,7 +263,7 @@ function RoleModal({ role, onClose, onSave }) {
                 fontWeight: 600,
               }}
             >
-              {saving ? "Saving..." : role ? "Update" : "Create"}
+              {saving ? "Đang lưu..." : role ? "Cập nhật" : "Tạo mới"}
             </button>
           </div>
         </form>
@@ -282,9 +284,10 @@ function AssignRoleModal({ onClose, onSave, roles }) {
         userId: parseInt(form.userId),
         roleId: parseInt(form.roleId),
       });
+      toast.success("Phân vai trò thành công!");
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -322,12 +325,12 @@ function AssignRoleModal({ onClose, onSave, roles }) {
             fontWeight: 700,
           }}
         >
-          👤 Assign Role
+          👤 Phân vai trò
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
           <input
             type="number"
-            placeholder="User ID *"
+            placeholder="ID người dùng *"
             value={form.userId}
             onChange={(e) => setForm({ ...form, userId: e.target.value })}
             style={iStyle}
@@ -339,7 +342,7 @@ function AssignRoleModal({ onClose, onSave, roles }) {
             style={iStyle}
             required
           >
-            <option value="">Select Role *</option>
+            <option value="">Chọn vai trò *</option>
             {roles.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.name}
@@ -359,7 +362,7 @@ function AssignRoleModal({ onClose, onSave, roles }) {
                 cursor: "pointer",
               }}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -374,7 +377,7 @@ function AssignRoleModal({ onClose, onSave, roles }) {
                 fontWeight: 600,
               }}
             >
-              {saving ? "Assigning..." : "Assign"}
+              {saving ? "Đang xử lý..." : "Phân quyền"}
             </button>
           </div>
         </form>
@@ -395,6 +398,7 @@ export default function StaffRolesTab() {
   const [roleSort, setRoleSort] = useState({ field: "name", dir: "asc" });
   const [showRoleModal, setShowRoleModal] = useState(false);
   const [editingRole, setEditingRole] = useState(null);
+  const [deleteRoleTarget, setDeleteRoleTarget] = useState(null);
 
   // Staff state
   const [staff, setStaff] = useState([]);
@@ -404,6 +408,7 @@ export default function StaffRolesTab() {
   const [staffSearch, setStaffSearch] = useState({ keyword: "", roleId: "" });
   const [staffSort, setStaffSort] = useState({ field: "username", dir: "asc" });
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [revokeTarget, setRevokeTarget] = useState(null);
 
   const loadRoles = async () => {
     try {
@@ -447,23 +452,27 @@ export default function StaffRolesTab() {
     return () => clearTimeout(t);
   }, [staffPage, staffPageSize, staffSearch]);
 
-  const handleDeleteRole = async (r) => {
-    if (!confirm(`Delete role "${r.name}"?`)) return;
+  const handleDeleteRole = async () => {
+    if (!deleteRoleTarget) return;
     try {
-      await adminAPI.deleteRole(r.id);
+      await adminAPI.deleteRole(deleteRoleTarget.id);
+      toast.success(`Đã xóa vai trò "${deleteRoleTarget.name}"!`);
+      setDeleteRoleTarget(null);
       loadRoles();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
-  const handleRevokeRole = async (userId, roleId, roleName) => {
-    if (!confirm(`Revoke role "${roleName}" from user #${userId}?`)) return;
+  const handleRevokeRole = async () => {
+    if (!revokeTarget) return;
     try {
-      await adminAPI.revokeRole({ userId, roleId });
+      await adminAPI.revokeRole({ userId: revokeTarget.userId, roleId: revokeTarget.roleId });
+      toast.success(`Đã thu hồi vai trò "${revokeTarget.roleName}"!`);
+      setRevokeTarget(null);
       loadStaff();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
@@ -477,8 +486,8 @@ export default function StaffRolesTab() {
       {/* Section switcher */}
       <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
         {[
-          { id: "roles", icon: Shield, label: "Roles & Permissions" },
-          { id: "staff", icon: UserPlus, label: "Staff Members" },
+          { id: "roles", icon: Shield, label: "Vai trò & Quyền hạn" },
+          { id: "staff", icon: UserPlus, label: "Nhân viên" },
         ].map(({ id, icon: Icon, label }) => (
           <button
             key={id}
@@ -514,7 +523,7 @@ export default function StaffRolesTab() {
             }}
           >
             <input
-              placeholder="Search roles..."
+              placeholder="Tìm vai trò..."
               value={roleSearch}
               onChange={(e) => setRoleSearch(e.target.value)}
               style={{ ...filterInputStyle, flex: 1, maxWidth: 220 }}
@@ -535,7 +544,7 @@ export default function StaffRolesTab() {
                   gap: 4,
                 }}
               >
-                <X size={12} /> Clear
+                <X size={12} /> Xóa lọc
               </button>
             )}
             <button
@@ -558,7 +567,7 @@ export default function StaffRolesTab() {
                 marginLeft: "auto",
               }}
             >
-              <Plus size={14} /> Add Role
+              <Plus size={14} /> Thêm vai trò
             </button>
           </div>
           <div
@@ -590,24 +599,24 @@ export default function StaffRolesTab() {
                     sort={roleSort}
                     setSort={setRoleSort}
                   >
-                    Name
+                    Tên
                   </SortableHeader>
                   <SortableHeader
                     field="description"
                     sort={roleSort}
                     setSort={setRoleSort}
                   >
-                    Description
+                    Mô tả
                   </SortableHeader>
                   <SortableHeader
                     field="userCount"
                     sort={roleSort}
                     setSort={setRoleSort}
                   >
-                    Users
+                    Số người dùng
                   </SortableHeader>
-                  <th style={{ ...thStyle, cursor: "default" }}>Permissions</th>
-                  <th style={{ ...thStyle, cursor: "default" }}>Status</th>
+                  <th style={{ ...thStyle, cursor: "default" }}>Quyền hạn</th>
+                  <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
                   <th style={{ ...thStyle, cursor: "default" }}></th>
                 </tr>
               </thead>
@@ -690,7 +699,7 @@ export default function StaffRolesTab() {
                             fontSize: 11,
                           }}
                         >
-                          {r.isActive ? "Active" : "Inactive"}
+                          {r.isActive ? "Hoạt động" : "Không hoạt động"}
                         </span>
                       </span>
                     </td>
@@ -714,7 +723,7 @@ export default function StaffRolesTab() {
                       </button>
                       {r.name !== "Admin" && r.name !== "User" && (
                         <button
-                          onClick={() => handleDeleteRole(r)}
+                          onClick={() => setDeleteRoleTarget(r)}
                           style={{
                             padding: "4px 7px",
                             background: "#1a1a2e",
@@ -739,7 +748,7 @@ export default function StaffRolesTab() {
                         color: "#666",
                       }}
                     >
-                      No roles found
+                      Không tìm thấy vai trò
                     </td>
                   </tr>
                 )}
@@ -769,7 +778,7 @@ export default function StaffRolesTab() {
             }}
           >
             <input
-              placeholder="Search username, name, email..."
+              placeholder="Tìm tên đăng nhập, tên, email..."
               value={staffSearch.keyword}
               onChange={(e) =>
                 setStaffSearch({ ...staffSearch, keyword: e.target.value })
@@ -783,7 +792,7 @@ export default function StaffRolesTab() {
               }
               style={filterInputStyle}
             >
-              <option value="">All Roles</option>
+              <option value="">Tất cả vai trò</option>
               {roles.map((r) => (
                 <option key={r.id} value={r.id}>
                   {r.name}
@@ -806,7 +815,7 @@ export default function StaffRolesTab() {
                   gap: 4,
                 }}
               >
-                <X size={12} /> Clear
+                <X size={12} /> Xóa lọc
               </button>
             )}
             <button
@@ -826,7 +835,7 @@ export default function StaffRolesTab() {
                 marginLeft: "auto",
               }}
             >
-              <UserPlus size={14} /> Assign Role
+              <UserPlus size={14} /> Phân vai trò
             </button>
           </div>
           <div
@@ -858,14 +867,14 @@ export default function StaffRolesTab() {
                     sort={staffSort}
                     setSort={setStaffSort}
                   >
-                    Username
+                    Tên đăng nhập
                   </SortableHeader>
                   <SortableHeader
                     field="displayName"
                     sort={staffSort}
                     setSort={setStaffSort}
                   >
-                    Name
+                    Tên hiển thị
                   </SortableHeader>
                   <SortableHeader
                     field="email"
@@ -874,8 +883,8 @@ export default function StaffRolesTab() {
                   >
                     Email
                   </SortableHeader>
-                  <th style={{ ...thStyle, cursor: "default" }}>Roles</th>
-                  <th style={{ ...thStyle, cursor: "default" }}>Status</th>
+                  <th style={{ ...thStyle, cursor: "default" }}>Vai trò</th>
+                  <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
                   <th style={{ ...thStyle, cursor: "default" }}></th>
                 </tr>
               </thead>
@@ -926,7 +935,7 @@ export default function StaffRolesTab() {
                             {r.roleName}
                             <button
                               onClick={() =>
-                                handleRevokeRole(u.id, r.roleId, r.roleName)
+                                setRevokeTarget({ userId: u.id, roleId: r.roleId, roleName: r.roleName })
                               }
                               style={{
                                 background: "none",
@@ -942,7 +951,7 @@ export default function StaffRolesTab() {
                         ))}
                         {(u.roles || []).length === 0 && (
                           <span style={{ color: "#555", fontSize: 10 }}>
-                            No roles
+                            Không có vai trò
                           </span>
                         )}
                       </div>
@@ -969,7 +978,7 @@ export default function StaffRolesTab() {
                             fontSize: 11,
                           }}
                         >
-                          {u.isActive ? "Active" : "Banned"}
+                          {u.isActive ? "Hoạt động" : "Bị khóa"}
                         </span>
                       </span>
                     </td>
@@ -983,7 +992,7 @@ export default function StaffRolesTab() {
                           borderRadius: 4,
                           cursor: "pointer",
                         }}
-                        title="Assign Role"
+                        title="Phân vai trò"
                       >
                         <UserPlus size={11} color="#4caf50" />
                       </button>
@@ -1000,7 +1009,7 @@ export default function StaffRolesTab() {
                         color: "#666",
                       }}
                     >
-                      No staff found
+                      Không tìm thấy nhân viên
                     </td>
                   </tr>
                 )}
@@ -1042,6 +1051,36 @@ export default function StaffRolesTab() {
             loadStaff();
           }}
         />
+      )}
+      {deleteRoleTarget && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 360, textAlign: "center", border: "1px solid #e94560" }} onClick={(e) => e.stopPropagation()}>
+            <Trash2 size={36} color="#e94560" style={{ marginBottom: 10 }} />
+            <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>Xóa vai trò?</h3>
+            <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
+              Bạn có chắc muốn xóa vai trò <strong style={{ color: "#fff" }}>"{deleteRoleTarget.name}"</strong>?
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button onClick={() => setDeleteRoleTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>Hủy</button>
+              <button onClick={handleDeleteRole} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>Xóa</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {revokeTarget && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 360, textAlign: "center", border: "1px solid #ff9800" }} onClick={(e) => e.stopPropagation()}>
+            <UserMinus size={36} color="#ff9800" style={{ marginBottom: 10 }} />
+            <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>Thu hồi vai trò?</h3>
+            <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
+              Xóa vai trò <strong style={{ color: "#fff" }}>"{revokeTarget.roleName}"</strong> khỏi người dùng #{revokeTarget.userId}?
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button onClick={() => setRevokeTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>Hủy</button>
+              <button onClick={handleRevokeRole} style={{ padding: "8px 20px", background: "#ff9800", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>Thu hồi</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

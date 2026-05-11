@@ -1,5 +1,6 @@
 // GameStore.WebClient/src/components/admin/GameFormModal.jsx
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { gameAPI } from "../../services/api";
 import { inputStyle } from "./adminStyles";
 
@@ -50,9 +51,10 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
       };
       if (game) await gameAPI.update(game.id, data);
       else await gameAPI.create(data);
+      toast.success(game ? "Cập nhật game thành công!" : "Tạo game thành công!");
       onSave();
     } catch (err) {
-      alert("Failed to save: " + (err.response?.data?.message || err.message));
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -91,14 +93,14 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             fontWeight: 700,
           }}
         >
-          {game ? "✏️ Edit Game" : "➕ Add New Game"}
+          {game ? "✏️ Chỉnh sửa game" : "➕ Thêm game mới"}
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
           <div
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
           >
             <input
-              placeholder="Title *"
+              placeholder="Tên game *"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               style={inputStyle}
@@ -107,7 +109,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             <input
               type="number"
               step="0.01"
-              placeholder="Price *"
+              placeholder="Giá *"
               value={form.price}
               onChange={(e) => setForm({ ...form, price: e.target.value })}
               style={inputStyle}
@@ -116,7 +118,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             <input
               type="number"
               step="0.01"
-              placeholder="Discount Price"
+              placeholder="Giá giảm"
               value={form.discountPrice}
               onChange={(e) =>
                 setForm({ ...form, discountPrice: e.target.value })
@@ -133,20 +135,20 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               style={inputStyle}
             />
             <input
-              placeholder="Developer"
+              placeholder="Nhà phát triển"
               value={form.developer}
               onChange={(e) => setForm({ ...form, developer: e.target.value })}
               style={inputStyle}
             />
             <input
-              placeholder="Publisher"
+              placeholder="Nhà phát hành"
               value={form.publisher}
               onChange={(e) => setForm({ ...form, publisher: e.target.value })}
               style={inputStyle}
             />
           </div>
           <textarea
-            placeholder="Description"
+            placeholder="Mô tả"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             style={{ ...inputStyle, minHeight: 80, resize: "vertical" }}
@@ -155,7 +157,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}
           >
             <input
-              placeholder="Cover Image URL"
+              placeholder="URL ảnh bìa"
               value={form.coverImageUrl}
               onChange={(e) =>
                 setForm({ ...form, coverImageUrl: e.target.value })
@@ -163,7 +165,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               style={inputStyle}
             />
             <input
-              placeholder="Trailer URL"
+              placeholder="URL trailer"
               value={form.trailerUrl}
               onChange={(e) => setForm({ ...form, trailerUrl: e.target.value })}
               style={inputStyle}
@@ -177,7 +179,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             }}
           >
             <legend style={{ color: "#888", fontSize: 12, padding: "0 8px" }}>
-              System Requirements
+              Cấu hình yêu cầu
             </legend>
             <div
               style={{
@@ -187,7 +189,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               }}
             >
               <input
-                placeholder="OS"
+                placeholder="Hệ điều hành"
                 value={form.minimumOS}
                 onChange={(e) =>
                   setForm({ ...form, minimumOS: e.target.value })
@@ -195,7 +197,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 style={inputStyle}
               />
               <input
-                placeholder="Processor"
+                placeholder="Bộ xử lý"
                 value={form.minimumProcessor}
                 onChange={(e) =>
                   setForm({ ...form, minimumProcessor: e.target.value })
@@ -203,7 +205,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 style={inputStyle}
               />
               <input
-                placeholder="Memory"
+                placeholder="RAM"
                 value={form.minimumMemory}
                 onChange={(e) =>
                   setForm({ ...form, minimumMemory: e.target.value })
@@ -211,7 +213,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 style={inputStyle}
               />
               <input
-                placeholder="Graphics"
+                placeholder="Card đồ họa"
                 value={form.minimumGraphics}
                 onChange={(e) =>
                   setForm({ ...form, minimumGraphics: e.target.value })
@@ -219,7 +221,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 style={inputStyle}
               />
               <input
-                placeholder="Storage"
+                placeholder="Ổ cứng"
                 value={form.minimumStorage}
                 onChange={(e) =>
                   setForm({ ...form, minimumStorage: e.target.value })
@@ -236,7 +238,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             }}
           >
             <legend style={{ color: "#888", fontSize: 12, padding: "0 8px" }}>
-              Categories (Genres)
+              Danh mục (Thể loại)
             </legend>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
               {genres &&
@@ -283,7 +285,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 cursor: "pointer",
               }}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -298,7 +300,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                 fontWeight: 600,
               }}
             >
-              {saving ? "Saving..." : game ? "Update" : "Create"}
+              {saving ? "Đang lưu..." : game ? "Cập nhật" : "Tạo mới"}
             </button>
           </div>
         </form>

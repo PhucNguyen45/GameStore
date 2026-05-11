@@ -1,5 +1,6 @@
 // GameStore.WebClient/src/components/admin/CategoriesTab.jsx
 import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import { Plus, Edit, Trash2, X, Tag } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "./Pagination";
@@ -21,9 +22,10 @@ function CategoryModal({ category, onClose, onSave }) {
     try {
       if (category) await adminAPI.updateCategory(category.id, form);
       else await adminAPI.createCategory(form);
+      toast.success(category ? "Cập nhật danh mục thành công!" : "Tạo danh mục thành công!");
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setSaving(false);
     }
@@ -61,24 +63,24 @@ function CategoryModal({ category, onClose, onSave }) {
             fontWeight: 700,
           }}
         >
-          {category ? "✏️ Edit Category" : "➕ New Category"}
+          {category ? "✏️ Chỉnh sửa danh mục" : "➕ Thêm danh mục"}
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
           <input
-            placeholder="Name *"
+            placeholder="Tên *"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             style={iStyle}
             required
           />
           <textarea
-            placeholder="Description"
+            placeholder="Mô tả"
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             style={{ ...iStyle, minHeight: 60, resize: "vertical" }}
           />
           <input
-            placeholder="Icon URL (optional)"
+            placeholder="URL icon (tùy chọn)"
             value={form.iconUrl}
             onChange={(e) => setForm({ ...form, iconUrl: e.target.value })}
             style={iStyle}
@@ -97,7 +99,7 @@ function CategoryModal({ category, onClose, onSave }) {
               checked={form.isActive}
               onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
             />
-            Active
+            Đang hoạt động
           </label>
           <div
             style={{
@@ -119,7 +121,7 @@ function CategoryModal({ category, onClose, onSave }) {
                 cursor: "pointer",
               }}
             >
-              Cancel
+              Hủy
             </button>
             <button
               type="submit"
@@ -134,7 +136,7 @@ function CategoryModal({ category, onClose, onSave }) {
                 fontWeight: 600,
               }}
             >
-              {saving ? "Saving..." : category ? "Update" : "Create"}
+              {saving ? "Đang lưu..." : category ? "Cập nhật" : "Tạo mới"}
             </button>
           </div>
         </form>
@@ -152,6 +154,7 @@ export default function CategoriesTab() {
   const [sort, setSort] = useState({ field: "name", dir: "asc" });
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   const load = async () => {
     try {
@@ -175,13 +178,15 @@ export default function CategoriesTab() {
     return () => clearTimeout(t);
   }, [page, pageSize, search]);
 
-  const handleDelete = async (cat) => {
-    if (!confirm(`Delete category "${cat.name}"?`)) return;
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await adminAPI.deleteCategory(cat.id);
+      await adminAPI.deleteCategory(deleteTarget.id);
+      toast.success(`Đã xóa danh mục "${deleteTarget.name}"!`);
+      setDeleteTarget(null);
       load();
     } catch (err) {
-      alert(err.response?.data?.message || err.message);
+      toast.error(err.response?.data?.message || err.message);
     }
   };
 
@@ -204,9 +209,9 @@ export default function CategoriesTab() {
           onChange={(e) => setSearch({ ...search, status: e.target.value })}
           style={filterInputStyle}
         >
-          <option value="">All Status</option>
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
+          <option value="">Tất cả trạng thái</option>
+          <option value="active">Hoạt động</option>
+          <option value="inactive">Không hoạt động</option>
         </select>
         {(search.keyword || search.status) && (
           <button
@@ -224,7 +229,7 @@ export default function CategoriesTab() {
               gap: 4,
             }}
           >
-            <X size={12} /> Clear
+            <X size={12} /> Xóa lọc
           </button>
         )}
         <button
@@ -247,7 +252,7 @@ export default function CategoriesTab() {
             marginLeft: "auto",
           }}
         >
-          <Plus size={14} /> Add Category
+          <Plus size={14} /> Thêm danh mục
         </button>
       </div>
       <div
@@ -338,7 +343,7 @@ export default function CategoriesTab() {
                         fontSize: 11,
                       }}
                     >
-                      {cat.isActive ? "Active" : "Inactive"}
+                      {cat.isActive ? "Hoạt động" : "Không hoạt động"}
                     </span>
                   </span>
                 </td>
@@ -359,7 +364,7 @@ export default function CategoriesTab() {
                     <Edit size={11} color="#0078f2" />
                   </button>
                   <button
-                    onClick={() => handleDelete(cat)}
+                    onClick={() => setDeleteTarget(cat)}
                     style={{
                       padding: "4px 7px",
                       background: "#1a1a2e",
@@ -379,7 +384,7 @@ export default function CategoriesTab() {
                   colSpan="6"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  No categories found
+                  Không tìm thấy danh mục
                 </td>
               </tr>
             )}
@@ -407,6 +412,21 @@ export default function CategoriesTab() {
             load();
           }}
         />
+      )}
+      {deleteTarget && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
+          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 360, textAlign: "center", border: "1px solid #e94560" }} onClick={(e) => e.stopPropagation()}>
+            <Trash2 size={36} color="#e94560" style={{ marginBottom: 10 }} />
+            <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>Xóa danh mục?</h3>
+            <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
+              Bạn có chắc muốn xóa <strong style={{ color: "#fff" }}>"{deleteTarget.name}"</strong>?
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button onClick={() => setDeleteTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>Hủy</button>
+              <button onClick={handleDelete} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>Xóa</button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

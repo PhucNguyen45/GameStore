@@ -1,5 +1,6 @@
 // GameStore.WebClient/src/components/admin/DeleteConfirmModal.jsx
 import { useState } from "react";
+import toast from "react-hot-toast";
 import { Trash2 } from "lucide-react";
 import { gameAPI } from "../../services/api";
 
@@ -9,11 +10,10 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
     setDeleting(true);
     try {
       await gameAPI.delete(game.id);
+      toast.success(`Đã xóa game "${game.title}"!`);
       onConfirm();
     } catch (err) {
-      alert(
-        "Failed to delete: " + (err.response?.data?.message || err.message),
-      );
+      toast.error(err.response?.data?.message || err.message);
     } finally {
       setDeleting(false);
     }
@@ -43,9 +43,9 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
         onClick={(e) => e.stopPropagation()}
       >
         <Trash2 size={40} color="#e94560" style={{ marginBottom: 12 }} />
-        <h3 style={{ color: "#fff", marginBottom: 8 }}>Delete Game?</h3>
+        <h3 style={{ color: "#fff", marginBottom: 8 }}>Xóa game?</h3>
         <p style={{ color: "#888", fontSize: 14, marginBottom: 20 }}>
-          Are you sure you want to delete{" "}
+          Bạn có chắc muốn xóa{" "}
           <strong style={{ color: "#fff" }}>"{game.title}"</strong>?
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
@@ -60,7 +60,7 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
               cursor: "pointer",
             }}
           >
-            Cancel
+            Hủy
           </button>
           <button
             onClick={handleDelete}
@@ -75,7 +75,7 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
               fontWeight: 600,
             }}
           >
-            {deleting ? "Deleting..." : "Delete"}
+            {deleting ? "Đang xóa..." : "Xóa"}
           </button>
         </div>
       </div>
