@@ -526,7 +526,10 @@ public class AdminService : IAdminService
                 r.IsActive,
                 r.Created,
                 userCount = _context.UserRoles.Count(ur => ur.RoleId == r.Id && !ur.IsDeleted),
-                permissions = r.RolePermissions.Select(rp => rp.Permission).ToList()
+                permissions = _context.RolePermissions
+                    .Where(rp => rp.RoleId == r.Id)
+                    .Select(rp => rp.Permission)
+                    .ToList()
             }).ToListAsync();
 
         return new { data, totalCount };
@@ -631,6 +634,8 @@ public class AdminService : IAdminService
     {
         var user = await _context.Users.FindAsync(dto.UserId) ?? throw new Exception("User not found");
         var role = await _context.Roles.FindAsync(dto.RoleId) ?? throw new Exception("Role not found");
+        if (role.Name == "User")
+            throw new Exception("Không thể gán role 'User' qua chức năng quản lý nhân viên");
 
         var existing = await _context.UserRoles.FirstOrDefaultAsync(ur => ur.UserId == dto.UserId && ur.RoleId == dto.RoleId);
         if (existing != null)

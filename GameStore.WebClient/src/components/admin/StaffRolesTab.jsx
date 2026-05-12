@@ -361,7 +361,7 @@ function AssignRoleModal({ onClose, onSave, roles, presetUser }) {
             required
           >
             <option value="">Chọn vai trò *</option>
-            {roles.map((r) => (
+            {roles.filter((r) => r.name !== "User").map((r) => (
               <option key={r.id} value={r.id}>
                 {r.name}
               </option>
@@ -437,7 +437,8 @@ export default function StaffRolesTab() {
       const res = await adminAPI.getRoles(params);
       setRoles(res.data.data || []);
       setRolesTotal(res.data.totalCount || 0);
-    } catch {
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Không thể tải danh sách vai trò");
       setRoles([]);
       setRolesTotal(0);
     }
@@ -452,7 +453,8 @@ export default function StaffRolesTab() {
       const res = await adminAPI.getStaff(params);
       setStaff(res.data.data || []);
       setStaffTotal(res.data.totalCount || 0);
-    } catch {
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Không thể tải danh sách nhân viên");
       setStaff([]);
       setStaffTotal(0);
     }
@@ -983,7 +985,7 @@ export default function StaffRolesTab() {
                             {r.roleName}
                             <button
                               onClick={() =>
-                                setRevokeTarget({ userId: u.id, roleId: r.roleId, roleName: r.roleName })
+                                setRevokeTarget({ userId: u.id, username: u.username, roleId: r.roleId, roleName: r.roleName })
                               }
                               style={{
                                 background: "none",
@@ -1122,7 +1124,9 @@ export default function StaffRolesTab() {
             <UserMinus size={36} color="#ff9800" style={{ marginBottom: 10 }} />
             <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>Thu hồi vai trò?</h3>
             <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
-              Xóa vai trò <strong style={{ color: "#fff" }}>"{revokeTarget.roleName}"</strong> khỏi người dùng #{revokeTarget.userId}?
+              Xóa vai trò <strong style={{ color: "#fff" }}>"{revokeTarget.roleName}"</strong> khỏi{" "}
+              <strong style={{ color: "#fff" }}>{revokeTarget.username}</strong>{" "}
+              <span style={{ color: "#555" }}>#{revokeTarget.userId}</span>?
             </p>
             <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
               <button onClick={() => setRevokeTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>Hủy</button>

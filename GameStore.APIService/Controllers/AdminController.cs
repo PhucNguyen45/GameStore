@@ -226,7 +226,7 @@ public class AdminController : ControllerBase
         return Ok(new { message = "Role assigned" });
     }
 
-    [HttpDelete("staff/revoke")]
+    [HttpPost("staff/revoke")]
     public async Task<IActionResult> RevokeRole([FromBody] AssignRoleDto dto)
     {
         await _adminService.RevokeRoleAsync(dto);

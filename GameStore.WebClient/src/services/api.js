@@ -102,7 +102,7 @@ export const adminAPI = {
   // Staff
   getStaff: (p) => api.get("/admin/staff", { params: p }),
   assignRole: (d) => api.post("/admin/staff/assign", d),
-  revokeRole: (d) => api.delete("/admin/staff/revoke", { data: d }),
+  revokeRole: (d) => api.post("/admin/staff/revoke", d),
   // Permissions
   getPermissions: () => api.get("/admin/permissions"),
 };
