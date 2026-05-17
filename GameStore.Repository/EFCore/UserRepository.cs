@@ -42,4 +42,37 @@ public class UserRepository : Repository<User>, IUserRepository
 
     public async Task<bool> IsEmailExists(string email) =>
         await _dbSet.AnyAsync(u => u.Email == email);
+
+    // ADMIN
+    public async Task<(List<User> Users, int TotalCount)> AdminSearchAsync(
+    string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
+    string? sortBy, bool desc, int page, int pageSize)
+    {
+        var query = _dbSet.AsQueryable();
+
+        if (!string.IsNullOrEmpty(keyword))
+            query = query.Where(u => u.Username.Contains(keyword) || u.DisplayName.Contains(keyword) || u.Email.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(u => u.IsActive == isActive.Value);
+        if (fromDate.HasValue)
+            query = query.Where(u => u.CreatedAt >= fromDate.Value);
+        if (toDate.HasValue)
+            query = query.Where(u => u.CreatedAt <= toDate.Value.AddDays(1));
+
+        int totalCount = await query.CountAsync();
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(u => u.Id) : query.OrderBy(u => u.Id),
+            "username" => desc ? query.OrderByDescending(u => u.Username) : query.OrderBy(u => u.Username),
+            "displayname" => desc ? query.OrderByDescending(u => u.DisplayName) : query.OrderBy(u => u.DisplayName),
+            "email" => desc ? query.OrderByDescending(u => u.Email) : query.OrderBy(u => u.Email),
+            "wallet" => desc ? query.OrderByDescending(u => u.Wallet) : query.OrderBy(u => u.Wallet),
+            "createdat" => desc ? query.OrderByDescending(u => u.CreatedAt) : query.OrderBy(u => u.CreatedAt),
+            _ => query.OrderByDescending(u => u.CreatedAt)
+        };
+
+        var users = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        return (users, totalCount);
+    }
 }

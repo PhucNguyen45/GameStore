@@ -141,7 +141,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
           </div>
 
           <div>
-            <label style={labelStyle}>Số dư ví ($)</label>
+            <label style={labelStyle}>Số dư ví (VND)</label>
             <input
               type="number"
               step="0.01"

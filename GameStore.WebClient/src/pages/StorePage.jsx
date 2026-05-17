@@ -107,7 +107,7 @@ export default function StorePage() {
           className="btn-primary"
           style={{ padding: "14px 28px" }}
         >
-          Search
+          Tìm kiếm
         </button>
         <button
           type="button"
@@ -120,7 +120,7 @@ export default function StorePage() {
             gap: 6,
           }}
         >
-          <SlidersHorizontal size={18} /> Filters
+          <SlidersHorizontal size={18} /> Bộ lọc
         </button>
       </form>
 
@@ -146,7 +146,7 @@ export default function StorePage() {
             }}
             style={selectStyle}
           >
-            <option value="">All Genres</option>
+            <option value="">Mọi thể loại</option>
             {genres.map((g) => (
               <option key={g.id} value={g.id}>
                 {g.name}
@@ -157,7 +157,7 @@ export default function StorePage() {
           {/* price input */}
           <input
             type="number"
-            placeholder="Max Price $"
+            placeholder="Max Price VND"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             style={{ ...selectStyle, width: 120 }}
@@ -179,11 +179,11 @@ export default function StorePage() {
             }}
             style={selectStyle}
           >
-            <option value="totalSales">Best Selling</option>
-            <option value="rating">Highest Rated</option>
-            <option value="price">Price: Low to High</option>
-            <option value="releaseDate">Newest</option>
-            <option value="title">Name: A-Z</option>
+            <option value="totalSales">Bán chạy nhất</option>
+            <option value="rating">Đánh giá cao nhất</option>
+            <option value="price">Giá: Thấp tới Cao</option>
+            <option value="releaseDate">Mới nhất</option>
+            <option value="title">Tên từ: A-Z</option>
           </select>
 
           <button
@@ -224,7 +224,7 @@ export default function StorePage() {
               fontWeight: 600,
             }}
           >
-            <X size={14} /> Clear All
+            <X size={14} /> Bỏ lọc
           </button>
 
           {/* apply all button */}
@@ -233,7 +233,7 @@ export default function StorePage() {
             className="btn-primary"
             style={{ padding: "8px 16px", fontSize: 13 }}
           >
-            Apply Filters
+            Áp dụng lọc
           </button>
         </div>
       )}
@@ -241,11 +241,11 @@ export default function StorePage() {
       {/* Results */}
       {loading ? (
         <p style={{ textAlign: "center", color: "#6b6b8e", padding: 40 }}>
-          Loading games...
+          Đang tải game...
         </p>
       ) : games.length === 0 ? (
         <p style={{ textAlign: "center", color: "#6b6b8e", padding: 40 }}>
-          No games found.
+          Không tìm thấy game.
         </p>
       ) : (
         <>
@@ -277,7 +277,7 @@ export default function StorePage() {
                 disabled={page === 1}
                 style={pageBtnStyle}
               >
-                ← Prev
+                ← Trước
               </button>
               {[...Array(totalPages)].map((_, i) => (
                 <button
@@ -297,7 +297,7 @@ export default function StorePage() {
                 disabled={page === totalPages}
                 style={pageBtnStyle}
               >
-                Next →
+                Sau →
               </button>
             </div>
           )}

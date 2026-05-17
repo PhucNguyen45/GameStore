@@ -1,58 +1,49 @@
 // GameStore.Services/OrderService.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using GameStore.Entities.Store;
 using GameStore.Entities.Games;
 using GameStore.Repository.EFCore;
 using GameStore.DTOs.Orders;
-using GameStore.Services;
 
 namespace GameStore.Services;
 
 public class OrderService : IOrderService
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IGameRepository _gameRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly GameStore.Repository.GameStoreDbContext _context;
-    private readonly INotificationService _notificationService;
+    private readonly IOrderRepository _orderRepo;
+    private readonly IGameRepository _gameRepo;
+    private readonly IUserRepository _userRepo;
+    private readonly IGameKeyRepository _gameKeyRepo;
+    private readonly INotificationRepository _notiRepo;
+    private readonly ILibraryRepository _libraryRepo;
+    private readonly GameStore.Repository.GameStoreDbContext _context; // chỉ dùng cho transaction
 
-    public OrderService(IOrderRepository orderRepository, IGameRepository gameRepository, IUserRepository userRepository, GameStore.Repository.GameStoreDbContext context,
-    INotificationService notificationService)
+    public OrderService(
+        IOrderRepository orderRepo,
+        IGameRepository gameRepo,
+        IUserRepository userRepo,
+        IGameKeyRepository gameKeyRepo,
+        INotificationRepository notiRepo,
+        ILibraryRepository libraryRepo,
+        GameStore.Repository.GameStoreDbContext context)
     {
-        _orderRepository = orderRepository;
-        _gameRepository = gameRepository;
-        _userRepository = userRepository;
+        _orderRepo = orderRepo;
+        _gameRepo = gameRepo;
+        _userRepo = userRepo;
+        _gameKeyRepo = gameKeyRepo;
+        _notiRepo = notiRepo;
+        _libraryRepo = libraryRepo;
         _context = context;
-        _notificationService = notificationService;
     }
 
     public async Task<Order?> GetById(int id) =>
-        await _context.Orders
-            .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.Game)
-            .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.GameKeys)
-            .FirstOrDefaultAsync(o => o.Id == id);
+        await _orderRepo.GetOrderWithDetailsAsync(id);
 
     public async Task<List<Order>> GetByUser(int userId) =>
-        await _orderRepository.GetByUserAsync(userId);
-
-    public async Task<List<Order>> GetAll(int page, int pageSize) =>
-        (await _orderRepository.GetAllAsync()).ToList();
+        await _orderRepo.GetByUserWithDetailsAsync(userId);
 
     public async Task<List<OrderHistoryDto>> GetOrderHistoryAsync(int userId)
     {
-        var orders = await _context.Orders
-            .Where(o => o.UserId == userId)
-            .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Game)
-            .OrderByDescending(o => o.OrderDate)
-            .ToListAsync();
-
+        var orders = await _orderRepo.GetByUserWithDetailsAsync(userId);
         return orders.Select(o => new OrderHistoryDto
         {
             Id = o.Id,
@@ -70,143 +61,180 @@ public class OrderService : IOrderService
         }).ToList();
     }
 
-    public async Task<(List<Order> Items, int TotalCount)> SearchOrders(int page, int pageSize, string? keyword, DateTime? fromDate, DateTime? toDate, string? status)
+    public async Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items,
+        string paymentMethod = "Wallet", string? email = null, string? phone = null)
     {
-        var query = _context.Orders.Include(o => o.User).AsQueryable();
-
-        if (!string.IsNullOrEmpty(keyword))
-        {
-            var isNumeric = int.TryParse(keyword, out int orderId);
-            query = query.Where(o => o.User.Username.Contains(keyword) || (isNumeric && o.Id == orderId));
-        }
-        if (fromDate.HasValue) query = query.Where(o => o.OrderDate >= fromDate.Value);
-        if (toDate.HasValue) query = query.Where(o => o.OrderDate <= toDate.Value);
-        if (!string.IsNullOrEmpty(status)) query = query.Where(o => o.Status == status);
-
-        int totalCount = await query.CountAsync();
-        var items = await query.OrderByDescending(o => o.OrderDate)
-                               .Skip((page - 1) * pageSize)
-                               .Take(pageSize)
-                               .ToListAsync();
-        return (items, totalCount);
-    }
-
-    public async Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items, string paymentMethod = "Wallet", string? email = null, string? phone = null)
-    {
-        // Ép buộc chỉ dùng Wallet
         if (!paymentMethod.Equals("Wallet", StringComparison.OrdinalIgnoreCase))
             throw new Exception("Only Wallet payment method is accepted.");
 
-        decimal totalAmount = 0;
-        var orderDetails = new List<OrderDetail>();
-        var user = await _userRepository.GetByIdAsync(userId);
-
-        // Kiểm tra số lượng key có sẵn
-        foreach (var (gameId, quantity) in items)
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            var game = await _gameRepository.GetByIdAsync(gameId)
-                       ?? throw new Exception($"Game {gameId} not found");
+            decimal totalAmount = 0;
+            var orderDetails = new List<OrderDetail>();
+            var user = await _userRepo.GetByIdAsync(userId)
+                       ?? throw new Exception("User not found");
 
-            int availableKeys = await _context.GameKeys
-                .CountAsync(k => k.GameId == gameId && !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
-            if (availableKeys < quantity)
-                throw new Exception($"Not enough keys for '{game.Title}'. Available: {availableKeys}");
-
-            var price = game.DiscountPrice ?? game.Price;
-            totalAmount += price * quantity;
-            orderDetails.Add(new OrderDetail
+            foreach (var (gameId, quantity) in items)
             {
-                GameId = gameId,
-                Quantity = quantity,
-                UnitPrice = price
-            });
+                var game = await _gameRepo.GetByIdAsync(gameId)
+                           ?? throw new Exception($"Game {gameId} not found");
+
+                var availableKeys = await _gameKeyRepo.GetAvailableKeysAsync(gameId, quantity);
+                if (availableKeys.Count < quantity)
+                    throw new Exception($"Not enough keys for '{game.Title}'. Available: {availableKeys.Count}");
+
+                var price = game.DiscountPrice ?? game.Price;
+                totalAmount += price * quantity;
+                orderDetails.Add(new OrderDetail
+                {
+                    GameId = gameId,
+                    Quantity = quantity,
+                    UnitPrice = price
+                });
+            }
+
+            if (user.Wallet < totalAmount)
+                throw new Exception("Insufficient wallet balance");
+
+            user.Wallet -= totalAmount;
+            await _userRepo.UpdateAsync(user);
+
+            var order = new Order
+            {
+                UserId = userId,
+                TotalAmount = totalAmount,
+                Status = "Pending",
+                PaymentMethod = "Wallet",
+                Email = email,
+                Phone = phone,
+                OrderDate = DateTime.UtcNow,
+                OrderDetails = orderDetails
+            };
+            await _orderRepo.AddAsync(order);
+
+            await transaction.CommitAsync();
+            return order;
         }
-
-        // Kiểm tra số dư
-        if (user == null || user.Wallet < totalAmount)
-            throw new Exception("Insufficient wallet balance");
-
-        // Trừ tiền
-        user.Wallet -= totalAmount;
-        _context.Users.Update(user);
-
-        // Tạo order
-        var order = new Order
+        catch
         {
-            UserId = userId,
-            TotalAmount = totalAmount,
-            Status = "Pending",
-            PaymentMethod = "Wallet",
-            Email = email,
-            Phone = phone,
-            OrderDate = DateTime.UtcNow,
-            OrderDetails = orderDetails
-        };
-        _context.Orders.Add(order);
-
-        // Lưu tất cả
-        await _context.SaveChangesAsync();
-        return order;
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<Order> UpdateStatus(int orderId, string status)
     {
-        var order = await _context.Orders
-            .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.Game)
-            .FirstOrDefaultAsync(o => o.Id == orderId) ?? throw new Exception("Order not found");
-
-        if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase) && order.Status != "Completed")
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            // Gán key cho từng game
-            foreach (var detail in order.OrderDetails)
+            var order = await _orderRepo.GetOrderWithDetailsAsync(orderId)
+                        ?? throw new Exception("Order not found");
+
+            // Chặn chuyển sang trạng thái không hợp lệ
+            if (order.Status == "Completed")
+                throw new Exception("Cannot change status of a completed order");
+            if (order.Status == "Cancelled")
+                throw new Exception("Cannot change status of a cancelled order");
+
+            if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase) && order.Status != "Completed")
             {
-                for (int i = 0; i < detail.Quantity; i++)
+                foreach (var detail in order.OrderDetails)
                 {
-                    var key = await _context.GameKeys
-                        .FirstOrDefaultAsync(k => k.GameId == detail.GameId && !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
-                    if (key == null)
-                        throw new Exception($"No available keys for game: {detail.Game?.Title}");
+                    var keys = await _gameKeyRepo.GetAvailableKeysAsync(detail.GameId, detail.Quantity);
+                    if (keys.Count < detail.Quantity)
+                        throw new Exception($"Not enough keys for game {detail.GameId}");
 
-                    key.IsUsed = true;
-                    key.UsedAt = DateTime.UtcNow;
-                    key.OrderDetailId = detail.Id;
-                    _context.GameKeys.Update(key);
+                    foreach (var key in keys)
+                    {
+                        key.IsUsed = true;
+                        key.UsedAt = DateTime.UtcNow;
+                        key.OrderDetailId = detail.Id;
+                        await _gameKeyRepo.UpdateAsync(key);
+                    }
+                    // Thêm vào library, kiểm tra trùng để tránh duplicate key
+                    for (int i = 0; i < detail.Quantity; i++)
+                    {
+                        bool alreadyOwned = await _libraryRepo.IsOwnedAsync(order.UserId, detail.GameId);
+                        if (!alreadyOwned)
+                        {
+                            await _libraryRepo.AddAsync(new Library
+                            {
+                                UserId = order.UserId,
+                                GameId = detail.GameId,
+                                AcquiredAt = DateTime.UtcNow
+                            });
+                        }
+                    }
                 }
+                await _notiRepo.AddAsync(new Notification
+                {
+                    UserId = order.UserId,
+                    Title = "Đơn hàng đã được duyệt",
+                    Message = $"Đơn hàng #{order.Id} đã được phê duyệt. Kiểm tra email để nhận key game.",
+                    Link = $"/invoice/{order.Id}",
+                    CreatedAt = DateTime.UtcNow
+                });
             }
-            await _notificationService.CreateNotificationAsync(order.UserId, "Đơn hàng đã được duyệt", $"Đơn hàng #{order.Id} đã được phê duyệt. Kiểm tra email để nhận key game.", $"/invoice/{order.Id}");
-        }
-
-        if (status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase) && order.Status != "Cancelled")
-        {
-            var user = await _userRepository.GetByIdAsync(order.UserId);
-            if (user != null && order.PaymentMethod.Equals("Wallet", StringComparison.OrdinalIgnoreCase))
+            else if (status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase) && order.Status != "Cancelled")
             {
-                user.Wallet += order.TotalAmount;
-                _context.Users.Update(user);
+                var user = await _userRepo.GetByIdAsync(order.UserId);
+                if (user != null && order.PaymentMethod.Equals("Wallet", StringComparison.OrdinalIgnoreCase))
+                {
+                    user.Wallet += order.TotalAmount;
+                    await _userRepo.UpdateAsync(user);
+                }
+                await _notiRepo.AddAsync(new Notification
+                {
+                    UserId = order.UserId,
+                    Title = "Đơn hàng đã bị hủy",
+                    Message = $"Đơn hàng #{order.Id} đã bị hủy. Tiền đã được hoàn vào ví.",
+                    Link = $"/invoice/{order.Id}",
+                    CreatedAt = DateTime.UtcNow
+                });
             }
-            await _notificationService.CreateNotificationAsync(order.UserId, "Đơn hàng đã bị hủy", $"Đơn hàng #{order.Id} đã bị hủy. Nếu bạn đã thanh toán, tiền sẽ được hoàn vào ví.", $"/invoice/{order.Id}"
-    );
-        }
+            else
+            {
+                throw new Exception("Invalid status transition");
+            }
 
-        order.Status = status;
-        _context.Orders.Update(order);
-        await _context.SaveChangesAsync();
-        return order;
+            order.Status = status;
+            await _orderRepo.UpdateAsync(order);
+            await transaction.CommitAsync();
+            return order;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task CancelOrder(int orderId)
     {
-        var order = await _orderRepository.GetByIdAsync(orderId) ?? throw new Exception("Order not found");
-        if (order.Status == "Completed") throw new Exception("Cannot cancel completed order");
-
-        var user = await _userRepository.GetByIdAsync(order.UserId);
-        if (user != null)
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            user.Wallet += order.TotalAmount;
-            await _userRepository.UpdateAsync(user);
+            var order = await _orderRepo.GetByIdAsync(orderId) ?? throw new Exception("Order not found");
+            if (order.Status == "Completed")
+                throw new Exception("Cannot cancel completed order");
+            if (order.Status == "Cancelled")
+                throw new Exception("Order already cancelled");
+
+            var user = await _userRepo.GetByIdAsync(order.UserId);
+            if (user != null)
+            {
+                user.Wallet += order.TotalAmount;
+                await _userRepo.UpdateAsync(user);
+            }
+            order.Status = "Cancelled";
+            await _orderRepo.UpdateAsync(order);
+            await transaction.CommitAsync();
         }
-        order.Status = "Cancelled";
-        await _orderRepository.UpdateAsync(order);
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }

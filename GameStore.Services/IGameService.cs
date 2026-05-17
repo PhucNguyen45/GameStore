@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Entities.Games;
+using GameStore.DTOs.Games;
 
 namespace GameStore.Services;
 
@@ -17,4 +18,5 @@ public interface IGameService
     Task<Game> Create(Game game);
     Task Update(Game game);
     Task Delete(int id);
+    Task UpdateGameAsync(int id, GameUpdateDto dto);
 }

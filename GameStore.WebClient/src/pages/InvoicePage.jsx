@@ -66,9 +66,9 @@ export default function InvoicePage() {
         className="container"
         style={{ textAlign: "center", paddingTop: 100 }}
       >
-        <h2>Order not found</h2>
+        <h2>Không tìm thấy đơn hàng</h2>
         <Link to="/store" className="btn-primary" style={{ marginTop: 20 }}>
-          Go to Store
+          Quay về cửa hàng
         </Link>
       </div>
     );
@@ -103,7 +103,7 @@ export default function InvoicePage() {
           marginBottom: 30,
         }}
       >
-        <ArrowLeft size={18} /> Back to Store
+        <ArrowLeft size={18} /> Trở về cửa hàng
       </Link>
 
       {/* Stepper Section */}
@@ -402,7 +402,7 @@ export default function InvoicePage() {
                 }}
               >
                 <span style={{ color: "#6b6b8e" }}>Subtotal</span>
-                <span>${(order.totalAmount || order.total).toFixed(2)}</span>
+                <span>{(order.totalAmount || order.total).toFixed(2)} VND</span>
               </div>
               <div
                 style={{
@@ -412,7 +412,7 @@ export default function InvoicePage() {
                 }}
               >
                 <span style={{ color: "#6b6b8e" }}>Tax (0%)</span>
-                <span>$0.00</span>
+                <span>0.00 VND</span>
               </div>
               <div
                 style={{
@@ -443,7 +443,7 @@ export default function InvoicePage() {
                 padding: "12px 20px",
               }}
             >
-              <Printer size={18} /> Print Invoice
+              <Printer size={18} /> In hóa đơn
             </button>
             <button
               className="btn-outline"
@@ -454,7 +454,7 @@ export default function InvoicePage() {
                 padding: "12px 20px",
               }}
             >
-              <Download size={18} /> Download PDF
+              <Download size={18} /> Tải về file PDF
             </button>
           </div>
 
@@ -483,9 +483,9 @@ export default function InvoicePage() {
                   Notice:
                 </p>
                 <p style={{ fontSize: 14, color: "#6b6b8e", lineHeight: 1.5 }}>
-                  Your order is currently being reviewed by our administrators.
-                  This usually takes 1-2 hours. If your order is rejected, a
-                  full refund will be issued to your wallet.
+                  Đơn hàng của bạn hiện đang được quản trị viên của chúng tôi
+                  xem xét. Quá trình này thường mất 30 phút đến 1 giờ. Nếu đơn
+                  hàng bị từ chối, bạn sẽ được hoàn lại toàn bộ số tiền vào ví.
                 </p>
               </div>
             </div>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Common.Auth;
 using GameStore.Entities.Users;
+using GameStore.Entities.Auth;
 using GameStore.Repository.EFCore;
 
 namespace GameStore.Services.Authen;
@@ -12,10 +13,14 @@ namespace GameStore.Services.Authen;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepo;
+    private readonly IUserRoleRepository _userRoleRepo;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, IRoleRepository roleRepo, IUserRoleRepository userRoleRepo)
     {
         _userRepository = userRepository;
+        _roleRepo = roleRepo;
+        _userRoleRepo = userRoleRepo;
     }
 
     public async Task<User?> Authenticate(string username, string password)
@@ -43,6 +48,18 @@ public class UserService : IUserService
         user.IsActive = true;
         await _userRepository.AddAsync(user);
         return user;
+    }
+
+    // Mới: đăng ký user và tự động gán role "User"
+    public async Task<User> RegisterUserAsync(User user, string password)
+    {
+        var createdUser = await Register(user, password);
+        var userRole = await _roleRepo.GetByNameAsync("User");
+        if (userRole != null)
+        {
+            await _userRoleRepo.AddRoleToUserAsync(createdUser.Id, userRole.Id);
+        }
+        return createdUser;
     }
 
     public async Task Update(User user, string? password = null)
@@ -89,5 +106,12 @@ public class UserService : IUserService
             user.Wallet += amount;
             await _userRepository.UpdateAsync(user);
         }
+    }
+
+    // Mới: lấy tên role của user
+    public async Task<string?> GetRoleNameAsync(int userId)
+    {
+        var userRole = await _userRoleRepo.GetActiveRoleByUserIdAsync(userId);
+        return userRole?.Role?.Name;
     }
 }

@@ -89,7 +89,7 @@ export default function FeaturedSlider({ games }) {
                       fontSize: 20,
                     }}
                   >
-                    ${(game.discountPrice || game.price)?.toFixed(2)}
+                    {(game.discountPrice || game.price)?.toFixed(2)} VND
                   </span>
                   <span
                     style={{

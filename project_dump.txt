@@ -1,15 +1,10 @@
-FILE: .git
-gitdir: /home/razer_admin/workspace/on-class-study/projects/cnweb/GameStore-repo/gamestore-hphuc/.git/worktrees/gamestore-full
-
 FILE: GameStore.APIService/Controllers/AdminController.cs
 // GameStore.APIService/Controllers/AdminController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using GameStore.Repository;
-using GameStore.Services;
-using GameStore.Entities.Games;
 using GameStore.DTOs.Admin;
+using GameStore.Services.Admin;
+using GameStore.Services; // For IGameService, IOrderService, INotificationService if needed
 
 namespace GameStore.APIService.Controllers;
 
@@ -18,42 +13,69 @@ namespace GameStore.APIService.Controllers;
 [ApiController]
 public class AdminController : ControllerBase
 {
-    private readonly IAdminService _adminService;
+    private readonly IAdminDashboardService _dashboardService;
+    private readonly IAdminGameService _adminGameService;
+    private readonly IAdminUserService _adminUserService;
+    private readonly IAdminOrderService _adminOrderService;
+    private readonly IAdminCategoryService _adminCategoryService;
+    private readonly IAdminGameKeyService _adminGameKeyService;
+    private readonly IAdminPaymentService _adminPaymentService;
+    private readonly IAdminRoleService _adminRoleService;
+    private readonly IAdminStaffService _adminStaffService;
 
-    public AdminController(IAdminService adminService) => _adminService = adminService;
+    public AdminController(
+        IAdminDashboardService dashboardService,
+        IAdminGameService adminGameService,
+        IAdminUserService adminUserService,
+        IAdminOrderService adminOrderService,
+        IAdminCategoryService adminCategoryService,
+        IAdminGameKeyService adminGameKeyService,
+        IAdminPaymentService adminPaymentService,
+        IAdminRoleService adminRoleService,
+        IAdminStaffService adminStaffService)
+    {
+        _dashboardService = dashboardService;
+        _adminGameService = adminGameService;
+        _adminUserService = adminUserService;
+        _adminOrderService = adminOrderService;
+        _adminCategoryService = adminCategoryService;
+        _adminGameKeyService = adminGameKeyService;
+        _adminPaymentService = adminPaymentService;
+        _adminRoleService = adminRoleService;
+        _adminStaffService = adminStaffService;
+    }
 
-    // Dashboard
     [HttpGet("dashboard")]
-    public async Task<IActionResult> GetDashboard() => Ok(await _adminService.GetDashboardAsync());
+    public async Task<IActionResult> GetDashboard() => Ok(await _dashboardService.GetDashboardAsync());
 
-    // Games Admin
+    // Games
     [HttpGet("games")]
     public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId,
         [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string? sortBy,
         [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (games, totalCount) = await _adminService.GetGamesAsync(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
+        var (games, totalCount) = await _adminGameService.GetGamesAsync(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
         return Ok(new { data = games, totalCount });
     }
 
     [HttpPost("games")]
     public async Task<IActionResult> CreateGame([FromBody] AdminGameCreateDto dto)
     {
-        var game = await _adminService.CreateGameAsync(dto);
+        var game = await _adminGameService.CreateGameAsync(dto);
         return Ok(game);
     }
 
     [HttpPut("games/{id}")]
     public async Task<IActionResult> UpdateGame(int id, [FromBody] AdminGameUpdateDto dto)
     {
-        await _adminService.UpdateGameAsync(id, dto);
+        await _adminGameService.UpdateGameAsync(id, dto);
         return Ok(new { message = "Game updated" });
     }
 
     [HttpDelete("games/{id}")]
     public async Task<IActionResult> DeleteGame(int id)
     {
-        await _adminService.DeleteGameAsync(id);
+        await _adminGameService.DeleteGameAsync(id);
         return Ok(new { message = "Game deleted" });
     }
 
@@ -64,21 +86,21 @@ public class AdminController : ControllerBase
         [FromQuery] string? sortBy, [FromQuery] bool desc = false,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (users, totalCount) = await _adminService.GetUsersAsync(keyword, isActive, fromDate, toDate, sortBy, desc, page, pageSize);
+        var (users, totalCount) = await _adminUserService.GetUsersAsync(keyword, isActive, fromDate, toDate, sortBy, desc, page, pageSize);
         return Ok(new { data = users, totalCount });
     }
 
     [HttpPut("users/{id}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] AdminUserUpdateDto dto)
     {
-        await _adminService.UpdateUserAsync(id, dto);
+        await _adminUserService.UpdateUserAsync(id, dto);
         return Ok(new { message = "User updated" });
     }
 
     [HttpDelete("users/{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        await _adminService.DeleteUserAsync(id);
+        await _adminUserService.DeleteUserAsync(id);
         return Ok(new { message = "User deleted" });
     }
 
@@ -88,14 +110,14 @@ public class AdminController : ControllerBase
         [FromQuery] DateTime? toDate, [FromQuery] string? status, [FromQuery] string? sortBy,
         [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (orders, totalCount) = await _adminService.GetOrdersAsync(keyword, fromDate, toDate, status, sortBy, desc, page, pageSize);
+        var (orders, totalCount) = await _adminOrderService.GetOrdersAsync(keyword, fromDate, toDate, status, sortBy, desc, page, pageSize);
         return Ok(new { data = orders, totalCount });
     }
 
     [HttpPut("orders/{id}/status")]
     public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] AdminUpdateStatusDto dto)
     {
-        await _adminService.UpdateOrderStatusAsync(id, dto.Status);
+        await _adminOrderService.UpdateOrderStatusAsync(id, dto.Status);
         return Ok(new { message = "Status updated" });
     }
 
@@ -104,27 +126,27 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetCategories([FromQuery] string? keyword, [FromQuery] string? status,
         [FromQuery] bool? hasGames, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetCategoriesAsync(keyword, status, hasGames, page, pageSize));
+        return Ok(await _adminCategoryService.GetCategoriesAsync(keyword, status, hasGames, page, pageSize));
     }
 
     [HttpPost("categories")]
     public async Task<IActionResult> CreateCategory([FromBody] CategoryDto dto)
     {
-        await _adminService.CreateCategoryAsync(dto);
+        await _adminCategoryService.CreateCategoryAsync(dto);
         return Ok(new { message = "Category created" });
     }
 
     [HttpPut("categories/{id}")]
     public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryDto dto)
     {
-        await _adminService.UpdateCategoryAsync(id, dto);
+        await _adminCategoryService.UpdateCategoryAsync(id, dto);
         return Ok(new { message = "Category updated" });
     }
 
     [HttpDelete("categories/{id}")]
     public async Task<IActionResult> DeleteCategory(int id)
     {
-        await _adminService.DeleteCategoryAsync(id);
+        await _adminCategoryService.DeleteCategoryAsync(id);
         return Ok(new { message = "Category deleted" });
     }
 
@@ -133,34 +155,34 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetGameKeys([FromQuery] string? keyword, [FromQuery] int? gameId,
         [FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetGameKeysAsync(keyword, gameId, status, page, pageSize));
+        return Ok(await _adminGameKeyService.GetGameKeysAsync(keyword, gameId, status, page, pageSize));
     }
 
     [HttpPost("gamekeys")]
     public async Task<IActionResult> CreateGameKey([FromBody] GameKeyDto dto)
     {
-        await _adminService.CreateGameKeyAsync(dto);
+        await _adminGameKeyService.CreateGameKeyAsync(dto);
         return Ok(new { message = "Key created" });
     }
 
     [HttpPost("gamekeys/batch")]
     public async Task<IActionResult> CreateBatchGameKeys([FromBody] BatchGameKeyDto dto)
     {
-        await _adminService.CreateBatchGameKeysAsync(dto);
+        await _adminGameKeyService.CreateBatchGameKeysAsync(dto);
         return Ok(new { message = "Batch keys created" });
     }
 
     [HttpPut("gamekeys/{id}")]
     public async Task<IActionResult> UpdateGameKey(int id, [FromBody] UpdateGameKeyDto dto)
     {
-        await _adminService.UpdateGameKeyAsync(id, dto);
+        await _adminGameKeyService.UpdateGameKeyAsync(id, dto);
         return Ok(new { message = "Key updated" });
     }
 
     [HttpDelete("gamekeys/{id}")]
     public async Task<IActionResult> DeleteGameKey(int id)
     {
-        await _adminService.DeleteGameKeyAsync(id);
+        await _adminGameKeyService.DeleteGameKeyAsync(id);
         return Ok(new { message = "Key deleted" });
     }
 
@@ -170,19 +192,19 @@ public class AdminController : ControllerBase
         [FromQuery] string? method, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetPaymentsAsync(keyword, status, method, fromDate, toDate, page, pageSize));
+        return Ok(await _adminPaymentService.GetPaymentsAsync(keyword, status, method, fromDate, toDate, page, pageSize));
     }
 
     [HttpGet("payments/order/{orderId}")]
     public async Task<IActionResult> GetOrderPayments(int orderId)
     {
-        return Ok(await _adminService.GetOrderPaymentsAsync(orderId));
+        return Ok(await _adminPaymentService.GetOrderPaymentsAsync(orderId));
     }
 
     [HttpPost("payments/refund/{paymentId}")]
     public async Task<IActionResult> RefundPayment(int paymentId, [FromBody] RefundDto? dto)
     {
-        await _adminService.RefundPaymentAsync(paymentId, dto);
+        await _adminPaymentService.RefundPaymentAsync(paymentId, dto);
         return Ok(new { message = "Payment refunded" });
     }
 
@@ -191,27 +213,27 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetRoles([FromQuery] string? keyword, [FromQuery] bool? isActive,
         [FromQuery] bool? hasUsers, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetRolesAsync(keyword, isActive, hasUsers, page, pageSize));
+        return Ok(await _adminRoleService.GetRolesAsync(keyword, isActive, hasUsers, page, pageSize));
     }
 
     [HttpPost("roles")]
     public async Task<IActionResult> CreateRole([FromBody] RoleDto dto)
     {
-        await _adminService.CreateRoleAsync(dto);
+        await _adminRoleService.CreateRoleAsync(dto);
         return Ok(new { message = "Role created" });
     }
 
     [HttpPut("roles/{id}")]
     public async Task<IActionResult> UpdateRole(int id, [FromBody] RoleDto dto)
     {
-        await _adminService.UpdateRoleAsync(id, dto);
+        await _adminRoleService.UpdateRoleAsync(id, dto);
         return Ok(new { message = "Role updated" });
     }
 
     [HttpDelete("roles/{id}")]
     public async Task<IActionResult> DeleteRole(int id)
     {
-        await _adminService.DeleteRoleAsync(id);
+        await _adminRoleService.DeleteRoleAsync(id);
         return Ok(new { message = "Role deleted" });
     }
 
@@ -220,28 +242,25 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetStaff([FromQuery] string? keyword, [FromQuery] int? roleId,
         [FromQuery] bool? isActive, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetStaffAsync(keyword, roleId, isActive, page, pageSize));
+        return Ok(await _adminStaffService.GetStaffAsync(keyword, roleId, isActive, page, pageSize));
     }
 
     [HttpPost("staff/assign")]
     public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto dto)
     {
-        await _adminService.AssignRoleAsync(dto);
+        await _adminStaffService.AssignRoleAsync(dto);
         return Ok(new { message = "Role assigned" });
     }
 
     [HttpDelete("staff/revoke")]
     public async Task<IActionResult> RevokeRole([FromBody] AssignRoleDto dto)
     {
-        await _adminService.RevokeRoleAsync(dto);
+        await _adminStaffService.RevokeRoleAsync(dto);
         return Ok(new { message = "Role revoked" });
     }
 
     [HttpGet("permissions")]
-    public IActionResult GetPermissions()
-    {
-        return Ok(_adminService.GetPermissions());
-    }
+    public IActionResult GetPermissions() => Ok(_adminRoleService.GetPermissions());
 }
 
 FILE: GameStore.APIService/Controllers/GamesController.cs
@@ -250,11 +269,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using GameStore.Entities.Games;
 using GameStore.Services;
-using GameStore.DTOs.Games;
 
 namespace GameStore.APIService.Controllers;
 
@@ -294,52 +310,6 @@ public class GamesController : ControllerBase
         var games = await _gameService.GetByGenre(genreId);
         return Ok(games);
     }
-
-    [HttpPost]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create([FromBody] GameCreateDto dto)
-    {
-        var game = new Game
-        {
-            Title = dto.Title,
-            Description = dto.Description ?? "",
-            Price = dto.Price,
-            DiscountPrice = dto.DiscountPrice,
-            Developer = dto.Developer ?? "",
-            Publisher = dto.Publisher ?? "",
-            ReleaseDate = dto.ReleaseDate,
-            TrailerUrl = dto.TrailerUrl ?? "",
-            CoverImageUrl = dto.CoverImageUrl ?? "",
-            MinimumOS = dto.MinimumOS ?? "",
-            MinimumProcessor = dto.MinimumProcessor ?? "",
-            MinimumMemory = dto.MinimumMemory ?? "",
-            MinimumGraphics = dto.MinimumGraphics ?? "",
-            MinimumStorage = dto.MinimumStorage ?? ""
-        };
-        var created = await _gameService.Create(game);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-    }
-
-    [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id, [FromBody] GameUpdateDto dto)
-    {
-        var game = await _gameService.GetById(id);
-        if (game == null) return NotFound(new { message = "Game not found" });
-        game.Title = dto.Title ?? game.Title; game.Description = dto.Description ?? game.Description;
-        game.Price = dto.Price ?? game.Price; game.DiscountPrice = dto.DiscountPrice ?? game.DiscountPrice;
-        game.CoverImageUrl = dto.CoverImageUrl ?? game.CoverImageUrl; game.TrailerUrl = dto.TrailerUrl ?? game.TrailerUrl;
-        await _gameService.Update(game);
-        return Ok(game);
-    }
-
-    [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _gameService.Delete(id);
-        return Ok(new { message = "Game deleted" });
-    }
 }
 
 FILE: GameStore.APIService/Controllers/GenresController.cs
@@ -348,11 +318,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using GameStore.Entities.Games;
 using GameStore.Services;
-using GameStore.DTOs.Genres;
 
 namespace GameStore.APIService.Controllers;
 
@@ -372,34 +339,6 @@ public class GenresController : ControllerBase
         var genre = await _genreService.GetById(id);
         return genre == null ? NotFound(new { message = "Genre not found" }) : Ok(genre);
     }
-
-    [HttpPost]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create([FromBody] GenreDto dto)
-    {
-        var genre = new Genre { Name = dto.Name, Description = dto.Description ?? "", IconUrl = dto.IconUrl ?? "" };
-        var created = await _genreService.Create(genre);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-    }
-
-    [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id, [FromBody] GenreDto dto)
-    {
-        var genre = await _genreService.GetById(id);
-        if (genre == null) return NotFound(new { message = "Genre not found" });
-        genre.Name = dto.Name; genre.Description = dto.Description ?? ""; genre.IconUrl = dto.IconUrl ?? "";
-        await _genreService.Update(genre);
-        return Ok(genre);
-    }
-
-    [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _genreService.Delete(id);
-        return Ok(new { message = "Genre deleted" });
-    }
 }
 
 FILE: GameStore.APIService/Controllers/LibraryController.cs
@@ -408,12 +347,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using GameStore.Repository;
 using GameStore.Services;
-using System.Security.Claims;
 
 namespace GameStore.APIService.Controllers;
 
@@ -486,9 +423,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using GameStore.Services;
 using System.Security.Claims;
 using GameStore.DTOs.Orders;
+using GameStore.Services;
 
 namespace GameStore.APIService.Controllers;
 
@@ -516,31 +453,6 @@ public class OrdersController : ControllerBase
         return Ok(history);
     }
 
-    [HttpGet("all")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20) =>
-        Ok(await _orderService.GetAll(page, pageSize));
-
-    [HttpGet("search")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> SearchOrders(
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 10,
-        [FromQuery] string? keyword = null, [FromQuery] DateTime? fromDate = null,
-        [FromQuery] DateTime? toDate = null, [FromQuery] string? status = null)
-    {
-        var result = await _orderService.SearchOrders(page, pageSize, keyword, fromDate, toDate, status);
-        return Ok(new { data = result.Items.Select(o => new { o.Id, o.UserId, o.OrderDate, o.TotalAmount, o.Status, o.PaymentMethod, Username = o.User?.Username }), totalCount = result.TotalCount });
-    }
-
-    [HttpPut("{id}/status")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto dto)
-    {
-        try { await _orderService.UpdateStatus(id, dto.Status); return Ok(new { message = "Status updated" }); }
-        catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
-    }
-
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -557,14 +469,15 @@ public class OrdersController : ControllerBase
             var order = await _orderService.CreateOrder(
                 userId,
                 dto.Items.Select(i => (i.GameId, i.Quantity)).ToList(),
-                dto.PaymentMethod,   // thêm
-                dto.Email,           // thêm
-                dto.Phone            // thêm
+                dto.PaymentMethod,
+                dto.Email,
+                dto.Phone
             );
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
         }
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
     }
+
     [HttpPut("{id}/cancel")]
     public async Task<IActionResult> Cancel(int id)
     {
@@ -734,6 +647,8 @@ using Microsoft.IdentityModel.Tokens;
 using GameStore.Repository;
 using GameStore.Repository.EFCore;
 using GameStore.Services;
+using GameStore.Services.Admin;
+using GameStore.Services.Authen;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -760,11 +675,28 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IGameService, GameService>();
 builder.Services.AddScoped<IGenreService, GenreService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<ILibraryService, LibraryService>();
 builder.Services.AddScoped<IWishlistService, WishlistService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IGameKeyRepository, GameKeyRepository>();
+builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ILibraryRepository, LibraryRepository>();
+builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+builder.Services.AddScoped<IAdminRepository, AdminRepository>();
+builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+builder.Services.AddScoped<IAdminGameService, AdminGameService>();
+builder.Services.AddScoped<IAdminUserService, AdminUserService>();
+builder.Services.AddScoped<IAdminOrderService, AdminOrderService>();
+builder.Services.AddScoped<IAdminCategoryService, AdminCategoryService>();
+builder.Services.AddScoped<IAdminGameKeyService, AdminGameKeyService>();
+builder.Services.AddScoped<IAdminPaymentService, AdminPaymentService>();
+builder.Services.AddScoped<IAdminRoleService, AdminRoleService>();
+builder.Services.AddScoped<IAdminStaffService, AdminStaffService>();
+builder.Services.AddScoped<IGameGenreRepository, GameGenreRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:SecretKey"]!);
 builder.Services.AddAuthentication(x =>
@@ -811,7 +743,7 @@ FILE: GameStore.APIService/Properties/launchSettings.json
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5031",
+      "applicationUrl": "http://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -1004,7 +936,6 @@ FILE: GameStore.ApiGateway/ocelot.json
 FILE: GameStore.AuthService/Controllers/AuthController.cs
 // GameStore.AuthService/Controllers/AuthController.cs
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GameStore.Common.Auth;
 using GameStore.Services.Authen;
 using GameStore.Entities.Users;
@@ -1019,28 +950,23 @@ public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IConfiguration _configuration;
-    private readonly GameStoreDbContext _context;
 
-    public AuthController(IUserService userService, IConfiguration configuration, GameStoreDbContext context)
+    public AuthController(IUserService userService, IConfiguration configuration)
     {
         _userService = userService;
         _configuration = configuration;
-        _context = context;
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-            return BadRequest(new { message = "Username and password are required" });
+            return BadRequest(new { message = "Tên người dùng và mật khẩu là bắt buộc" });
 
         var user = await _userService.Authenticate(request.Username, request.Password);
-        if (user == null) return Unauthorized(new { message = "Invalid username or password" });
+        if (user == null) return Unauthorized(new { message = "Tên người dùng và mật khẩu không hợp lệ" });
 
-        var userRole = await _context.UserRoles
-            .Include(ur => ur.Role)
-            .FirstOrDefaultAsync(ur => ur.UserId == user.Id);
-        var roleName = userRole?.Role?.Name ?? "User";
+        var roleName = await _userService.GetRoleNameAsync(user.Id) ?? "User";
 
         var secretKey = _configuration["Jwt:SecretKey"]!;
         var expireMinutes = int.Parse(_configuration["Jwt:ExpireMinutes"] ?? "480");
@@ -1064,9 +990,9 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-            return BadRequest(new { message = "Username and password are required" });
+            return BadRequest(new { message = "Tên người dùng và mật khẩu là bắt buộc" });
         if (request.Password.Length < 6)
-            return BadRequest(new { message = "Password must be at least 6 characters" });
+            return BadRequest(new { message = "Mật khẩu phải ít nhất 6 chữ, số" });
 
         var user = new User
         {
@@ -1075,8 +1001,9 @@ public class AuthController : ControllerBase
             Email = request.Email ?? "",
             Phone = request.Phone ?? ""
         };
-        var createdUser = await _userService.Register(user, request.Password);
-        return Ok(new { message = "Registration successful", userId = createdUser.Id });
+        var createdUser = await _userService.RegisterUserAsync(user, request.Password);
+
+        return Ok(new { message = "Đăng ký hoàn tất", userId = createdUser.Id });
     }
 }
 
@@ -1100,70 +1027,7 @@ namespace GameStore.AuthService.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
-
     public UserController(IUserService userService) => _userService = userService;
-
-    [HttpGet]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll([FromQuery] string? keyword, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-    {
-        var (users, totalCount) = await _userService.Search(keyword, page, pageSize);
-        return Ok(new
-        {
-            data = users.Select(u => new { u.Id, u.Username, u.DisplayName, u.Email, u.Wallet, u.IsActive, u.CreatedAt }),
-            totalCount,
-            page,
-            pageSize,
-            totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
-        });
-    }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
-    {
-        var user = await _userService.GetById(id);
-        if (user == null) return NotFound(new { message = "User not found" });
-        return Ok(new { user.Id, user.Username, user.DisplayName, user.Email, user.Phone, user.AvatarUrl, user.Wallet, user.IsActive, user.CreatedAt });
-    }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, [FromBody] UpdateUserRequest request)
-    {
-        var user = await _userService.GetById(id);
-        if (user == null) return NotFound(new { message = "User not found" });
-        user.DisplayName = request.DisplayName ?? user.DisplayName;
-        user.Email = request.Email ?? user.Email;
-        user.Phone = request.Phone ?? user.Phone;
-        user.AvatarUrl = request.AvatarUrl ?? user.AvatarUrl;
-        await _userService.Update(user, request.Password);
-        return Ok(new { message = "User updated" });
-    }
-
-    [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _userService.Delete(id);
-        return Ok(new { message = "User deactivated" });
-    }
-
-    [HttpGet("wallet")]
-    public async Task<IActionResult> GetWallet()
-    {
-        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
-        var balance = await _userService.GetWalletBalance(userId);
-        return Ok(new { balance });
-    }
-
-    [HttpPost("wallet/topup")]
-    public async Task<IActionResult> TopUp([FromBody] TopUpRequest request)
-    {
-        if (request.Amount <= 0) return BadRequest(new { message = "Amount must be positive" });
-        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
-        await _userService.AddToWallet(userId, request.Amount);
-        var balance = await _userService.GetWalletBalance(userId);
-        return Ok(new { message = "Wallet topped up", balance });
-    }
 
     [HttpGet("profile")]
     public async Task<IActionResult> GetProfile()
@@ -1187,6 +1051,24 @@ public class UserController : ControllerBase
         user.AvatarUrl = request.AvatarUrl ?? user.AvatarUrl;
         await _userService.Update(user, request.Password);
         return Ok(new { message = "Profile updated" });
+    }
+
+    [HttpGet("wallet")]
+    public async Task<IActionResult> GetWallet()
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        var balance = await _userService.GetWalletBalance(userId);
+        return Ok(new { balance });
+    }
+
+    [HttpPost("wallet/topup")]
+    public async Task<IActionResult> TopUp([FromBody] TopUpRequest request)
+    {
+        if (request.Amount <= 0) return BadRequest(new { message = "Amount must be positive" });
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        await _userService.AddToWallet(userId, request.Amount);
+        var balance = await _userService.GetWalletBalance(userId);
+        return Ok(new { message = "Wallet topped up", balance });
     }
 }
 
@@ -1258,6 +1140,8 @@ builder.Services.AddDbContext<GameStoreDbContext>(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IUserRoleRepository, UserRoleRepository>();
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:SecretKey"]!);
 builder.Services.AddAuthentication(x =>
@@ -1305,7 +1189,7 @@ FILE: GameStore.AuthService/Properties/launchSettings.json
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": false,
-      "applicationUrl": "http://localhost:5083",
+      "applicationUrl": "http://localhost:5002",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -1658,6 +1542,21 @@ public class RegisterRequest
     public string? DisplayName { get; set; }
     public string? Email { get; set; }
     public string? Phone { get; set; }
+}
+
+FILE: GameStore.DTOs/Common/ApiResponse.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace GameStore.DTOs.Common;
+
+public class ApiResponse<T>
+{
+    public T? Data { get; set; }
+    public int? TotalCount { get; set; }
+    public string? Message { get; set; }
 }
 
 FILE: GameStore.DTOs/GameStore.DTOs.csproj
@@ -2391,6 +2290,285 @@ namespace GameStore.Entities.Users
     }
 }
 
+FILE: GameStore.Repository/EFCore/AdminRepository.cs
+// GameStore.Repository/EFCore/AdminRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Entities.Auth;
+using GameStore.Entities.Store;
+using GameStore.Entities.Users;
+
+namespace GameStore.Repository.EFCore;
+
+public class AdminRepository : IAdminRepository
+{
+    private readonly GameStoreDbContext _context;
+
+    public AdminRepository(GameStoreDbContext context)
+    {
+        _context = context;
+    }
+
+    // ---- Roles ----
+    public async Task<(List<Role> Roles, int TotalCount)> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers,
+        int page, int pageSize)
+    {
+        var query = _context.Roles.Where(r => !r.IsDeleted).AsQueryable();
+        if (!string.IsNullOrEmpty(keyword))
+            query = query.Where(r => r.Name.Contains(keyword) || r.Description.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(r => r.IsActive == isActive.Value);
+        if (hasUsers == true)
+            query = query.Where(r => _context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
+        else if (hasUsers == false)
+            query = query.Where(r => !_context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
+
+        var totalCount = await query.CountAsync();
+        var roles = await query.OrderBy(r => r.Name)
+                               .Skip((page - 1) * pageSize)
+                               .Take(pageSize)
+                               .ToListAsync();
+        return (roles, totalCount);
+    }
+
+    public async Task<(List<(Role Role, int UserCount)> RolesWithCount, int TotalCount)> GetRolesWithUserCountAsync(
+        string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize)
+    {
+        var query = _context.Roles.Where(r => !r.IsDeleted).AsQueryable();
+        if (!string.IsNullOrEmpty(keyword))
+            query = query.Where(r => r.Name.Contains(keyword) || r.Description.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(r => r.IsActive == isActive.Value);
+        if (hasUsers == true)
+            query = query.Where(r => _context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
+        else if (hasUsers == false)
+            query = query.Where(r => !_context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
+
+        var totalCount = await query.CountAsync();
+        var roles = await query.OrderBy(r => r.Name)
+                               .Skip((page - 1) * pageSize)
+                               .Take(pageSize)
+                               .ToListAsync();
+
+        var roleIds = roles.Select(r => r.Id).ToList();
+        var userCounts = await _context.UserRoles
+            .Where(ur => roleIds.Contains(ur.RoleId) && !ur.IsDeleted)
+            .GroupBy(ur => ur.RoleId)
+            .Select(g => new { RoleId = g.Key, Count = g.Count() })
+            .ToListAsync();
+
+        var result = roles.Select(r => (
+            r,
+            userCounts.FirstOrDefault(uc => uc.RoleId == r.Id)?.Count ?? 0
+        )).ToList();
+
+        return (result, totalCount);
+    }
+
+    public async Task<Role?> GetRoleByIdAsync(int id) =>
+        await _context.Roles.Include(r => r.RolePermissions)
+                           .FirstOrDefaultAsync(r => r.Id == id && !r.IsDeleted);
+
+    public async Task<bool> RoleExistsAsync(string name, int? excludeId = null) =>
+        await _context.Roles.AnyAsync(r => r.Name == name && !r.IsDeleted &&
+                                          (!excludeId.HasValue || r.Id != excludeId.Value));
+
+    public async Task<Role> AddRoleAsync(Role role)
+    {
+        _context.Roles.Add(role);
+        await _context.SaveChangesAsync();
+        return role;
+    }
+
+    public async Task UpdateRoleAsync(Role role)
+    {
+        _context.Roles.Update(role);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task SoftDeleteRoleAsync(int id)
+    {
+        var role = await _context.Roles.FindAsync(id);
+        if (role != null)
+        {
+            role.IsDeleted = true;
+            role.Modified = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task AddRolePermissionsAsync(int roleId, List<string> permissions)
+    {
+        foreach (var perm in permissions)
+            _context.RolePermissions.Add(new RolePermission { RoleId = roleId, Permission = perm });
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task RemoveAllRolePermissionsAsync(int roleId)
+    {
+        var perms = await _context.RolePermissions.Where(rp => rp.RoleId == roleId).ToListAsync();
+        _context.RolePermissions.RemoveRange(perms);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task<int> GetUserCountInRoleAsync(int roleId) =>
+        await _context.UserRoles.CountAsync(ur => ur.RoleId == roleId && !ur.IsDeleted);
+
+    // ---- Staff ----
+    public async Task<(List<User> Users, int TotalCount)> GetStaffUsersAsync(string? keyword, int? roleId, bool? isActive,
+        int page, int pageSize)
+    {
+        var query = _context.Users
+            .Where(u => u.UserRoles.Any(ur => !ur.IsDeleted && ur.Role.Name != "User"))
+            .AsQueryable();
+        if (roleId.HasValue)
+            query = query.Where(u => u.UserRoles.Any(ur => ur.RoleId == roleId.Value && !ur.IsDeleted));
+        if (!string.IsNullOrEmpty(keyword))
+            query = query.Where(u => u.Username.Contains(keyword) ||
+                                     u.DisplayName.Contains(keyword) ||
+                                     u.Email.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(u => u.IsActive == isActive.Value);
+
+        var totalCount = await query.CountAsync();
+        var users = await query.OrderBy(u => u.Username)
+                               .Skip((page - 1) * pageSize)
+                               .Take(pageSize)
+                               .Include(u => u.UserRoles)
+                                   .ThenInclude(ur => ur.Role)
+                               .ToListAsync();
+        return (users, totalCount);
+    }
+
+    public async Task AssignRoleAsync(int userId, int roleId)
+    {
+        var existing = await _context.UserRoles
+            .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
+        if (existing != null)
+        {
+            if (existing.IsDeleted) existing.IsDeleted = false;
+            existing.Modified = DateTime.UtcNow;
+        }
+        else
+        {
+            _context.UserRoles.Add(new UserRole
+            {
+                UserId = userId,
+                RoleId = roleId,
+                Guid = Guid.NewGuid(),
+                CreatedBy = "admin",
+                Created = DateTime.UtcNow,
+                ModifiedBy = "admin",
+                Modified = DateTime.UtcNow
+            });
+        }
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task RevokeRoleAsync(int userId, int roleId)
+    {
+        var userRole = await _context.UserRoles
+            .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoleId == roleId && !ur.IsDeleted);
+        if (userRole != null)
+        {
+            userRole.IsDeleted = true;
+            userRole.Modified = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
+    }
+}
+
+FILE: GameStore.Repository/EFCore/GameGenreRepository.cs
+// GameStore.Repository/EFCore/GameGenreRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Entities.Games;
+
+namespace GameStore.Repository.EFCore;
+
+public class GameGenreRepository : Repository<GameGenre>, IGameGenreRepository
+{
+    public GameGenreRepository(GameStoreDbContext context) : base(context) { }
+
+    public async Task RemoveByGameIdAsync(int gameId)
+    {
+        var existing = await _dbSet.Where(gg => gg.GameId == gameId).ToListAsync();
+        _dbSet.RemoveRange(existing);
+        await _context.SaveChangesAsync();
+    }
+}
+
+FILE: GameStore.Repository/EFCore/GameKeyRepository.cs
+// GameStore.Repository/EFCore/GameKeyRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public class GameKeyRepository : Repository<GameKey>, IGameKeyRepository
+{
+    public GameKeyRepository(GameStoreDbContext context) : base(context) { }
+
+    public async Task<List<GameKey>> GetAvailableKeysAsync(int gameId, int count) =>
+        await _dbSet.Where(k => k.GameId == gameId && !k.IsUsed &&
+                                (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow))
+                   .Take(count).ToListAsync();
+
+    public async Task<(List<GameKey> Keys, int TotalCount)> SearchAsync(
+        string? keyword, int? gameId, string? status, int page, int pageSize)
+    {
+        var query = _dbSet.Include(k => k.Game).AsQueryable();
+
+        if (!string.IsNullOrEmpty(keyword))
+            query = query.Where(k => k.KeyCode.Contains(keyword) ||
+                                     k.Game.Title.Contains(keyword));
+        if (gameId.HasValue)
+            query = query.Where(k => k.GameId == gameId.Value);
+        if (status == "available")
+            query = query.Where(k => !k.IsUsed &&
+                                     (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
+        else if (status == "used")
+            query = query.Where(k => k.IsUsed);
+        else if (status == "expired")
+            query = query.Where(k => k.ExpiresAt != null &&
+                                     k.ExpiresAt <= DateTime.UtcNow && !k.IsUsed);
+
+        int totalCount = await query.CountAsync();
+        var keys = await query.OrderByDescending(k => k.CreatedAt)
+                             .Skip((page - 1) * pageSize)
+                             .Take(pageSize)
+                             .ToListAsync();
+        return (keys, totalCount);
+    }
+
+    public async Task<Dictionary<string, int>> GetStatsAsync()
+    {
+        var totalKeys = await _dbSet.CountAsync();
+        var usedKeys = await _dbSet.CountAsync(k => k.IsUsed);
+        var availableKeys = await _dbSet.CountAsync(k =>
+            !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
+        var expiredKeys = await _dbSet.CountAsync(k =>
+            k.ExpiresAt != null && k.ExpiresAt <= DateTime.UtcNow && !k.IsUsed);
+        return new Dictionary<string, int>
+        {
+            ["totalKeys"] = totalKeys,
+            ["usedKeys"] = usedKeys,
+            ["availableKeys"] = availableKeys,
+            ["expiredKeys"] = expiredKeys
+        };
+    }
+}
+
 FILE: GameStore.Repository/EFCore/GameRepository.cs
 // GameStore.Repository/EFCore/GameRepository.cs
 using System;
@@ -2648,6 +2826,101 @@ public class GenreRepository : Repository<Genre>, IGenreRepository
 
     public async Task<List<Genre>> GetActiveGenresAsync() =>
         await _dbSet.Where(g => g.IsActive).OrderBy(g => g.Name).ToListAsync();
+
+    public async Task<(List<Genre> Genres, int TotalCount)> SearchAsync(
+        string? keyword, string? status, bool? hasGames, int page, int pageSize)
+    {
+        var query = _dbSet.AsQueryable();
+
+        if (!string.IsNullOrEmpty(keyword))
+            query = query.Where(g => g.Name.Contains(keyword) || g.Description.Contains(keyword));
+        if (status == "active")
+            query = query.Where(g => g.IsActive);
+        else if (status == "inactive")
+            query = query.Where(g => !g.IsActive);
+        if (hasGames == true)
+            query = query.Where(g => _context.Set<GameGenre>().Any(gg => gg.GenreId == g.Id));
+        else if (hasGames == false)
+            query = query.Where(g => !_context.Set<GameGenre>().Any(gg => gg.GenreId == g.Id));
+
+        int totalCount = await query.CountAsync();
+        var genres = await query.OrderBy(g => g.Name)
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToListAsync();
+        return (genres, totalCount);
+    }
+
+    public async Task<int> GetGameCountAsync(int genreId) =>
+        await _context.Set<GameGenre>().CountAsync(gg => gg.GenreId == genreId);
+}
+
+FILE: GameStore.Repository/EFCore/IAdminRepository.cs
+// GameStore.Repository/EFCore/IAdminRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Auth;
+using GameStore.Entities.Store;
+using GameStore.Entities.Users;
+
+namespace GameStore.Repository.EFCore;
+
+public interface IAdminRepository
+{
+    // Roles
+    Task<(List<Role> Roles, int TotalCount)> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers,
+        int page, int pageSize);
+    Task<Role?> GetRoleByIdAsync(int id);
+    Task<bool> RoleExistsAsync(string name, int? excludeId = null);
+    Task<Role> AddRoleAsync(Role role);
+    Task UpdateRoleAsync(Role role);
+    Task SoftDeleteRoleAsync(int id);
+    Task AddRolePermissionsAsync(int roleId, List<string> permissions);
+    Task RemoveAllRolePermissionsAsync(int roleId);
+    Task<int> GetUserCountInRoleAsync(int roleId);
+    Task<(List<(Role Role, int UserCount)> RolesWithCount, int TotalCount)> GetRolesWithUserCountAsync(
+        string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize);
+
+    // Staff
+    Task<(List<User> Users, int TotalCount)> GetStaffUsersAsync(string? keyword, int? roleId, bool? isActive,
+        int page, int pageSize);
+    Task AssignRoleAsync(int userId, int roleId);
+    Task RevokeRoleAsync(int userId, int roleId);
+}
+
+FILE: GameStore.Repository/EFCore/IGameGenreRepository.cs
+// GameStore.Repository/EFCore/IGameGenreRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Games;
+
+namespace GameStore.Repository.EFCore;
+
+public interface IGameGenreRepository : IRepository<GameGenre>
+{
+    Task RemoveByGameIdAsync(int gameId);
+}
+
+FILE: GameStore.Repository/EFCore/IGameKeyRepository.cs
+// GameStore.Repository/EFCore/IGameKeyRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public interface IGameKeyRepository : IRepository<GameKey>
+{
+    Task<List<GameKey>> GetAvailableKeysAsync(int gameId, int count);
+    Task<(List<GameKey> Keys, int TotalCount)> SearchAsync(
+        string? keyword, int? gameId, string? status, int page, int pageSize);
+    Task<Dictionary<string, int>> GetStatsAsync();
 }
 
 FILE: GameStore.Repository/EFCore/IGameRepository.cs
@@ -2682,6 +2955,41 @@ public interface IGenreRepository : IRepository<Genre>
 {
     Task<Genre?> GetByNameAsync(string name);
     Task<List<Genre>> GetActiveGenresAsync();
+    // Thêm cho admin
+    Task<(List<Genre> Genres, int TotalCount)> SearchAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize);
+    Task<int> GetGameCountAsync(int genreId);
+}
+
+FILE: GameStore.Repository/EFCore/ILibraryRepository.cs
+// GameStore.Repository/EFCore/ILibraryRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public interface ILibraryRepository : IRepository<Library>
+{
+    Task<List<Library>> GetByUserAsync(int userId);
+    Task<bool> IsOwnedAsync(int userId, int gameId);
+}
+
+FILE: GameStore.Repository/EFCore/INotificationRepository.cs
+// GameStore.Repository/EFCore/INotificationRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public interface INotificationRepository : IRepository<Notification>
+{
+    Task<List<Notification>> GetByUserAsync(int userId, bool unreadOnly = false, int limit = 50);
+    Task MarkAsReadAsync(int notificationId, int userId);
 }
 
 FILE: GameStore.Repository/EFCore/IOrderRepository.cs
@@ -2697,6 +3005,29 @@ namespace GameStore.Repository.EFCore;
 public interface IOrderRepository : IRepository<Order>
 {
     Task<List<Order>> GetByUserAsync(int userId);
+    Task<List<Order>> GetByUserWithDetailsAsync(int userId);  // thêm
+    Task<(List<Order> Orders, int TotalCount)> SearchOrdersAsync(
+        string? keyword, DateTime? fromDate, DateTime? toDate,
+        string? status, int page, int pageSize);
+    Task<Order?> GetOrderWithDetailsAsync(int orderId);
+}
+
+FILE: GameStore.Repository/EFCore/IPaymentRepository.cs
+// GameStore.Repository/EFCore/IPaymentRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public interface IPaymentRepository : IRepository<Payment>
+{
+    Task<(List<Payment> Payments, int TotalCount)> SearchPaymentsAsync(
+        string? keyword, string? status, string? method,
+        DateTime? fromDate, DateTime? toDate, int page, int pageSize);
+    Task<Payment?> GetPaymentWithDetailsAsync(int paymentId);
 }
 
 FILE: GameStore.Repository/EFCore/IRepository.cs
@@ -2725,6 +3056,39 @@ public interface IRepository<T> where T : class
         Expression<Func<T, object>>? orderBy = null, bool descending = false);
 }
 
+FILE: GameStore.Repository/EFCore/IReviewRepository.cs
+// GameStore.Repository/EFCore/IReviewRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public interface IReviewRepository : IRepository<Review>
+{
+    Task<(List<Review> Reviews, int TotalCount)> GetReviewsByGameAsync(
+        int gameId, int page, int pageSize);
+    Task<bool> ExistsAsync(int userId, int gameId);
+    Task UpdateGameRatingAsync(int gameId);
+}
+
+FILE: GameStore.Repository/EFCore/IRoleRepository.cs
+// GameStore.Repository/EFCore/IRoleRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Auth;
+
+namespace GameStore.Repository.EFCore;
+
+public interface IRoleRepository : IRepository<Role>
+{
+    Task<Role?> GetByNameAsync(string name);
+}
+
 FILE: GameStore.Repository/EFCore/IUserRepository.cs
 // GameStore.Repository/EFCore/IUserRepository.cs
 using System;
@@ -2738,11 +3102,106 @@ namespace GameStore.Repository.EFCore;
 public interface IUserRepository : IRepository<User>
 {
     Task<User?> GetByUsernameAsync(string username);
-    Task<User?> GetByUsernameForAuthAsync(string username);  // THÊM DÒNG NÀY
+    Task<User?> GetByUsernameForAuthAsync(string username);
     Task<User?> GetByEmailAsync(string email);
     Task<(List<User> Users, int TotalCount)> SearchAsync(string? keyword, int page, int pageSize);
     Task<bool> IsUsernameExists(string username);
     Task<bool> IsEmailExists(string email);
+    // Thêm cho admin
+    Task<(List<User> Users, int TotalCount)> AdminSearchAsync(
+        string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
+        string? sortBy, bool desc, int page, int pageSize);
+}
+
+FILE: GameStore.Repository/EFCore/IUserRoleRepository.cs
+// GameStore.Repository/EFCore/IUserRoleRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Users;
+
+namespace GameStore.Repository.EFCore;
+
+public interface IUserRoleRepository : IRepository<UserRole>
+{
+    Task<UserRole?> GetActiveRoleByUserIdAsync(int userId);
+    Task AddRoleToUserAsync(int userId, int roleId);
+}
+
+FILE: GameStore.Repository/EFCore/IWishlistRepository.cs
+// GameStore.Repository/EFCore/IWishlistRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public interface IWishlistRepository : IRepository<Wishlist>
+{
+    Task<List<Wishlist>> GetByUserAsync(int userId);
+    Task<bool> ExistsAsync(int userId, int gameId);
+}
+
+FILE: GameStore.Repository/EFCore/LibraryRepository.cs
+// GameStore.Repository/EFCore/LibraryRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public class LibraryRepository : Repository<Library>, ILibraryRepository
+{
+    public LibraryRepository(GameStoreDbContext context) : base(context) { }
+
+    public async Task<List<Library>> GetByUserAsync(int userId) =>
+        await _dbSet.Where(l => l.UserId == userId)
+                    .Include(l => l.Game)
+                    .OrderByDescending(l => l.AcquiredAt)
+                    .ToListAsync();
+
+    public async Task<bool> IsOwnedAsync(int userId, int gameId) =>
+        await _dbSet.AnyAsync(l => l.UserId == userId && l.GameId == gameId);
+}
+
+FILE: GameStore.Repository/EFCore/NotificationRepository.cs
+// GameStore.Repository/EFCore/NotificationRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public class NotificationRepository : Repository<Notification>, INotificationRepository
+{
+    public NotificationRepository(GameStoreDbContext context) : base(context) { }
+
+    public async Task<List<Notification>> GetByUserAsync(
+        int userId, bool unreadOnly = false, int limit = 50)
+    {
+        var query = _dbSet.Where(n => n.UserId == userId);
+        if (unreadOnly) query = query.Where(n => !n.IsRead);
+        return await query.OrderByDescending(n => n.CreatedAt).Take(limit).ToListAsync();
+    }
+
+    public async Task MarkAsReadAsync(int notificationId, int userId)
+    {
+        var noti = await _dbSet.FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == userId);
+        if (noti != null)
+        {
+            noti.IsRead = true;
+            await _context.SaveChangesAsync();
+        }
+    }
 }
 
 FILE: GameStore.Repository/EFCore/OrderRepository.cs
@@ -2759,8 +3218,102 @@ namespace GameStore.Repository.EFCore;
 public class OrderRepository : Repository<Order>, IOrderRepository
 {
     public OrderRepository(GameStoreDbContext context) : base(context) { }
+
     public async Task<List<Order>> GetByUserAsync(int userId) =>
-        await _dbSet.Where(o => o.UserId == userId).OrderByDescending(o => o.OrderDate).ToListAsync();
+        await _dbSet.Where(o => o.UserId == userId)
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToListAsync();
+
+    public async Task<List<Order>> GetByUserWithDetailsAsync(int userId) =>
+        await _dbSet.Where(o => o.UserId == userId)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Game)
+                    .OrderByDescending(o => o.OrderDate)
+                    .ToListAsync();
+
+    public async Task<(List<Order> Orders, int TotalCount)> SearchOrdersAsync(
+        string? keyword, DateTime? fromDate, DateTime? toDate,
+        string? status, int page, int pageSize)
+    {
+        var query = _dbSet.Include(o => o.User).AsQueryable();
+
+        if (!string.IsNullOrEmpty(keyword))
+        {
+            var isNumeric = int.TryParse(keyword, out int orderId);
+            query = query.Where(o => o.User.Username.Contains(keyword) ||
+                                     (isNumeric && o.Id == orderId));
+        }
+        if (fromDate.HasValue)
+            query = query.Where(o => o.OrderDate >= fromDate.Value);
+        if (toDate.HasValue)
+            query = query.Where(o => o.OrderDate <= toDate.Value);
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(o => o.Status == status);
+
+        int totalCount = await query.CountAsync();
+        var orders = await query.OrderByDescending(o => o.OrderDate)
+                                .Skip((page - 1) * pageSize)
+                                .Take(pageSize)
+                                .ToListAsync();
+        return (orders, totalCount);
+    }
+
+    public async Task<Order?> GetOrderWithDetailsAsync(int orderId) =>
+        await _dbSet.Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.Game)
+                    .Include(o => o.OrderDetails)
+                        .ThenInclude(od => od.GameKeys)
+                    .FirstOrDefaultAsync(o => o.Id == orderId);
+}
+
+FILE: GameStore.Repository/EFCore/PaymentRepository.cs
+// GameStore.Repository/EFCore/PaymentRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public class PaymentRepository : Repository<Payment>, IPaymentRepository
+{
+    public PaymentRepository(GameStoreDbContext context) : base(context) { }
+
+    public async Task<(List<Payment> Payments, int TotalCount)> SearchPaymentsAsync(
+        string? keyword, string? status, string? method,
+        DateTime? fromDate, DateTime? toDate, int page, int pageSize)
+    {
+        var query = _dbSet.Include(p => p.Order).ThenInclude(o => o.User).AsQueryable();
+
+        if (!string.IsNullOrEmpty(keyword))
+        {
+            var isNumeric = int.TryParse(keyword, out int searchId);
+            query = query.Where(p => (isNumeric && (p.Id == searchId || p.OrderId == searchId)) ||
+                                     (p.TransactionId != null && p.TransactionId.Contains(keyword)) ||
+                                     p.Order.User.Username.Contains(keyword));
+        }
+        if (!string.IsNullOrEmpty(status))
+            query = query.Where(p => p.Status == status);
+        if (!string.IsNullOrEmpty(method))
+            query = query.Where(p => p.PaymentMethod == method);
+        if (fromDate.HasValue)
+            query = query.Where(p => p.PaidAt >= fromDate.Value);
+        if (toDate.HasValue)
+            query = query.Where(p => p.PaidAt <= toDate.Value);
+
+        int totalCount = await query.CountAsync();
+        var payments = await query.OrderByDescending(p => p.PaidAt)
+                                  .Skip((page - 1) * pageSize)
+                                  .Take(pageSize)
+                                  .ToListAsync();
+        return (payments, totalCount);
+    }
+
+    public async Task<Payment?> GetPaymentWithDetailsAsync(int paymentId) =>
+        await _dbSet.Include(p => p.Order).ThenInclude(o => o.User)
+                    .FirstOrDefaultAsync(p => p.Id == paymentId);
 }
 
 FILE: GameStore.Repository/EFCore/Repository.cs
@@ -2840,6 +3393,69 @@ public class Repository<T> : IRepository<T> where T : class
     }
 }
 
+FILE: GameStore.Repository/EFCore/ReviewRepository.cs
+// GameStore.Repository/EFCore/ReviewRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Entities.Games;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public class ReviewRepository : Repository<Review>, IReviewRepository
+{
+    public ReviewRepository(GameStoreDbContext context) : base(context) { }
+
+    public async Task<(List<Review> Reviews, int TotalCount)> GetReviewsByGameAsync(
+        int gameId, int page, int pageSize)
+    {
+        var query = _dbSet.Include(r => r.User)
+                         .Where(r => r.GameId == gameId)
+                         .OrderByDescending(r => r.CreatedAt);
+        int totalCount = await query.CountAsync();
+        var reviews = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        return (reviews, totalCount);
+    }
+
+    public async Task<bool> ExistsAsync(int userId, int gameId) =>
+        await _dbSet.AnyAsync(r => r.UserId == userId && r.GameId == gameId);
+
+    public async Task UpdateGameRatingAsync(int gameId)
+    {
+        var avg = await _dbSet.Where(r => r.GameId == gameId)
+                              .AverageAsync(r => (double?)r.Rating) ?? 0;
+        var count = await _dbSet.CountAsync(r => r.GameId == gameId);
+        var game = await _context.Set<Game>().FindAsync(gameId);
+        if (game != null)
+        {
+            game.Rating = avg;
+            game.RatingCount = count;
+            await _context.SaveChangesAsync();
+        }
+    }
+}
+
+FILE: GameStore.Repository/EFCore/RoleRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Entities.Auth;
+
+namespace GameStore.Repository.EFCore;
+
+public class RoleRepository : Repository<Role>, IRoleRepository
+{
+    public RoleRepository(GameStoreDbContext context) : base(context) { }
+
+    public async Task<Role?> GetByNameAsync(string name) =>
+        await _dbSet.FirstOrDefaultAsync(r => r.Name == name && !r.IsDeleted);
+}
+
 FILE: GameStore.Repository/EFCore/UserRepository.cs
 // GameStore.Repository/EFCore/UserRepository.cs
 using System;
@@ -2885,6 +3501,109 @@ public class UserRepository : Repository<User>, IUserRepository
 
     public async Task<bool> IsEmailExists(string email) =>
         await _dbSet.AnyAsync(u => u.Email == email);
+
+    // ADMIN
+    public async Task<(List<User> Users, int TotalCount)> AdminSearchAsync(
+    string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
+    string? sortBy, bool desc, int page, int pageSize)
+    {
+        var query = _dbSet.AsQueryable();
+
+        if (!string.IsNullOrEmpty(keyword))
+            query = query.Where(u => u.Username.Contains(keyword) || u.DisplayName.Contains(keyword) || u.Email.Contains(keyword));
+        if (isActive.HasValue)
+            query = query.Where(u => u.IsActive == isActive.Value);
+        if (fromDate.HasValue)
+            query = query.Where(u => u.CreatedAt >= fromDate.Value);
+        if (toDate.HasValue)
+            query = query.Where(u => u.CreatedAt <= toDate.Value.AddDays(1));
+
+        int totalCount = await query.CountAsync();
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(u => u.Id) : query.OrderBy(u => u.Id),
+            "username" => desc ? query.OrderByDescending(u => u.Username) : query.OrderBy(u => u.Username),
+            "displayname" => desc ? query.OrderByDescending(u => u.DisplayName) : query.OrderBy(u => u.DisplayName),
+            "email" => desc ? query.OrderByDescending(u => u.Email) : query.OrderBy(u => u.Email),
+            "wallet" => desc ? query.OrderByDescending(u => u.Wallet) : query.OrderBy(u => u.Wallet),
+            "createdat" => desc ? query.OrderByDescending(u => u.CreatedAt) : query.OrderBy(u => u.CreatedAt),
+            _ => query.OrderByDescending(u => u.CreatedAt)
+        };
+
+        var users = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        return (users, totalCount);
+    }
+}
+
+FILE: GameStore.Repository/EFCore/UserRoleRepository.cs
+// GameStore.Repository/EFCore/UserRoleRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Entities.Users;
+
+namespace GameStore.Repository.EFCore;
+
+public class UserRoleRepository : Repository<UserRole>, IUserRoleRepository
+{
+    public UserRoleRepository(GameStoreDbContext context) : base(context) { }
+
+    public async Task<UserRole?> GetActiveRoleByUserIdAsync(int userId) =>
+        await _dbSet
+            .Include(ur => ur.Role)
+            .FirstOrDefaultAsync(ur => ur.UserId == userId && !ur.IsDeleted);
+
+    public async Task AddRoleToUserAsync(int userId, int roleId)
+    {
+        var existing = await _dbSet
+            .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.RoleId == roleId);
+        if (existing != null)
+        {
+            if (existing.IsDeleted) existing.IsDeleted = false;
+        }
+        else
+        {
+            await _dbSet.AddAsync(new UserRole
+            {
+                UserId = userId,
+                RoleId = roleId,
+                Guid = Guid.NewGuid(),
+                CreatedBy = "system",
+                Created = DateTime.UtcNow,
+                ModifiedBy = "system",
+                Modified = DateTime.UtcNow
+            });
+        }
+        await _context.SaveChangesAsync();
+    }
+}
+
+FILE: GameStore.Repository/EFCore/WishlistRepository.cs
+// GameStore.Repository/EFCore/WishlistRepository.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Entities.Store;
+
+namespace GameStore.Repository.EFCore;
+
+public class WishlistRepository : Repository<Wishlist>, IWishlistRepository
+{
+    public WishlistRepository(GameStoreDbContext context) : base(context) { }
+
+    public async Task<List<Wishlist>> GetByUserAsync(int userId) =>
+        await _dbSet.Where(w => w.UserId == userId)
+                    .Include(w => w.Game)
+                    .OrderByDescending(w => w.AddedAt)
+                    .ToListAsync();
+
+    public async Task<bool> ExistsAsync(int userId, int gameId) =>
+        await _dbSet.AnyAsync(w => w.UserId == userId && w.GameId == gameId);
 }
 
 FILE: GameStore.Repository/GameStore.Repository.csproj
@@ -3652,52 +4371,119 @@ public class GameStoreDbContextFactory : IDesignTimeDbContextFactory<GameStoreDb
     }
 }
 
-FILE: GameStore.Services/AdminService.cs
-// GameStore.Services/AdminService.cs
+FILE: GameStore.Services/Admin/AdminCategoryService.cs
+// GameStore.Services/Admin/AdminCategoryService.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using GameStore.DTOs.Admin;
-using GameStore.Entities.Auth;
 using GameStore.Entities.Games;
-using GameStore.Entities.Store;
-using GameStore.Entities.Users;
-using GameStore.Repository;
+using GameStore.Repository.EFCore;
 
-namespace GameStore.Services;
+namespace GameStore.Services.Admin;
 
-public class AdminService : IAdminService
+public class AdminCategoryService : IAdminCategoryService
 {
-    private readonly GameStoreDbContext _context;
-    private readonly IGameService _gameService;
-    private readonly IOrderService _orderService;
-    private readonly INotificationService _notificationService;
+    private readonly IGenreRepository _genreRepo;
 
-    public AdminService(GameStoreDbContext context, IGameService gameService, IOrderService orderService, INotificationService notificationService)
+    public AdminCategoryService(IGenreRepository genreRepo) => _genreRepo = genreRepo;
+
+    public async Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize)
     {
-        _context = context;
-        _gameService = gameService;
-        _orderService = orderService;
-        _notificationService = notificationService;
+        var (genres, totalCount) = await _genreRepo.SearchAsync(keyword, status, hasGames, page, pageSize);
+        var data = new List<object>();
+        foreach (var g in genres)
+        {
+            var gameCount = await _genreRepo.GetGameCountAsync(g.Id);
+            data.Add(new
+            {
+                g.Id,
+                g.Name,
+                g.Description,
+                g.IconUrl,
+                g.IsActive,
+                gameCount
+            });
+        }
+        return new { data, totalCount };
     }
 
-    // ================= DASHBOARD =================
+    public async Task CreateCategoryAsync(CategoryDto dto)
+    {
+        if (await _genreRepo.GetByNameAsync(dto.Name) != null)
+            throw new Exception("Category name already exists");
+        var genre = new Genre
+        {
+            Name = dto.Name,
+            Description = dto.Description ?? "",
+            IconUrl = dto.IconUrl ?? "",
+            IsActive = dto.IsActive
+        };
+        await _genreRepo.AddAsync(genre);
+    }
+
+    public async Task UpdateCategoryAsync(int id, CategoryDto dto)
+    {
+        var genre = await _genreRepo.GetByIdAsync(id) ?? throw new Exception("Category not found");
+        if (await _genreRepo.GetByNameAsync(dto.Name) != null && genre.Name != dto.Name)
+            throw new Exception("Category name already exists");
+        genre.Name = dto.Name;
+        genre.Description = dto.Description ?? "";
+        genre.IconUrl = dto.IconUrl ?? "";
+        genre.IsActive = dto.IsActive;
+        await _genreRepo.UpdateAsync(genre);
+    }
+
+    public async Task DeleteCategoryAsync(int id)
+    {
+        var genre = await _genreRepo.GetByIdAsync(id) ?? throw new Exception("Category not found");
+        var gameCount = await _genreRepo.GetGameCountAsync(id);
+        if (gameCount > 0)
+            throw new Exception($"Cannot delete: {gameCount} games use this category");
+        await _genreRepo.DeleteByIdAsync(id);
+    }
+}
+
+FILE: GameStore.Services/Admin/AdminDashboardService.cs
+// GameStore.Services/Admin/AdminDashboardService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Repository.EFCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace GameStore.Services.Admin;
+
+public class AdminDashboardService : IAdminDashboardService
+{
+    private readonly IGameRepository _gameRepo;
+    private readonly IUserRepository _userRepo;
+    private readonly IOrderRepository _orderRepo;
+
+    public AdminDashboardService(
+        IGameRepository gameRepo,
+        IUserRepository userRepo,
+        IOrderRepository orderRepo)
+    {
+        _gameRepo = gameRepo;
+        _userRepo = userRepo;
+        _orderRepo = orderRepo;
+    }
+
     public async Task<object> GetDashboardAsync()
     {
-        var totalGames = await _context.Games.CountAsync();
-        var totalUsers = await _context.Users.CountAsync();
-        var totalOrders = await _context.Orders.CountAsync();
-        var revenue = await _context.Orders
-            .Where(o => o.Status == "Completed")
-            .SumAsync(o => o.TotalAmount);
+        var totalGames = await _gameRepo.GetAllAsync().ContinueWith(t => t.Result.Count());
+        var totalUsers = await _userRepo.GetAllAsync().ContinueWith(t => t.Result.Count());
+        var allOrders = await _orderRepo.GetAllAsync();
+        var totalOrders = allOrders.Count();
+        var revenue = allOrders.Where(o => o.Status == "Completed").Sum(o => o.TotalAmount);
 
         var currentYear = DateTime.UtcNow.Year;
-        var completedOrders = await _context.Orders
+        var completedOrders = allOrders
             .Where(o => o.Status == "Completed" && o.OrderDate.Year == currentYear)
-            .Select(o => new { o.OrderDate, o.TotalAmount })
-            .ToListAsync();
+            .ToList();
 
         var monthlyRevenue = Enumerable.Range(0, 12).Select(m => new
         {
@@ -3706,21 +4492,19 @@ public class AdminService : IAdminService
             count = completedOrders.Count(o => o.OrderDate.Month == m + 1)
         }).ToList();
 
-        var recentOrders = await _context.Orders
-            .Include(o => o.User)
+        var recentOrders = allOrders
             .OrderByDescending(o => o.OrderDate)
             .Take(20)
             .Select(o => new
             {
                 o.Id,
                 o.UserId,
-                username = o.User.Username,
+                username = o.User?.Username,
                 o.TotalAmount,
                 o.Status,
                 o.PaymentMethod,
                 o.OrderDate
-            })
-            .ToListAsync();
+            }).ToList();
 
         return new
         {
@@ -3732,18 +4516,138 @@ public class AdminService : IAdminService
             recentOrders
         };
     }
+}
 
-    // ================= GAMES =================
+FILE: GameStore.Services/Admin/AdminGameKeyService.cs
+// GameStore.Services/Admin/AdminGameKeyService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+using GameStore.Entities.Store;
+using GameStore.Repository.EFCore;
+
+namespace GameStore.Services.Admin;
+
+public class AdminGameKeyService : IAdminGameKeyService
+{
+    private readonly IGameKeyRepository _gameKeyRepo;
+    private readonly IGameRepository _gameRepo;
+
+    public AdminGameKeyService(IGameKeyRepository gameKeyRepo, IGameRepository gameRepo)
+    {
+        _gameKeyRepo = gameKeyRepo;
+        _gameRepo = gameRepo;
+    }
+
+    public async Task<object> GetGameKeysAsync(string? keyword, int? gameId, string? status, int page, int pageSize)
+    {
+        var (keys, totalCount) = await _gameKeyRepo.SearchAsync(keyword, gameId, status, page, pageSize);
+        var stats = await _gameKeyRepo.GetStatsAsync();
+        var data = keys.Select(k => new
+        {
+            k.Id,
+            k.GameId,
+            gameTitle = k.Game?.Title ?? "",
+            k.KeyCode,
+            k.IsUsed,
+            k.OrderDetailId,
+            k.UsedAt,
+            k.CreatedAt,
+            k.ExpiresAt
+        }).ToList();
+        return new { data, totalCount, stats };
+    }
+
+    public async Task CreateGameKeyAsync(GameKeyDto dto)
+    {
+        var game = await _gameRepo.GetByIdAsync(dto.GameId) ?? throw new Exception("Game not found");
+        if (await _gameKeyRepo.FirstOrDefaultAsync(k => k.KeyCode == dto.KeyCode) != null)
+            throw new Exception("Key code already exists");
+        await _gameKeyRepo.AddAsync(new GameKey
+        {
+            GameId = dto.GameId,
+            KeyCode = dto.KeyCode,
+            ExpiresAt = dto.ExpiresAt
+        });
+    }
+
+    public async Task CreateBatchGameKeysAsync(BatchGameKeyDto dto)
+    {
+        var game = await _gameRepo.GetByIdAsync(dto.GameId) ?? throw new Exception("Game not found");
+        var existing = new HashSet<string>((await _gameKeyRepo.GetAllAsync()).Select(k => k.KeyCode));
+        var keys = dto.KeyCodes
+            .Where(c => !string.IsNullOrWhiteSpace(c) && !existing.Contains(c))
+            .Select(c => new GameKey { GameId = dto.GameId, KeyCode = c.Trim(), ExpiresAt = dto.ExpiresAt })
+            .ToList();
+        if (keys.Count == 0) throw new Exception("No valid keys to add");
+        await _gameKeyRepo.AddRangeAsync(keys);
+    }
+
+    public async Task UpdateGameKeyAsync(int id, UpdateGameKeyDto dto)
+    {
+        var key = await _gameKeyRepo.GetByIdAsync(id) ?? throw new Exception("Key not found");
+        if (key.IsUsed) throw new Exception("Cannot edit a used key");
+        if (!string.IsNullOrWhiteSpace(dto.KeyCode))
+        {
+            if (await _gameKeyRepo.FirstOrDefaultAsync(k => k.KeyCode == dto.KeyCode && k.Id != id) != null)
+                throw new Exception("Key code already exists");
+            key.KeyCode = dto.KeyCode;
+        }
+        key.ExpiresAt = dto.ClearExpiry ? null : (dto.ExpiresAt ?? key.ExpiresAt);
+        await _gameKeyRepo.UpdateAsync(key);
+    }
+
+    public async Task DeleteGameKeyAsync(int id)
+    {
+        var key = await _gameKeyRepo.GetByIdAsync(id) ?? throw new Exception("Key not found");
+        if (key.IsUsed) throw new Exception("Cannot delete a used key");
+        await _gameKeyRepo.DeleteAsync(key);
+    }
+}
+
+FILE: GameStore.Services/Admin/AdminGameService.cs
+// GameStore.Services/Admin/AdminGameService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+using GameStore.Entities.Games;
+using GameStore.Entities.Store;
+using GameStore.Repository.EFCore;
+
+namespace GameStore.Services.Admin;
+
+public class AdminGameService : IAdminGameService
+{
+    private readonly IGameService _gameService;
+    private readonly IGameRepository _gameRepo;
+    private readonly IGenreRepository _genreRepo;
+    private readonly IGameKeyRepository _gameKeyRepo;
+    private readonly IGameGenreRepository _gameGenreRepo; // mới
+
+    public AdminGameService(
+        IGameService gameService,
+        IGameRepository gameRepo,
+        IGenreRepository genreRepo,
+        IGameKeyRepository gameKeyRepo,
+        IGameGenreRepository gameGenreRepo) // Thêm
+    {
+        _gameService = gameService;
+        _gameRepo = gameRepo;
+        _genreRepo = genreRepo;
+        _gameKeyRepo = gameKeyRepo;
+        _gameGenreRepo = gameGenreRepo;
+    }
+
     public async Task<(IEnumerable<Game> Games, int TotalCount)> GetGamesAsync(
         string? keyword, int? genreId, decimal? minPrice, decimal? maxPrice,
         string? sortBy, bool desc, int page, int pageSize)
     {
-        var (games, totalCount) = await _gameService.Search(
-            keyword, genreId, minPrice, maxPrice,
-            sortBy ?? "CreatedAt", desc,
-            page, pageSize
-        );
-        return (games, totalCount);
+        return await _gameRepo.SearchAsync(keyword, genreId, minPrice, maxPrice,
+            sortBy ?? "createdat", desc, page, pageSize);
     }
 
     public async Task<Game> CreateGameAsync(AdminGameCreateDto dto)
@@ -3769,35 +4673,33 @@ public class AdminService : IAdminService
 
         if (dto.GenreIds != null && dto.GenreIds.Any())
         {
-            foreach (var gid in dto.GenreIds)
-            {
-                _context.GameGenres.Add(new GameGenre { GameId = created.Id, GenreId = gid });
-            }
-            await _context.SaveChangesAsync();
+            var genres = dto.GenreIds.Select(gid => new GameGenre { GameId = created.Id, GenreId = gid });
+            await _gameGenreRepo.AddRangeAsync(genres);
         }
 
-        // Tự động sinh 10-20 game keys, hết hạn sau 1 ngày
+        // Tự động sinh 10-20 key
         var random = new Random();
         int keyCount = random.Next(10, 21);
+        var keys = new List<GameKey>();
         for (int i = 0; i < keyCount; i++)
         {
-            _context.GameKeys.Add(new GameKey
+            keys.Add(new GameKey
             {
                 GameId = created.Id,
-                KeyCode = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper(),
+                KeyCode = Guid.NewGuid().ToString("N")[..12].ToUpper(),
                 ExpiresAt = DateTime.UtcNow.AddDays(1),
-                CreatedAt = DateTime.UtcNow,
-                IsUsed = false
+                CreatedAt = DateTime.UtcNow
             });
         }
-        await _context.SaveChangesAsync();
+        await _gameKeyRepo.AddRangeAsync(keys);
 
         return created;
     }
 
     public async Task UpdateGameAsync(int id, AdminGameUpdateDto dto)
     {
-        var existing = await _gameService.GetById(id) ?? throw new Exception("Game not found");
+        var existing = await _gameRepo.GetByIdAsync(id)
+                       ?? throw new Exception("Game not found");
 
         existing.Title = dto.Title ?? existing.Title;
         existing.Description = dto.Description ?? existing.Description;
@@ -3813,13 +4715,14 @@ public class AdminService : IAdminService
         existing.MinimumGraphics = dto.MinimumGraphics ?? existing.MinimumGraphics;
         existing.MinimumStorage = dto.MinimumStorage ?? existing.MinimumStorage;
 
+        // Cập nhật thể loại
         if (dto.GenreIds != null)
         {
-            var existingGenres = _context.GameGenres.Where(gg => gg.GameId == id);
-            _context.GameGenres.RemoveRange(existingGenres);
-            foreach (var gid in dto.GenreIds)
+            await _gameGenreRepo.RemoveByGameIdAsync(id);
+            if (dto.GenreIds.Any())
             {
-                _context.GameGenres.Add(new GameGenre { GameId = id, GenreId = gid });
+                var genres = dto.GenreIds.Select(gid => new GameGenre { GameId = id, GenreId = gid });
+                await _gameGenreRepo.AddRangeAsync(genres);
             }
         }
 
@@ -3827,319 +4730,117 @@ public class AdminService : IAdminService
             existing.ReleaseDate = dto.ReleaseDate.Value;
 
         await _gameService.Update(existing);
-        await _context.SaveChangesAsync();
     }
 
-    public async Task DeleteGameAsync(int id)
+    public async Task DeleteGameAsync(int id) => await _gameService.Delete(id);
+}
+
+FILE: GameStore.Services/Admin/AdminOrderService.cs
+// GameStore.Services/Admin/AdminOrderService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Store;
+using GameStore.Repository.EFCore;
+using GameStore.Services;
+
+namespace GameStore.Services.Admin;
+
+public class AdminOrderService : IAdminOrderService
+{
+    private readonly IOrderRepository _orderRepo;
+    private readonly IOrderService _orderService;
+    private readonly INotificationService _notificationService;
+
+    public AdminOrderService(IOrderRepository orderRepo, IOrderService orderService,
+        INotificationService notificationService)
     {
-        var existing = await _gameService.GetById(id) ?? throw new Exception("Game not found");
-        await _gameService.Delete(id);
+        _orderRepo = orderRepo;
+        _orderService = orderService;
+        _notificationService = notificationService;
     }
 
-    // ================= USERS =================
-    public async Task<(IEnumerable<User> Users, int TotalCount)> GetUsersAsync(
-        string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
-        string? sortBy, bool desc, int page, int pageSize)
-    {
-        var query = _context.Users.AsQueryable();
-
-        if (!string.IsNullOrEmpty(keyword))
-            query = query.Where(u => u.Username.Contains(keyword) || u.DisplayName.Contains(keyword) || u.Email.Contains(keyword));
-        if (isActive.HasValue)
-            query = query.Where(u => u.IsActive == isActive.Value);
-        if (fromDate.HasValue)
-            query = query.Where(u => u.CreatedAt >= fromDate.Value);
-        if (toDate.HasValue)
-            query = query.Where(u => u.CreatedAt <= toDate.Value.AddDays(1));
-
-        var totalCount = await query.CountAsync();
-
-        query = sortBy?.ToLower() switch
-        {
-            "id" => desc ? query.OrderByDescending(u => u.Id) : query.OrderBy(u => u.Id),
-            "username" => desc ? query.OrderByDescending(u => u.Username) : query.OrderBy(u => u.Username),
-            "displayname" => desc ? query.OrderByDescending(u => u.DisplayName) : query.OrderBy(u => u.DisplayName),
-            "email" => desc ? query.OrderByDescending(u => u.Email) : query.OrderBy(u => u.Email),
-            "wallet" => desc ? query.OrderByDescending(u => u.Wallet) : query.OrderBy(u => u.Wallet),
-            "createdat" => desc ? query.OrderByDescending(u => u.CreatedAt) : query.OrderBy(u => u.CreatedAt),
-            _ => query.OrderByDescending(u => u.CreatedAt)
-        };
-
-        var users = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-        return (users, totalCount);
-    }
-
-    public async Task UpdateUserAsync(int id, AdminUserUpdateDto dto)
-    {
-        var user = await _context.Users.FindAsync(id) ?? throw new Exception("User not found");
-        user.DisplayName = dto.DisplayName ?? user.DisplayName;
-        user.Email = dto.Email ?? user.Email;
-        if (dto.Phone != null) user.Phone = dto.Phone;
-        if (dto.AvatarUrl != null) user.AvatarUrl = dto.AvatarUrl;
-        if (dto.Wallet.HasValue) user.Wallet = dto.Wallet.Value;
-        if (dto.IsActive.HasValue) user.IsActive = dto.IsActive.Value;
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteUserAsync(int id)
-    {
-        var user = await _context.Users.FindAsync(id) ?? throw new Exception("User not found");
-        _context.Users.Remove(user);
-        await _context.SaveChangesAsync();
-    }
-
-    // ================= ORDERS =================
     public async Task<(IEnumerable<Order> Orders, int TotalCount)> GetOrdersAsync(
         string? keyword, DateTime? fromDate, DateTime? toDate, string? status,
         string? sortBy, bool desc, int page, int pageSize)
     {
-        var query = _context.Orders.Include(o => o.User).AsQueryable();
-
-        if (!string.IsNullOrEmpty(keyword))
-        {
-            var isNumeric = int.TryParse(keyword, out int searchId);
-            query = query.Where(o => o.User.Username.Contains(keyword) || (isNumeric && o.Id == searchId));
-        }
-        if (fromDate.HasValue) query = query.Where(o => o.OrderDate >= fromDate.Value);
-        if (toDate.HasValue) query = query.Where(o => o.OrderDate <= toDate.Value);
-        if (!string.IsNullOrEmpty(status)) query = query.Where(o => o.Status == status);
-
-        var totalCount = await query.CountAsync();
-
-        query = sortBy?.ToLower() switch
-        {
-            "id" => desc ? query.OrderByDescending(o => o.Id) : query.OrderBy(o => o.Id),
-            "totalamount" => desc ? query.OrderByDescending(o => o.TotalAmount) : query.OrderBy(o => o.TotalAmount),
-            "status" => desc ? query.OrderByDescending(o => o.Status) : query.OrderBy(o => o.Status),
-            "orderdate" => desc ? query.OrderByDescending(o => o.OrderDate) : query.OrderBy(o => o.OrderDate),
-            _ => query.OrderByDescending(o => o.OrderDate)
-        };
-
-        var orders = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
-        return (orders, totalCount);
+        return await _orderRepo.SearchOrdersAsync(keyword, fromDate, toDate, status, page, pageSize);
     }
 
     public async Task UpdateOrderStatusAsync(int orderId, string status)
     {
         await _orderService.UpdateStatus(orderId, status);
-
-        if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
-        {
-            var order = await _context.Orders
-                .Include(o => o.User)
-                .FirstOrDefaultAsync(o => o.Id == orderId);
-
-            if (order != null)
-            {
-                await _notificationService.CreateNotificationAsync(
-                    order.UserId,
-                    "Order Approved ✅",
-                    $"Your order #{orderId} has been approved. Check your email for game keys!",
-                    $"/invoice/{orderId}"
-                );
-            }
-        }
+        // Notify user nếu completed (đã có trong UpdateStatus)
     }
+}
 
-    // ================= CATEGORIES (Genres) =================
-    public async Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize)
+FILE: GameStore.Services/Admin/AdminPaymentService.cs
+// GameStore.Services/Admin/AdminPaymentService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+using GameStore.Repository.EFCore;
+using GameStore.Services.Authen;
+
+namespace GameStore.Services.Admin;
+
+public class AdminPaymentService : IAdminPaymentService
+{
+    private readonly IPaymentRepository _paymentRepo;
+    private readonly IOrderRepository _orderRepo;
+    private readonly IUserService _userService;
+    private readonly IUserRepository _userRepo;
+
+    public AdminPaymentService(IPaymentRepository paymentRepo, IOrderRepository orderRepo,
+        IUserService userService, IUserRepository userRepo)
     {
-        var query = _context.Genres.AsQueryable();
-
-        if (!string.IsNullOrEmpty(keyword))
-            query = query.Where(g => g.Name.Contains(keyword) || g.Description.Contains(keyword));
-        if (status == "active") query = query.Where(g => g.IsActive);
-        else if (status == "inactive") query = query.Where(g => !g.IsActive);
-        if (hasGames == true)
-            query = query.Where(g => _context.GameGenres.Any(gg => gg.GenreId == g.Id));
-        else if (hasGames == false)
-            query = query.Where(g => !_context.GameGenres.Any(gg => gg.GenreId == g.Id));
-
-        var totalCount = await query.CountAsync();
-        var data = await query.OrderBy(g => g.Name).Skip((page - 1) * pageSize).Take(pageSize)
-            .Select(g => new
-            {
-                g.Id,
-                g.Name,
-                g.Description,
-                g.IconUrl,
-                g.IsActive,
-                gameCount = _context.GameGenres.Count(gg => gg.GenreId == g.Id)
-            }).ToListAsync();
-
-        return new { data, totalCount };
+        _paymentRepo = paymentRepo;
+        _orderRepo = orderRepo;
+        _userService = userService;
+        _userRepo = userRepo;
     }
 
-    public async Task CreateCategoryAsync(CategoryDto dto)
-    {
-        if (await _context.Genres.AnyAsync(g => g.Name == dto.Name))
-            throw new Exception("Category name already exists");
-        var genre = new Genre { Name = dto.Name, Description = dto.Description ?? "", IconUrl = dto.IconUrl ?? "", IsActive = dto.IsActive };
-        _context.Genres.Add(genre);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task UpdateCategoryAsync(int id, CategoryDto dto)
-    {
-        var genre = await _context.Genres.FindAsync(id) ?? throw new Exception("Category not found");
-        if (await _context.Genres.AnyAsync(g => g.Name == dto.Name && g.Id != id))
-            throw new Exception("Category name already exists");
-        genre.Name = dto.Name;
-        genre.Description = dto.Description ?? "";
-        genre.IconUrl = dto.IconUrl ?? "";
-        genre.IsActive = dto.IsActive;
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteCategoryAsync(int id)
-    {
-        var genre = await _context.Genres.FindAsync(id) ?? throw new Exception("Category not found");
-        var gamesUsingGenre = await _context.GameGenres.CountAsync(gg => gg.GenreId == id);
-        if (gamesUsingGenre > 0)
-            throw new Exception($"Cannot delete: {gamesUsingGenre} games use this category");
-        _context.Genres.Remove(genre);
-        await _context.SaveChangesAsync();
-    }
-
-    // ================= GAME KEYS =================
-    public async Task<object> GetGameKeysAsync(string? keyword, int? gameId, string? status, int page, int pageSize)
-    {
-        var query = _context.GameKeys.Include(k => k.Game).AsQueryable();
-
-        if (!string.IsNullOrEmpty(keyword))
-            query = query.Where(k => k.KeyCode.Contains(keyword) || k.Game.Title.Contains(keyword));
-        if (gameId.HasValue) query = query.Where(k => k.GameId == gameId.Value);
-        if (status == "available") query = query.Where(k => !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
-        else if (status == "used") query = query.Where(k => k.IsUsed);
-        else if (status == "expired") query = query.Where(k => k.ExpiresAt != null && k.ExpiresAt <= DateTime.UtcNow && !k.IsUsed);
-
-        var totalCount = await query.CountAsync();
-        var data = await query.OrderByDescending(k => k.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize)
-            .Select(k => new
-            {
-                k.Id,
-                k.GameId,
-                gameTitle = k.Game.Title,
-                k.KeyCode,
-                k.IsUsed,
-                k.OrderDetailId,
-                k.UsedAt,
-                k.CreatedAt,
-                k.ExpiresAt
-            }).ToListAsync();
-
-        var totalKeys = await _context.GameKeys.CountAsync();
-        var usedKeys = await _context.GameKeys.CountAsync(k => k.IsUsed);
-        var availableKeys = await _context.GameKeys.CountAsync(k => !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
-        var expiredKeys = await _context.GameKeys.CountAsync(k => k.ExpiresAt != null && k.ExpiresAt <= DateTime.UtcNow && !k.IsUsed);
-
-        return new { data, totalCount, stats = new { totalKeys, usedKeys, availableKeys, expiredKeys } };
-    }
-
-    public async Task CreateGameKeyAsync(GameKeyDto dto)
-    {
-        var game = await _context.Games.FindAsync(dto.GameId) ?? throw new Exception("Game not found");
-        if (await _context.GameKeys.AnyAsync(k => k.KeyCode == dto.KeyCode))
-            throw new Exception("Key code already exists");
-        _context.GameKeys.Add(new GameKey { GameId = dto.GameId, KeyCode = dto.KeyCode, ExpiresAt = dto.ExpiresAt });
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task CreateBatchGameKeysAsync(BatchGameKeyDto dto)
-    {
-        var game = await _context.Games.FindAsync(dto.GameId) ?? throw new Exception("Game not found");
-        var existing = new HashSet<string>(await _context.GameKeys.Select(k => k.KeyCode).ToListAsync());
-        var keys = new List<GameKey>();
-        foreach (var code in dto.KeyCodes)
-        {
-            if (string.IsNullOrWhiteSpace(code) || existing.Contains(code)) continue;
-            keys.Add(new GameKey { GameId = dto.GameId, KeyCode = code.Trim(), ExpiresAt = dto.ExpiresAt });
-            existing.Add(code);
-        }
-        if (keys.Count == 0) throw new Exception("No valid keys to add");
-        await _context.GameKeys.AddRangeAsync(keys);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task UpdateGameKeyAsync(int id, UpdateGameKeyDto dto)
-    {
-        var key = await _context.GameKeys.FindAsync(id) ?? throw new Exception("Key not found");
-        if (key.IsUsed) throw new Exception("Cannot edit a used key");
-        if (!string.IsNullOrWhiteSpace(dto.KeyCode))
-        {
-            if (await _context.GameKeys.AnyAsync(k => k.KeyCode == dto.KeyCode && k.Id != id))
-                throw new Exception("Key code already exists");
-            key.KeyCode = dto.KeyCode;
-        }
-        key.ExpiresAt = dto.ClearExpiry ? null : (dto.ExpiresAt ?? key.ExpiresAt);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteGameKeyAsync(int id)
-    {
-        var key = await _context.GameKeys.FindAsync(id) ?? throw new Exception("Key not found");
-        if (key.IsUsed) throw new Exception("Cannot delete a used key");
-        _context.GameKeys.Remove(key);
-        await _context.SaveChangesAsync();
-    }
-
-    // ================= PAYMENTS =================
     public async Task<object> GetPaymentsAsync(string? keyword, string? status, string? method,
         DateTime? fromDate, DateTime? toDate, int page, int pageSize)
     {
-        var query = _context.Payments.Include(p => p.Order).ThenInclude(o => o.User).AsQueryable();
-
-        if (!string.IsNullOrEmpty(keyword))
+        var (payments, totalCount) = await _paymentRepo.SearchPaymentsAsync(keyword, status, method, fromDate, toDate, page, pageSize);
+        var data = payments.Select(p => new
         {
-            var isNumeric = int.TryParse(keyword, out int searchId);
-            query = query.Where(p => (isNumeric && (p.Id == searchId || p.OrderId == searchId)) ||
-                                     (p.TransactionId != null && p.TransactionId.Contains(keyword)) ||
-                                     p.Order.User.Username.Contains(keyword));
-        }
-        if (!string.IsNullOrEmpty(status)) query = query.Where(p => p.Status == status);
-        if (!string.IsNullOrEmpty(method)) query = query.Where(p => p.PaymentMethod == method);
-        if (fromDate.HasValue) query = query.Where(p => p.PaidAt >= fromDate.Value);
-        if (toDate.HasValue) query = query.Where(p => p.PaidAt <= toDate.Value);
-
-        var totalCount = await query.CountAsync();
-        var data = await query.OrderByDescending(p => p.PaidAt).Skip((page - 1) * pageSize).Take(pageSize)
-            .Select(p => new
-            {
-                p.Id,
-                p.OrderId,
-                p.Amount,
-                p.PaymentMethod,
-                p.Status,
-                p.TransactionId,
-                p.Note,
-                p.PaidAt,
-                p.CreatedAt,
-                username = p.Order.User.Username,
-                userId = p.Order.UserId
-            }).ToListAsync();
-
+            p.Id,
+            p.OrderId,
+            p.Amount,
+            p.PaymentMethod,
+            p.Status,
+            p.TransactionId,
+            p.Note,
+            p.PaidAt,
+            p.CreatedAt,
+            username = p.Order?.User?.Username,
+            userId = p.Order?.UserId
+        });
         return new { data, totalCount };
     }
 
     public async Task<object> GetOrderPaymentsAsync(int orderId)
     {
-        var order = await _context.Orders.Include(o => o.User).Include(o => o.OrderDetails).ThenInclude(od => od.Game)
-            .FirstOrDefaultAsync(o => o.Id == orderId) ?? throw new Exception("Order not found");
-
-        var payments = await _context.Payments.Where(p => p.OrderId == orderId).OrderByDescending(p => p.PaidAt).ToListAsync();
-
+        var order = await _orderRepo.GetOrderWithDetailsAsync(orderId)
+                    ?? throw new Exception("Order not found");
+        var payments = await _paymentRepo.FindAsync(p => p.OrderId == orderId);
         return new
         {
             order = new
             {
                 order.Id,
                 order.UserId,
-                username = order.User.Username,
+                username = order.User?.Username,
                 order.TotalAmount,
                 order.Status,
                 order.PaymentMethod,
                 order.OrderDate,
-                items = order.OrderDetails.Select(od => new { od.Id, od.GameId, gameTitle = od.Game.Title, od.Quantity, od.UnitPrice })
+                items = order.OrderDetails.Select(od => new { od.Id, od.GameId, gameTitle = od.Game?.Title, od.Quantity, od.UnitPrice })
             },
             payments
         };
@@ -4147,49 +4848,60 @@ public class AdminService : IAdminService
 
     public async Task RefundPaymentAsync(int paymentId, RefundDto? dto)
     {
-        var payment = await _context.Payments.Include(p => p.Order).ThenInclude(o => o.User)
-            .FirstOrDefaultAsync(p => p.Id == paymentId) ?? throw new Exception("Payment not found");
+        var payment = await _paymentRepo.GetPaymentWithDetailsAsync(paymentId)
+                      ?? throw new Exception("Payment not found");
         if (payment.Status == "Refunded") throw new Exception("Payment already refunded");
 
         var user = payment.Order.User;
-        user.Wallet += payment.Amount;
+        if (user != null)
+        {
+            user.Wallet += payment.Amount;
+            await _userRepo.UpdateAsync(user);
+        }
         payment.Status = "Refunded";
         payment.Note = dto?.Note ?? "Admin refund";
         payment.Order.Status = "Refunded";
-        await _context.SaveChangesAsync();
+        await _paymentRepo.UpdateAsync(payment);
     }
+}
 
-    // ================= ROLES =================
+FILE: GameStore.Services/Admin/AdminRoleService.cs
+// GameStore.Services/Admin/AdminRoleService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+using GameStore.Entities.Auth;
+using GameStore.Repository.EFCore;
+
+namespace GameStore.Services.Admin;
+
+public class AdminRoleService : IAdminRoleService
+{
+    private readonly IAdminRepository _adminRepo;
+
+    public AdminRoleService(IAdminRepository adminRepo) => _adminRepo = adminRepo;
+
     public async Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize)
     {
-        var query = _context.Roles.Where(r => !r.IsDeleted).AsQueryable();
-        if (!string.IsNullOrEmpty(keyword)) query = query.Where(r => r.Name.Contains(keyword) || r.Description.Contains(keyword));
-        if (isActive.HasValue)
-            query = query.Where(r => r.IsActive == isActive.Value);
-        if (hasUsers == true)
-            query = query.Where(r => _context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
-        else if (hasUsers == false)
-            query = query.Where(r => !_context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
-
-        var totalCount = await query.CountAsync();
-        var data = await query.OrderBy(r => r.Name).Skip((page - 1) * pageSize).Take(pageSize)
-            .Select(r => new
-            {
-                r.Id,
-                r.Name,
-                r.Description,
-                r.IsActive,
-                r.Created,
-                userCount = _context.UserRoles.Count(ur => ur.RoleId == r.Id && !ur.IsDeleted),
-                permissions = r.RolePermissions.Select(rp => rp.Permission).ToList()
-            }).ToListAsync();
-
+        var (rolesWithCount, totalCount) = await _adminRepo.GetRolesWithUserCountAsync(keyword, isActive, hasUsers, page, pageSize);
+        var data = rolesWithCount.Select(r => new
+        {
+            r.Role.Id,
+            r.Role.Name,
+            r.Role.Description,
+            r.Role.IsActive,
+            r.Role.Created,
+            userCount = r.UserCount,
+            permissions = r.Role.RolePermissions.Select(rp => rp.Permission).ToList()
+        }).ToList();
         return new { data, totalCount };
     }
 
     public async Task CreateRoleAsync(RoleDto dto)
     {
-        if (await _context.Roles.AnyAsync(r => r.Name == dto.Name && !r.IsDeleted))
+        if (await _adminRepo.RoleExistsAsync(dto.Name))
             throw new Exception("Role name already exists");
 
         var role = new Role
@@ -4203,23 +4915,16 @@ public class AdminService : IAdminService
             ModifiedBy = "admin",
             Modified = DateTime.UtcNow
         };
-        _context.Roles.Add(role);
-        await _context.SaveChangesAsync();
+        role = await _adminRepo.AddRoleAsync(role);
 
-        if (dto.Permissions != null)
-        {
-            foreach (var perm in dto.Permissions)
-            {
-                _context.RolePermissions.Add(new RolePermission { RoleId = role.Id, Permission = perm });
-            }
-            await _context.SaveChangesAsync();
-        }
+        if (dto.Permissions != null && dto.Permissions.Any())
+            await _adminRepo.AddRolePermissionsAsync(role.Id, dto.Permissions);
     }
 
     public async Task UpdateRoleAsync(int id, RoleDto dto)
     {
-        var role = await _context.Roles.FindAsync(id) ?? throw new Exception("Role not found");
-        if (await _context.Roles.AnyAsync(r => r.Name == dto.Name && r.Id != id && !r.IsDeleted))
+        var role = await _adminRepo.GetRoleByIdAsync(id) ?? throw new Exception("Role not found");
+        if (await _adminRepo.RoleExistsAsync(dto.Name, excludeId: id))
             throw new Exception("Role name already exists");
 
         role.Name = dto.Name;
@@ -4227,112 +4932,283 @@ public class AdminService : IAdminService
         role.IsActive = dto.IsActive;
         role.ModifiedBy = "admin";
         role.Modified = DateTime.UtcNow;
+        await _adminRepo.UpdateRoleAsync(role);
 
-        var oldPerms = await _context.RolePermissions.Where(rp => rp.RoleId == id).ToListAsync();
-        _context.RolePermissions.RemoveRange(oldPerms);
+        await _adminRepo.RemoveAllRolePermissionsAsync(id);
         if (dto.Permissions != null)
-        {
-            foreach (var perm in dto.Permissions)
-            {
-                _context.RolePermissions.Add(new RolePermission { RoleId = id, Permission = perm });
-            }
-        }
-        await _context.SaveChangesAsync();
+            await _adminRepo.AddRolePermissionsAsync(id, dto.Permissions);
     }
 
     public async Task DeleteRoleAsync(int id)
     {
-        var role = await _context.Roles.FindAsync(id) ?? throw new Exception("Role not found");
+        var role = await _adminRepo.GetRoleByIdAsync(id) ?? throw new Exception("Role not found");
         if (role.Name == "Admin" || role.Name == "User")
             throw new Exception("Cannot delete built-in roles");
 
-        var usersWithRole = await _context.UserRoles.CountAsync(ur => ur.RoleId == id && !ur.IsDeleted);
-        if (usersWithRole > 0)
-            throw new Exception($"Cannot delete: {usersWithRole} users have this role");
+        var userCount = await _adminRepo.GetUserCountInRoleAsync(id);
+        if (userCount > 0)
+            throw new Exception($"Cannot delete: {userCount} users have this role");
 
-        role.IsDeleted = true;
-        role.Modified = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
+        await _adminRepo.SoftDeleteRoleAsync(id);
     }
 
-    // ================= STAFF =================
+    public IEnumerable<string> GetPermissions() => new[]
+    {
+        "games.view", "games.create", "games.edit", "games.delete",
+        "users.view", "users.edit", "users.ban",
+        "orders.view", "orders.edit",
+        "categories.view", "categories.create", "categories.edit", "categories.delete",
+        "gamekeys.view", "gamekeys.create", "gamekeys.delete",
+        "payments.view", "payments.refund",
+        "roles.view", "roles.create", "roles.edit", "roles.delete",
+        "staff.view", "staff.assign"
+    };
+}
+
+FILE: GameStore.Services/Admin/AdminStaffService.cs
+// GameStore.Services/Admin/AdminStaffService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+using GameStore.Repository.EFCore;
+
+namespace GameStore.Services.Admin;
+
+public class AdminStaffService : IAdminStaffService
+{
+    private readonly IAdminRepository _adminRepo;
+
+    public AdminStaffService(IAdminRepository adminRepo) => _adminRepo = adminRepo;
+
     public async Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive, int page, int pageSize)
     {
-        var query = _context.Users
-            .Where(u => u.UserRoles.Any(ur => !ur.IsDeleted && ur.Role.Name != "User"))
-            .AsQueryable();
-        if (roleId.HasValue) query = query.Where(u => u.UserRoles.Any(ur => ur.RoleId == roleId.Value && !ur.IsDeleted));
-        if (!string.IsNullOrEmpty(keyword)) query = query.Where(u => u.Username.Contains(keyword) || u.DisplayName.Contains(keyword) || u.Email.Contains(keyword));
-        if (isActive.HasValue)
-            query = query.Where(u => u.IsActive == isActive.Value);
-
-        var totalCount = await query.CountAsync();
-        var data = await query.OrderBy(u => u.Username).Skip((page - 1) * pageSize).Take(pageSize)
-            .Select(u => new
-            {
-                u.Id,
-                u.Username,
-                u.DisplayName,
-                u.Email,
-                u.IsActive,
-                u.CreatedAt,
-                roles = u.UserRoles.Where(ur => !ur.IsDeleted).Select(ur => new { ur.RoleId, roleName = ur.Role.Name }).ToList()
-            }).ToListAsync();
-
+        var (users, totalCount) = await _adminRepo.GetStaffUsersAsync(keyword, roleId, isActive, page, pageSize);
+        var data = users.Select(u => new
+        {
+            u.Id,
+            u.Username,
+            u.DisplayName,
+            u.Email,
+            u.IsActive,
+            u.CreatedAt,
+            roles = u.UserRoles.Where(ur => !ur.IsDeleted).Select(ur => new { ur.RoleId, roleName = ur.Role?.Name }).ToList()
+        }).ToList();
         return new { data, totalCount };
     }
 
-    public async Task AssignRoleAsync(AssignRoleDto dto)
-    {
-        var user = await _context.Users.FindAsync(dto.UserId) ?? throw new Exception("User not found");
-        var role = await _context.Roles.FindAsync(dto.RoleId) ?? throw new Exception("Role not found");
+    public Task AssignRoleAsync(AssignRoleDto dto) => _adminRepo.AssignRoleAsync(dto.UserId, dto.RoleId);
+    public Task RevokeRoleAsync(AssignRoleDto dto) => _adminRepo.RevokeRoleAsync(dto.UserId, dto.RoleId);
+}
 
-        var existing = await _context.UserRoles.FirstOrDefaultAsync(ur => ur.UserId == dto.UserId && ur.RoleId == dto.RoleId);
-        if (existing != null)
-        {
-            if (!existing.IsDeleted) throw new Exception("User already has this role");
-            existing.IsDeleted = false;
-            existing.Modified = DateTime.UtcNow;
-        }
-        else
-        {
-            _context.UserRoles.Add(new UserRole
-            {
-                UserId = dto.UserId,
-                RoleId = dto.RoleId,
-                Guid = Guid.NewGuid(),
-                CreatedBy = "admin",
-                Created = DateTime.UtcNow,
-                ModifiedBy = "admin",
-                Modified = DateTime.UtcNow
-            });
-        }
-        await _context.SaveChangesAsync();
+FILE: GameStore.Services/Admin/AdminUserService.cs
+// GameStore.Services/Admin/AdminUserService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+using GameStore.Entities.Users;
+using GameStore.Repository.EFCore;
+using GameStore.Services.Authen;
+
+namespace GameStore.Services.Admin;
+
+public class AdminUserService : IAdminUserService
+{
+    private readonly IUserRepository _userRepo;
+    private readonly IUserService _userService;
+
+    public AdminUserService(IUserRepository userRepo, IUserService userService)
+    {
+        _userRepo = userRepo;
+        _userService = userService;
     }
 
-    public async Task RevokeRoleAsync(AssignRoleDto dto)
+    public async Task<(IEnumerable<User> Users, int TotalCount)> GetUsersAsync(
+        string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
+        string? sortBy, bool desc, int page, int pageSize)
     {
-        var userRole = await _context.UserRoles.FirstOrDefaultAsync(ur => ur.UserId == dto.UserId && ur.RoleId == dto.RoleId && !ur.IsDeleted)
-                        ?? throw new Exception("User does not have this role");
-        userRole.IsDeleted = true;
-        userRole.Modified = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
+        return await _userRepo.AdminSearchAsync(keyword, isActive, fromDate, toDate, sortBy, desc, page, pageSize);
     }
 
-    public IEnumerable<string> GetPermissions()
+    public async Task UpdateUserAsync(int id, AdminUserUpdateDto dto)
     {
-        return new[]
-        {
-            "games.view", "games.create", "games.edit", "games.delete",
-            "users.view", "users.edit", "users.ban",
-            "orders.view", "orders.edit",
-            "categories.view", "categories.create", "categories.edit", "categories.delete",
-            "gamekeys.view", "gamekeys.create", "gamekeys.delete",
-            "payments.view", "payments.refund",
-            "roles.view", "roles.create", "roles.edit", "roles.delete",
-            "staff.view", "staff.assign"
-        };
+        var user = await _userService.GetById(id) ?? throw new Exception("User not found");
+        user.DisplayName = dto.DisplayName ?? user.DisplayName;
+        user.Email = dto.Email ?? user.Email;
+        if (dto.Phone != null) user.Phone = dto.Phone;
+        if (dto.AvatarUrl != null) user.AvatarUrl = dto.AvatarUrl;
+        if (dto.Wallet.HasValue) user.Wallet = dto.Wallet.Value;
+        if (dto.IsActive.HasValue) user.IsActive = dto.IsActive.Value;
+        await _userService.Update(user);
     }
+
+    public async Task DeleteUserAsync(int id)
+    {
+        await _userService.Delete(id);
+    }
+}
+
+FILE: GameStore.Services/Admin/IAdminCategoryService.cs
+// GameStore.Services/Admin/IAdminCategoryService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+
+namespace GameStore.Services.Admin;
+
+public interface IAdminCategoryService
+{
+    Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize);
+    Task CreateCategoryAsync(CategoryDto dto);
+    Task UpdateCategoryAsync(int id, CategoryDto dto);
+    Task DeleteCategoryAsync(int id);
+}
+
+FILE: GameStore.Services/Admin/IAdminDashboardService.cs
+// GameStore.Services/Admin/IAdminDashboardService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+namespace GameStore.Services.Admin;
+
+public interface IAdminDashboardService
+{
+    Task<object> GetDashboardAsync();
+}
+
+FILE: GameStore.Services/Admin/IAdminGameKeyService.cs
+// GameStore.Services/Admin/IAdminGameKeyService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+
+namespace GameStore.Services.Admin;
+
+public interface IAdminGameKeyService
+{
+    Task<object> GetGameKeysAsync(string? keyword, int? gameId, string? status, int page, int pageSize);
+    Task CreateGameKeyAsync(GameKeyDto dto);
+    Task CreateBatchGameKeysAsync(BatchGameKeyDto dto);
+    Task UpdateGameKeyAsync(int id, UpdateGameKeyDto dto);
+    Task DeleteGameKeyAsync(int id);
+}
+
+FILE: GameStore.Services/Admin/IAdminGameService.cs
+// GameStore.Services/Admin/IAdminGameService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+using GameStore.Entities.Games;
+
+namespace GameStore.Services.Admin;
+
+public interface IAdminGameService
+{
+    Task<(IEnumerable<Game> Games, int TotalCount)> GetGamesAsync(
+        string? keyword, int? genreId, decimal? minPrice, decimal? maxPrice,
+        string? sortBy, bool desc, int page, int pageSize);
+    Task<Game> CreateGameAsync(AdminGameCreateDto dto);
+    Task UpdateGameAsync(int id, AdminGameUpdateDto dto);
+    Task DeleteGameAsync(int id);
+}
+
+FILE: GameStore.Services/Admin/IAdminOrderService.cs
+// GameStore.Services/Admin/IAdminOrderService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.Entities.Store;
+
+namespace GameStore.Services.Admin;
+
+public interface IAdminOrderService
+{
+    Task<(IEnumerable<Order> Orders, int TotalCount)> GetOrdersAsync(
+        string? keyword, DateTime? fromDate, DateTime? toDate, string? status,
+        string? sortBy, bool desc, int page, int pageSize);
+    Task UpdateOrderStatusAsync(int orderId, string status);
+}
+
+FILE: GameStore.Services/Admin/IAdminPaymentService.cs
+// GameStore.Services/Admin/AdminPaymentService.cs
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+
+namespace GameStore.Services.Admin;
+
+public interface IAdminPaymentService
+{
+    Task<object> GetPaymentsAsync(string? keyword, string? status, string? method,
+        DateTime? fromDate, DateTime? toDate, int page, int pageSize);
+    Task<object> GetOrderPaymentsAsync(int orderId);
+    Task RefundPaymentAsync(int paymentId, RefundDto? dto);
+}
+
+FILE: GameStore.Services/Admin/IAdminRoleService.cs
+// GameStore.Services/Admin/IAdminRoleService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+
+namespace GameStore.Services.Admin;
+
+public interface IAdminRoleService
+{
+    Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize);
+    Task CreateRoleAsync(RoleDto dto);
+    Task UpdateRoleAsync(int id, RoleDto dto);
+    Task DeleteRoleAsync(int id);
+    IEnumerable<string> GetPermissions();
+}
+
+FILE: GameStore.Services/Admin/IAdminStaffService.cs
+// GameStore.Services/Admin/IAdminStaffService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+
+namespace GameStore.Services.Admin;
+
+public interface IAdminStaffService
+{
+    Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive, int page, int pageSize);
+    Task AssignRoleAsync(AssignRoleDto dto);
+    Task RevokeRoleAsync(AssignRoleDto dto);
+}
+
+FILE: GameStore.Services/Admin/IAdminUserService.cs
+// GameStore.Services/Admin/IAdminUserService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GameStore.DTOs.Admin;
+using GameStore.Entities.Users;
+
+namespace GameStore.Services.Admin;
+
+public interface IAdminUserService
+{
+    Task<(IEnumerable<User> Users, int TotalCount)> GetUsersAsync(
+        string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
+        string? sortBy, bool desc, int page, int pageSize);
+    Task UpdateUserAsync(int id, AdminUserUpdateDto dto);
+    Task DeleteUserAsync(int id);
 }
 
 FILE: GameStore.Services/Authen/IUserService.cs
@@ -4350,7 +5226,8 @@ public interface IUserService
     Task<User?> Authenticate(string username, string password);
     Task<User?> GetById(int id);
     Task<List<User>> GetAll();
-    Task<User> Register(User user, string password);
+    Task<User> Register(User user, string password); // vẫn giữ, chỉ tạo user
+    Task<User> RegisterUserAsync(User user, string password); // mới: tạo user và gán role mặc định
     Task Update(User user, string? password = null);
     Task Delete(int id);
     Task<(List<User> Users, int TotalCount)> Search(string? keyword, int page, int pageSize);
@@ -4358,6 +5235,7 @@ public interface IUserService
     Task<bool> IsEmailExists(string email);
     Task<decimal> GetWalletBalance(int userId);
     Task AddToWallet(int userId, decimal amount);
+    Task<string?> GetRoleNameAsync(int userId); // mới
 }
 
 FILE: GameStore.Services/Authen/UserService.cs
@@ -4368,6 +5246,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Common.Auth;
 using GameStore.Entities.Users;
+using GameStore.Entities.Auth;
 using GameStore.Repository.EFCore;
 
 namespace GameStore.Services.Authen;
@@ -4375,10 +5254,14 @@ namespace GameStore.Services.Authen;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly IRoleRepository _roleRepo;
+    private readonly IUserRoleRepository _userRoleRepo;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, IRoleRepository roleRepo, IUserRoleRepository userRoleRepo)
     {
         _userRepository = userRepository;
+        _roleRepo = roleRepo;
+        _userRoleRepo = userRoleRepo;
     }
 
     public async Task<User?> Authenticate(string username, string password)
@@ -4406,6 +5289,18 @@ public class UserService : IUserService
         user.IsActive = true;
         await _userRepository.AddAsync(user);
         return user;
+    }
+
+    // Mới: đăng ký user và tự động gán role "User"
+    public async Task<User> RegisterUserAsync(User user, string password)
+    {
+        var createdUser = await Register(user, password);
+        var userRole = await _roleRepo.GetByNameAsync("User");
+        if (userRole != null)
+        {
+            await _userRoleRepo.AddRoleToUserAsync(createdUser.Id, userRole.Id);
+        }
+        return createdUser;
     }
 
     public async Task Update(User user, string? password = null)
@@ -4453,6 +5348,13 @@ public class UserService : IUserService
             await _userRepository.UpdateAsync(user);
         }
     }
+
+    // Mới: lấy tên role của user
+    public async Task<string?> GetRoleNameAsync(int userId)
+    {
+        var userRole = await _userRoleRepo.GetActiveRoleByUserIdAsync(userId);
+        return userRole?.Role?.Name;
+    }
 }
 
 FILE: GameStore.Services/GameService.cs
@@ -4462,6 +5364,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Entities.Games;
+using GameStore.DTOs.Games;
 using GameStore.Repository.EFCore;
 
 namespace GameStore.Services;
@@ -4502,6 +5405,18 @@ public class GameService : IGameService
     public async Task Delete(int id)
     {
         await _gameRepository.DeleteByIdAsync(id);
+    }
+
+    public async Task UpdateGameAsync(int id, GameUpdateDto dto)
+    {
+        var game = await _gameRepository.GetByIdAsync(id) ?? throw new Exception("Game not found");
+        game.Title = dto.Title ?? game.Title;
+        game.Description = dto.Description ?? game.Description;
+        game.Price = dto.Price ?? game.Price;
+        game.DiscountPrice = dto.DiscountPrice ?? game.DiscountPrice;
+        game.CoverImageUrl = dto.CoverImageUrl ?? game.CoverImageUrl;
+        game.TrailerUrl = dto.TrailerUrl ?? game.TrailerUrl;
+        await _gameRepository.UpdateAsync(game);
     }
 }
 
@@ -4566,79 +5481,6 @@ public class GenreService : IGenreService
     }
 }
 
-FILE: GameStore.Services/IAdminService.cs
-// GameStore.Services/IAdminService.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GameStore.DTOs.Admin;
-using GameStore.Entities.Games;
-using GameStore.Entities.Store;
-using GameStore.Entities.Users;
-
-namespace GameStore.Services;
-
-public interface IAdminService
-{
-    // Dashboard
-    Task<object> GetDashboardAsync();
-
-    // Games
-    Task<(IEnumerable<Game> Games, int TotalCount)> GetGamesAsync(
-        string? keyword, int? genreId, decimal? minPrice, decimal? maxPrice,
-        string? sortBy, bool desc, int page, int pageSize);
-    Task<Game> CreateGameAsync(AdminGameCreateDto dto);
-    Task UpdateGameAsync(int id, AdminGameUpdateDto dto);
-    Task DeleteGameAsync(int id);
-
-    // Users
-    Task<(IEnumerable<User> Users, int TotalCount)> GetUsersAsync(
-        string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
-        string? sortBy, bool desc, int page, int pageSize);
-    Task UpdateUserAsync(int id, AdminUserUpdateDto dto);
-    Task DeleteUserAsync(int id);
-
-    // Orders
-    Task<(IEnumerable<Order> Orders, int TotalCount)> GetOrdersAsync(
-        string? keyword, DateTime? fromDate, DateTime? toDate, string? status,
-        string? sortBy, bool desc, int page, int pageSize);
-    Task UpdateOrderStatusAsync(int orderId, string status);
-
-    // Categories (Genres)
-    Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize);
-    Task CreateCategoryAsync(CategoryDto dto);
-    Task UpdateCategoryAsync(int id, CategoryDto dto);
-    Task DeleteCategoryAsync(int id);
-
-    // Game Keys
-    Task<object> GetGameKeysAsync(string? keyword, int? gameId, string? status, int page, int pageSize);
-    Task CreateGameKeyAsync(GameKeyDto dto);
-    Task CreateBatchGameKeysAsync(BatchGameKeyDto dto);
-    Task UpdateGameKeyAsync(int id, UpdateGameKeyDto dto);
-    Task DeleteGameKeyAsync(int id);
-
-    // Payments
-    Task<object> GetPaymentsAsync(string? keyword, string? status, string? method,
-        DateTime? fromDate, DateTime? toDate, int page, int pageSize);
-    Task<object> GetOrderPaymentsAsync(int orderId);
-    Task RefundPaymentAsync(int paymentId, RefundDto? dto);
-
-    // Roles
-    Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize);
-    Task CreateRoleAsync(RoleDto dto);
-    Task UpdateRoleAsync(int id, RoleDto dto);
-    Task DeleteRoleAsync(int id);
-
-    // Staff
-    Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive, int page, int pageSize);
-    Task AssignRoleAsync(AssignRoleDto dto);
-    Task RevokeRoleAsync(AssignRoleDto dto);
-
-    // Permissions
-    IEnumerable<string> GetPermissions();
-}
-
 FILE: GameStore.Services/IGameService.cs
 // GameStore.Services/IGameService.cs
 using System;
@@ -4646,6 +5488,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Entities.Games;
+using GameStore.DTOs.Games;
 
 namespace GameStore.Services;
 
@@ -4659,6 +5502,7 @@ public interface IGameService
     Task<Game> Create(Game game);
     Task Update(Game game);
     Task Delete(int id);
+    Task UpdateGameAsync(int id, GameUpdateDto dto);
 }
 
 FILE: GameStore.Services/IGenreService.cs
@@ -4728,16 +5572,9 @@ public interface IOrderService
 {
     Task<Order?> GetById(int id);
     Task<List<Order>> GetByUser(int userId);
-    Task<List<Order>> GetAll(int page, int pageSize);
-    Task<(List<Order> Items, int TotalCount)> SearchOrders(int page, int pageSize, string? keyword, DateTime? fromDate, DateTime? toDate, string? status);
-
-    // Đồng bộ signature với DTO checkout (có email, phone, paymentMethod)
     Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items, string paymentMethod = "Wallet", string? email = null, string? phone = null);
-
     Task<Order> UpdateStatus(int orderId, string status);
     Task CancelOrder(int orderId);
-
-    // Thêm method lịch sử mua hàng
     Task<List<OrderHistoryDto>> GetOrderHistoryAsync(int userId);
 }
 
@@ -4786,40 +5623,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using GameStore.Repository;
+using GameStore.Repository.EFCore;
 
 namespace GameStore.Services;
 
 public class LibraryService : ILibraryService
 {
-    private readonly GameStoreDbContext _context;
-
-    public LibraryService(GameStoreDbContext context)
-    {
-        _context = context;
-    }
+    private readonly ILibraryRepository _libraryRepo;
+    public LibraryService(ILibraryRepository libraryRepo) => _libraryRepo = libraryRepo;
 
     public async Task<IEnumerable<object>> GetMyLibraryAsync(int userId)
     {
-        return await _context.Libraries
-            .Where(l => l.UserId == userId)
-            .Include(l => l.Game)
-            .Select(l => new
-            {
-                l.Game.Id,
-                l.Game.Title,
-                l.Game.CoverImageUrl,
-                l.Game.Developer,
-                l.Game.Rating,
-                AcquiredAt = l.AcquiredAt
-            })
-            .ToListAsync();
+        var libs = await _libraryRepo.GetByUserAsync(userId);
+        return libs.Select(l => new
+        {
+            l.Game.Id,
+            l.Game.Title,
+            l.Game.CoverImageUrl,
+            l.Game.Developer,
+            l.Game.Rating,
+            AcquiredAt = l.AcquiredAt
+        });
     }
 
-    public async Task<bool> CheckOwnedAsync(int userId, int gameId)
-    {
-        return await _context.Libraries.AnyAsync(l => l.UserId == userId && l.GameId == gameId);
-    }
+    public async Task<bool> CheckOwnedAsync(int userId, int gameId) =>
+        await _libraryRepo.IsOwnedAsync(userId, gameId);
 }
 
 FILE: GameStore.Services/NotificationService.cs
@@ -4831,52 +5659,35 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GameStore.DTOs.Notifications;
 using GameStore.Entities.Store;
-using GameStore.Repository;
+using GameStore.Repository.EFCore;
 
 namespace GameStore.Services;
 
 public class NotificationService : INotificationService
 {
-    private readonly GameStoreDbContext _context;
-
-    public NotificationService(GameStoreDbContext context) => _context = context;
+    private readonly INotificationRepository _notiRepo;
+    public NotificationService(INotificationRepository notiRepo) => _notiRepo = notiRepo;
 
     public async Task<IEnumerable<NotificationDto>> GetUserNotificationsAsync(int userId, bool unreadOnly = false)
     {
-        var query = _context.Notifications
-            .Where(n => n.UserId == userId);
-        if (unreadOnly)
-            query = query.Where(n => !n.IsRead);
-
-        return await query
-            .OrderByDescending(n => n.CreatedAt)
-            .Select(n => new NotificationDto
-            {
-                Id = n.Id,
-                Title = n.Title,
-                Message = n.Message,
-                Link = n.Link,
-                IsRead = n.IsRead,
-                CreatedAt = n.CreatedAt
-            })
-            .Take(50) // giới hạn 50 thông báo gần nhất
-            .ToListAsync();
-    }
-
-    public async Task MarkAsReadAsync(int notificationId, int userId)
-    {
-        var noti = await _context.Notifications
-            .FirstOrDefaultAsync(n => n.Id == notificationId && n.UserId == userId);
-        if (noti != null)
+        var notis = await _notiRepo.GetByUserAsync(userId, unreadOnly);
+        return notis.Select(n => new NotificationDto
         {
-            noti.IsRead = true;
-            await _context.SaveChangesAsync();
-        }
+            Id = n.Id,
+            Title = n.Title,
+            Message = n.Message,
+            Link = n.Link,
+            IsRead = n.IsRead,
+            CreatedAt = n.CreatedAt
+        });
     }
+
+    public async Task MarkAsReadAsync(int notificationId, int userId) =>
+        await _notiRepo.MarkAsReadAsync(notificationId, userId);
 
     public async Task CreateNotificationAsync(int userId, string title, string message, string? link = null)
     {
-        _context.Notifications.Add(new Notification
+        await _notiRepo.AddAsync(new Notification
         {
             UserId = userId,
             Title = title,
@@ -4884,66 +5695,56 @@ public class NotificationService : INotificationService
             Link = link,
             CreatedAt = DateTime.UtcNow
         });
-        await _context.SaveChangesAsync();
     }
 }
 
 FILE: GameStore.Services/OrderService.cs
 // GameStore.Services/OrderService.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using GameStore.Entities.Store;
 using GameStore.Entities.Games;
 using GameStore.Repository.EFCore;
 using GameStore.DTOs.Orders;
-using GameStore.Services;
 
 namespace GameStore.Services;
 
 public class OrderService : IOrderService
 {
-    private readonly IOrderRepository _orderRepository;
-    private readonly IGameRepository _gameRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly GameStore.Repository.GameStoreDbContext _context;
-    private readonly INotificationService _notificationService;
+    private readonly IOrderRepository _orderRepo;
+    private readonly IGameRepository _gameRepo;
+    private readonly IUserRepository _userRepo;
+    private readonly IGameKeyRepository _gameKeyRepo;
+    private readonly INotificationRepository _notiRepo;
+    private readonly ILibraryRepository _libraryRepo;
+    private readonly GameStore.Repository.GameStoreDbContext _context; // chỉ dùng cho transaction
 
-    public OrderService(IOrderRepository orderRepository, IGameRepository gameRepository, IUserRepository userRepository, GameStore.Repository.GameStoreDbContext context,
-    INotificationService notificationService)
+    public OrderService(
+        IOrderRepository orderRepo,
+        IGameRepository gameRepo,
+        IUserRepository userRepo,
+        IGameKeyRepository gameKeyRepo,
+        INotificationRepository notiRepo,
+        ILibraryRepository libraryRepo,
+        GameStore.Repository.GameStoreDbContext context)
     {
-        _orderRepository = orderRepository;
-        _gameRepository = gameRepository;
-        _userRepository = userRepository;
+        _orderRepo = orderRepo;
+        _gameRepo = gameRepo;
+        _userRepo = userRepo;
+        _gameKeyRepo = gameKeyRepo;
+        _notiRepo = notiRepo;
+        _libraryRepo = libraryRepo;
         _context = context;
-        _notificationService = notificationService;
     }
 
     public async Task<Order?> GetById(int id) =>
-        await _context.Orders
-            .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.Game)
-            .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.GameKeys)
-            .FirstOrDefaultAsync(o => o.Id == id);
+        await _orderRepo.GetOrderWithDetailsAsync(id);
 
     public async Task<List<Order>> GetByUser(int userId) =>
-        await _orderRepository.GetByUserAsync(userId);
-
-    public async Task<List<Order>> GetAll(int page, int pageSize) =>
-        (await _orderRepository.GetAllAsync()).ToList();
+        await _orderRepo.GetByUserWithDetailsAsync(userId);
 
     public async Task<List<OrderHistoryDto>> GetOrderHistoryAsync(int userId)
     {
-        var orders = await _context.Orders
-            .Where(o => o.UserId == userId)
-            .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Game)
-            .OrderByDescending(o => o.OrderDate)
-            .ToListAsync();
-
+        var orders = await _orderRepo.GetByUserWithDetailsAsync(userId);
         return orders.Select(o => new OrderHistoryDto
         {
             Id = o.Id,
@@ -4961,193 +5762,220 @@ public class OrderService : IOrderService
         }).ToList();
     }
 
-    public async Task<(List<Order> Items, int TotalCount)> SearchOrders(int page, int pageSize, string? keyword, DateTime? fromDate, DateTime? toDate, string? status)
+    public async Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items,
+        string paymentMethod = "Wallet", string? email = null, string? phone = null)
     {
-        var query = _context.Orders.Include(o => o.User).AsQueryable();
-
-        if (!string.IsNullOrEmpty(keyword))
-        {
-            var isNumeric = int.TryParse(keyword, out int orderId);
-            query = query.Where(o => o.User.Username.Contains(keyword) || (isNumeric && o.Id == orderId));
-        }
-        if (fromDate.HasValue) query = query.Where(o => o.OrderDate >= fromDate.Value);
-        if (toDate.HasValue) query = query.Where(o => o.OrderDate <= toDate.Value);
-        if (!string.IsNullOrEmpty(status)) query = query.Where(o => o.Status == status);
-
-        int totalCount = await query.CountAsync();
-        var items = await query.OrderByDescending(o => o.OrderDate)
-                               .Skip((page - 1) * pageSize)
-                               .Take(pageSize)
-                               .ToListAsync();
-        return (items, totalCount);
-    }
-
-    public async Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items, string paymentMethod = "Wallet", string? email = null, string? phone = null)
-    {
-        // Ép buộc chỉ dùng Wallet
         if (!paymentMethod.Equals("Wallet", StringComparison.OrdinalIgnoreCase))
             throw new Exception("Only Wallet payment method is accepted.");
 
-        decimal totalAmount = 0;
-        var orderDetails = new List<OrderDetail>();
-        var user = await _userRepository.GetByIdAsync(userId);
-
-        // Kiểm tra số lượng key có sẵn
-        foreach (var (gameId, quantity) in items)
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            var game = await _gameRepository.GetByIdAsync(gameId)
-                       ?? throw new Exception($"Game {gameId} not found");
+            decimal totalAmount = 0;
+            var orderDetails = new List<OrderDetail>();
+            var user = await _userRepo.GetByIdAsync(userId)
+                       ?? throw new Exception("User not found");
 
-            int availableKeys = await _context.GameKeys
-                .CountAsync(k => k.GameId == gameId && !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
-            if (availableKeys < quantity)
-                throw new Exception($"Not enough keys for '{game.Title}'. Available: {availableKeys}");
-
-            var price = game.DiscountPrice ?? game.Price;
-            totalAmount += price * quantity;
-            orderDetails.Add(new OrderDetail
+            foreach (var (gameId, quantity) in items)
             {
-                GameId = gameId,
-                Quantity = quantity,
-                UnitPrice = price
-            });
+                var game = await _gameRepo.GetByIdAsync(gameId)
+                           ?? throw new Exception($"Game {gameId} not found");
+
+                var availableKeys = await _gameKeyRepo.GetAvailableKeysAsync(gameId, quantity);
+                if (availableKeys.Count < quantity)
+                    throw new Exception($"Not enough keys for '{game.Title}'. Available: {availableKeys.Count}");
+
+                var price = game.DiscountPrice ?? game.Price;
+                totalAmount += price * quantity;
+                orderDetails.Add(new OrderDetail
+                {
+                    GameId = gameId,
+                    Quantity = quantity,
+                    UnitPrice = price
+                });
+            }
+
+            if (user.Wallet < totalAmount)
+                throw new Exception("Insufficient wallet balance");
+
+            user.Wallet -= totalAmount;
+            await _userRepo.UpdateAsync(user);
+
+            var order = new Order
+            {
+                UserId = userId,
+                TotalAmount = totalAmount,
+                Status = "Pending",
+                PaymentMethod = "Wallet",
+                Email = email,
+                Phone = phone,
+                OrderDate = DateTime.UtcNow,
+                OrderDetails = orderDetails
+            };
+            await _orderRepo.AddAsync(order);
+
+            await transaction.CommitAsync();
+            return order;
         }
-
-        // Kiểm tra số dư
-        if (user == null || user.Wallet < totalAmount)
-            throw new Exception("Insufficient wallet balance");
-
-        // Trừ tiền
-        user.Wallet -= totalAmount;
-        _context.Users.Update(user);
-
-        // Tạo order
-        var order = new Order
+        catch
         {
-            UserId = userId,
-            TotalAmount = totalAmount,
-            Status = "Pending",
-            PaymentMethod = "Wallet",
-            Email = email,
-            Phone = phone,
-            OrderDate = DateTime.UtcNow,
-            OrderDetails = orderDetails
-        };
-        _context.Orders.Add(order);
-
-        // Lưu tất cả
-        await _context.SaveChangesAsync();
-        return order;
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task<Order> UpdateStatus(int orderId, string status)
     {
-        var order = await _context.Orders
-            .Include(o => o.OrderDetails)
-            .ThenInclude(od => od.Game)
-            .FirstOrDefaultAsync(o => o.Id == orderId) ?? throw new Exception("Order not found");
-
-        if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase) && order.Status != "Completed")
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            // Gán key cho từng game
-            foreach (var detail in order.OrderDetails)
+            var order = await _orderRepo.GetOrderWithDetailsAsync(orderId)
+                        ?? throw new Exception("Order not found");
+
+            // Chặn chuyển sang trạng thái không hợp lệ
+            if (order.Status == "Completed")
+                throw new Exception("Cannot change status of a completed order");
+            if (order.Status == "Cancelled")
+                throw new Exception("Cannot change status of a cancelled order");
+
+            if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase) && order.Status != "Completed")
             {
-                for (int i = 0; i < detail.Quantity; i++)
+                foreach (var detail in order.OrderDetails)
                 {
-                    var key = await _context.GameKeys
-                        .FirstOrDefaultAsync(k => k.GameId == detail.GameId && !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
-                    if (key == null)
-                        throw new Exception($"No available keys for game: {detail.Game?.Title}");
+                    var keys = await _gameKeyRepo.GetAvailableKeysAsync(detail.GameId, detail.Quantity);
+                    if (keys.Count < detail.Quantity)
+                        throw new Exception($"Not enough keys for game {detail.GameId}");
 
-                    key.IsUsed = true;
-                    key.UsedAt = DateTime.UtcNow;
-                    key.OrderDetailId = detail.Id;
-                    _context.GameKeys.Update(key);
+                    foreach (var key in keys)
+                    {
+                        key.IsUsed = true;
+                        key.UsedAt = DateTime.UtcNow;
+                        key.OrderDetailId = detail.Id;
+                        await _gameKeyRepo.UpdateAsync(key);
+                    }
+                    // Thêm vào library, kiểm tra trùng để tránh duplicate key
+                    for (int i = 0; i < detail.Quantity; i++)
+                    {
+                        bool alreadyOwned = await _libraryRepo.IsOwnedAsync(order.UserId, detail.GameId);
+                        if (!alreadyOwned)
+                        {
+                            await _libraryRepo.AddAsync(new Library
+                            {
+                                UserId = order.UserId,
+                                GameId = detail.GameId,
+                                AcquiredAt = DateTime.UtcNow
+                            });
+                        }
+                    }
                 }
+                await _notiRepo.AddAsync(new Notification
+                {
+                    UserId = order.UserId,
+                    Title = "Đơn hàng đã được duyệt",
+                    Message = $"Đơn hàng #{order.Id} đã được phê duyệt. Kiểm tra email để nhận key game.",
+                    Link = $"/invoice/{order.Id}",
+                    CreatedAt = DateTime.UtcNow
+                });
             }
-            await _notificationService.CreateNotificationAsync(order.UserId, "Đơn hàng đã được duyệt", $"Đơn hàng #{order.Id} đã được phê duyệt. Kiểm tra email để nhận key game.", $"/invoice/{order.Id}");
-        }
-
-        if (status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase) && order.Status != "Cancelled")
-        {
-            var user = await _userRepository.GetByIdAsync(order.UserId);
-            if (user != null && order.PaymentMethod.Equals("Wallet", StringComparison.OrdinalIgnoreCase))
+            else if (status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase) && order.Status != "Cancelled")
             {
-                user.Wallet += order.TotalAmount;
-                _context.Users.Update(user);
+                var user = await _userRepo.GetByIdAsync(order.UserId);
+                if (user != null && order.PaymentMethod.Equals("Wallet", StringComparison.OrdinalIgnoreCase))
+                {
+                    user.Wallet += order.TotalAmount;
+                    await _userRepo.UpdateAsync(user);
+                }
+                await _notiRepo.AddAsync(new Notification
+                {
+                    UserId = order.UserId,
+                    Title = "Đơn hàng đã bị hủy",
+                    Message = $"Đơn hàng #{order.Id} đã bị hủy. Tiền đã được hoàn vào ví.",
+                    Link = $"/invoice/{order.Id}",
+                    CreatedAt = DateTime.UtcNow
+                });
             }
-            await _notificationService.CreateNotificationAsync(order.UserId, "Đơn hàng đã bị hủy", $"Đơn hàng #{order.Id} đã bị hủy. Nếu bạn đã thanh toán, tiền sẽ được hoàn vào ví.", $"/invoice/{order.Id}"
-    );
-        }
+            else
+            {
+                throw new Exception("Invalid status transition");
+            }
 
-        order.Status = status;
-        _context.Orders.Update(order);
-        await _context.SaveChangesAsync();
-        return order;
+            order.Status = status;
+            await _orderRepo.UpdateAsync(order);
+            await transaction.CommitAsync();
+            return order;
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
     public async Task CancelOrder(int orderId)
     {
-        var order = await _orderRepository.GetByIdAsync(orderId) ?? throw new Exception("Order not found");
-        if (order.Status == "Completed") throw new Exception("Cannot cancel completed order");
-
-        var user = await _userRepository.GetByIdAsync(order.UserId);
-        if (user != null)
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
         {
-            user.Wallet += order.TotalAmount;
-            await _userRepository.UpdateAsync(user);
+            var order = await _orderRepo.GetByIdAsync(orderId) ?? throw new Exception("Order not found");
+            if (order.Status == "Completed")
+                throw new Exception("Cannot cancel completed order");
+            if (order.Status == "Cancelled")
+                throw new Exception("Order already cancelled");
+
+            var user = await _userRepo.GetByIdAsync(order.UserId);
+            if (user != null)
+            {
+                user.Wallet += order.TotalAmount;
+                await _userRepo.UpdateAsync(user);
+            }
+            order.Status = "Cancelled";
+            await _orderRepo.UpdateAsync(order);
+            await transaction.CommitAsync();
         }
-        order.Status = "Cancelled";
-        await _orderRepository.UpdateAsync(order);
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 }
 
 FILE: GameStore.Services/ReviewService.cs
 // GameStore.Services/ReviewService.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using GameStore.DTOs.Reviews;
 using GameStore.Entities.Store;
-using GameStore.Repository;
+using GameStore.Repository.EFCore;
 
 namespace GameStore.Services;
 
 public class ReviewService : IReviewService
 {
-    private readonly GameStoreDbContext _context;
+    private readonly IReviewRepository _reviewRepo;
 
-    public ReviewService(GameStoreDbContext context) => _context = context;
+    public ReviewService(IReviewRepository reviewRepo)
+    {
+        _reviewRepo = reviewRepo;
+    }
 
     public async Task<IEnumerable<ReviewDto>> GetGameReviewsAsync(int gameId, int page = 1, int pageSize = 10)
     {
-        return await _context.Reviews
-            .Where(r => r.GameId == gameId)
-            .Include(r => r.User)
-            .OrderByDescending(r => r.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(r => new ReviewDto
-            {
-                Id = r.Id,
-                UserId = r.UserId,
-                Username = r.User.Username,
-                Rating = r.Rating,
-                Content = r.Content,
-                IsRecommended = r.IsRecommended,
-                HelpfulCount = r.HelpfulCount,
-                CreatedAt = r.CreatedAt
-            })
-            .ToListAsync();
+        var (reviews, _) = await _reviewRepo.GetReviewsByGameAsync(gameId, page, pageSize);
+        return reviews.Select(r => new ReviewDto
+        {
+            Id = r.Id,
+            UserId = r.UserId,
+            Username = r.User?.Username ?? "",
+            Rating = r.Rating,
+            Content = r.Content,
+            IsRecommended = r.IsRecommended,
+            HelpfulCount = r.HelpfulCount,
+            CreatedAt = r.CreatedAt
+        });
     }
 
     public async Task<ReviewDto> AddReviewAsync(int userId, CreateReviewDto dto)
     {
-        bool alreadyReviewed = await _context.Reviews
-            .AnyAsync(r => r.UserId == userId && r.GameId == dto.GameId);
-        if (alreadyReviewed)
+        if (await _reviewRepo.ExistsAsync(userId, dto.GameId))
             throw new InvalidOperationException("You have already reviewed this game.");
 
         var review = new Review
@@ -5160,27 +5988,14 @@ public class ReviewService : IReviewService
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-        _context.Reviews.Add(review);
-        await _context.SaveChangesAsync();
-
-        // Cập nhật rating trung bình của game
-        var avg = await _context.Reviews
-            .Where(r => r.GameId == dto.GameId)
-            .AverageAsync(r => (double?)r.Rating) ?? 0;
-        var count = await _context.Reviews.CountAsync(r => r.GameId == dto.GameId);
-        var game = await _context.Games.FindAsync(dto.GameId);
-        if (game != null)
-        {
-            game.Rating = avg;
-            game.RatingCount = count;
-            await _context.SaveChangesAsync();
-        }
+        await _reviewRepo.AddAsync(review);
+        await _reviewRepo.UpdateGameRatingAsync(dto.GameId);
 
         return new ReviewDto
         {
             Id = review.Id,
             UserId = userId,
-            Username = (await _context.Users.FindAsync(userId))?.Username ?? "",
+            Username = "",  // có thể bổ sung sau
             Rating = review.Rating,
             Content = review.Content,
             IsRecommended = review.IsRecommended,
@@ -5190,7 +6005,7 @@ public class ReviewService : IReviewService
 
     public async Task UpdateReviewAsync(int reviewId, int userId, CreateReviewDto dto)
     {
-        var review = await _context.Reviews.FindAsync(reviewId);
+        var review = await _reviewRepo.GetByIdAsync(reviewId);
         if (review == null || review.UserId != userId)
             throw new InvalidOperationException("Review not found or not yours.");
 
@@ -5198,48 +6013,23 @@ public class ReviewService : IReviewService
         review.Content = dto.Content;
         review.IsRecommended = dto.IsRecommended;
         review.UpdatedAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
-
-        // Recalculate rating
-        var avg = await _context.Reviews
-            .Where(r => r.GameId == review.GameId)
-            .AverageAsync(r => (double?)r.Rating) ?? 0;
-        var count = await _context.Reviews.CountAsync(r => r.GameId == review.GameId);
-        var game = await _context.Games.FindAsync(review.GameId);
-        if (game != null)
-        {
-            game.Rating = avg;
-            game.RatingCount = count;
-            await _context.SaveChangesAsync();
-        }
+        await _reviewRepo.UpdateAsync(review);
+        await _reviewRepo.UpdateGameRatingAsync(review.GameId);
     }
 
     public async Task DeleteReviewAsync(int reviewId, int userId)
     {
-        var review = await _context.Reviews.FindAsync(reviewId);
+        var review = await _reviewRepo.GetByIdAsync(reviewId);
         if (review == null || review.UserId != userId)
             throw new InvalidOperationException("Review not found or not yours.");
-        _context.Reviews.Remove(review);
-        await _context.SaveChangesAsync();
 
-        // Recalculate rating
-        var avg = await _context.Reviews
-            .Where(r => r.GameId == review.GameId)
-            .AverageAsync(r => (double?)r.Rating) ?? 0;
-        var count = await _context.Reviews.CountAsync(r => r.GameId == review.GameId);
-        var game = await _context.Games.FindAsync(review.GameId);
-        if (game != null)
-        {
-            game.Rating = avg;
-            game.RatingCount = count;
-            await _context.SaveChangesAsync();
-        }
+        int gameId = review.GameId;
+        await _reviewRepo.DeleteAsync(review);
+        await _reviewRepo.UpdateGameRatingAsync(gameId);
     }
 
-    public async Task<bool> HasUserReviewedAsync(int userId, int gameId)
-    {
-        return await _context.Reviews.AnyAsync(r => r.UserId == userId && r.GameId == gameId);
-    }
+    public async Task<bool> HasUserReviewedAsync(int userId, int gameId) =>
+        await _reviewRepo.ExistsAsync(userId, gameId);
 }
 
 FILE: GameStore.Services/WishlistService.cs
@@ -5251,65 +6041,43 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GameStore.DTOs.Wishlist;
 using GameStore.Entities.Store;
-using GameStore.Repository;
+using GameStore.Repository.EFCore;
 
 namespace GameStore.Services;
 
 public class WishlistService : IWishlistService
 {
-    private readonly GameStoreDbContext _context;
-
-    public WishlistService(GameStoreDbContext context) => _context = context;
+    private readonly IWishlistRepository _wishlistRepo;
+    public WishlistService(IWishlistRepository wishlistRepo) => _wishlistRepo = wishlistRepo;
 
     public async Task<IEnumerable<WishlistItemDto>> GetUserWishlistAsync(int userId)
     {
-        return await _context.Wishlists
-            .Where(w => w.UserId == userId)
-            .Include(w => w.Game)
-            .OrderByDescending(w => w.AddedAt)
-            .Select(w => new WishlistItemDto
-            {
-                GameId = w.GameId,
-                Title = w.Game.Title,
-                CoverImageUrl = w.Game.CoverImageUrl,
-                Price = w.Game.Price,
-                DiscountPrice = w.Game.DiscountPrice,
-                AddedAt = w.AddedAt
-            })
-            .ToListAsync();
+        var items = await _wishlistRepo.GetByUserAsync(userId);
+        return items.Select(w => new WishlistItemDto
+        {
+            GameId = w.GameId,
+            Title = w.Game.Title,
+            CoverImageUrl = w.Game.CoverImageUrl,
+            Price = w.Game.Price,
+            DiscountPrice = w.Game.DiscountPrice,
+            AddedAt = w.AddedAt
+        });
     }
 
     public async Task AddToWishlistAsync(int userId, int gameId)
     {
-        bool exists = await _context.Wishlists
-            .AnyAsync(w => w.UserId == userId && w.GameId == gameId);
-        if (exists) return;
-
-        _context.Wishlists.Add(new Wishlist
-        {
-            UserId = userId,
-            GameId = gameId,
-            AddedAt = DateTime.UtcNow
-        });
-        await _context.SaveChangesAsync();
+        if (await _wishlistRepo.ExistsAsync(userId, gameId)) return;
+        await _wishlistRepo.AddAsync(new Wishlist { UserId = userId, GameId = gameId, AddedAt = DateTime.UtcNow });
     }
 
     public async Task RemoveFromWishlistAsync(int userId, int gameId)
     {
-        var item = await _context.Wishlists
-            .FirstOrDefaultAsync(w => w.UserId == userId && w.GameId == gameId);
-        if (item != null)
-        {
-            _context.Wishlists.Remove(item);
-            await _context.SaveChangesAsync();
-        }
+        var item = await _wishlistRepo.FirstOrDefaultAsync(w => w.UserId == userId && w.GameId == gameId);
+        if (item != null) await _wishlistRepo.DeleteAsync(item);
     }
 
-    public async Task<bool> IsInWishlistAsync(int userId, int gameId)
-    {
-        return await _context.Wishlists
-            .AnyAsync(w => w.UserId == userId && w.GameId == gameId);
-    }
+    public async Task<bool> IsInWishlistAsync(int userId, int gameId) =>
+        await _wishlistRepo.ExistsAsync(userId, gameId);
 }
 
 FILE: GameStore.WebClient/index.html
@@ -5445,12 +6213,12 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
             }}
           >
             <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>
-              A
+              Q
             </span>
           </div>
           <div>
             <div style={{ fontWeight: 600, fontSize: 12, color: "#fff" }}>
-              Admin
+              Quản trị viên
             </div>
             <div style={{ fontSize: 10, color: "#666" }}>
               {user?.displayName || user?.username}
@@ -10471,7 +11239,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
           </div>
 
           <div>
-            <label style={labelStyle}>Số dư ví ($)</label>
+            <label style={labelStyle}>Số dư ví (VND)</label>
             <input
               type="number"
               step="0.01"
@@ -10541,7 +11309,12 @@ import { useState } from "react";
 import { Edit2, Trash2, X } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "./Pagination";
-import { thStyle, sortFn, actionBtnStyle, filterInputStyle } from "./adminStyles";
+import {
+  thStyle,
+  sortFn,
+  actionBtnStyle,
+  filterInputStyle,
+} from "./adminStyles";
 
 export default function UsersTab({
   users,
@@ -10560,194 +11333,253 @@ export default function UsersTab({
 }) {
   return (
     <div>
-      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+      <div
+        style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
+      >
         <input
           placeholder="Tìm tên đăng nhập, tên, email..."
           value={userSearch.keyword}
-          onChange={(e) => setUserSearch({ ...userSearch, keyword: e.target.value })}
+          onChange={(e) =>
+            setUserSearch({ ...userSearch, keyword: e.target.value })
+          }
           style={{ ...filterInputStyle, flex: 1, maxWidth: 220 }}
         />
         <select
           value={userSearch.status}
-          onChange={(e) => setUserSearch({ ...userSearch, status: e.target.value })}
+          onChange={(e) =>
+            setUserSearch({ ...userSearch, status: e.target.value })
+          }
           style={filterInputStyle}
         >
           <option value="">Tất cả trạng thái</option>
           <option value="active">Hoạt động</option>
           <option value="locked">Bị khóa</option>
         </select>
-        <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#888", fontSize: 12 }}>
-          Từ ngày:{" "}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
+            color: "#888",
+            fontSize: 12,
+          }}
+        >
+          Từ ngày:
           <input
             type="date"
             value={userSearch.fromDate}
-            onChange={(e) => setUserSearch({ ...userSearch, fromDate: e.target.value })}
+            onChange={(e) =>
+              setUserSearch({ ...userSearch, fromDate: e.target.value })
+            }
             style={filterInputStyle}
           />
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#888", fontSize: 12 }}>
-          Đến ngày:{" "}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 5,
+            color: "#888",
+            fontSize: 12,
+          }}
+        >
+          Đến ngày:
           <input
             type="date"
             value={userSearch.toDate}
-            onChange={(e) => setUserSearch({ ...userSearch, toDate: e.target.value })}
+            onChange={(e) =>
+              setUserSearch({ ...userSearch, toDate: e.target.value })
+            }
             style={filterInputStyle}
           />
         </div>
-        {(userSearch.keyword || userSearch.status || userSearch.fromDate || userSearch.toDate) && (
+        {(userSearch.keyword ||
+          userSearch.status ||
+          userSearch.fromDate ||
+          userSearch.toDate) && (
           <button
-            onClick={() => setUserSearch({ keyword: "", status: "", fromDate: "", toDate: "" })}
-            style={{ padding: "7px 12px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4 }}
+            onClick={() =>
+              setUserSearch({
+                keyword: "",
+                status: "",
+                fromDate: "",
+                toDate: "",
+              })
+            }
+            style={{
+              padding: "7px 12px",
+              background: "#2a2a2a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              fontSize: 12,
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 4,
+            }}
           >
             <X size={12} /> Xóa lọc
           </button>
         )}
       </div>
-    <div
-      style={{
-        background: "#111118",
-        borderRadius: 8,
-        border: "1px solid #1a1a2e",
-        overflow: "hidden",
-      }}
-    >
-      <table
-        style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}
+      <div
+        style={{
+          background: "#111118",
+          borderRadius: 8,
+          border: "1px solid #1a1a2e",
+          overflow: "hidden",
+        }}
       >
-        <thead>
-          <tr style={{ background: "#0a0a10" }}>
-            <SortableHeader field="id" sort={userSort} setSort={setUserSort}>
-              #
-            </SortableHeader>
-            <SortableHeader
-              field="username"
-              sort={userSort}
-              setSort={setUserSort}
-            >
-              Tên đăng nhập
-            </SortableHeader>
-            <SortableHeader
-              field="displayName"
-              sort={userSort}
-              setSort={setUserSort}
-            >
-              Tên hiển thị
-            </SortableHeader>
-            <SortableHeader field="email" sort={userSort} setSort={setUserSort}>
-              Email
-            </SortableHeader>
-            <SortableHeader
-              field="wallet"
-              sort={userSort}
-              setSort={setUserSort}
-            >
-              Ví
-            </SortableHeader>
-            <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
-            <SortableHeader
-              field="createdAt"
-              sort={userSort}
-              setSort={setUserSort}
-            >
-              Ngày tham gia
-            </SortableHeader>
-            <th style={{ ...thStyle, textAlign: "right" }}>Thao tác</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id} style={{ borderBottom: "1px solid #1a1a1a" }}>
-              <td style={{ padding: "9px 14px", color: "#555" }}>#{u.id}</td>
-              <td
-                style={{ padding: "9px 14px", color: "#fff", fontWeight: 500 }}
+        <table
+          style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}
+        >
+          <thead>
+            <tr style={{ background: "#0a0a10" }}>
+              <SortableHeader field="id" sort={userSort} setSort={setUserSort}>
+                #
+              </SortableHeader>
+              <SortableHeader
+                field="username"
+                sort={userSort}
+                setSort={setUserSort}
               >
-                {u.username}
-              </td>
-              <td style={{ padding: "9px 14px", color: "#ccc" }}>
-                {u.displayName || "-"}
-              </td>
-              <td style={{ padding: "9px 14px", color: "#888" }}>
-                {u.email || "-"}
-              </td>
-              <td
-                style={{
-                  padding: "9px 14px",
-                  color: "#4caf50",
-                  fontWeight: 600,
-                }}
+                Tên đăng nhập
+              </SortableHeader>
+              <SortableHeader
+                field="displayName"
+                sort={userSort}
+                setSort={setUserSort}
               >
-                ${u.wallet?.toFixed(2) || "0.00"}
-              </td>
-              <td style={{ padding: "9px 14px" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <div
-                    style={{
-                      width: 7,
-                      height: 7,
-                      borderRadius: "50%",
-                      background: u.isActive ? "#4caf50" : "#e94560",
-                    }}
-                  />
-                  <span
-                    style={{
-                      color: u.isActive ? "#4caf50" : "#e94560",
-                      fontSize: 11,
-                    }}
-                  >
-                    {u.isActive ? "Hoạt động" : "Bị khóa"}
-                  </span>
-                </span>
-              </td>
-              <td style={{ padding: "9px 14px", color: "#888" }}>
-                {u.createdAt ? new Date(u.createdAt).toLocaleDateString() : "-"}
-              </td>
-              <td style={{ padding: "9px 14px", textAlign: "right" }}>
-                <div
+                Tên hiển thị
+              </SortableHeader>
+              <SortableHeader
+                field="email"
+                sort={userSort}
+                setSort={setUserSort}
+              >
+                Email
+              </SortableHeader>
+              <SortableHeader
+                field="wallet"
+                sort={userSort}
+                setSort={setUserSort}
+              >
+                Ví
+              </SortableHeader>
+              <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
+              <SortableHeader
+                field="createdAt"
+                sort={userSort}
+                setSort={setUserSort}
+              >
+                Ngày tham gia
+              </SortableHeader>
+              <th style={{ ...thStyle, textAlign: "right" }}>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users.map((u) => (
+              <tr key={u.id} style={{ borderBottom: "1px solid #1a1a1a" }}>
+                <td style={{ padding: "9px 14px", color: "#555" }}>#{u.id}</td>
+                <td
                   style={{
-                    display: "flex",
-                    gap: 6,
-                    justifyContent: "flex-end",
+                    padding: "9px 14px",
+                    color: "#fff",
+                    fontWeight: 500,
                   }}
                 >
-                  <button
-                    style={actionBtnStyle}
-                    onClick={() => onEdit && onEdit(u)}
-                    title="Chỉnh sửa"
+                  {u.username}
+                </td>
+                <td style={{ padding: "9px 14px", color: "#ccc" }}>
+                  {u.displayName || "-"}
+                </td>
+                <td style={{ padding: "9px 14px", color: "#888" }}>
+                  {u.email || "-"}
+                </td>
+                <td
+                  style={{
+                    padding: "9px 14px",
+                    color: "#4caf50",
+                    fontWeight: 600,
+                  }}
+                >
+                  ${u.wallet?.toFixed(2) || "0.00"}
+                </td>
+                <td style={{ padding: "9px 14px" }}>
+                  <span
+                    style={{ display: "flex", alignItems: "center", gap: 5 }}
                   >
-                    <Edit2 size={14} color="#3498db" />
-                  </button>
-                  <button
-                    style={actionBtnStyle}
-                    onClick={() => onDelete && onDelete(u)}
-                    title="Xóa người dùng"
+                    <div
+                      style={{
+                        width: 7,
+                        height: 7,
+                        borderRadius: "50%",
+                        background: u.isActive ? "#4caf50" : "#e94560",
+                      }}
+                    />
+                    <span
+                      style={{
+                        color: u.isActive ? "#4caf50" : "#e94560",
+                        fontSize: 11,
+                      }}
+                    >
+                      {u.isActive ? "Hoạt động" : "Bị khóa"}
+                    </span>
+                  </span>
+                </td>
+                <td style={{ padding: "9px 14px", color: "#888" }}>
+                  {u.createdAt
+                    ? new Date(u.createdAt).toLocaleDateString()
+                    : "-"}
+                </td>
+                <td style={{ padding: "9px 14px", textAlign: "right" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      gap: 6,
+                      justifyContent: "flex-end",
+                    }}
                   >
-                    <Trash2 size={14} color="#e94560" />
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-          {users.length === 0 && (
-            <tr>
-              <td
-                colSpan="8"
-                style={{ padding: 20, textAlign: "center", color: "#666" }}
-              >
-                Không tìm thấy người dùng
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-      <Pagination
-        page={usersPage}
-        totalPages={usersTotalPages}
-        totalItems={usersTotal}
-        pageSize={usersPageSize}
-        setPage={setUsersPage}
-        setPageSize={setUsersPageSize}
-      />
-    </div>
+                    <button
+                      style={actionBtnStyle}
+                      onClick={() => onEdit && onEdit(u)}
+                      title="Chỉnh sửa"
+                    >
+                      <Edit2 size={14} color="#3498db" />
+                    </button>
+                    <button
+                      style={actionBtnStyle}
+                      onClick={() => onDelete && onDelete(u)}
+                      title="Xóa người dùng"
+                    >
+                      <Trash2 size={14} color="#e94560" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {users.length === 0 && (
+              <tr>
+                <td
+                  colSpan="8"
+                  style={{ padding: 20, textAlign: "center", color: "#666" }}
+                >
+                  Không tìm thấy người dùng
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        <Pagination
+          page={usersPage}
+          totalPages={usersTotalPages}
+          totalItems={usersTotal}
+          pageSize={usersPageSize}
+          setPage={setUsersPage}
+          setPageSize={setUsersPageSize}
+        />
+      </div>
     </div>
   );
 }
@@ -11008,7 +11840,7 @@ export default function FeaturedSlider({ games }) {
                       fontSize: 20,
                     }}
                   >
-                    ${(game.discountPrice || game.price)?.toFixed(2)}
+                    {(game.discountPrice || game.price)?.toFixed(2)} VND
                   </span>
                   <span
                     style={{
@@ -11116,7 +11948,7 @@ export default function GameCard({ game }) {
             gap: 3,
           }}
         >
-          <Check size={12} /> OWNED
+          <Check size={12} /> ĐÃ MUA
         </div>
       )}
       {/* Wishlist heart */}
@@ -11214,11 +12046,11 @@ export default function GameCard({ game }) {
                   marginRight: 4,
                 }}
               >
-                ${game.price?.toFixed(2)}
+                {game.price?.toFixed(2)} VND
               </span>
             )}
             <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>
-              ${(game.discountPrice || game.price)?.toFixed(2)}
+              {(game.discountPrice || game.price)?.toFixed(2)} VND
             </span>
           </div>
           {owned ? (
@@ -14481,9 +15313,9 @@ export default function InvoicePage() {
         className="container"
         style={{ textAlign: "center", paddingTop: 100 }}
       >
-        <h2>Order not found</h2>
+        <h2>Không tìm thấy đơn hàng</h2>
         <Link to="/store" className="btn-primary" style={{ marginTop: 20 }}>
-          Go to Store
+          Quay về cửa hàng
         </Link>
       </div>
     );
@@ -14518,7 +15350,7 @@ export default function InvoicePage() {
           marginBottom: 30,
         }}
       >
-        <ArrowLeft size={18} /> Back to Store
+        <ArrowLeft size={18} /> Trở về cửa hàng
       </Link>
 
       {/* Stepper Section */}
@@ -14817,7 +15649,7 @@ export default function InvoicePage() {
                 }}
               >
                 <span style={{ color: "#6b6b8e" }}>Subtotal</span>
-                <span>${(order.totalAmount || order.total).toFixed(2)}</span>
+                <span>{(order.totalAmount || order.total).toFixed(2)} VND</span>
               </div>
               <div
                 style={{
@@ -14827,7 +15659,7 @@ export default function InvoicePage() {
                 }}
               >
                 <span style={{ color: "#6b6b8e" }}>Tax (0%)</span>
-                <span>$0.00</span>
+                <span>0.00 VND</span>
               </div>
               <div
                 style={{
@@ -14858,7 +15690,7 @@ export default function InvoicePage() {
                 padding: "12px 20px",
               }}
             >
-              <Printer size={18} /> Print Invoice
+              <Printer size={18} /> In hóa đơn
             </button>
             <button
               className="btn-outline"
@@ -14869,7 +15701,7 @@ export default function InvoicePage() {
                 padding: "12px 20px",
               }}
             >
-              <Download size={18} /> Download PDF
+              <Download size={18} /> Tải về file PDF
             </button>
           </div>
 
@@ -14898,9 +15730,9 @@ export default function InvoicePage() {
                   Notice:
                 </p>
                 <p style={{ fontSize: 14, color: "#6b6b8e", lineHeight: 1.5 }}>
-                  Your order is currently being reviewed by our administrators.
-                  This usually takes 1-2 hours. If your order is rejected, a
-                  full refund will be issued to your wallet.
+                  Đơn hàng của bạn hiện đang được quản trị viên của chúng tôi
+                  xem xét. Quá trình này thường mất 30 phút đến 1 giờ. Nếu đơn
+                  hàng bị từ chối, bạn sẽ được hoàn lại toàn bộ số tiền vào ví.
                 </p>
               </div>
             </div>
@@ -16562,7 +17394,7 @@ export default function StorePage() {
           className="btn-primary"
           style={{ padding: "14px 28px" }}
         >
-          Search
+          Tìm kiếm
         </button>
         <button
           type="button"
@@ -16575,7 +17407,7 @@ export default function StorePage() {
             gap: 6,
           }}
         >
-          <SlidersHorizontal size={18} /> Filters
+          <SlidersHorizontal size={18} /> Bộ lọc
         </button>
       </form>
 
@@ -16601,7 +17433,7 @@ export default function StorePage() {
             }}
             style={selectStyle}
           >
-            <option value="">All Genres</option>
+            <option value="">Mọi thể loại</option>
             {genres.map((g) => (
               <option key={g.id} value={g.id}>
                 {g.name}
@@ -16612,7 +17444,7 @@ export default function StorePage() {
           {/* price input */}
           <input
             type="number"
-            placeholder="Max Price $"
+            placeholder="Max Price VND"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             style={{ ...selectStyle, width: 120 }}
@@ -16634,11 +17466,11 @@ export default function StorePage() {
             }}
             style={selectStyle}
           >
-            <option value="totalSales">Best Selling</option>
-            <option value="rating">Highest Rated</option>
-            <option value="price">Price: Low to High</option>
-            <option value="releaseDate">Newest</option>
-            <option value="title">Name: A-Z</option>
+            <option value="totalSales">Bán chạy nhất</option>
+            <option value="rating">Đánh giá cao nhất</option>
+            <option value="price">Giá: Thấp tới Cao</option>
+            <option value="releaseDate">Mới nhất</option>
+            <option value="title">Tên từ: A-Z</option>
           </select>
 
           <button
@@ -16679,7 +17511,7 @@ export default function StorePage() {
               fontWeight: 600,
             }}
           >
-            <X size={14} /> Clear All
+            <X size={14} /> Bỏ lọc
           </button>
 
           {/* apply all button */}
@@ -16688,7 +17520,7 @@ export default function StorePage() {
             className="btn-primary"
             style={{ padding: "8px 16px", fontSize: 13 }}
           >
-            Apply Filters
+            Áp dụng lọc
           </button>
         </div>
       )}
@@ -16696,11 +17528,11 @@ export default function StorePage() {
       {/* Results */}
       {loading ? (
         <p style={{ textAlign: "center", color: "#6b6b8e", padding: 40 }}>
-          Loading games...
+          Đang tải game...
         </p>
       ) : games.length === 0 ? (
         <p style={{ textAlign: "center", color: "#6b6b8e", padding: 40 }}>
-          No games found.
+          Không tìm thấy game.
         </p>
       ) : (
         <>
@@ -16732,7 +17564,7 @@ export default function StorePage() {
                 disabled={page === 1}
                 style={pageBtnStyle}
               >
-                ← Prev
+                ← Trước
               </button>
               {[...Array(totalPages)].map((_, i) => (
                 <button
@@ -16752,7 +17584,7 @@ export default function StorePage() {
                 disabled={page === totalPages}
                 style={pageBtnStyle}
               >
-                Next →
+                Sau →
               </button>
             </div>
           )}

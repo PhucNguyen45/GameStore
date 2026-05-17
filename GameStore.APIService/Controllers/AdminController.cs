@@ -1,11 +1,9 @@
 // GameStore.APIService/Controllers/AdminController.cs
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using GameStore.Repository;
-using GameStore.Services;
-using GameStore.Entities.Games;
 using GameStore.DTOs.Admin;
+using GameStore.Services.Admin;
+using GameStore.Services; // For IGameService, IOrderService, INotificationService if needed
 
 namespace GameStore.APIService.Controllers;
 
@@ -14,42 +12,69 @@ namespace GameStore.APIService.Controllers;
 [ApiController]
 public class AdminController : ControllerBase
 {
-    private readonly IAdminService _adminService;
+    private readonly IAdminDashboardService _dashboardService;
+    private readonly IAdminGameService _adminGameService;
+    private readonly IAdminUserService _adminUserService;
+    private readonly IAdminOrderService _adminOrderService;
+    private readonly IAdminCategoryService _adminCategoryService;
+    private readonly IAdminGameKeyService _adminGameKeyService;
+    private readonly IAdminPaymentService _adminPaymentService;
+    private readonly IAdminRoleService _adminRoleService;
+    private readonly IAdminStaffService _adminStaffService;
 
-    public AdminController(IAdminService adminService) => _adminService = adminService;
+    public AdminController(
+        IAdminDashboardService dashboardService,
+        IAdminGameService adminGameService,
+        IAdminUserService adminUserService,
+        IAdminOrderService adminOrderService,
+        IAdminCategoryService adminCategoryService,
+        IAdminGameKeyService adminGameKeyService,
+        IAdminPaymentService adminPaymentService,
+        IAdminRoleService adminRoleService,
+        IAdminStaffService adminStaffService)
+    {
+        _dashboardService = dashboardService;
+        _adminGameService = adminGameService;
+        _adminUserService = adminUserService;
+        _adminOrderService = adminOrderService;
+        _adminCategoryService = adminCategoryService;
+        _adminGameKeyService = adminGameKeyService;
+        _adminPaymentService = adminPaymentService;
+        _adminRoleService = adminRoleService;
+        _adminStaffService = adminStaffService;
+    }
 
-    // Dashboard
     [HttpGet("dashboard")]
-    public async Task<IActionResult> GetDashboard() => Ok(await _adminService.GetDashboardAsync());
+    public async Task<IActionResult> GetDashboard() => Ok(await _dashboardService.GetDashboardAsync());
 
-    // Games Admin
+    // Games
     [HttpGet("games")]
     public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId,
         [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string? sortBy,
         [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (games, totalCount) = await _adminService.GetGamesAsync(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
+        var (games, totalCount) = await _adminGameService.GetGamesAsync(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
         return Ok(new { data = games, totalCount });
     }
 
     [HttpPost("games")]
     public async Task<IActionResult> CreateGame([FromBody] AdminGameCreateDto dto)
     {
-        var game = await _adminService.CreateGameAsync(dto);
+        var game = await _adminGameService.CreateGameAsync(dto);
         return Ok(game);
     }
 
     [HttpPut("games/{id}")]
     public async Task<IActionResult> UpdateGame(int id, [FromBody] AdminGameUpdateDto dto)
     {
-        await _adminService.UpdateGameAsync(id, dto);
+        await _adminGameService.UpdateGameAsync(id, dto);
         return Ok(new { message = "Game updated" });
     }
 
     [HttpDelete("games/{id}")]
     public async Task<IActionResult> DeleteGame(int id)
     {
-        await _adminService.DeleteGameAsync(id);
+        await _adminGameService.DeleteGameAsync(id);
         return Ok(new { message = "Game deleted" });
     }
 
@@ -60,21 +85,21 @@ public class AdminController : ControllerBase
         [FromQuery] string? sortBy, [FromQuery] bool desc = false,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (users, totalCount) = await _adminService.GetUsersAsync(keyword, isActive, fromDate, toDate, sortBy, desc, page, pageSize);
+        var (users, totalCount) = await _adminUserService.GetUsersAsync(keyword, isActive, fromDate, toDate, sortBy, desc, page, pageSize);
         return Ok(new { data = users, totalCount });
     }
 
     [HttpPut("users/{id}")]
     public async Task<IActionResult> UpdateUser(int id, [FromBody] AdminUserUpdateDto dto)
     {
-        await _adminService.UpdateUserAsync(id, dto);
+        await _adminUserService.UpdateUserAsync(id, dto);
         return Ok(new { message = "User updated" });
     }
 
     [HttpDelete("users/{id}")]
     public async Task<IActionResult> DeleteUser(int id)
     {
-        await _adminService.DeleteUserAsync(id);
+        await _adminUserService.DeleteUserAsync(id);
         return Ok(new { message = "User deleted" });
     }
 
@@ -84,14 +109,14 @@ public class AdminController : ControllerBase
         [FromQuery] DateTime? toDate, [FromQuery] string? status, [FromQuery] string? sortBy,
         [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (orders, totalCount) = await _adminService.GetOrdersAsync(keyword, fromDate, toDate, status, sortBy, desc, page, pageSize);
+        var (orders, totalCount) = await _adminOrderService.GetOrdersAsync(keyword, fromDate, toDate, status, sortBy, desc, page, pageSize);
         return Ok(new { data = orders, totalCount });
     }
 
     [HttpPut("orders/{id}/status")]
     public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] AdminUpdateStatusDto dto)
     {
-        await _adminService.UpdateOrderStatusAsync(id, dto.Status);
+        await _adminOrderService.UpdateOrderStatusAsync(id, dto.Status);
         return Ok(new { message = "Status updated" });
     }
 
@@ -100,27 +125,27 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetCategories([FromQuery] string? keyword, [FromQuery] string? status,
         [FromQuery] bool? hasGames, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetCategoriesAsync(keyword, status, hasGames, page, pageSize));
+        return Ok(await _adminCategoryService.GetCategoriesAsync(keyword, status, hasGames, page, pageSize));
     }
 
     [HttpPost("categories")]
     public async Task<IActionResult> CreateCategory([FromBody] CategoryDto dto)
     {
-        await _adminService.CreateCategoryAsync(dto);
+        await _adminCategoryService.CreateCategoryAsync(dto);
         return Ok(new { message = "Category created" });
     }
 
     [HttpPut("categories/{id}")]
     public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryDto dto)
     {
-        await _adminService.UpdateCategoryAsync(id, dto);
+        await _adminCategoryService.UpdateCategoryAsync(id, dto);
         return Ok(new { message = "Category updated" });
     }
 
     [HttpDelete("categories/{id}")]
     public async Task<IActionResult> DeleteCategory(int id)
     {
-        await _adminService.DeleteCategoryAsync(id);
+        await _adminCategoryService.DeleteCategoryAsync(id);
         return Ok(new { message = "Category deleted" });
     }
 
@@ -129,34 +154,34 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetGameKeys([FromQuery] string? keyword, [FromQuery] int? gameId,
         [FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetGameKeysAsync(keyword, gameId, status, page, pageSize));
+        return Ok(await _adminGameKeyService.GetGameKeysAsync(keyword, gameId, status, page, pageSize));
     }
 
     [HttpPost("gamekeys")]
     public async Task<IActionResult> CreateGameKey([FromBody] GameKeyDto dto)
     {
-        await _adminService.CreateGameKeyAsync(dto);
+        await _adminGameKeyService.CreateGameKeyAsync(dto);
         return Ok(new { message = "Key created" });
     }
 
     [HttpPost("gamekeys/batch")]
     public async Task<IActionResult> CreateBatchGameKeys([FromBody] BatchGameKeyDto dto)
     {
-        await _adminService.CreateBatchGameKeysAsync(dto);
+        await _adminGameKeyService.CreateBatchGameKeysAsync(dto);
         return Ok(new { message = "Batch keys created" });
     }
 
     [HttpPut("gamekeys/{id}")]
     public async Task<IActionResult> UpdateGameKey(int id, [FromBody] UpdateGameKeyDto dto)
     {
-        await _adminService.UpdateGameKeyAsync(id, dto);
+        await _adminGameKeyService.UpdateGameKeyAsync(id, dto);
         return Ok(new { message = "Key updated" });
     }
 
     [HttpDelete("gamekeys/{id}")]
     public async Task<IActionResult> DeleteGameKey(int id)
     {
-        await _adminService.DeleteGameKeyAsync(id);
+        await _adminGameKeyService.DeleteGameKeyAsync(id);
         return Ok(new { message = "Key deleted" });
     }
 
@@ -166,19 +191,19 @@ public class AdminController : ControllerBase
         [FromQuery] string? method, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetPaymentsAsync(keyword, status, method, fromDate, toDate, page, pageSize));
+        return Ok(await _adminPaymentService.GetPaymentsAsync(keyword, status, method, fromDate, toDate, page, pageSize));
     }
 
     [HttpGet("payments/order/{orderId}")]
     public async Task<IActionResult> GetOrderPayments(int orderId)
     {
-        return Ok(await _adminService.GetOrderPaymentsAsync(orderId));
+        return Ok(await _adminPaymentService.GetOrderPaymentsAsync(orderId));
     }
 
     [HttpPost("payments/refund/{paymentId}")]
     public async Task<IActionResult> RefundPayment(int paymentId, [FromBody] RefundDto? dto)
     {
-        await _adminService.RefundPaymentAsync(paymentId, dto);
+        await _adminPaymentService.RefundPaymentAsync(paymentId, dto);
         return Ok(new { message = "Payment refunded" });
     }
 
@@ -187,27 +212,27 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetRoles([FromQuery] string? keyword, [FromQuery] bool? isActive,
         [FromQuery] bool? hasUsers, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetRolesAsync(keyword, isActive, hasUsers, page, pageSize));
+        return Ok(await _adminRoleService.GetRolesAsync(keyword, isActive, hasUsers, page, pageSize));
     }
 
     [HttpPost("roles")]
     public async Task<IActionResult> CreateRole([FromBody] RoleDto dto)
     {
-        await _adminService.CreateRoleAsync(dto);
+        await _adminRoleService.CreateRoleAsync(dto);
         return Ok(new { message = "Role created" });
     }
 
     [HttpPut("roles/{id}")]
     public async Task<IActionResult> UpdateRole(int id, [FromBody] RoleDto dto)
     {
-        await _adminService.UpdateRoleAsync(id, dto);
+        await _adminRoleService.UpdateRoleAsync(id, dto);
         return Ok(new { message = "Role updated" });
     }
 
     [HttpDelete("roles/{id}")]
     public async Task<IActionResult> DeleteRole(int id)
     {
-        await _adminService.DeleteRoleAsync(id);
+        await _adminRoleService.DeleteRoleAsync(id);
         return Ok(new { message = "Role deleted" });
     }
 
@@ -216,26 +241,23 @@ public class AdminController : ControllerBase
     public async Task<IActionResult> GetStaff([FromQuery] string? keyword, [FromQuery] int? roleId,
         [FromQuery] bool? isActive, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetStaffAsync(keyword, roleId, isActive, page, pageSize));
+        return Ok(await _adminStaffService.GetStaffAsync(keyword, roleId, isActive, page, pageSize));
     }
 
     [HttpPost("staff/assign")]
     public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto dto)
     {
-        await _adminService.AssignRoleAsync(dto);
+        await _adminStaffService.AssignRoleAsync(dto);
         return Ok(new { message = "Role assigned" });
     }
 
     [HttpDelete("staff/revoke")]
     public async Task<IActionResult> RevokeRole([FromBody] AssignRoleDto dto)
     {
-        await _adminService.RevokeRoleAsync(dto);
+        await _adminStaffService.RevokeRoleAsync(dto);
         return Ok(new { message = "Role revoked" });
     }
 
     [HttpGet("permissions")]
-    public IActionResult GetPermissions()
-    {
-        return Ok(_adminService.GetPermissions());
-    }
+    public IActionResult GetPermissions() => Ok(_adminRoleService.GetPermissions());
 }

@@ -49,6 +49,8 @@
 │   ├── Auth
 │   │   ├── LoginRequest.cs
 │   │   └── RegisterRequest.cs
+│   ├── Common
+│   │   └── ApiResponse.cs
 │   ├── GameStore.DTOs.csproj
 │   ├── Games
 │   │   ├── GameCreateDto.cs
@@ -97,28 +99,65 @@
 │       └── UserRole.cs
 ├── GameStore.Repository
 │   ├── EFCore
+│   │   ├── AdminRepository.cs
+│   │   ├── GameGenreRepository.cs
+│   │   ├── GameKeyRepository.cs
 │   │   ├── GameRepository.cs
 │   │   ├── GenreRepository.cs
+│   │   ├── IAdminRepository.cs
+│   │   ├── IGameGenreRepository.cs
+│   │   ├── IGameKeyRepository.cs
 │   │   ├── IGameRepository.cs
 │   │   ├── IGenreRepository.cs
+│   │   ├── ILibraryRepository.cs
+│   │   ├── INotificationRepository.cs
 │   │   ├── IOrderRepository.cs
+│   │   ├── IPaymentRepository.cs
 │   │   ├── IRepository.cs
+│   │   ├── IReviewRepository.cs
+│   │   ├── IRoleRepository.cs
 │   │   ├── IUserRepository.cs
+│   │   ├── IUserRoleRepository.cs
+│   │   ├── IWishlistRepository.cs
+│   │   ├── LibraryRepository.cs
+│   │   ├── NotificationRepository.cs
 │   │   ├── OrderRepository.cs
+│   │   ├── PaymentRepository.cs
 │   │   ├── Repository.cs
-│   │   └── UserRepository.cs
+│   │   ├── ReviewRepository.cs
+│   │   ├── RoleRepository.cs
+│   │   ├── UserRepository.cs
+│   │   ├── UserRoleRepository.cs
+│   │   └── WishlistRepository.cs
 │   ├── GameStore.Repository.csproj
 │   ├── GameStoreDbContext.cs
 │   └── GameStoreDbContextFactory.cs
 ├── GameStore.Services
-│   ├── AdminService.cs
+│   ├── Admin
+│   │   ├── AdminCategoryService.cs
+│   │   ├── AdminDashboardService.cs
+│   │   ├── AdminGameKeyService.cs
+│   │   ├── AdminGameService.cs
+│   │   ├── AdminOrderService.cs
+│   │   ├── AdminPaymentService.cs
+│   │   ├── AdminRoleService.cs
+│   │   ├── AdminStaffService.cs
+│   │   ├── AdminUserService.cs
+│   │   ├── IAdminCategoryService.cs
+│   │   ├── IAdminDashboardService.cs
+│   │   ├── IAdminGameKeyService.cs
+│   │   ├── IAdminGameService.cs
+│   │   ├── IAdminOrderService.cs
+│   │   ├── IAdminPaymentService.cs
+│   │   ├── IAdminRoleService.cs
+│   │   ├── IAdminStaffService.cs
+│   │   └── IAdminUserService.cs
 │   ├── Authen
 │   │   ├── IUserService.cs
 │   │   └── UserService.cs
 │   ├── GameService.cs
 │   ├── GameStore.Services.csproj
 │   ├── GenreService.cs
-│   ├── IAdminService.cs
 │   ├── IGameService.cs
 │   ├── IGenreService.cs
 │   ├── ILibraryService.cs
@@ -195,4 +234,4 @@
 ├── project_dump.txt
 └── run-all.sh
 
-45 directories, 151 files
+47 directories, 188 files

@@ -11,4 +11,7 @@ public interface IGenreRepository : IRepository<Genre>
 {
     Task<Genre?> GetByNameAsync(string name);
     Task<List<Genre>> GetActiveGenresAsync();
+    // Thêm cho admin
+    Task<(List<Genre> Genres, int TotalCount)> SearchAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize);
+    Task<int> GetGameCountAsync(int genreId);
 }

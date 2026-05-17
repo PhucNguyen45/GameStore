@@ -81,7 +81,7 @@ export default function GameCard({ game }) {
             gap: 3,
           }}
         >
-          <Check size={12} /> OWNED
+          <Check size={12} /> ĐÃ MUA
         </div>
       )}
       {/* Wishlist heart */}
@@ -179,11 +179,11 @@ export default function GameCard({ game }) {
                   marginRight: 4,
                 }}
               >
-                ${game.price?.toFixed(2)}
+                {game.price?.toFixed(2)} VND
               </span>
             )}
             <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>
-              ${(game.discountPrice || game.price)?.toFixed(2)}
+              {(game.discountPrice || game.price)?.toFixed(2)} VND
             </span>
           </div>
           {owned ? (

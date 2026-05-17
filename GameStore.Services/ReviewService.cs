@@ -1,48 +1,38 @@
 // GameStore.Services/ReviewService.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using GameStore.DTOs.Reviews;
 using GameStore.Entities.Store;
-using GameStore.Repository;
+using GameStore.Repository.EFCore;
 
 namespace GameStore.Services;
 
 public class ReviewService : IReviewService
 {
-    private readonly GameStoreDbContext _context;
+    private readonly IReviewRepository _reviewRepo;
 
-    public ReviewService(GameStoreDbContext context) => _context = context;
+    public ReviewService(IReviewRepository reviewRepo)
+    {
+        _reviewRepo = reviewRepo;
+    }
 
     public async Task<IEnumerable<ReviewDto>> GetGameReviewsAsync(int gameId, int page = 1, int pageSize = 10)
     {
-        return await _context.Reviews
-            .Where(r => r.GameId == gameId)
-            .Include(r => r.User)
-            .OrderByDescending(r => r.CreatedAt)
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(r => new ReviewDto
-            {
-                Id = r.Id,
-                UserId = r.UserId,
-                Username = r.User.Username,
-                Rating = r.Rating,
-                Content = r.Content,
-                IsRecommended = r.IsRecommended,
-                HelpfulCount = r.HelpfulCount,
-                CreatedAt = r.CreatedAt
-            })
-            .ToListAsync();
+        var (reviews, _) = await _reviewRepo.GetReviewsByGameAsync(gameId, page, pageSize);
+        return reviews.Select(r => new ReviewDto
+        {
+            Id = r.Id,
+            UserId = r.UserId,
+            Username = r.User?.Username ?? "",
+            Rating = r.Rating,
+            Content = r.Content,
+            IsRecommended = r.IsRecommended,
+            HelpfulCount = r.HelpfulCount,
+            CreatedAt = r.CreatedAt
+        });
     }
 
     public async Task<ReviewDto> AddReviewAsync(int userId, CreateReviewDto dto)
     {
-        bool alreadyReviewed = await _context.Reviews
-            .AnyAsync(r => r.UserId == userId && r.GameId == dto.GameId);
-        if (alreadyReviewed)
+        if (await _reviewRepo.ExistsAsync(userId, dto.GameId))
             throw new InvalidOperationException("You have already reviewed this game.");
 
         var review = new Review
@@ -55,27 +45,14 @@ public class ReviewService : IReviewService
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
         };
-        _context.Reviews.Add(review);
-        await _context.SaveChangesAsync();
-
-        // Cập nhật rating trung bình của game
-        var avg = await _context.Reviews
-            .Where(r => r.GameId == dto.GameId)
-            .AverageAsync(r => (double?)r.Rating) ?? 0;
-        var count = await _context.Reviews.CountAsync(r => r.GameId == dto.GameId);
-        var game = await _context.Games.FindAsync(dto.GameId);
-        if (game != null)
-        {
-            game.Rating = avg;
-            game.RatingCount = count;
-            await _context.SaveChangesAsync();
-        }
+        await _reviewRepo.AddAsync(review);
+        await _reviewRepo.UpdateGameRatingAsync(dto.GameId);
 
         return new ReviewDto
         {
             Id = review.Id,
             UserId = userId,
-            Username = (await _context.Users.FindAsync(userId))?.Username ?? "",
+            Username = "",  // có thể bổ sung sau
             Rating = review.Rating,
             Content = review.Content,
             IsRecommended = review.IsRecommended,
@@ -85,7 +62,7 @@ public class ReviewService : IReviewService
 
     public async Task UpdateReviewAsync(int reviewId, int userId, CreateReviewDto dto)
     {
-        var review = await _context.Reviews.FindAsync(reviewId);
+        var review = await _reviewRepo.GetByIdAsync(reviewId);
         if (review == null || review.UserId != userId)
             throw new InvalidOperationException("Review not found or not yours.");
 
@@ -93,46 +70,21 @@ public class ReviewService : IReviewService
         review.Content = dto.Content;
         review.IsRecommended = dto.IsRecommended;
         review.UpdatedAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
-
-        // Recalculate rating
-        var avg = await _context.Reviews
-            .Where(r => r.GameId == review.GameId)
-            .AverageAsync(r => (double?)r.Rating) ?? 0;
-        var count = await _context.Reviews.CountAsync(r => r.GameId == review.GameId);
-        var game = await _context.Games.FindAsync(review.GameId);
-        if (game != null)
-        {
-            game.Rating = avg;
-            game.RatingCount = count;
-            await _context.SaveChangesAsync();
-        }
+        await _reviewRepo.UpdateAsync(review);
+        await _reviewRepo.UpdateGameRatingAsync(review.GameId);
     }
 
     public async Task DeleteReviewAsync(int reviewId, int userId)
     {
-        var review = await _context.Reviews.FindAsync(reviewId);
+        var review = await _reviewRepo.GetByIdAsync(reviewId);
         if (review == null || review.UserId != userId)
             throw new InvalidOperationException("Review not found or not yours.");
-        _context.Reviews.Remove(review);
-        await _context.SaveChangesAsync();
 
-        // Recalculate rating
-        var avg = await _context.Reviews
-            .Where(r => r.GameId == review.GameId)
-            .AverageAsync(r => (double?)r.Rating) ?? 0;
-        var count = await _context.Reviews.CountAsync(r => r.GameId == review.GameId);
-        var game = await _context.Games.FindAsync(review.GameId);
-        if (game != null)
-        {
-            game.Rating = avg;
-            game.RatingCount = count;
-            await _context.SaveChangesAsync();
-        }
+        int gameId = review.GameId;
+        await _reviewRepo.DeleteAsync(review);
+        await _reviewRepo.UpdateGameRatingAsync(gameId);
     }
 
-    public async Task<bool> HasUserReviewedAsync(int userId, int gameId)
-    {
-        return await _context.Reviews.AnyAsync(r => r.UserId == userId && r.GameId == gameId);
-    }
+    public async Task<bool> HasUserReviewedAsync(int userId, int gameId) =>
+        await _reviewRepo.ExistsAsync(userId, gameId);
 }

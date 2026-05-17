@@ -5,9 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using GameStore.Services;
 using System.Security.Claims;
 using GameStore.DTOs.Orders;
+using GameStore.Services;
 
 namespace GameStore.APIService.Controllers;
 
@@ -35,31 +35,6 @@ public class OrdersController : ControllerBase
         return Ok(history);
     }
 
-    [HttpGet("all")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20) =>
-        Ok(await _orderService.GetAll(page, pageSize));
-
-    [HttpGet("search")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> SearchOrders(
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 10,
-        [FromQuery] string? keyword = null, [FromQuery] DateTime? fromDate = null,
-        [FromQuery] DateTime? toDate = null, [FromQuery] string? status = null)
-    {
-        var result = await _orderService.SearchOrders(page, pageSize, keyword, fromDate, toDate, status);
-        return Ok(new { data = result.Items.Select(o => new { o.Id, o.UserId, o.OrderDate, o.TotalAmount, o.Status, o.PaymentMethod, Username = o.User?.Username }), totalCount = result.TotalCount });
-    }
-
-    [HttpPut("{id}/status")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto dto)
-    {
-        try { await _orderService.UpdateStatus(id, dto.Status); return Ok(new { message = "Status updated" }); }
-        catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
-    }
-
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
@@ -76,14 +51,15 @@ public class OrdersController : ControllerBase
             var order = await _orderService.CreateOrder(
                 userId,
                 dto.Items.Select(i => (i.GameId, i.Quantity)).ToList(),
-                dto.PaymentMethod,   // thêm
-                dto.Email,           // thêm
-                dto.Phone            // thêm
+                dto.PaymentMethod,
+                dto.Email,
+                dto.Phone
             );
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
         }
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
     }
+
     [HttpPut("{id}/cancel")]
     public async Task<IActionResult> Cancel(int id)
     {

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Entities.Games;
+using GameStore.DTOs.Games;
 using GameStore.Repository.EFCore;
 
 namespace GameStore.Services;
@@ -44,5 +45,17 @@ public class GameService : IGameService
     public async Task Delete(int id)
     {
         await _gameRepository.DeleteByIdAsync(id);
+    }
+
+    public async Task UpdateGameAsync(int id, GameUpdateDto dto)
+    {
+        var game = await _gameRepository.GetByIdAsync(id) ?? throw new Exception("Game not found");
+        game.Title = dto.Title ?? game.Title;
+        game.Description = dto.Description ?? game.Description;
+        game.Price = dto.Price ?? game.Price;
+        game.DiscountPrice = dto.DiscountPrice ?? game.DiscountPrice;
+        game.CoverImageUrl = dto.CoverImageUrl ?? game.CoverImageUrl;
+        game.TrailerUrl = dto.TrailerUrl ?? game.TrailerUrl;
+        await _gameRepository.UpdateAsync(game);
     }
 }

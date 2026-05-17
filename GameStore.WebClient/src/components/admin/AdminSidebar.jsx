@@ -49,12 +49,12 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
             }}
           >
             <span style={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>
-              A
+              Q
             </span>
           </div>
           <div>
             <div style={{ fontWeight: 600, fontSize: 12, color: "#fff" }}>
-              Admin
+              Quản trị viên
             </div>
             <div style={{ fontSize: 10, color: "#666" }}>
               {user?.displayName || user?.username}

@@ -10,4 +10,9 @@ namespace GameStore.Repository.EFCore;
 public interface IOrderRepository : IRepository<Order>
 {
     Task<List<Order>> GetByUserAsync(int userId);
+    Task<List<Order>> GetByUserWithDetailsAsync(int userId);  // thêm
+    Task<(List<Order> Orders, int TotalCount)> SearchOrdersAsync(
+        string? keyword, DateTime? fromDate, DateTime? toDate,
+        string? status, int page, int pageSize);
+    Task<Order?> GetOrderWithDetailsAsync(int orderId);
 }

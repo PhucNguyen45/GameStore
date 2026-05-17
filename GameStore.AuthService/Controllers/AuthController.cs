@@ -1,6 +1,5 @@
 // GameStore.AuthService/Controllers/AuthController.cs
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using GameStore.Common.Auth;
 using GameStore.Services.Authen;
 using GameStore.Entities.Users;
@@ -15,28 +14,23 @@ public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IConfiguration _configuration;
-    private readonly GameStoreDbContext _context;
 
-    public AuthController(IUserService userService, IConfiguration configuration, GameStoreDbContext context)
+    public AuthController(IUserService userService, IConfiguration configuration)
     {
         _userService = userService;
         _configuration = configuration;
-        _context = context;
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-            return BadRequest(new { message = "Username and password are required" });
+            return BadRequest(new { message = "Tên người dùng và mật khẩu là bắt buộc" });
 
         var user = await _userService.Authenticate(request.Username, request.Password);
-        if (user == null) return Unauthorized(new { message = "Invalid username or password" });
+        if (user == null) return Unauthorized(new { message = "Tên người dùng và mật khẩu không hợp lệ" });
 
-        var userRole = await _context.UserRoles
-            .Include(ur => ur.Role)
-            .FirstOrDefaultAsync(ur => ur.UserId == user.Id);
-        var roleName = userRole?.Role?.Name ?? "User";
+        var roleName = await _userService.GetRoleNameAsync(user.Id) ?? "User";
 
         var secretKey = _configuration["Jwt:SecretKey"]!;
         var expireMinutes = int.Parse(_configuration["Jwt:ExpireMinutes"] ?? "480");
@@ -60,9 +54,9 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Register([FromBody] RegisterRequest request)
     {
         if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
-            return BadRequest(new { message = "Username and password are required" });
+            return BadRequest(new { message = "Tên người dùng và mật khẩu là bắt buộc" });
         if (request.Password.Length < 6)
-            return BadRequest(new { message = "Password must be at least 6 characters" });
+            return BadRequest(new { message = "Mật khẩu phải ít nhất 6 chữ, số" });
 
         var user = new User
         {
@@ -71,7 +65,8 @@ public class AuthController : ControllerBase
             Email = request.Email ?? "",
             Phone = request.Phone ?? ""
         };
-        var createdUser = await _userService.Register(user, request.Password);
-        return Ok(new { message = "Registration successful", userId = createdUser.Id });
+        var createdUser = await _userService.RegisterUserAsync(user, request.Password);
+
+        return Ok(new { message = "Đăng ký hoàn tất", userId = createdUser.Id });
     }
 }
