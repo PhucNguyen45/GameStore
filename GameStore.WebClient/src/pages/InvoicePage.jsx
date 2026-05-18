@@ -28,7 +28,7 @@ export default function InvoicePage() {
         const res = await orderAPI.getById(id);
         setOrder(res.data);
       } catch (err) {
-        toast.error("Failed to load invoice details");
+        toast.error("Lỗi khi tải chi tiết Hóa đơn");
       } finally {
         setLoading(false);
       }
@@ -207,10 +207,10 @@ export default function InvoicePage() {
         >
           <div>
             <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>
-              Invoice #{id}
+              Hóa đơn số #{id}
             </h2>
             <p style={{ color: "#6b6b8e", fontSize: 14 }}>
-              Order placed on {new Date(order.orderDate).toLocaleDateString()}
+              Đơn được đặt vào {new Date(order.orderDate).toLocaleDateString()}
             </p>
           </div>
           <div
@@ -238,10 +238,10 @@ export default function InvoicePage() {
               <Clock size={20} />
             )}
             {order.status === "Completed" || order.status === "Approved"
-              ? "Approved"
+              ? "Đã duyệt"
               : order.status === "Cancelled" || order.status === "Rejected"
-                ? "Rejected"
-                : "Waiting for Admin..."}
+                ? "Bị hủy"
+                : "Chờ Admin duyệt..."}
           </div>
         </div>
 
@@ -269,7 +269,9 @@ export default function InvoicePage() {
               <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 5 }}>
                 Email: {order.email || "N/A"}
               </p>
-              <p style={{ color: "#e0e0e0" }}>Phone: {order.phone || "N/A"}</p>
+              <p style={{ color: "#e0e0e0" }}>
+                Siis ==: {order.phone || "N/A"}
+              </p>
             </div>
             <div style={{ textAlign: "right" }}>
               <h4
@@ -281,7 +283,7 @@ export default function InvoicePage() {
                   marginBottom: 15,
                 }}
               >
-                Payment Details
+                Thông tin đơn hàng
               </h4>
               <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 5 }}>
                 Status:{" "}
@@ -295,11 +297,13 @@ export default function InvoicePage() {
                   }}
                 >
                   {order.status === "Completed" || order.status === "Approved"
-                    ? "Paid"
-                    : "Verifying..."}
+                    ? "Đã thanh toán"
+                    : "Đang xãc minh..."}
                 </span>
               </p>
-              <p style={{ color: "#e0e0e0" }}>Method: {order.paymentMethod}</p>
+              <p style={{ color: "#e0e0e0" }}>
+                Phương thức thanh toán: {order.paymentMethod}
+              </p>
             </div>
           </div>
 
@@ -320,7 +324,7 @@ export default function InvoicePage() {
                     fontWeight: 500,
                   }}
                 >
-                  Description
+                  Mô tả
                 </th>
                 <th
                   style={{
@@ -330,7 +334,7 @@ export default function InvoicePage() {
                     fontWeight: 500,
                   }}
                 >
-                  Qty
+                  Số luọng
                 </th>
                 <th
                   style={{
@@ -340,7 +344,7 @@ export default function InvoicePage() {
                     fontWeight: 500,
                   }}
                 >
-                  Price
+                  Giá
                 </th>
                 <th
                   style={{
@@ -350,7 +354,7 @@ export default function InvoicePage() {
                     fontWeight: 500,
                   }}
                 >
-                  Amount
+                  Số lượng
                 </th>
               </tr>
             </thead>

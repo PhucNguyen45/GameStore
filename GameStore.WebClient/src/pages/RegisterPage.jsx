@@ -20,7 +20,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError("Mật khẩu phải tối thiểu 6 ký tự");
       return;
     }
     setLoading(true);
@@ -29,7 +29,7 @@ export default function RegisterPage() {
       await register(form);
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(err.response?.data?.message || "Đăng ký thất bại");
     } finally {
       setLoading(false);
     }
@@ -97,20 +97,20 @@ export default function RegisterPage() {
           {[
             {
               icon: User,
-              placeholder: "Username *",
+              placeholder: "Tên tài khoản *",
               value: form.username,
               key: "username",
             },
             {
               icon: Lock,
-              placeholder: "Password *",
+              placeholder: "Mật khẩu *",
               value: form.password,
               key: "password",
               type: "password",
             },
             {
               icon: User,
-              placeholder: "Display Name",
+              placeholder: "Tên hiển thị",
               value: form.displayName,
               key: "displayName",
             },
@@ -123,7 +123,7 @@ export default function RegisterPage() {
             },
             {
               icon: Phone,
-              placeholder: "Phone",
+              placeholder: "Số điện thoại",
               value: form.phone,
               key: "phone",
             },
@@ -159,7 +159,7 @@ export default function RegisterPage() {
             className="btn-primary"
             style={{ width: "100%", padding: 14, fontSize: 16, marginTop: 8 }}
           >
-            {loading ? "Creating account..." : "Register"}
+            {loading ? "Đang tạo tài khoản..." : "Đăng ký"}
           </button>
         </form>
         <p
@@ -170,7 +170,7 @@ export default function RegisterPage() {
             fontSize: 13,
           }}
         >
-          Already have an account?{" "}
+          Đã có tài khoản rồi ?
           <Link to="/login" style={{ color: "#e94560", fontWeight: 600 }}>
             Login here
           </Link>

@@ -90,7 +90,7 @@ export default function StorePage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search games..."
+            placeholder="Tìm kiếm game.."
             style={{
               flex: 1,
               padding: "14px 0",
@@ -157,7 +157,7 @@ export default function StorePage() {
           {/* price input */}
           <input
             type="number"
-            placeholder="Max Price VND"
+            placeholder="Giá cao nhất (VND)"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             style={{ ...selectStyle, width: 120 }}
@@ -200,7 +200,7 @@ export default function StorePage() {
             }}
             title={desc ? "Descending" : "Ascending"}
           >
-            {desc ? "↓ Desc" : "↑ Asc"}
+            {desc ? "↓ Giảm" : "↑ Tăng"}
           </button>
 
           {/* clear button */}

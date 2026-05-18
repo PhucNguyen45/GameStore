@@ -29,20 +29,20 @@ export default function PurchaseHistoryPage() {
   if (!user)
     return (
       <div style={{ padding: 40, textAlign: "center" }}>
-        Sign in to view order history.
+        Đăng nhập để xem lịch sử giao dịch.
       </div>
     );
   if (loading)
     return (
       <div style={{ padding: 40, textAlign: "center", color: "#888" }}>
-        Loading...
+        Đang tải...
       </div>
     );
 
   return (
     <div className="container" style={{ paddingTop: 30, maxWidth: 1000 }}>
       <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 24 }}>
-        Order History
+        Lịch sử giao dịch.
       </h1>
       {orders.length === 0 ? (
         <div style={{ textAlign: "center", padding: 60, color: "#888" }}>
@@ -53,7 +53,7 @@ export default function PurchaseHistoryPage() {
             className="btn-primary"
             style={{ marginTop: 16, display: "inline-block" }}
           >
-            Browse Games
+            Xem Game
           </Link>
         </div>
       ) : (
@@ -120,7 +120,7 @@ export default function PurchaseHistoryPage() {
                         fontSize: 12,
                       }}
                     >
-                      <Eye size={14} /> Detail
+                      <Eye size={14} /> Chi Tiết
                     </Link>
                   </div>
                 </div>
@@ -145,13 +145,13 @@ export default function PurchaseHistoryPage() {
                           Game
                         </th>
                         <th style={{ textAlign: "center", padding: "6px 0" }}>
-                          Qty
+                          Số lượng
                         </th>
                         <th style={{ textAlign: "right", padding: "6px 0" }}>
-                          Price
+                          Giá
                         </th>
                         <th style={{ textAlign: "right", padding: "6px 0" }}>
-                          Subtotal
+                          Tổng cộng
                         </th>
                       </tr>
                     </thead>
@@ -202,7 +202,7 @@ export default function PurchaseHistoryPage() {
                   }}
                 >
                   <span style={{ color: "#888", fontSize: 12 }}>
-                    Payment: {order.paymentMethod}
+                    Phương thức thanh toán: {order.paymentMethod}
                   </span>
                   <span
                     style={{ fontWeight: 800, fontSize: 18, color: "#e94560" }}

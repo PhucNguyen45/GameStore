@@ -14,8 +14,9 @@ export default function LoginPage() {
 
   const validateForm = () => {
     const errors = {};
-    if (!form.username.trim()) errors.username = "Username is required";
-    if (!form.password) errors.password = "Password is required";
+    if (!form.username.trim())
+      errors.username = "Tên tài khoản không được để trống";
+    if (!form.password) errors.password = "Mật khẩu không được để trống";
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -34,7 +35,7 @@ export default function LoginPage() {
     } catch (err) {
       // Chỉ set error 1 lần duy nhất
       if (!error) {
-        setError("Invalid username or password");
+        setError("Tên tài khoản hoặc Mật khẩu không hợp lệ");
       }
     } finally {
       setLoading(false);
@@ -133,9 +134,11 @@ export default function LoginPage() {
           >
             <LogIn size={28} color="#fff" />
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700 }}>Welcome Back</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 700 }}>
+            CHÀO MỪNG QUAY TRỞ LẠI
+          </h1>
           <p style={{ color: "#6b6b8e", fontSize: 14, marginTop: 6 }}>
-            Login to your GameStore account
+            Đăng nhập vào tài khoản GameStore của bạn
           </p>
         </div>
 
@@ -147,7 +150,7 @@ export default function LoginPage() {
               style={{ position: "absolute", left: 14, top: 14 }}
             />
             <input
-              placeholder="Username"
+              placeholder="Tên tài khoản"
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
               style={{
@@ -171,7 +174,7 @@ export default function LoginPage() {
             />
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Mật khẩu"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               style={{
@@ -193,7 +196,7 @@ export default function LoginPage() {
             className="btn-primary"
             style={{ width: "100%", padding: 14, fontSize: 16 }}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>
         <p
@@ -204,9 +207,9 @@ export default function LoginPage() {
             fontSize: 13,
           }}
         >
-          Don't have an account?{" "}
+          Bạn chưa có tài khoản ?
           <Link to="/register" style={{ color: "#e94560", fontWeight: 600 }}>
-            Register here
+            Đăng ký ở đây
           </Link>
         </p>
       </div>

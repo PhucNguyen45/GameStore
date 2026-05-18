@@ -34,7 +34,7 @@ export default function PaymentPage() {
     try {
       if (paymentMethod === "wallet") {
         if (user.wallet < orderData.total) {
-          toast.error("Insufficient wallet balance!");
+          toast.error("Số dư trong ví không đủ!");
           setIsProcessing(false);
           return;
         }
@@ -59,16 +59,17 @@ export default function PaymentPage() {
       }
 
       clearCart();
-      toast.success("Payment Successful!");
+      toast.success("Thanh toán thành công!");
 
       // Redirect to invoice page
       navigate(`/invoice/${orderId}`, {
-        state: { order: { ...orderData, id: orderId, status: "Pending" } },
+        state: { order: { ...orderData, id: orderId, status: "Đang chờ" } },
       });
     } catch (error) {
       console.error(error);
       const msg =
-        error.response?.data?.message || "Payment failed. Please try again.";
+        error.response?.data?.message ||
+        "Thanh toán thất bại. Vui lòng thử lại.";
       toast.error(msg);
     } finally {
       setIsProcessing(false);
@@ -155,7 +156,7 @@ export default function PaymentPage() {
 
         <div style={{ marginBottom: 30 }}>
           <h3 style={{ fontSize: 18, marginBottom: 16, color: "#e94560" }}>
-            Select Payment Method
+            Chọn phương thức thanh toán
           </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <label
@@ -176,7 +177,9 @@ export default function PaymentPage() {
                 color={paymentMethod === "wallet" ? "#e94560" : "#6b6b8e"}
               />
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600 }}>GameStore Wallet</div>
+                <div style={{ fontWeight: 600 }}>
+                  Ví <GameStore></GameStore>
+                </div>
                 <div style={{ fontSize: 12, color: "#6b6b8e" }}>
                   Balance: ${user?.wallet?.toFixed(2)}
                 </div>
@@ -201,11 +204,11 @@ export default function PaymentPage() {
         >
           {isProcessing ? (
             <>
-              <Loader2 className="animate-spin" size={20} /> Processing...
+              <Loader2 className="animate-spin" size={20} /> Đang tiến hành...
             </>
           ) : (
             <>
-              <ShieldCheck size={20} /> Pay Now
+              <ShieldCheck size={20} /> Thanh toán ngay
             </>
           )}
         </button>

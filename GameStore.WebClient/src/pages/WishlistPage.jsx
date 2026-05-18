@@ -30,19 +30,19 @@ export default function WishlistPage() {
   const remove = async (gameId) => {
     await wishlistAPI.remove(gameId);
     setItems(items.filter((i) => i.gameId !== gameId));
-    toast.success("Removed from wishlist");
+    toast.success("Đã xóa khỏi Yêu thích");
   };
 
   if (!user)
     return (
       <div style={{ textAlign: "center", padding: 80, color: "#888" }}>
-        Sign in to view your wishlist.
+        Đăng nhập để xem danh sách Yêu thích.
       </div>
     );
   if (loading)
     return (
       <div style={{ textAlign: "center", padding: 80, color: "#888" }}>
-        Loading...
+        Đang tải...
       </div>
     );
 
@@ -70,7 +70,7 @@ export default function WishlistPage() {
             className="btn-primary"
             style={{ marginTop: 16, display: "inline-block" }}
           >
-            Browse Games
+            Xem Game
           </Link>
         </div>
       ) : (
@@ -140,7 +140,7 @@ export default function WishlistPage() {
                       discountPrice: item.discountPrice,
                       coverImageUrl: item.coverImageUrl,
                     });
-                    toast.success("Added to cart");
+                    toast.success("Đã thêm vào giỏ hàng");
                   }}
                   style={{
                     flex: 1,
@@ -156,7 +156,7 @@ export default function WishlistPage() {
                     gap: 4,
                   }}
                 >
-                  <ShoppingCart size={14} /> Add to Cart
+                  <ShoppingCart size={14} /> Thêm vào giỏ hàng
                 </button>
                 <button
                   onClick={() => remove(item.gameId)}

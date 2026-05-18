@@ -80,7 +80,7 @@ export default function LibraryPage() {
             MY LIBRARY
           </h1>
           <p style={{ color: "#888", fontSize: 14 }}>
-            {games.length} game{games.length !== 1 ? "s" : ""} in collection
+            {games.length} game{games.length !== 1 ? "s" : ""} trong Bộ sưu tập
           </p>
         </div>
       </div>
@@ -116,7 +116,7 @@ export default function LibraryPage() {
                 style={{ position: "absolute", left: 10, top: 10 }}
               />
               <input
-                placeholder="Search library..."
+                placeholder="Tìm kiếm trong thư viện..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 style={{
@@ -176,9 +176,9 @@ export default function LibraryPage() {
                 letterSpacing: 0.5,
               }}
             >
-              <option value="recent">Sort: Recent</option>
-              <option value="name">Sort: A-Z</option>
-              <option value="playtime">Sort: Play Time</option>
+              <option value="recent">Sắp xếp theo: Gần nhất</option>
+              <option value="name">Sắp xếp theo: A &gt; Z</option>
+              <option value="playtime">Sắp xếp theo: Thời gian chơi</option>
             </select>
             <button
               onClick={() => setViewMode("grid")}
@@ -374,7 +374,7 @@ function GridView({ games }) {
                     e.preventDefault();
                   }}
                 >
-                  <Play size={12} /> Play
+                  <Play size={12} /> Chơi
                 </button>
                 <button
                   style={{
@@ -413,9 +413,9 @@ function ListView({ games }) {
         }}
       >
         <span style={{ flex: 1 }}>Game</span>
-        <span style={{ width: 100, textAlign: "center" }}>Rating</span>
-        <span style={{ width: 100, textAlign: "center" }}>Play Time</span>
-        <span style={{ width: 100, textAlign: "right" }}>Acquired</span>
+        <span style={{ width: 100, textAlign: "center" }}>Đánh giá</span>
+        <span style={{ width: 100, textAlign: "center" }}>Thời gian chơi</span>
+        <span style={{ width: 100, textAlign: "right" }}>Đã mua</span>
       </div>
       {games.map((game, i) => (
         <Link
@@ -567,12 +567,14 @@ function EmptyState({ gamesCount, search }) {
           letterSpacing: -0.5,
         }}
       >
-        {gamesCount === 0 ? "Your library is empty" : "No games found"}
+        {gamesCount === 0
+          ? "Thư viện của bạn đang trống"
+          : "Nhông tìm thấy game"}
       </h2>
       <p style={{ color: "#888", fontSize: 14, marginBottom: 24 }}>
         {gamesCount === 0
-          ? "Games you purchase or claim will appear here"
-          : `No results for "${search}"`}
+          ? "Game hoặc vật phẩm của bạn ở đây"
+          : `Không tìm thấy "${search}"`}
       </p>
       {gamesCount === 0 && (
         <Link to="/store">
@@ -633,10 +635,10 @@ function LoginPrompt() {
           letterSpacing: -0.5,
         }}
       >
-        Sign In Required
+        Yêu cầu Đăng nhập
       </h2>
       <p style={{ color: "#888", fontSize: 14, marginBottom: 24 }}>
-        Sign in to access your game library
+        Đăng nhập để xem Thư viện của bạn
       </p>
       <Link to="/login">
         <button
@@ -652,7 +654,7 @@ function LoginPrompt() {
             letterSpacing: 1,
           }}
         >
-          SIGN IN
+          Đăng nhập
         </button>
       </Link>
     </div>
