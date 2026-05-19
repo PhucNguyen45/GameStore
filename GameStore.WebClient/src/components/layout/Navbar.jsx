@@ -1,11 +1,10 @@
 // GameStore.WebClient/src/components/layout/Navbar.jsx
-
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { useState, useEffect, useRef } from "react";
 import WalletModal from "../wallet/WalletModal";
 import useCartStore from "../../stores/cartStore";
-import { gameAPI } from "../../services/api";
+import { gameAPI, notificationAPI } from "../../services/api";
 import {
   ShoppingCart,
   Gamepad2,
@@ -16,6 +15,8 @@ import {
   X,
   Wallet,
   Shield,
+  Heart,
+  Bell,
 } from "lucide-react";
 
 export default function Navbar() {
@@ -31,6 +32,12 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const searchRef = useRef(null);
+
+  // NOTIFICATION STATE
+  const [showNoti, setShowNoti] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const notiRef = useRef(null);
 
   const isActive = (path) =>
     location.pathname === path
@@ -57,16 +64,39 @@ export default function Navbar() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // CLOSE SEARCH ON CLICK OUTSIDE
   useEffect(() => {
     const handleClick = (e) => {
-      if (searchRef.current && !searchRef.current.contains(e.target)) {
+      if (searchRef.current && !searchRef.current.contains(e.target))
         setSearchOpen(false);
-      }
+      if (notiRef.current && !notiRef.current.contains(e.target))
+        setShowNoti(false);
     };
     document.addEventListener("mousedown", handleClick);
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
+
+  // NOTIFICATION LOGIC
+  const fetchNotifications = async () => {
+    if (!user) return;
+    try {
+      const { data } = await notificationAPI.get(true);
+      setNotifications(data);
+      setUnreadCount(data.length);
+    } catch {}
+  };
+
+  useEffect(() => {
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000); // Poll mỗi 30s
+    return () => clearInterval(interval);
+  }, [user]);
+
+  const handleMarkRead = async (noti) => {
+    await notificationAPI.markRead(noti.id);
+    setUnreadCount((c) => c - 1);
+    setShowNoti(false);
+    if (noti.link) navigate(noti.link);
+  };
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -113,19 +143,34 @@ export default function Navbar() {
               to="/store"
               style={{ padding: "4px 0", ...isActive("/store") }}
             >
-              STORE
+              CỬA HÀNG
             </Link>
             {user && (
               <Link
                 to="/library"
                 style={{ padding: "4px 0", ...isActive("/library") }}
               >
-                LIBRARY
+                THƯ VIỆN
+              </Link>
+            )}
+            {user && (
+              <Link
+                to="/wishlist"
+                style={{ padding: "4px 0", ...isActive("/wishlist") }}
+              >
+                YÊU THÍCH
+              </Link>
+            )}
+            {user && (
+              <Link
+                to="/orders"
+                style={{ padding: "4px 0", ...isActive("/orders") }}
+              >
+                ĐƠN HÀNG
               </Link>
             )}
           </div>
 
-          {/* Spacer */}
           <div style={{ flex: 1 }} />
 
           {/* Right Section */}
@@ -137,7 +182,7 @@ export default function Navbar() {
               fontSize: 13,
             }}
           >
-            {/* SEARCH BUTTON + DROPDOWN */}
+            {/* SEARCH */}
             <div ref={searchRef} style={{ position: "relative" }}>
               {!searchOpen ? (
                 <button
@@ -163,7 +208,7 @@ export default function Navbar() {
                     autoFocus
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search games..."
+                    placeholder="Tìm kiếm..."
                     style={{
                       width: 200,
                       padding: "6px 32px 6px 12px",
@@ -194,8 +239,6 @@ export default function Navbar() {
                   </button>
                 </form>
               )}
-
-              {/* SUGGESTIONS DROPDOWN */}
               {searchOpen && suggestions.length > 0 && (
                 <div
                   style={{
@@ -289,6 +332,161 @@ export default function Navbar() {
               )}
             </div>
 
+            {/* Wishlist */}
+            {user && (
+              <Link
+                to="/wishlist"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  color: "#999",
+                }}
+              >
+                <Heart size={18} />
+              </Link>
+            )}
+
+            {/* Notifications */}
+            {user && (
+              <div ref={notiRef} style={{ position: "relative" }}>
+                <button
+                  onClick={() => {
+                    setShowNoti(!showNoti);
+                    fetchNotifications();
+                  }}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 6,
+                    color: "#999",
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    position: "relative",
+                  }}
+                >
+                  <Bell size={18} />
+                  {unreadCount > 0 && (
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: -6,
+                        right: -6,
+                        background: "#e94560",
+                        color: "#fff",
+                        borderRadius: "50%",
+                        width: 18,
+                        height: 18,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 10,
+                        fontWeight: 700,
+                      }}
+                    >
+                      {unreadCount}
+                    </span>
+                  )}
+                </button>
+                {showNoti && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      right: 0,
+                      marginTop: 8,
+                      width: 320,
+                      background: "#1a1a1a",
+                      border: "1px solid #333",
+                      borderRadius: 8,
+                      overflow: "hidden",
+                      zIndex: 1001,
+                      boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+                      maxHeight: 400,
+                      overflowY: "auto",
+                    }}
+                  >
+                    <div
+                      style={{
+                        padding: "12px 16px",
+                        borderBottom: "1px solid #333",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span
+                        style={{ fontWeight: 600, color: "#fff", fontSize: 13 }}
+                      >
+                        Thông báo
+                      </span>
+                      <span style={{ color: "#888", fontSize: 11 }}>
+                        {unreadCount} Chưa đọc
+                      </span>
+                    </div>
+                    {notifications.length === 0 ? (
+                      <div
+                        style={{
+                          padding: 20,
+                          textAlign: "center",
+                          color: "#666",
+                          fontSize: 12,
+                        }}
+                      >
+                        Không có thông báo nào
+                      </div>
+                    ) : (
+                      notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          onClick={() => handleMarkRead(n)}
+                          style={{
+                            padding: "10px 16px",
+                            borderBottom: "1px solid #222",
+                            cursor: "pointer",
+                            transition: "background 0.15s",
+                            background: n.isRead ? "transparent" : "#1e1e30",
+                          }}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.background = "#2a2a2a")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.background = n.isRead
+                              ? "transparent"
+                              : "#1e1e30")
+                          }
+                        >
+                          <p
+                            style={{
+                              fontSize: 12,
+                              color: "#fff",
+                              fontWeight: n.isRead ? 400 : 600,
+                              marginBottom: 2,
+                            }}
+                          >
+                            {n.title}
+                          </p>
+                          <p style={{ fontSize: 11, color: "#888" }}>
+                            {n.message}
+                          </p>
+                          <p
+                            style={{
+                              fontSize: 10,
+                              color: "#555",
+                              marginTop: 4,
+                            }}
+                          >
+                            {new Date(n.createdAt).toLocaleString()}
+                          </p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Cart */}
             <Link
               to="/cart"
@@ -324,10 +522,9 @@ export default function Navbar() {
               )}
             </Link>
 
-            {/* ========== USER SECTION (ĐÃ KHÔI PHỤC) ========== */}
+            {/* User */}
             {user ? (
               <>
-                {/* Wallet Button */}
                 <button
                   onClick={() => setShowWallet(true)}
                   style={{
@@ -346,8 +543,6 @@ export default function Navbar() {
                 >
                   <Wallet size={14} />${user.wallet?.toFixed(2) || "0.00"}
                 </button>
-
-                {/* Admin Button */}
                 {isAdmin && (
                   <Link
                     to="/admin"
@@ -363,11 +558,9 @@ export default function Navbar() {
                       borderRadius: 4,
                     }}
                   >
-                    <Shield size={14} /> ADMIN
+                    <Shield size={14} /> QUẢN TRỊ VIÊN
                   </Link>
                 )}
-
-                {/* User Info */}
                 <div
                   style={{
                     display: "flex",
@@ -383,8 +576,6 @@ export default function Navbar() {
                   <span style={{ fontWeight: 500 }}>
                     {user.displayName || user.username}
                   </span>
-
-                  {/* Logout */}
                   <button
                     onClick={logout}
                     style={{
@@ -417,13 +608,12 @@ export default function Navbar() {
                   borderRadius: 4,
                 }}
               >
-                <User size={14} /> SIGN IN
+                <User size={14} /> ĐĂNG NHẬP
               </Link>
             )}
           </div>
         </div>
       </nav>
-
       {showWallet && <WalletModal onClose={() => setShowWallet(false)} />}
     </>
   );

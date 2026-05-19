@@ -32,3 +32,6 @@ Thumbs.db
 #appsetting.json
 appsettings.Development.json
 appsettings.*.local.json
+
+#project dump files
+project_dump.txt

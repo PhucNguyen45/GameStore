@@ -33,11 +33,13 @@ public class AuthController : ControllerBase
         var user = await _userService.Authenticate(request.Username, request.Password);
         if (user == null) return Unauthorized(new { message = "Invalid username or password" });
 
-        // Lấy role từ database
-        var userRole = await _context.UserRoles
+        var userRoles = await _context.UserRoles
             .Include(ur => ur.Role)
-            .FirstOrDefaultAsync(ur => ur.UserId == user.Id);
-        var roleName = userRole?.Role?.Name ?? "User";
+            .Where(ur => ur.UserId == user.Id && !ur.IsDeleted)
+            .ToListAsync();
+        // Ưu tiên role cao nhất: Admin > các role khác > User
+        var roleName = userRoles.Any(ur => ur.Role.Name == "Admin") ? "Admin"
+            : userRoles.FirstOrDefault()?.Role?.Name ?? "User";
 
         var secretKey = _configuration["Jwt:SecretKey"]!;
         var expireMinutes = int.Parse(_configuration["Jwt:ExpireMinutes"] ?? "480");

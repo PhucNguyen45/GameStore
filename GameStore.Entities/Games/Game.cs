@@ -39,5 +39,6 @@ namespace GameStore.Entities.Games
         public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
         public virtual ICollection<Wishlist> Wishlists { get; set; } = new HashSet<Wishlist>();
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new HashSet<OrderDetail>();
+
     }
 }

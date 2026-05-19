@@ -8,20 +8,20 @@ LOGS_DIR="$SCRIPT_DIR/logs"
 PID_FILE="$LOGS_DIR/services.pid"
 
 clear
-echo -e "${RED}${BOLD}"
+echo  "${RED}${BOLD}"
 echo "╔══════════════════════════════════════════════════════════════╗"
 echo "║           🛑  GAMESTORE - STOPPING ALL SERVICES           ║"
 echo "║           📅  $(date '+%Y-%m-%d %H:%M:%S')                        ║"
 echo "╚══════════════════════════════════════════════════════════════╝"
-echo -e "${NC}"
+echo  "${NC}"
 
 kill_port() {
     local PORT=$1 NAME=$2
-    echo -ne "${YELLOW}[$(date +%H:%M:%S)] Stopping ${NAME} (Port ${PORT})...${NC}"
+    echo  "${YELLOW}[$(date +%H:%M:%S)] Stopping ${NAME} (Port ${PORT})...${NC}"
     local PIDS=$(lsof -ti :$PORT 2>/dev/null)
-    if [ -z "$PIDS" ]; then echo -e " ${CYAN}not running${NC}"; return; fi
+    if [ -z "$PIDS" ]; then echo  " ${CYAN}not running${NC}"; return; fi
     for PID in $PIDS; do kill $PID 2>/dev/null; sleep 0.3; kill -0 $PID 2>/dev/null && kill -9 $PID 2>/dev/null; done
-    echo -e " ${GREEN}stopped${NC}"
+    echo  " ${GREEN}stopped${NC}"
 }
 
 if [ -f "$PID_FILE" ]; then
@@ -40,6 +40,6 @@ kill_port 3000 "Web Client"
 pkill -f "dotnet.*GameStore" 2>/dev/null
 pkill -f "vite" 2>/dev/null
 
-echo -e "\n${GREEN}${BOLD}╔══════════════════════════════════════════════════════════════╗"
-echo -e "║              ✅  ALL SERVICES STOPPED                       ║"
-echo -e "╚══════════════════════════════════════════════════════════════╝${NC}"
+echo  "\n${GREEN}${BOLD}╔══════════════════════════════════════════════════════════════╗"
+echo  "║              ✅  ALL SERVICES STOPPED                       ║"
+echo  "╚══════════════════════════════════════════════════════════════╝${NC}"

@@ -1,35 +1,50 @@
 // GameStore.WebClient/src/components/games/GameCard.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Star, ShoppingCart, Check } from "lucide-react";
+import { Star, ShoppingCart, Check, Heart } from "lucide-react";
 import useCartStore from "../../stores/cartStore";
 import { useAuth } from "../../contexts/AuthContext";
-import { libraryAPI } from "../../services/api";
+import { libraryAPI, wishlistAPI } from "../../services/api";
 
 export default function GameCard({ game }) {
   const addItem = useCartStore((s) => s.addItem);
-  // const hasItem = useCartStore((s) => s.hasItem);
-  // const inCart = hasItem(game.id); // Kiểm tra đã trong giỏ chưa
   const { user } = useAuth();
   const [owned, setOwned] = useState(false);
+  const [wishlisted, setWishlisted] = useState(false);
 
   const discount = game.discountPrice
     ? Math.round((1 - game.discountPrice / game.price) * 100)
     : 0;
 
-  // 🔍 Kiểm tra game đã mua chưa
   useEffect(() => {
     if (user && game.id) {
       libraryAPI
         .checkOwned(game.id)
         .then((res) => setOwned(res.data.owned))
         .catch(() => setOwned(false));
+      wishlistAPI
+        .check(game.id)
+        .then((res) => setWishlisted(res.data.isWishlisted))
+        .catch(() => setWishlisted(false));
     }
   }, [user, game.id]);
 
+  const toggleWishlist = async (e) => {
+    e.preventDefault();
+    if (!user) return;
+    try {
+      if (wishlisted) {
+        await wishlistAPI.remove(game.id);
+        setWishlisted(false);
+      } else {
+        await wishlistAPI.add(game.id);
+        setWishlisted(true);
+      }
+    } catch {}
+  };
+
   return (
     <div className="card" style={{ position: "relative" }}>
-      {/* Discount Badge */}
       {discount > 0 && (
         <div
           style={{
@@ -48,8 +63,6 @@ export default function GameCard({ game }) {
           -{discount}%
         </div>
       )}
-
-      {/* Owned Badge */}
       {owned && (
         <div
           style={{
@@ -71,6 +84,27 @@ export default function GameCard({ game }) {
           <Check size={12} /> OWNED
         </div>
       )}
+      {/* Wishlist heart */}
+      <button
+        onClick={toggleWishlist}
+        style={{
+          position: "absolute",
+          top: 8,
+          right: owned ? 80 : 8,
+          zIndex: 2,
+          background: wishlisted ? "#e94560" : "rgba(0,0,0,0.5)",
+          border: "none",
+          borderRadius: "50%",
+          width: 28,
+          height: 28,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+        }}
+      >
+        <Heart size={14} fill={wishlisted ? "#fff" : "none"} color="#fff" />
+      </button>
 
       <Link to={`/game/${game.id}`}>
         <div
@@ -112,7 +146,6 @@ export default function GameCard({ game }) {
             {game.title}
           </h4>
         </Link>
-
         <div
           style={{
             display: "flex",
@@ -128,7 +161,6 @@ export default function GameCard({ game }) {
             {game.rating?.toFixed(1)}
           </span>
         </div>
-
         <div
           style={{
             display: "flex",
@@ -154,8 +186,6 @@ export default function GameCard({ game }) {
               ${(game.discountPrice || game.price)?.toFixed(2)}
             </span>
           </div>
-
-          {/* Nút: Owned / Add to Cart */}
           {owned ? (
             <button
               disabled
@@ -169,11 +199,10 @@ export default function GameCard({ game }) {
                 alignItems: "center",
                 gap: 4,
               }}
-              title="Already in your library"
             >
               <Check size={14} color="#4caf50" />
               <span style={{ color: "#4caf50", fontSize: 11, fontWeight: 600 }}>
-                OWNED
+                ĐÃ MUA
               </span>
             </button>
           ) : (
@@ -186,7 +215,6 @@ export default function GameCard({ game }) {
                 padding: "4px 10px",
                 cursor: "pointer",
               }}
-              title="Add to cart"
             >
               <ShoppingCart size={14} color="#fff" />
             </button>

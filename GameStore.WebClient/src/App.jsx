@@ -12,6 +12,10 @@ import CartPage from "./pages/CartPage";
 import LibraryPage from "./pages/LibraryPage";
 import AdminPage from "./pages/AdminPage";
 import GameDetailPage from "./pages/GameDetailPage";
+import PaymentPage from "./pages/PaymentPage";
+import InvoicePage from "./pages/InvoicePage";
+import WishlistPage from "./pages/WishlistPage";
+import PurchaseHistoryPage from "./pages/PurchaseHistoryPage";
 
 export default function App() {
   return (
@@ -42,6 +46,10 @@ export default function App() {
               <Route path="/library" element={<LibraryPage />} />
               <Route path="/admin" element={<AdminPage />} />
               <Route path="/game/:id" element={<GameDetailPage />} />
+              <Route path="/payment" element={<PaymentPage />} />
+              <Route path="/invoice/:id" element={<InvoicePage />} />
+              <Route path="/wishlist" element={<WishlistPage />} />
+              <Route path="/orders" element={<PurchaseHistoryPage />} />
             </Route>
           </Routes>
         </ErrorBoundary>

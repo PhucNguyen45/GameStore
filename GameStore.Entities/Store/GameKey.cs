@@ -16,6 +16,7 @@ namespace GameStore.Entities.Store
         public int? OrderDetailId { get; set; }
         public DateTime? UsedAt { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? ExpiresAt { get; set; } // thêm
 
         public virtual Game Game { get; set; } = null!;
         public virtual OrderDetail? OrderDetail { get; set; }

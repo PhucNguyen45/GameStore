@@ -1,7 +1,13 @@
 // GameStore.WebClient/src/pages/GameDetailPage.jsx
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { gameAPI, libraryAPI, orderAPI } from "../services/api";
+import {
+  gameAPI,
+  libraryAPI,
+  orderAPI,
+  wishlistAPI,
+  reviewAPI,
+} from "../services/api";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
@@ -12,17 +18,13 @@ import {
   Cpu,
   HardDrive,
   Gamepad2,
-  ChevronRight,
   Heart,
-  Share2,
-  Clock,
-  Globe,
-  Award,
   Users,
-  Plus,
   Check,
-  X,
   Play,
+  ChevronLeft,
+  ChevronRight,
+  MessageSquare,
 } from "lucide-react";
 
 export default function GameDetailPage() {
@@ -35,6 +37,23 @@ export default function GameDetailPage() {
   const addItem = useCartStore((s) => s.addItem);
   const navigate = useNavigate();
 
+  // ===== WISHLIST STATE =====
+  const [wishlisted, setWishlisted] = useState(false);
+
+  // ===== REVIEWS STATE =====
+  const [reviews, setReviews] = useState([]);
+  const [reviewPage, setReviewPage] = useState(1);
+  const [totalReviewPages, setTotalReviewPages] = useState(1);
+  const [hasReviewed, setHasReviewed] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    rating: 5,
+    content: "",
+    isRecommended: true,
+  });
+  const [submittingReview, setSubmittingReview] = useState(false);
+
+  // ===== LOAD GAME =====
   useEffect(() => {
     gameAPI
       .getById(id)
@@ -42,26 +61,96 @@ export default function GameDetailPage() {
       .finally(() => setLoading(false));
   }, [id]);
 
-  // KIỂM TRA GAME ĐÃ MUA CHƯA
+  // ===== CHECK OWNED & WISHLIST =====
   useEffect(() => {
     if (user && id) {
       libraryAPI
         .checkOwned(id)
         .then((res) => setOwned(res.data.owned))
         .catch(() => setOwned(false));
+      wishlistAPI
+        .check(id)
+        .then((res) => setWishlisted(res.data.isWishlisted))
+        .catch(() => setWishlisted(false));
     } else {
       setOwned(false);
+      setWishlisted(false);
     }
   }, [user, id]);
 
+  // ===== LOAD REVIEWS WHEN TAB ACTIVE =====
+  const loadReviews = async (page = 1) => {
+    try {
+      const { data } = await reviewAPI.getByGame(id, page);
+      setReviews(data.reviews || data); // tuỳ backend trả về
+      setTotalReviewPages(data.totalPages || 1);
+      setReviewPage(page);
+    } catch {}
+  };
+
+  useEffect(() => {
+    if (activeTab === "reviews" && id) {
+      loadReviews(1);
+      if (user) {
+        reviewAPI
+          .check(id)
+          .then((res) => setHasReviewed(res.data.reviewed))
+          .catch(() => {});
+      }
+    }
+  }, [activeTab, id, user]);
+
+  // ===== WISHLIST TOGGLE =====
+  const toggleWishlist = async () => {
+    if (!user) {
+      toast.error("Đăng nhập để cho vào Yêu Thích");
+      return;
+    }
+    try {
+      if (wishlisted) {
+        await wishlistAPI.remove(id);
+        setWishlisted(false);
+        toast.success("Xóa khỏi Yêu Thích");
+      } else {
+        await wishlistAPI.add(id);
+        setWishlisted(true);
+        toast.success("Đã thêm vào Yêu Thích");
+      }
+    } catch {
+      toast.error("Lỗi khi tải Yêu Thích");
+    }
+  };
+
+  // ===== BUY NOW =====
   const handleBuyNow = () => {
     if (!user) {
-      toast.error("Sign in to purchase");
+      toast.error("Đăng nhập để mua");
       navigate("/login");
       return;
     }
     addItem(game);
     navigate("/cart");
+  };
+
+  // ===== SUBMIT REVIEW =====
+  const submitReview = async (e) => {
+    e.preventDefault();
+    if (!reviewForm.content.trim()) return;
+    setSubmittingReview(true);
+    try {
+      await reviewAPI.create({ gameId: parseInt(id), ...reviewForm });
+      toast.success("Đã gửi đánh giá!");
+      setShowReviewForm(false);
+      setReviewForm({ rating: 5, content: "", isRecommended: true });
+      setHasReviewed(true);
+      // Reload reviews để có review mới + cập nhật rating game
+      loadReviews(1);
+      gameAPI.getById(id).then((res) => setGame(res.data)); // cập nhật rating mới
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Gửi đánh giá thất bại!");
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
   if (loading) return <LoadingSkeleton />;
@@ -81,7 +170,7 @@ export default function GameDetailPage() {
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      {/* ===== HERO - FULL WIDTH DARK ===== */}
+      {/* ===== HERO ===== */}
       <div
         style={{
           background: `linear-gradient(0deg, #121212 0%, rgba(18,18,18,0.6) 100%), url(${game.coverImageUrl}) center/cover no-repeat`,
@@ -92,7 +181,6 @@ export default function GameDetailPage() {
           position: "relative",
         }}
       >
-        {/* Gradient Overlay */}
         <div
           style={{
             position: "absolute",
@@ -101,8 +189,6 @@ export default function GameDetailPage() {
               "linear-gradient(0deg, #121212 10%, transparent 50%, rgba(0,0,0,0.4) 100%)",
           }}
         />
-
-        {/* Content */}
         <div
           style={{
             maxWidth: 1400,
@@ -113,7 +199,6 @@ export default function GameDetailPage() {
             zIndex: 1,
           }}
         >
-          {/* Coming Soon / Available Now Badge */}
           <div style={{ marginBottom: 16 }}>
             <span
               style={{
@@ -128,11 +213,9 @@ export default function GameDetailPage() {
                 textTransform: "uppercase",
               }}
             >
-              Available Now
+              Sẵn có
             </span>
           </div>
-
-          {/* Title */}
           <h1
             style={{
               fontSize: "clamp(32px, 5vw, 64px)",
@@ -145,8 +228,6 @@ export default function GameDetailPage() {
           >
             {game.title}
           </h1>
-
-          {/* Description */}
           <p
             style={{
               fontSize: 16,
@@ -158,8 +239,6 @@ export default function GameDetailPage() {
           >
             {game.description?.substring(0, 150)}...
           </p>
-
-          {/* Genres */}
           <div
             style={{
               display: "flex",
@@ -185,8 +264,6 @@ export default function GameDetailPage() {
               </span>
             ))}
           </div>
-
-          {/* Rating + Platform + Price Row */}
           <div
             style={{
               display: "flex",
@@ -195,7 +272,6 @@ export default function GameDetailPage() {
               flexWrap: "wrap",
             }}
           >
-            {/* Rating */}
             {game.rating > 0 && (
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <Star size={18} fill="#f7b731" color="#f7b731" />
@@ -207,8 +283,6 @@ export default function GameDetailPage() {
                 </span>
               </div>
             )}
-
-            {/* Platform */}
             <div
               style={{
                 display: "flex",
@@ -221,8 +295,6 @@ export default function GameDetailPage() {
               <Monitor size={16} /> Windows PC
             </div>
           </div>
-
-          {/* Price & Buttons Row */}
           <div
             style={{
               display: "flex",
@@ -231,7 +303,6 @@ export default function GameDetailPage() {
               marginTop: 24,
             }}
           >
-            {/* 🆕 NẾU ĐÃ MUA → HIỂN THỊ "IN LIBRARY" */}
             {owned ? (
               <>
                 <button
@@ -241,18 +312,17 @@ export default function GameDetailPage() {
                     cursor: "default",
                   }}
                 >
-                  <Check size={16} style={{ marginRight: 6 }} />
-                  IN LIBRARY
+                  <Check size={16} style={{ marginRight: 6 }} /> ĐÃ CÓ TRONG THƯ
+                  VIỆN
                 </button>
                 <button
                   style={epicSecondaryBtn}
                   onClick={() => navigate("/library")}
                 >
-                  GO TO LIBRARY
+                  ĐẾN THƯ VIỆN
                 </button>
               </>
             ) : game.price === 0 ? (
-              /* FREE GAME */
               <button
                 style={epicPrimaryBtn}
                 onClick={async () => {
@@ -265,22 +335,18 @@ export default function GameDetailPage() {
                       items: [{ gameId: game.id, quantity: 1 }],
                     });
                     setOwned(true);
-                    toast.success("Game added to your library!");
+                    toast.success("Đã thêm game vào thư viện!");
                   } catch (e) {
-                    toast.error(e.response?.data?.message || "Failed");
+                    toast.error(e.response?.data?.message || "Thất bại");
                   }
                 }}
               >
-                GET{" "}
-                <span style={{ marginLeft: 8, fontSize: 14, fontWeight: 400 }}>
-                  Free
-                </span>
+                MIỄN PHÍ
               </button>
             ) : (
-              /* GAME TRẢ PHÍ */
               <>
                 <button style={epicPrimaryBtn} onClick={handleBuyNow}>
-                  BUY NOW
+                  MUA NGAY
                   <span
                     style={{
                       marginLeft: 10,
@@ -311,17 +377,26 @@ export default function GameDetailPage() {
                     toast.success("Added to cart!");
                   }}
                 >
-                  <ShoppingCart size={16} /> ADD TO CART
+                  <ShoppingCart size={16} /> THÊM VÀO GIỎ HÀNG
                 </button>
               </>
             )}
-
-            <button style={epicWishlistBtn}>
-              <Heart size={16} />
+            {/* ===== WISHLIST BUTTON ===== */}
+            <button
+              onClick={toggleWishlist}
+              style={{
+                ...epicWishlistBtn,
+                background: wishlisted ? "#e94560" : "transparent",
+                borderColor: wishlisted ? "#e94560" : "#fff",
+              }}
+            >
+              <Heart
+                size={16}
+                fill={wishlisted ? "#ffffff" : "none"}
+                color={wishlisted ? "#ffffff" : "inherit"}
+              />
             </button>
           </div>
-
-          {/* Age Rating + Features */}
           <div style={{ display: "flex", gap: 20, marginTop: 20 }}>
             <span
               style={{
@@ -333,7 +408,7 @@ export default function GameDetailPage() {
                 color: "#aaa",
               }}
             >
-              RATING PENDING
+              CHỜ XẾP HẠNG
             </span>
             <span
               style={{
@@ -350,7 +425,7 @@ export default function GameDetailPage() {
         </div>
       </div>
 
-      {/* ===== TABS - STICKY ===== */}
+      {/* ===== TABS ===== */}
       <div
         style={{
           background: "#1a1a1a",
@@ -370,9 +445,9 @@ export default function GameDetailPage() {
           }}
         >
           {[
-            { id: "overview", label: "OVERVIEW" },
-            { id: "requirements", label: "SYSTEM REQUIREMENTS" },
-            { id: "reviews", label: "REVIEWS" },
+            { id: "overview", label: "TỔNG QUAN" },
+            { id: "requirements", label: "CẤU HÌNH YÊU CẦU" },
+            { id: "reviews", label: "ĐÁNH GIÁ" },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -410,7 +485,6 @@ export default function GameDetailPage() {
               gap: 60,
             }}
           >
-            {/* LEFT - Description */}
             <div>
               <h2
                 style={{
@@ -420,7 +494,7 @@ export default function GameDetailPage() {
                   letterSpacing: -0.5,
                 }}
               >
-                ABOUT {game.title?.toUpperCase()}
+                VỀ {game.title?.toUpperCase()}
               </h2>
               <p
                 style={{
@@ -432,8 +506,6 @@ export default function GameDetailPage() {
               >
                 {game.description}
               </p>
-
-              {/* Feature Highlights */}
               <div
                 style={{
                   display: "grid",
@@ -442,16 +514,16 @@ export default function GameDetailPage() {
                 }}
               >
                 {[
-                  { label: "Developer", value: game.developer },
-                  { label: "Publisher", value: game.publisher },
+                  { label: "Nhà phát triển", value: game.developer },
+                  { label: "Nhà phát hành", value: game.publisher },
                   {
-                    label: "Release Date",
+                    label: "Ngày phát hành",
                     value: new Date(game.releaseDate).toLocaleDateString(
                       "en-US",
                       { year: "numeric", month: "long", day: "numeric" },
                     ),
                   },
-                  { label: "Platform", value: "Windows PC" },
+                  { label: "Nền tảng", value: "Windows PC" },
                 ].map(({ label, value }) => (
                   <div key={label}>
                     <p
@@ -470,10 +542,7 @@ export default function GameDetailPage() {
                 ))}
               </div>
             </div>
-
-            {/* RIGHT - Sidebar */}
             <div>
-              {/* Ratings Card */}
               <div
                 style={{
                   background: "#1e1e1e",
@@ -492,7 +561,7 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  EPIC PLAYER RATINGS
+                  ĐÁNH GIÁ CỦA NGƯỜI CHƠI
                 </h3>
                 <div
                   style={{
@@ -542,6 +611,7 @@ export default function GameDetailPage() {
                   </div>
                 </div>
                 <button
+                  onClick={() => setActiveTab("reviews")}
                   style={{
                     width: "100%",
                     padding: "10px",
@@ -555,11 +625,9 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  WRITE A REVIEW
+                  XEM TẤT CẢ ĐÁNH GIÁ
                 </button>
               </div>
-
-              {/* Game Info Card */}
               <div
                 style={{
                   background: "#1e1e1e",
@@ -577,23 +645,23 @@ export default function GameDetailPage() {
                     letterSpacing: 1,
                   }}
                 >
-                  SPECIFICATIONS
+                  THÔNG TIN CHI TIẾT
                 </h3>
                 <div
                   style={{ display: "flex", flexDirection: "column", gap: 12 }}
                 >
                   {[
                     [
-                      "Genre",
+                      "Thể loại",
                       game.gameGenres?.map((g) => g.genre?.name).join(", "),
                     ],
                     [
-                      "Release Date",
+                      "Ngày phát hành",
                       new Date(game.releaseDate).toLocaleDateString(),
                     ],
-                    ["Platform", "Windows PC"],
-                    ["Developer", game.developer],
-                    ["Publisher", game.publisher],
+                    ["Nền tảng", "Windows PC"],
+                    ["Nhà phát triển", game.developer],
+                    ["Nhà phát hành", game.publisher],
                   ].map(([label, value]) => (
                     <div
                       key={label}
@@ -634,7 +702,7 @@ export default function GameDetailPage() {
                 letterSpacing: -0.5,
               }}
             >
-              SYSTEM REQUIREMENTS
+              CẤU HÌNH YÊU CẦU
             </h2>
             <div
               style={{
@@ -648,25 +716,29 @@ export default function GameDetailPage() {
                 style={{ display: "flex", flexDirection: "column", gap: 16 }}
               >
                 {[
-                  { icon: Monitor, label: "OS", value: game.minimumOS },
+                  {
+                    icon: Monitor,
+                    label: "Hệ điều hành",
+                    value: game.minimumOS,
+                  },
                   {
                     icon: Cpu,
-                    label: "Processor",
+                    label: "Bộ xử lý",
                     value: game.minimumProcessor,
                   },
                   {
                     icon: HardDrive,
-                    label: "Memory",
+                    label: "Bộ nhớ",
                     value: game.minimumMemory,
                   },
                   {
                     icon: Gamepad2,
-                    label: "Graphics",
+                    label: "Card đồ họa",
                     value: game.minimumGraphics,
                   },
                   {
                     icon: HardDrive,
-                    label: "Storage",
+                    label: "Dung lượng lưu trữ",
                     value: game.minimumStorage,
                   },
                 ]
@@ -698,39 +770,282 @@ export default function GameDetailPage() {
           </div>
         )}
 
-        {/* REVIEWS TAB */}
+        {/* ===== REVIEWS TAB (REAL) ===== */}
         {activeTab === "reviews" && (
-          <div style={{ textAlign: "center", padding: 60 }}>
-            <Star size={64} color="#333" />
-            <h2
+          <div style={{ maxWidth: 800, margin: "0 auto" }}>
+            <div
               style={{
-                fontSize: 20,
-                fontWeight: 700,
-                marginTop: 20,
-                letterSpacing: -0.5,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                marginBottom: 30,
               }}
             >
-              NO REVIEWS YET
-            </h2>
-            <p style={{ color: "#888", marginTop: 8, fontSize: 14 }}>
-              Be the first to review "{game.title}"
-            </p>
-            <button
-              style={{
-                marginTop: 20,
-                padding: "12px 32px",
-                background: "#fff",
-                color: "#000",
-                border: "none",
-                borderRadius: 4,
-                cursor: "pointer",
-                fontSize: 13,
-                fontWeight: 700,
-                letterSpacing: 1,
-              }}
-            >
-              WRITE REVIEW
-            </button>
+              <h2
+                style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.5 }}
+              >
+                ĐÁNH GIÁ CỦA NGƯỜI CHƠI
+              </h2>
+              {owned && !hasReviewed && !showReviewForm && (
+                <button
+                  onClick={() => setShowReviewForm(true)}
+                  style={{
+                    padding: "10px 24px",
+                    background: "#fff",
+                    color: "#000",
+                    border: "none",
+                    borderRadius: 4,
+                    cursor: "pointer",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    letterSpacing: 1,
+                  }}
+                >
+                  VIẾT ĐÁNH GIÁ
+                </button>
+              )}
+            </div>
+
+            {/* Review Form */}
+            {showReviewForm && (
+              <form
+                onSubmit={submitReview}
+                style={{
+                  background: "#1e1e1e",
+                  borderRadius: 8,
+                  padding: 24,
+                  marginBottom: 30,
+                  border: "1px solid #333",
+                }}
+              >
+                <h3 style={{ marginBottom: 16, fontSize: 14, fontWeight: 600 }}>
+                  Your Review
+                </h3>
+                <div style={{ marginBottom: 12 }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: 6,
+                      color: "#888",
+                      fontSize: 12,
+                    }}
+                  >
+                    Rating
+                  </label>
+                  <div style={{ display: "flex", gap: 4 }}>
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        size={20}
+                        fill={s <= reviewForm.rating ? "#f7b731" : "none"}
+                        color="#f7b731"
+                        style={{ cursor: "pointer" }}
+                        onClick={() =>
+                          setReviewForm({ ...reviewForm, rating: s })
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div style={{ marginBottom: 12 }}>
+                  <label
+                    style={{
+                      display: "block",
+                      marginBottom: 6,
+                      color: "#888",
+                      fontSize: 12,
+                    }}
+                  >
+                    Content
+                  </label>
+                  <textarea
+                    value={reviewForm.content}
+                    onChange={(e) =>
+                      setReviewForm({ ...reviewForm, content: e.target.value })
+                    }
+                    placeholder="Hãy viết trải nghiệm của bạn..."
+                    rows={4}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      background: "#0a0a10",
+                      border: "1px solid #333",
+                      borderRadius: 4,
+                      color: "#fff",
+                      fontSize: 13,
+                      resize: "vertical",
+                      outline: "none",
+                    }}
+                    required
+                  />
+                </div>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    color: "#ccc",
+                    fontSize: 13,
+                    marginBottom: 12,
+                    cursor: "pointer",
+                  }}
+                >
+                  <input
+                    type="checkbox"
+                    checked={reviewForm.isRecommended}
+                    onChange={(e) =>
+                      setReviewForm({
+                        ...reviewForm,
+                        isRecommended: e.target.checked,
+                      })
+                    }
+                  />
+                  Tôi đề xuất tựa game này
+                </label>
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button
+                    type="submit"
+                    disabled={submittingReview}
+                    className="btn-primary"
+                    style={{ padding: "10px 20px" }}
+                  >
+                    {submittingReview ? "Đang gửi..." : "Gửi đánh giá"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowReviewForm(false)}
+                    className="btn-outline"
+                    style={{ padding: "10px 20px" }}
+                  >
+                    HỦY
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {/* Reviews List */}
+            {reviews.length === 0 ? (
+              <div style={{ textAlign: "center", padding: 60 }}>
+                <Star size={64} color="#333" />
+                <h2
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 700,
+                    marginTop: 20,
+                    letterSpacing: -0.5,
+                  }}
+                >
+                  CHƯA CÓ ĐÁNH GIÁ NÀO
+                </h2>
+                <p style={{ color: "#888", marginTop: 8, fontSize: 14 }}>
+                  Be the first to review "{game.title}"
+                </p>
+              </div>
+            ) : (
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 16 }}
+              >
+                {reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    style={{
+                      background: "#1e1e1e",
+                      borderRadius: 8,
+                      padding: 20,
+                      border: "1px solid #333",
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        marginBottom: 8,
+                      }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                        }}
+                      >
+                        <span style={{ fontWeight: 600, fontSize: 14 }}>
+                          {review.username}
+                        </span>
+                        <div style={{ display: "flex", gap: 2 }}>
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <Star
+                              key={s}
+                              size={12}
+                              fill={s <= review.rating ? "#f7b731" : "none"}
+                              color="#f7b731"
+                            />
+                          ))}
+                        </div>
+                      </div>
+                      <span style={{ color: "#888", fontSize: 11 }}>
+                        {new Date(review.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <p style={{ color: "#ccc", fontSize: 13, lineHeight: 1.5 }}>
+                      {review.content}
+                    </p>
+                    {review.isRecommended && (
+                      <p
+                        style={{ color: "#4caf50", fontSize: 11, marginTop: 8 }}
+                      >
+                        👍 Được đề xuất
+                      </p>
+                    )}
+                  </div>
+                ))}
+                {/* Pagination */}
+                {totalReviewPages > 1 && (
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      gap: 8,
+                      marginTop: 16,
+                    }}
+                  >
+                    <button
+                      disabled={reviewPage === 1}
+                      onClick={() => loadReviews(reviewPage - 1)}
+                      style={{
+                        padding: "6px 12px",
+                        background: "#2a2a2a",
+                        border: "none",
+                        borderRadius: 4,
+                        color: "#fff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      ←
+                    </button>
+                    <span
+                      style={{ color: "#888", fontSize: 13, padding: "6px 0" }}
+                    >
+                      Page {reviewPage} of {totalReviewPages}
+                    </span>
+                    <button
+                      disabled={reviewPage === totalReviewPages}
+                      onClick={() => loadReviews(reviewPage + 1)}
+                      style={{
+                        padding: "6px 12px",
+                        background: "#2a2a2a",
+                        border: "none",
+                        borderRadius: 4,
+                        color: "#fff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      →
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
@@ -738,7 +1053,7 @@ export default function GameDetailPage() {
   );
 }
 
-// ===== STYLES =====
+// ===== STYLES (giữ nguyên) =====
 const epicPrimaryBtn = {
   padding: "12px 28px",
   background: "#fff",
@@ -782,7 +1097,7 @@ const epicWishlistBtn = {
   transition: "all 0.2s",
 };
 
-// ===== SUB COMPONENTS =====
+// ===== SUB COMPONENTS (giữ nguyên) =====
 function LoadingSkeleton() {
   return (
     <div style={{ background: "#121212", minHeight: "100vh" }}>
@@ -840,7 +1155,7 @@ function NotFound() {
       }}
     >
       <Gamepad2 size={64} />
-      <h2 style={{ marginTop: 16, color: "#fff" }}>Game Not Found</h2>
+      <h2 style={{ marginTop: 16, color: "#fff" }}>Không có game</h2>
       <Link
         to="/store"
         style={{
@@ -850,7 +1165,7 @@ function NotFound() {
           textDecoration: "underline",
         }}
       >
-        Back to Store
+        Trở về Cửa Hàng
       </Link>
     </div>
   );

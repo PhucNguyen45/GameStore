@@ -1,8 +1,8 @@
 // GameStore.WebClient/src/pages/CartPage.jsx
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
-import { orderAPI, userAPI } from "../services/api"; // ← THÊM userAPI
 import toast from "react-hot-toast";
 import {
   ShoppingCart,
@@ -16,42 +16,36 @@ import {
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, total, count } =
     useCartStore();
-  const { user, updateUser } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
+  const [email, setEmail] = useState(user?.email || "");
+  const [phone, setPhone] = useState(user?.phoneNumber || "");
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!user) {
+      toast.error("Vui lòng đăng nhập để tiếp tục thanh toán");
       navigate("/login");
       return;
     }
 
-    const orderTotal = total();
-
-    // Kiểm tra số dư trước khi gọi API
-    if (user.wallet < orderTotal) {
-      toast.error("Insufficient wallet balance! Please top up.");
+    if (!email || !phone) {
+      toast.error("Vui lòng nhập email và số điện thoại");
       return;
     }
 
-    try {
-      await orderAPI.create({
-        items: items.map((i) => ({ gameId: i.id, quantity: i.quantity })),
-      });
-
-      // Lấy số dư mới từ server (backend đã trừ tiền)
-      const walletRes = await userAPI.getWallet();
-      updateUser({ wallet: walletRes.data.balance });
-
-      clearCart();
-      toast.success("🎉 Purchase successful! Games added to your library.");
-      navigate("/library");
-    } catch (e) {
-      if (e.response?.status === 400) {
-        toast.error(e.response?.data?.message || "Insufficient balance");
-      } else {
-        toast.error("Checkout failed. Please try again.");
-      }
-    }
+    navigate("/payment", {
+      state: {
+        email,
+        phone,
+        items: items.map((i) => ({
+          gameId: i.id,
+          quantity: i.quantity,
+          title: i.title,
+          price: i.discountPrice || i.price,
+        })),
+        total: total(),
+      },
+    });
   };
 
   if (count() === 0)
@@ -67,12 +61,12 @@ export default function CartPage() {
         }}
       >
         <ShoppingCart size={64} color="#6b6b8e" />
-        <h2 style={{ marginTop: 20 }}>Your cart is empty</h2>
+        <h2 style={{ marginTop: 20 }}>Giỏ hàng đang trống</h2>
         <p style={{ color: "#6b6b8e", margin: "8px 0 20px" }}>
-          Start shopping for games!
+          Bắt đầu mua game thôi!
         </p>
         <Link to="/store">
-          <button className="btn-primary">Browse Store</button>
+          <button className="btn-primary">Xem cửa hàng</button>
         </Link>
       </div>
     );
@@ -89,7 +83,7 @@ export default function CartPage() {
           marginBottom: 24,
         }}
       >
-        <ArrowLeft size={16} /> Continue Shopping
+        <ArrowLeft size={16} /> Tiếp tục mua sắm
       </Link>
       <h1
         style={{
@@ -101,8 +95,7 @@ export default function CartPage() {
           marginBottom: 24,
         }}
       >
-        <ShoppingBag size={28} color="#e94560" /> Shopping Cart ({count()}{" "}
-        items)
+        <ShoppingBag size={28} color="#e94560" /> Giỏ hàng ({count()} items)
       </h1>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -119,7 +112,6 @@ export default function CartPage() {
               alignItems: "center",
             }}
           >
-            {/* Game Image */}
             <div
               style={{
                 width: 100,
@@ -148,38 +140,13 @@ export default function CartPage() {
                 "🎮"
               )}
             </div>
-
-            {/* Game Info */}
             <div style={{ flex: 1 }}>
               <h3 style={{ fontSize: 16, fontWeight: 600 }}>{item.title}</h3>
               <span style={{ color: "#e94560", fontWeight: 700, fontSize: 15 }}>
                 ${(item.discountPrice || item.price)?.toFixed(2)}
               </span>
             </div>
-
-            {/* Quantity Controls + Remove Button */}
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              {/* <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                <button
-                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                  style={qtyBtnStyle}
-                >
-                  <Minus size={14} />
-                </button>
-                <span
-                  style={{ minWidth: 30, textAlign: "center", fontWeight: 600 }}
-                >
-                  {item.quantity}
-                </span>
-                <button
-                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                  style={qtyBtnStyle}
-                >
-                  <Plus size={14} />
-                </button>
-              </div> */}
-
-              {/* Remove Button */}
               <button
                 onClick={() => removeItem(item.id)}
                 style={{
@@ -197,7 +164,6 @@ export default function CartPage() {
         ))}
       </div>
 
-      {/* Checkout Section */}
       <div
         style={{
           marginTop: 24,
@@ -219,20 +185,53 @@ export default function CartPage() {
             ${total().toFixed(2)}
           </span>
         </div>
-        <div style={{ display: "flex", gap: 12, marginTop: 20 }}>
+
+        <div
+          style={{
+            marginTop: 24,
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+          }}
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="example@gmail.com"
+              style={inputStyle}
+            />
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <label style={{ color: "#6b6b8e", fontSize: 14 }}>
+              Số điện thoại
+            </label>
+            <input
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="0123456789"
+              style={inputStyle}
+            />
+          </div>
+        </div>
+
+        <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
           <button
             onClick={clearCart}
             className="btn-outline"
             style={{ flex: 1 }}
           >
-            Clear Cart
+            Xóa giỏ hàng
           </button>
           <button
             onClick={handleCheckout}
             className="btn-primary"
             style={{ flex: 1, padding: 14, fontSize: 16 }}
           >
-            Checkout
+            Tiến hành thanh toán
           </button>
         </div>
         {!user && (
@@ -244,7 +243,7 @@ export default function CartPage() {
               fontSize: 13,
             }}
           >
-            ⚠ You need to login to checkout
+            ⚠ Bạn cần đăng nhập để thanh toán
           </p>
         )}
       </div>
@@ -252,13 +251,14 @@ export default function CartPage() {
   );
 }
 
-const qtyBtnStyle = {
-  padding: 6,
-  background: "#2a2a4a",
-  border: "none",
-  borderRadius: 6,
-  color: "#e0e0e0",
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
+const inputStyle = {
+  background: "#1a1a3e",
+  border: "1px solid #2a2a4a",
+  borderRadius: 8,
+  padding: "12px 16px",
+  color: "#fff",
+  fontSize: 14,
+  outline: "none",
+  width: "100%",
+  transition: "border-color 0.2s",
 };

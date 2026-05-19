@@ -19,6 +19,7 @@ export default function StorePage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [genreId, setGenreId] = useState("");
+  const [minPrice, setMinPrice] = useState(""); // thêm
   const [maxPrice, setMaxPrice] = useState("");
   const [sort, setSort] = useState("totalSales"); // sủa
   const [desc, setDesc] = useState(true);
@@ -41,6 +42,7 @@ export default function StorePage() {
         const params = { page, pageSize, sortBy: sort, desc }; // thêm desc
         if (search) params.keyword = search;
         if (genreId) params.genreId = genreId;
+        if (minPrice) params.minPrice = minPrice;
         if (maxPrice) params.maxPrice = maxPrice;
         const res = await gameAPI.getAll(params);
         setGames(res.data.data || []);
@@ -54,7 +56,7 @@ export default function StorePage() {
 
     const timer = setTimeout(fetchGames, 300);
     return () => clearTimeout(timer);
-  }, [page, sort, desc, genreId, search, maxPrice]); // thêm desc
+  }, [page, sort, desc, genreId, search, minPrice, maxPrice]); // thêm min price
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -157,6 +159,13 @@ export default function StorePage() {
           {/* price input */}
           <input
             type="number"
+            placeholder="Min Price $"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            style={{ ...selectStyle, width: 120 }}
+          />
+          <input
+            type="number"
             placeholder="Max Price $"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
@@ -207,6 +216,7 @@ export default function StorePage() {
           <button
             onClick={() => {
               setGenreId("");
+              setMinPrice(""); // thêm
               setMaxPrice("");
               setSort("sales");
               setShowFilters(false);

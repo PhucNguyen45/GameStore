@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using GameStore.Repository;
 using GameStore.Services;
 using GameStore.Entities.Games;
+using GameStore.DTOs.Admin;
 
 namespace GameStore.APIService.Controllers;
 
@@ -13,138 +14,228 @@ namespace GameStore.APIService.Controllers;
 [ApiController]
 public class AdminController : ControllerBase
 {
-    private readonly GameStoreDbContext _context;
-    private readonly IGameService _gameService;
+    private readonly IAdminService _adminService;
 
-    public AdminController(GameStoreDbContext context, IGameService gameService)
-    {
-        _context = context;
-        _gameService = gameService;
-    }
+    public AdminController(IAdminService adminService) => _adminService = adminService;
 
-    // ================= DASHBOARD =================
-
+    // Dashboard
     [HttpGet("dashboard")]
-    public async Task<IActionResult> GetDashboard()
-    {
-        var totalGames = await _context.Games.CountAsync();
-        var totalUsers = await _context.Users.CountAsync();
-        var totalOrders = await _context.Orders.CountAsync();
+    public async Task<IActionResult> GetDashboard() => Ok(await _adminService.GetDashboardAsync());
 
-        var revenue = await _context.Orders
-            .Where(o => o.Status == "Completed")
-            .SumAsync(o => o.TotalAmount);
-
-        return Ok(new
-        {
-            totalGames,
-            totalUsers,
-            totalOrders,
-            totalRevenue = revenue
-        });
-    }
-
-    // ================= GAMES =================
-
+    // Games Admin
     [HttpGet("games")]
-    public async Task<IActionResult> GetGames()
+    public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId,
+        [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string? sortBy,
+        [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (games, totalCount) = await _gameService.Search(
-            null, null, null,
-            "CreatedAt", true,
-            1, 1000
-        );
-
-        return Ok(new
-        {
-            data = games.Select(g => new
-            {
-                g.Id,
-                g.Title,
-                g.Price,
-                g.DiscountPrice,
-                g.Developer,
-                g.Rating
-            }),
-            totalCount
-        });
+        var (games, totalCount) = await _adminService.GetGamesAsync(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
+        return Ok(new { data = games, totalCount });
     }
 
     [HttpPost("games")]
-    public async Task<IActionResult> CreateGame([FromBody] Game game)
+    public async Task<IActionResult> CreateGame([FromBody] AdminGameCreateDto dto)
     {
-        var created = await _gameService.Create(game);
-        return Ok(created);
+        var game = await _adminService.CreateGameAsync(dto);
+        return Ok(game);
     }
 
     [HttpPut("games/{id}")]
-    public async Task<IActionResult> UpdateGame(int id, [FromBody] Game game)
+    public async Task<IActionResult> UpdateGame(int id, [FromBody] AdminGameUpdateDto dto)
     {
-        var existing = await _gameService.GetById(id);
-
-        if (existing == null)
-            return NotFound();
-
-        existing.Title = game.Title;
-        existing.Price = game.Price;
-        existing.DiscountPrice = game.DiscountPrice;
-        existing.Developer = game.Developer;
-
-        await _gameService.Update(existing);
-
-        return Ok(existing);
+        await _adminService.UpdateGameAsync(id, dto);
+        return Ok(new { message = "Game updated" });
     }
 
     [HttpDelete("games/{id}")]
     public async Task<IActionResult> DeleteGame(int id)
     {
-        await _gameService.Delete(id);
-        return Ok();
+        await _adminService.DeleteGameAsync(id);
+        return Ok(new { message = "Game deleted" });
     }
 
-    // ================= USERS =================
-
+    // Users
     [HttpGet("users")]
-    public async Task<IActionResult> GetUsers()
+    public async Task<IActionResult> GetUsers([FromQuery] string? keyword,
+        [FromQuery] bool? isActive, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
+        [FromQuery] string? sortBy, [FromQuery] bool desc = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var users = await _context.Users
-            .Select(u => new
-            {
-                u.Id,
-                u.Username,
-                u.DisplayName,
-                u.Email,
-                u.Wallet,
-                u.IsActive,
-                u.CreatedAt
-            })
-            .ToListAsync();
-
-        return Ok(new
-        {
-            data = users,
-            totalCount = users.Count
-        });
+        var (users, totalCount) = await _adminService.GetUsersAsync(keyword, isActive, fromDate, toDate, sortBy, desc, page, pageSize);
+        return Ok(new { data = users, totalCount });
     }
 
-    // ================= ORDERS =================
-
-    [HttpGet("orders")]
-    public async Task<IActionResult> GetOrders()
+    [HttpPut("users/{id}")]
+    public async Task<IActionResult> UpdateUser(int id, [FromBody] AdminUserUpdateDto dto)
     {
-        var orders = await _context.Orders
-            .OrderByDescending(o => o.OrderDate)
-            .Select(o => new
-            {
-                o.Id,
-                o.UserId,
-                o.TotalAmount,
-                o.Status,
-                o.PaymentMethod,
-                o.OrderDate
-            })
-            .ToListAsync();
+        await _adminService.UpdateUserAsync(id, dto);
+        return Ok(new { message = "User updated" });
+    }
 
-        return Ok(orders);
+    [HttpDelete("users/{id}")]
+    public async Task<IActionResult> DeleteUser(int id)
+    {
+        await _adminService.DeleteUserAsync(id);
+        return Ok(new { message = "User deleted" });
+    }
+
+    // Orders
+    [HttpGet("orders")]
+    public async Task<IActionResult> GetOrders([FromQuery] string? keyword, [FromQuery] DateTime? fromDate,
+        [FromQuery] DateTime? toDate, [FromQuery] string? status, [FromQuery] string? sortBy,
+        [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        var (orders, totalCount) = await _adminService.GetOrdersAsync(keyword, fromDate, toDate, status, sortBy, desc, page, pageSize);
+        return Ok(new { data = orders, totalCount });
+    }
+
+    [HttpPut("orders/{id}/status")]
+    public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] AdminUpdateStatusDto dto)
+    {
+        await _adminService.UpdateOrderStatusAsync(id, dto.Status);
+        return Ok(new { message = "Status updated" });
+    }
+
+    // Categories
+    [HttpGet("categories")]
+    public async Task<IActionResult> GetCategories([FromQuery] string? keyword, [FromQuery] string? status,
+        [FromQuery] bool? hasGames, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        return Ok(await _adminService.GetCategoriesAsync(keyword, status, hasGames, page, pageSize));
+    }
+
+    [HttpPost("categories")]
+    public async Task<IActionResult> CreateCategory([FromBody] CategoryDto dto)
+    {
+        await _adminService.CreateCategoryAsync(dto);
+        return Ok(new { message = "Category created" });
+    }
+
+    [HttpPut("categories/{id}")]
+    public async Task<IActionResult> UpdateCategory(int id, [FromBody] CategoryDto dto)
+    {
+        await _adminService.UpdateCategoryAsync(id, dto);
+        return Ok(new { message = "Category updated" });
+    }
+
+    [HttpDelete("categories/{id}")]
+    public async Task<IActionResult> DeleteCategory(int id)
+    {
+        await _adminService.DeleteCategoryAsync(id);
+        return Ok(new { message = "Category deleted" });
+    }
+
+    // Game Keys
+    [HttpGet("gamekeys")]
+    public async Task<IActionResult> GetGameKeys([FromQuery] string? keyword, [FromQuery] int? gameId,
+        [FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        return Ok(await _adminService.GetGameKeysAsync(keyword, gameId, status, page, pageSize));
+    }
+
+    [HttpPost("gamekeys")]
+    public async Task<IActionResult> CreateGameKey([FromBody] GameKeyDto dto)
+    {
+        await _adminService.CreateGameKeyAsync(dto);
+        return Ok(new { message = "Key created" });
+    }
+
+    [HttpPost("gamekeys/batch")]
+    public async Task<IActionResult> CreateBatchGameKeys([FromBody] BatchGameKeyDto dto)
+    {
+        await _adminService.CreateBatchGameKeysAsync(dto);
+        return Ok(new { message = "Batch keys created" });
+    }
+
+    [HttpPut("gamekeys/{id}")]
+    public async Task<IActionResult> UpdateGameKey(int id, [FromBody] UpdateGameKeyDto dto)
+    {
+        await _adminService.UpdateGameKeyAsync(id, dto);
+        return Ok(new { message = "Key updated" });
+    }
+
+    [HttpDelete("gamekeys/{id}")]
+    public async Task<IActionResult> DeleteGameKey(int id)
+    {
+        await _adminService.DeleteGameKeyAsync(id);
+        return Ok(new { message = "Key deleted" });
+    }
+
+    // Payments
+    [HttpGet("payments")]
+    public async Task<IActionResult> GetPayments([FromQuery] string? keyword, [FromQuery] string? status,
+        [FromQuery] string? method, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        return Ok(await _adminService.GetPaymentsAsync(keyword, status, method, fromDate, toDate, page, pageSize));
+    }
+
+    [HttpGet("payments/order/{orderId}")]
+    public async Task<IActionResult> GetOrderPayments(int orderId)
+    {
+        return Ok(await _adminService.GetOrderPaymentsAsync(orderId));
+    }
+
+    [HttpPost("payments/refund/{paymentId}")]
+    public async Task<IActionResult> RefundPayment(int paymentId, [FromBody] RefundDto? dto)
+    {
+        await _adminService.RefundPaymentAsync(paymentId, dto);
+        return Ok(new { message = "Payment refunded" });
+    }
+
+    // Roles
+    [HttpGet("roles")]
+    public async Task<IActionResult> GetRoles([FromQuery] string? keyword, [FromQuery] bool? isActive,
+        [FromQuery] bool? hasUsers, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        return Ok(await _adminService.GetRolesAsync(keyword, isActive, hasUsers, page, pageSize));
+    }
+
+    [HttpPost("roles")]
+    public async Task<IActionResult> CreateRole([FromBody] RoleDto dto)
+    {
+        await _adminService.CreateRoleAsync(dto);
+        return Ok(new { message = "Role created" });
+    }
+
+    [HttpPut("roles/{id}")]
+    public async Task<IActionResult> UpdateRole(int id, [FromBody] RoleDto dto)
+    {
+        await _adminService.UpdateRoleAsync(id, dto);
+        return Ok(new { message = "Role updated" });
+    }
+
+    [HttpDelete("roles/{id}")]
+    public async Task<IActionResult> DeleteRole(int id)
+    {
+        await _adminService.DeleteRoleAsync(id);
+        return Ok(new { message = "Role deleted" });
+    }
+
+    // Staff
+    [HttpGet("staff")]
+    public async Task<IActionResult> GetStaff([FromQuery] string? keyword, [FromQuery] int? roleId,
+        [FromQuery] bool? isActive, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+    {
+        return Ok(await _adminService.GetStaffAsync(keyword, roleId, isActive, page, pageSize));
+    }
+
+    [HttpPost("staff/assign")]
+    public async Task<IActionResult> AssignRole([FromBody] AssignRoleDto dto)
+    {
+        await _adminService.AssignRoleAsync(dto);
+        return Ok(new { message = "Role assigned" });
+    }
+
+    [HttpPost("staff/revoke")]
+    public async Task<IActionResult> RevokeRole([FromBody] AssignRoleDto dto)
+    {
+        await _adminService.RevokeRoleAsync(dto);
+        return Ok(new { message = "Role revoked" });
+    }
+
+    [HttpGet("permissions")]
+    public IActionResult GetPermissions()
+    {
+        return Ok(_adminService.GetPermissions());
     }
 }

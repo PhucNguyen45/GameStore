@@ -9,6 +9,9 @@ namespace GameStore.DTOs.Orders;
 public class CreateOrderDto
 {
     public List<OrderItemDto> Items { get; set; } = new();
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+    public string PaymentMethod { get; set; } = "Wallet";
 }
 
 public class OrderItemDto

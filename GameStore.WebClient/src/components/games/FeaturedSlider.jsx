@@ -101,7 +101,7 @@ export default function FeaturedSlider({ games }) {
                       border: "1px solid rgba(255,255,255,0.2)",
                     }}
                   >
-                    View Details →
+                    Xem Chi Tiết →
                   </span>
                 </div>
               </div>
