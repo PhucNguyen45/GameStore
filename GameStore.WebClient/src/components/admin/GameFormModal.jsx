@@ -127,7 +127,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
             />
             <input
               type="date"
-              placeholder="Release Date"
+              placeholder="Ngày phát hành"
               value={form.releaseDate}
               onChange={(e) =>
                 setForm({ ...form, releaseDate: e.target.value })

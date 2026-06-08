@@ -1,15 +1,18 @@
 // GameStore.WebClient/src/components/admin/OrdersTab.jsx
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
+import { formatVND } from "../../utils/format";
 import SortableHeader from "./SortableHeader";
 import Pagination from "./Pagination";
-import { thStyle, sortFn, filterInputStyle } from "./adminStyles";
+import { thStyle, filterInputStyle } from "./adminStyles";
 import api from "../../services/api";
 import { Link } from "react-router-dom";
 import { Eye, Check, XCircle, AlertTriangle } from "lucide-react";
 import toast from "react-hot-toast";
 
 function OrderActionModal({ action, order, onClose, onConfirm, loading }) {
+  const { t } = useTranslation();
   const isApprove = action === "approve";
   const accent = isApprove ? "#4caf50" : "#e94560";
   const accentBg = isApprove ? "#4caf5018" : "#e9456018";
@@ -30,17 +33,15 @@ function OrderActionModal({ action, order, onClose, onConfirm, loading }) {
             <AlertTriangle size={20} color={accent} />
           </div>
           <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: "#fff" }}>
-            {isApprove ? "Duyệt đơn hàng?" : "Hủy đơn hàng?"}
+            {isApprove ? t("admin.approveOrder") : t("admin.rejectOrder")}
           </h3>
         </div>
         <p style={{ margin: "0 0 6px", color: "#aaa", fontSize: 13 }}>
-          {isApprove
-            ? "Xác nhận duyệt và gửi key game cho khách hàng."
-            : "Đơn hàng sẽ bị hủy và hoàn tiền vào ví người dùng (nếu có)."}
+          {isApprove ? t("admin.approveDesc") : t("admin.rejectDesc")}
         </p>
         <p style={{ margin: "0 0 24px", color: "#666", fontSize: 12 }}>
           Đơn #{order.id} — {order.username || `NSD #${order.userId}`} —{" "}
-          <span style={{ color: "#4caf50", fontWeight: 600 }}>${order.totalAmount?.toFixed(2)}</span>
+          <span style={{ color: "#4caf50", fontWeight: 600 }}>{formatVND(order.totalAmount || 0)}</span>
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
           <button
@@ -52,7 +53,7 @@ function OrderActionModal({ action, order, onClose, onConfirm, loading }) {
               cursor: "pointer", fontSize: 13,
             }}
           >
-            Hủy bỏ
+            {t("common.cancel")}
           </button>
           <button
             onClick={onConfirm}
@@ -65,7 +66,7 @@ function OrderActionModal({ action, order, onClose, onConfirm, loading }) {
               display: "flex", alignItems: "center", gap: 6,
             }}
           >
-            {loading ? "Đang xử lý..." : isApprove ? <><Check size={14} /> Xác nhận duyệt</> : <><XCircle size={14} /> Xác nhận hủy</>}
+            {loading ? t("admin.loading") : isApprove ? <><Check size={14} /> {t("admin.confirmApprove")}</> : <><XCircle size={14} /> {t("admin.confirmCancel")}</>}
           </button>
         </div>
       </div>
@@ -89,7 +90,8 @@ export default function OrdersTab({
   loadDashboard,
   activeTab,
 }) {
-  const statusVN = { Pending: "Chờ xử lý", Completed: "Hoàn thành", Cancelled: "Đã hủy", Refunded: "Hoàn tiền" };
+  const { t } = useTranslation();
+  const statusVN = { Pending: t("orders.statusPending"), Completed: t("orders.statusCompleted"), Cancelled: t("orders.statusCancelled"), Refunded: t("orders.statusRefunded") };
 
   const [confirmAction, setConfirmAction] = useState(null); // { action: "approve"|"cancel", order }
   const [actionLoading, setActionLoading] = useState(false);
@@ -102,11 +104,11 @@ export default function OrdersTab({
       await api.put(`/admin/orders/${order.id}/status`, {
         status: action === "approve" ? "Completed" : "Cancelled",
       });
-      toast.success(action === "approve" ? "Đơn hàng đã duyệt & gửi key!" : "Đã hủy đơn hàng!");
+      toast.success(action === "approve" ? t("admin.orderApproved") : t("admin.orderCancelled"));
       setConfirmAction(null);
       loadOrders();
     } catch (e) {
-      toast.error(e.response?.data?.message || (action === "approve" ? "Duyệt thất bại" : "Hủy đơn thất bại"));
+      toast.error(e.response?.data?.message || (action === "approve" ? t("admin.approveFailed") : t("admin.cancelFailed")));
     } finally {
       setActionLoading(false);
     }
@@ -124,7 +126,7 @@ export default function OrdersTab({
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Tìm tên người dùng hoặc mã đơn..."
+          placeholder={t("admin.searchOrders")}
           value={orderSearch.keyword}
           onChange={(e) =>
             setOrderSearch({ ...orderSearch, keyword: e.target.value })
@@ -140,7 +142,7 @@ export default function OrdersTab({
             fontSize: 12,
           }}
         >
-          Từ ngày:{" "}
+          {t("admin.fromDate")}:{" "}
           <input
             type="date"
             value={orderSearch.fromDate}
@@ -159,7 +161,7 @@ export default function OrdersTab({
             fontSize: 12,
           }}
         >
-          Đến ngày:{" "}
+          {t("admin.toDate")}:{" "}
           <input
             type="date"
             value={orderSearch.toDate}
@@ -176,11 +178,11 @@ export default function OrdersTab({
           }
           style={filterInputStyle}
         >
-          <option value="">Tất cả trạng thái</option>
-          <option value="Pending">Chờ xử lý</option>
-          <option value="Completed">Hoàn thành</option>
-          <option value="Cancelled">Đã hủy</option>
-          <option value="Refunded">Hoàn tiền</option>
+          <option value="">{t("admin.allStatuses")}</option>
+          <option value="Pending">{t("orders.statusPending")}</option>
+          <option value="Completed">{t("orders.statusCompleted")}</option>
+          <option value="Cancelled">{t("orders.statusCancelled")}</option>
+          <option value="Refunded">{t("orders.statusRefunded")}</option>
         </select>
         {hasFilters && (
           <button
@@ -205,7 +207,7 @@ export default function OrdersTab({
               gap: 4,
             }}
           >
-            <X size={12} /> Xóa lọc
+            <X size={12} /> {t("admin.clearFilter")}
           </button>
         )}
       </div>
@@ -234,38 +236,38 @@ export default function OrdersTab({
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Người dùng
+                {t("admin.user")}
               </SortableHeader>
               <SortableHeader
                 field="totalAmount"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Tổng tiền
+                {t("admin.total")}
               </SortableHeader>
               <SortableHeader
                 field="status"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Trạng thái
+                {t("admin.orderStatus")}
               </SortableHeader>
               <SortableHeader
                 field="paymentMethod"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Phương thức
+                {t("admin.paymentMethod")}
               </SortableHeader>
               <SortableHeader
                 field="orderDate"
                 sort={orderSort}
                 setSort={setOrderSort}
               >
-                Ngày đặt
+                {t("admin.orderDate")}
               </SortableHeader>
-              <th style={thStyle}>Xem</th>
-              <th style={thStyle}>Xử lý</th>
+              <th style={thStyle}>{t("admin.viewInvoice")}</th>
+              <th style={thStyle}>{t("admin.process")}</th>
             </tr>
           </thead>
           <tbody>
@@ -284,7 +286,7 @@ export default function OrdersTab({
                     fontWeight: 600,
                   }}
                 >
-                  ${o.totalAmount?.toFixed(2)}
+                  {formatVND(o.totalAmount || 0)}
                 </td>
                 <td style={{ padding: "9px 14px" }}>
                   <span
@@ -335,7 +337,7 @@ export default function OrdersTab({
                       textDecoration: "none",
                     }}
                   >
-                    <Eye size={14} /> Chi tiết
+                    <Eye size={14} /> {t("admin.viewDetail")}
                   </Link>
                 </td>
                 <td style={{ padding: "9px 14px" }}>
@@ -356,7 +358,7 @@ export default function OrdersTab({
                           fontSize: 12,
                         }}
                       >
-                        <Check size={13} /> Duyệt
+                        <Check size={13} /> {t("admin.approveAction")}
                       </button>
                       <button
                         onClick={() => setConfirmAction({ action: "cancel", order: o })}
@@ -373,7 +375,7 @@ export default function OrdersTab({
                           fontSize: 12,
                         }}
                       >
-                        <XCircle size={13} /> Hủy
+                        <XCircle size={13} /> {t("admin.cancelAction")}
                       </button>
                     </div>
                   )}
@@ -386,7 +388,7 @@ export default function OrdersTab({
                   colSpan="8"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  Không tìm thấy đơn hàng
+                  {t("admin.noOrders")}
                 </td>
               </tr>
             )}

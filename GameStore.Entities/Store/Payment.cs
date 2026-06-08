@@ -10,7 +10,7 @@ namespace GameStore.Entities.Store
     {
         public int Id { get; set; }
         public int OrderId { get; set; }
-        public decimal Amount { get; set; }
+        public long Amount { get; set; }
         public string PaymentMethod { get; set; } = "Wallet"; // Wallet, CreditCard, PayPal
         public string Status { get; set; } = "Completed"; // Completed, Failed, Refunded, Pending
         public string? TransactionId { get; set; }

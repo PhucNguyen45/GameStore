@@ -1,45 +1,40 @@
 // GameStore.WebClient/src/pages/StorePage.jsx
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { gameAPI, genreAPI } from "../services/api";
 import GameCard from "../components/games/GameCard";
+import { GameCardSkeletonGrid } from "../components/games/GameCardSkeleton";
 import {
   Search,
   SlidersHorizontal,
   X,
-  ChevronLeft,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
 } from "lucide-react";
-import { useAsyncError } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function StorePage() {
+  const { t } = useTranslation();
   const [games, setGames] = useState([]);
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [genreId, setGenreId] = useState("");
-  const [minPrice, setMinPrice] = useState(""); // thêm
+  const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-  const [sort, setSort] = useState("totalSales"); // sủa
+  const [sort, setSort] = useState("totalSales");
   const [desc, setDesc] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   const pageSize = 12;
 
-  // Load genres 1 lần
   useEffect(() => {
     genreAPI.getAll().then((r) => setGenres(r.data));
   }, []);
 
-  // Load games mỗi khi filter thay đổi (bao gồm cả lần đầu)
   useEffect(() => {
     const fetchGames = async () => {
       setLoading(true);
       try {
-        const params = { page, pageSize, sortBy: sort, desc }; // thêm desc
+        const params = { page, pageSize, sortBy: sort, desc };
         if (search) params.keyword = search;
         if (genreId) params.genreId = genreId;
         if (minPrice) params.minPrice = minPrice;
@@ -56,17 +51,15 @@ export default function StorePage() {
 
     const timer = setTimeout(fetchGames, 300);
     return () => clearTimeout(timer);
-  }, [page, sort, desc, genreId, search, minPrice, maxPrice]); // thêm min price
+  }, [page, sort, desc, genreId, search, minPrice, maxPrice]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    setPage(1); // Reset về page 1 khi search
-    // fetchGames();
+    setPage(1);
   };
 
   const handleFilterChange = () => {
     setPage(1);
-    // fetchGames();
   };
 
   return (
@@ -92,7 +85,7 @@ export default function StorePage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search games..."
+            placeholder={t("store.searchPlaceholder")}
             style={{
               flex: 1,
               padding: "14px 0",
@@ -109,7 +102,7 @@ export default function StorePage() {
           className="btn-primary"
           style={{ padding: "14px 28px" }}
         >
-          Search
+          {t("store.search")}
         </button>
         <button
           type="button"
@@ -122,7 +115,7 @@ export default function StorePage() {
             gap: 6,
           }}
         >
-          <SlidersHorizontal size={18} /> Filters
+          <SlidersHorizontal size={18} /> {t("store.filters")}
         </button>
       </form>
 
@@ -148,7 +141,7 @@ export default function StorePage() {
             }}
             style={selectStyle}
           >
-            <option value="">All Genres</option>
+            <option value="">{t("store.allGenres")}</option>
             {genres.map((g) => (
               <option key={g.id} value={g.id}>
                 {g.name}
@@ -156,43 +149,39 @@ export default function StorePage() {
             ))}
           </select>
 
-          {/* price input */}
           <input
             type="number"
-            placeholder="Min Price $"
+            placeholder={t("store.minPrice")}
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
             style={{ ...selectStyle, width: 120 }}
           />
           <input
             type="number"
-            placeholder="Max Price $"
+            placeholder={t("store.maxPrice")}
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             style={{ ...selectStyle, width: 120 }}
           />
 
-          {/* sort selection */}
           <select
             value={sort}
             onChange={(e) => {
               const newSort = e.target.value;
               setSort(newSort);
-              // Tự động đặt desc phù hợp
               if (newSort === "price" || newSort === "title") {
                 setDesc(false);
               } else {
-                setDesc(true); // sales, rating, releaseDate mặc định giảm dần
+                setDesc(true);
               }
               handleFilterChange();
             }}
             style={selectStyle}
           >
-            <option value="totalSales">Best Selling</option>
-            <option value="rating">Highest Rated</option>
-            <option value="price">Price: Low to High</option>
-            <option value="releaseDate">Newest</option>
-            <option value="title">Name: A-Z</option>
+            <option value="totalSales">{t("store.bestSelling")}</option>
+            <option value="rating">{t("store.highestRated")}</option>
+            <option value="releaseDate">{t("store.newest")}</option>
+            <option value="title">{t("store.nameAZ")}</option>
           </select>
 
           <button
@@ -209,14 +198,13 @@ export default function StorePage() {
             }}
             title={desc ? "Descending" : "Ascending"}
           >
-            {desc ? "↓ Desc" : "↑ Asc"}
+            {desc ? t("store.desc") : t("store.asc")}
           </button>
 
-          {/* clear button */}
           <button
             onClick={() => {
               setGenreId("");
-              setMinPrice(""); // thêm
+              setMinPrice("");
               setMaxPrice("");
               setSort("sales");
               setShowFilters(false);
@@ -234,28 +222,25 @@ export default function StorePage() {
               fontWeight: 600,
             }}
           >
-            <X size={14} /> Clear All
+            <X size={14} /> {t("store.clearAll")}
           </button>
 
-          {/* apply all button */}
           <button
             onClick={handleFilterChange}
             className="btn-primary"
             style={{ padding: "8px 16px", fontSize: 13 }}
           >
-            Apply Filters
+            {t("store.apply")}
           </button>
         </div>
       )}
 
       {/* Results */}
       {loading ? (
-        <p style={{ textAlign: "center", color: "#6b6b8e", padding: 40 }}>
-          Loading games...
-        </p>
+        <GameCardSkeletonGrid count={12} />
       ) : games.length === 0 ? (
         <p style={{ textAlign: "center", color: "#6b6b8e", padding: 40 }}>
-          No games found.
+          {t("store.noGames")}
         </p>
       ) : (
         <>
@@ -272,7 +257,6 @@ export default function StorePage() {
             ))}
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div
               style={{
@@ -287,27 +271,54 @@ export default function StorePage() {
                 disabled={page === 1}
                 style={pageBtnStyle}
               >
-                ← Prev
+                {t("store.prev")}
               </button>
-              {[...Array(totalPages)].map((_, i) => (
-                <button
-                  key={i + 1}
-                  onClick={() => setPage(i + 1)}
-                  style={{
-                    ...pageBtnStyle,
-                    background: page === i + 1 ? "#e94560" : "#2a2a4a",
-                    color: page === i + 1 ? "#fff" : "#aaa",
-                  }}
-                >
-                  {i + 1}
-                </button>
-              ))}
+              {(() => {
+                const pages = [];
+                const maxVisible = 4;
+                if (totalPages <= maxVisible + 1) {
+                  for (let i = 1; i <= totalPages; i++) pages.push(i);
+                } else {
+                  let start = Math.max(1, page - 1);
+                  let end = Math.min(totalPages, start + maxVisible - 1);
+                  if (end - start < maxVisible - 1)
+                    start = Math.max(1, end - maxVisible + 1);
+                  if (start > 1) {
+                    pages.push(1);
+                    if (start > 2) pages.push("...");
+                  }
+                  for (let i = start; i <= end; i++) pages.push(i);
+                  if (end < totalPages) {
+                    if (end < totalPages - 1) pages.push("...");
+                    pages.push(totalPages);
+                  }
+                }
+                return pages;
+              })().map((p, idx) =>
+                p === "..." ? (
+                  <span key={`e-${idx}`} style={{ color: "#666", padding: "0 6px", fontSize: 14 }}>
+                    …
+                  </span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p)}
+                    style={{
+                      ...pageBtnStyle,
+                      background: page === p ? "#e94560" : "#2a2a4a",
+                      color: page === p ? "#fff" : "#aaa",
+                    }}
+                  >
+                    {p}
+                  </button>
+                )
+              )}
               <button
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
                 style={pageBtnStyle}
               >
-                Next →
+                {t("store.next")}
               </button>
             </div>
           )}

@@ -4,9 +4,12 @@ import { Link } from "react-router-dom";
 import { gameAPI, genreAPI } from "../services/api";
 import GameCard from "../components/games/GameCard";
 import FeaturedSlider from "../components/games/FeaturedSlider";
+import { HomePageSkeleton } from "../components/common/PageSkeleton";
 import { Gamepad2, TrendingUp, Star, ArrowRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const [games, setGames] = useState([]);
   const [featuredGames, setFeaturedGames] = useState([]);
   const [genres, setGenres] = useState([]);
@@ -22,15 +25,7 @@ export default function HomePage() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading)
-    return (
-      <div
-        className="container"
-        style={{ textAlign: "center", padding: 80, color: "#888" }}
-      >
-        Loading...
-      </div>
-    );
+  if (loading) return <HomePageSkeleton />;
 
   const featured = games.slice(0, 6);
   const trending = games.filter((g) => g.rating > 4).slice(0, 8);
@@ -57,11 +52,11 @@ export default function HomePage() {
                 letterSpacing: -1,
               }}
             >
-              KHÁM PHÁ
+              {t("home.heroTitle")}
               <br />
-              <span style={{ color: "var(--accent)" }}>TỰA GAME</span>
+              <span style={{ color: "var(--accent)" }}>{t("home.heroSubtitle")}</span>
               <br />
-              YÊU THÍCH KẾ TIẾP CỦA BẠN
+              {t("home.heroDescription")}
             </h1>
             <p
               style={{
@@ -71,8 +66,7 @@ export default function HomePage() {
                 lineHeight: 1.6,
               }}
             >
-              Explore a vast library of games from AAA blockbusters to indie
-              gems. Buy once, play forever.
+              {t("home.heroText")}
             </p>
             <Link to="/store">
               <button
@@ -85,7 +79,7 @@ export default function HomePage() {
                   gap: 8,
                 }}
               >
-                VÀO CỬA HÀNG <ArrowRight size={18} />
+                {t("home.enterStore")} <ArrowRight size={18} />
               </button>
             </Link>
           </div>
@@ -103,8 +97,7 @@ export default function HomePage() {
             gap: 8,
           }}
         >
-          <Star size={20} color="var(--accent)" fill="var(--accent)" /> GAME NỔI
-          BẬT
+          <Star size={20} color="var(--accent)" fill="var(--accent)" /> {t("home.featured")}
         </h2>
         <div
           style={{
@@ -130,7 +123,7 @@ export default function HomePage() {
             gap: 8,
           }}
         >
-          <TrendingUp size={20} color="var(--accent)" /> XU HƯỚNG HIỆN NAY
+          <TrendingUp size={20} color="var(--accent)" /> {t("home.trending")}
         </h2>
         <div
           style={{
@@ -147,7 +140,7 @@ export default function HomePage() {
       {/* GENRES */}
       <div className="container" style={{ marginTop: 40, paddingBottom: 40 }}>
         <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 16 }}>
-          TÌM KIẾM THEO THỂ LOẠI
+          {t("home.browseGenres")}
         </h2>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           {genres.map((g) => (

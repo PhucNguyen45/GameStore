@@ -6,28 +6,25 @@ import { libraryAPI } from "../services/api";
 import {
   Library,
   Gamepad2,
-  Clock,
+  Star,
+  Play,
+  Download,
   Search,
   Grid3X3,
   List,
-  Star,
-  ChevronRight,
-  Download,
-  Play,
-  Infinity,
-  Filter,
-  ArrowUp,
-  ArrowDown,
 } from "lucide-react";
+import { GameCardSkeletonGrid } from "../components/games/GameCardSkeleton";
+import { useTranslation } from "react-i18next";
 
 export default function LibraryPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [viewMode, setViewMode] = useState("grid");
-  const [filter, setFilter] = useState("all"); // all, installed, recent
+  const [filter, setFilter] = useState("all");
 
   useEffect(() => {
     if (user) {
@@ -44,7 +41,7 @@ export default function LibraryPage() {
         const d = new Date(g.acquiredAt);
         return d > new Date(Date.now() - 30 * 86400000);
       }
-      return true; // "all" hoặc bất kỳ filter nào khác đều hiển thị tất cả
+      return true;
     })
     .filter((g) => g.title?.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
@@ -63,7 +60,6 @@ export default function LibraryPage() {
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      {/* ===== HEADER ===== */}
       <div
         style={{ padding: "40px 40px 30px", borderBottom: "1px solid #222" }}
       >
@@ -77,15 +73,14 @@ export default function LibraryPage() {
               marginBottom: 4,
             }}
           >
-            MY LIBRARY
+            {t("library.title")}
           </h1>
           <p style={{ color: "#888", fontSize: 14 }}>
-            {games.length} game{games.length !== 1 ? "s" : ""} in collection
+            {t("library.gameCount", { count: games.length })}
           </p>
         </div>
       </div>
 
-      {/* ===== TOOLBAR ===== */}
       <div
         style={{
           background: "#1a1a1a",
@@ -107,7 +102,6 @@ export default function LibraryPage() {
             flexWrap: "wrap",
           }}
         >
-          {/* Search + Filter */}
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
             <div style={{ position: "relative" }}>
               <Search
@@ -116,7 +110,7 @@ export default function LibraryPage() {
                 style={{ position: "absolute", left: 10, top: 10 }}
               />
               <input
-                placeholder="Search library..."
+                placeholder={t("library.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 style={{
@@ -133,8 +127,8 @@ export default function LibraryPage() {
             </div>
             <div style={{ display: "flex", gap: 4 }}>
               {[
-                { id: "all", label: "All" },
-                { id: "recent", label: "Recent" },
+                { id: "all", label: t("library.all") },
+                { id: "recent", label: t("library.recent") },
               ].map((f) => (
                 <button
                   key={f.id}
@@ -158,7 +152,6 @@ export default function LibraryPage() {
             </div>
           </div>
 
-          {/* Sort + View */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <select
               value={sortBy}
@@ -176,9 +169,9 @@ export default function LibraryPage() {
                 letterSpacing: 0.5,
               }}
             >
-              <option value="recent">Sort: Recent</option>
-              <option value="name">Sort: A-Z</option>
-              <option value="playtime">Sort: Play Time</option>
+              <option value="recent">{t("library.sortRecent")}</option>
+              <option value="name">{t("library.sortAZ")}</option>
+              <option value="playtime">{t("library.sortPlaytime")}</option>
             </select>
             <button
               onClick={() => setViewMode("grid")}
@@ -202,24 +195,9 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      {/* ===== CONTENT ===== */}
       <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px 40px" }}>
         {loading ? (
-          <div
-            style={{ display: "flex", justifyContent: "center", padding: 80 }}
-          >
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: "50%",
-                border: "3px solid #333",
-                borderTopColor: "#fff",
-                animation: "spin 0.8s linear infinite",
-              }}
-            />
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          </div>
+          <GameCardSkeletonGrid count={12} compact />
         ) : filteredGames.length === 0 ? (
           <EmptyState gamesCount={games.length} search={search} />
         ) : viewMode === "grid" ? (
@@ -232,8 +210,9 @@ export default function LibraryPage() {
   );
 }
 
-// ===== GRID VIEW =====
 function GridView({ games }) {
+  const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -266,7 +245,6 @@ function GridView({ games }) {
               e.currentTarget.style.transform = "translateY(0)";
             }}
           >
-            {/* Cover */}
             <div
               style={{
                 aspectRatio: "16/9",
@@ -295,7 +273,6 @@ function GridView({ games }) {
                   <Gamepad2 size={32} color="#444" />
                 </div>
               )}
-              {/* Hover Overlay */}
               <div
                 style={{
                   position: "absolute",
@@ -313,7 +290,6 @@ function GridView({ games }) {
               </div>
             </div>
 
-            {/* Info */}
             <div style={{ padding: 12 }}>
               <h4
                 style={{
@@ -366,15 +342,12 @@ function GridView({ games }) {
                     : ""}
                 </span>
               </div>
-              {/* Action Buttons */}
               <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
                 <button
                   style={smallBtnStyle}
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}
+                  onClick={(e) => e.preventDefault()}
                 >
-                  <Play size={12} /> Play
+                  <Play size={12} /> {t("library.play")}
                 </button>
                 <button
                   style={{
@@ -395,11 +368,11 @@ function GridView({ games }) {
   );
 }
 
-// ===== LIST VIEW =====
 function ListView({ games }) {
+  const { t } = useTranslation();
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      {/* Header */}
       <div
         style={{
           display: "flex",
@@ -412,10 +385,10 @@ function ListView({ games }) {
           fontWeight: 700,
         }}
       >
-        <span style={{ flex: 1 }}>Game</span>
-        <span style={{ width: 100, textAlign: "center" }}>Rating</span>
-        <span style={{ width: 100, textAlign: "center" }}>Play Time</span>
-        <span style={{ width: 100, textAlign: "right" }}>Acquired</span>
+        <span style={{ flex: 1 }}>{t("library.game")}</span>
+        <span style={{ width: 100, textAlign: "center" }}>{t("library.rating")}</span>
+        <span style={{ width: 100, textAlign: "center" }}>{t("library.playTime")}</span>
+        <span style={{ width: 100, textAlign: "right" }}>{t("library.acquired")}</span>
       </div>
       {games.map((game, i) => (
         <Link
@@ -438,14 +411,7 @@ function ListView({ games }) {
                 i % 2 === 0 ? "#1a1a1a" : "#151515")
             }
           >
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 12 }}>
               <div
                 style={{
                   width: 100,
@@ -460,11 +426,7 @@ function ListView({ games }) {
                   <img
                     src={game.coverImageUrl}
                     alt=""
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
                 ) : (
                   <div
@@ -484,9 +446,7 @@ function ListView({ games }) {
                 <h4 style={{ color: "#ddd", fontSize: 13, fontWeight: 500 }}>
                   {game.title}
                 </h4>
-                <span style={{ fontSize: 11, color: "#666" }}>
-                  {game.developer}
-                </span>
+                <span style={{ fontSize: 11, color: "#666" }}>{game.developer}</span>
               </div>
             </div>
 
@@ -506,25 +466,11 @@ function ListView({ games }) {
               {game.rating?.toFixed(1) || "-"}
             </span>
 
-            <span
-              style={{
-                width: 100,
-                textAlign: "center",
-                fontSize: 12,
-                color: "#888",
-              }}
-            >
+            <span style={{ width: 100, textAlign: "center", fontSize: 12, color: "#888" }}>
               {game.playTime || 0}h
             </span>
 
-            <span
-              style={{
-                width: 100,
-                textAlign: "right",
-                fontSize: 11,
-                color: "#666",
-              }}
-            >
+            <span style={{ width: 100, textAlign: "right", fontSize: 11, color: "#666" }}>
               {game.acquiredAt
                 ? new Date(game.acquiredAt).toLocaleDateString("en-US", {
                     month: "short",
@@ -540,8 +486,9 @@ function ListView({ games }) {
   );
 }
 
-// ===== EMPTY STATE =====
 function EmptyState({ gamesCount, search }) {
+  const { t } = useTranslation();
+
   return (
     <div style={{ textAlign: "center", padding: 80 }}>
       <div
@@ -558,21 +505,13 @@ function EmptyState({ gamesCount, search }) {
       >
         <Library size={32} color="#444" />
       </div>
-      <h2
-        style={{
-          fontSize: 20,
-          fontWeight: 700,
-          color: "#fff",
-          marginBottom: 8,
-          letterSpacing: -0.5,
-        }}
-      >
-        {gamesCount === 0 ? "Your library is empty" : "No games found"}
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 8, letterSpacing: -0.5 }}>
+        {gamesCount === 0 ? t("library.empty") : t("library.noResults")}
       </h2>
       <p style={{ color: "#888", fontSize: 14, marginBottom: 24 }}>
         {gamesCount === 0
-          ? "Games you purchase or claim will appear here"
-          : `No results for "${search}"`}
+          ? t("library.emptyDesc")
+          : t("library.noResultsDesc", { search })}
       </p>
       {gamesCount === 0 && (
         <Link to="/store">
@@ -589,7 +528,7 @@ function EmptyState({ gamesCount, search }) {
               letterSpacing: 1,
             }}
           >
-            BROWSE STORE
+            {t("library.browseStore")}
           </button>
         </Link>
       )}
@@ -597,8 +536,9 @@ function EmptyState({ gamesCount, search }) {
   );
 }
 
-// ===== PROMPT =====
 function LoginPrompt() {
+  const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -624,19 +564,11 @@ function LoginPrompt() {
       >
         <Library size={32} color="#444" />
       </div>
-      <h2
-        style={{
-          fontSize: 20,
-          fontWeight: 700,
-          color: "#fff",
-          marginBottom: 8,
-          letterSpacing: -0.5,
-        }}
-      >
-        Sign In Required
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 8, letterSpacing: -0.5 }}>
+        {t("library.loginRequired")}
       </h2>
       <p style={{ color: "#888", fontSize: 14, marginBottom: 24 }}>
-        Sign in to access your game library
+        {t("library.loginDesc")}
       </p>
       <Link to="/login">
         <button
@@ -652,14 +584,13 @@ function LoginPrompt() {
             letterSpacing: 1,
           }}
         >
-          SIGN IN
+          {t("library.signIn")}
         </button>
       </Link>
     </div>
   );
 }
 
-// ===== STYLES =====
 const viewBtnStyle = {
   padding: 8,
   borderRadius: 4,

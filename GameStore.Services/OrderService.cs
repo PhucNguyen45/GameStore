@@ -41,8 +41,14 @@ public class OrderService : IOrderService
     public async Task<List<Order>> GetByUser(int userId) =>
         await _orderRepository.GetByUserAsync(userId);
 
-    public async Task<List<Order>> GetAll(int page, int pageSize) =>
-        (await _orderRepository.GetAllAsync()).ToList();
+    public async Task<(List<Order> Items, int TotalCount)> GetAll(int page, int pageSize)
+    {
+        var (items, totalCount) = await _orderRepository.GetPagedAsync(
+            page, pageSize,
+            orderBy: o => (object)o.OrderDate,
+            descending: true);
+        return (items.ToList(), totalCount);
+    }
 
     public async Task<List<OrderHistoryDto>> GetOrderHistoryAsync(int userId)
     {
@@ -97,7 +103,7 @@ public class OrderService : IOrderService
         if (!paymentMethod.Equals("Wallet", StringComparison.OrdinalIgnoreCase))
             throw new Exception("Only Wallet payment method is accepted.");
 
-        decimal totalAmount = 0;
+        long totalAmount = 0;
         var orderDetails = new List<OrderDetail>();
         var user = await _userRepository.GetByIdAsync(userId);
 

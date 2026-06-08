@@ -4,6 +4,9 @@ import { Link } from "react-router-dom";
 import { orderAPI } from "../services/api";
 import { useAuth } from "../contexts/AuthContext";
 import { Eye, Clock, CheckCircle, XCircle, RefreshCw } from "lucide-react";
+import { OrderHistorySkeleton } from "../components/common/PageSkeleton";
+import { useTranslation } from "react-i18next";
+import { formatVND } from "../utils/format";
 
 const statusConfig = {
   Pending: { color: "#ffc107", icon: Clock },
@@ -13,6 +16,7 @@ const statusConfig = {
 };
 
 export default function PurchaseHistoryPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,31 +33,36 @@ export default function PurchaseHistoryPage() {
   if (!user)
     return (
       <div style={{ padding: 40, textAlign: "center" }}>
-        Sign in to view order history.
+        {t("orders.loginRequired")}
       </div>
     );
-  if (loading)
-    return (
-      <div style={{ padding: 40, textAlign: "center", color: "#888" }}>
-        Loading...
-      </div>
-    );
+  if (loading) return <OrderHistorySkeleton />;
+
+  const getStatusText = (status) => {
+    const map = {
+      Pending: t("orders.statusPending"),
+      Completed: t("orders.statusCompleted"),
+      Cancelled: t("orders.statusCancelled"),
+      Refunded: t("orders.statusRefunded"),
+    };
+    return map[status] || status;
+  };
 
   return (
     <div className="container" style={{ paddingTop: 30, maxWidth: 1000 }}>
       <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 24 }}>
-        Order History
+        {t("orders.title")}
       </h1>
       {orders.length === 0 ? (
         <div style={{ textAlign: "center", padding: 60, color: "#888" }}>
           <Clock size={48} color="#444" />
-          <p style={{ marginTop: 16 }}>You haven't placed any orders yet.</p>
+          <p style={{ marginTop: 16 }}>{t("orders.empty")}</p>
           <Link
             to="/store"
             className="btn-primary"
             style={{ marginTop: 16, display: "inline-block" }}
           >
-            Browse Games
+            {t("orders.browseGames")}
           </Link>
         </div>
       ) : (
@@ -70,7 +79,6 @@ export default function PurchaseHistoryPage() {
                   overflow: "hidden",
                 }}
               >
-                {/* Header */}
                 <div
                   style={{
                     display: "flex",
@@ -80,19 +88,15 @@ export default function PurchaseHistoryPage() {
                     borderBottom: "1px solid #2a2a4a",
                   }}
                 >
-                  <div
-                    style={{ display: "flex", alignItems: "center", gap: 12 }}
-                  >
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <span style={{ fontWeight: 600, color: "#fff" }}>
-                      Order #{order.id}
+                      {t("orders.orderLabel", { id: order.id })}
                     </span>
                     <span style={{ fontSize: 12, color: "#888" }}>
                       {new Date(order.orderDate).toLocaleString()}
                     </span>
                   </div>
-                  <div
-                    style={{ display: "flex", alignItems: "center", gap: 10 }}
-                  >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                     <StatusIcon
                       size={16}
                       color={statusConfig[order.status]?.color || "#888"}
@@ -104,7 +108,7 @@ export default function PurchaseHistoryPage() {
                         fontSize: 13,
                       }}
                     >
-                      {order.status}
+                      {getStatusText(order.status)}
                     </span>
                     <Link
                       to={`/invoice/${order.id}`}
@@ -120,12 +124,11 @@ export default function PurchaseHistoryPage() {
                         fontSize: 12,
                       }}
                     >
-                      <Eye size={14} /> Detail
+                      <Eye size={14} /> {t("orders.details")}
                     </Link>
                   </div>
                 </div>
 
-                {/* Items */}
                 <div style={{ padding: "12px 20px" }}>
                   <table
                     style={{
@@ -135,32 +138,24 @@ export default function PurchaseHistoryPage() {
                     }}
                   >
                     <thead>
-                      <tr
-                        style={{
-                          color: "#888",
-                          borderBottom: "1px solid #2a2a4a",
-                        }}
-                      >
+                      <tr style={{ color: "#888", borderBottom: "1px solid #2a2a4a" }}>
                         <th style={{ textAlign: "left", padding: "6px 0" }}>
-                          Game
+                          {t("orders.game")}
                         </th>
                         <th style={{ textAlign: "center", padding: "6px 0" }}>
-                          Qty
+                          {t("orders.qty")}
                         </th>
                         <th style={{ textAlign: "right", padding: "6px 0" }}>
-                          Price
+                          {t("orders.price")}
                         </th>
                         <th style={{ textAlign: "right", padding: "6px 0" }}>
-                          Subtotal
+                          {t("orders.subtotal")}
                         </th>
                       </tr>
                     </thead>
                     <tbody>
                       {order.items.map((item, idx) => (
-                        <tr
-                          key={idx}
-                          style={{ borderBottom: "1px solid #1e1e2e" }}
-                        >
+                        <tr key={idx} style={{ borderBottom: "1px solid #1e1e2e" }}>
                           <td style={{ padding: "8px 0", color: "#ddd" }}>
                             <Link
                               to={`/game/${item.gameId}`}
@@ -173,16 +168,10 @@ export default function PurchaseHistoryPage() {
                             {item.quantity}
                           </td>
                           <td style={{ textAlign: "right", color: "#ccc" }}>
-                            ${item.unitPrice.toFixed(2)}
+                            {formatVND(item.unitPrice || 0)}
                           </td>
-                          <td
-                            style={{
-                              textAlign: "right",
-                              color: "#fff",
-                              fontWeight: 600,
-                            }}
-                          >
-                            ${(item.unitPrice * item.quantity).toFixed(2)}
+                          <td style={{ textAlign: "right", color: "#fff", fontWeight: 600 }}>
+                            {formatVND(item.unitPrice * item.quantity)}
                           </td>
                         </tr>
                       ))}
@@ -190,7 +179,6 @@ export default function PurchaseHistoryPage() {
                   </table>
                 </div>
 
-                {/* Footer */}
                 <div
                   style={{
                     padding: "12px 20px",
@@ -202,12 +190,10 @@ export default function PurchaseHistoryPage() {
                   }}
                 >
                   <span style={{ color: "#888", fontSize: 12 }}>
-                    Payment: {order.paymentMethod}
+                    {t("orders.payment", { method: order.paymentMethod })}
                   </span>
-                  <span
-                    style={{ fontWeight: 800, fontSize: 18, color: "#e94560" }}
-                  >
-                    ${order.totalAmount.toFixed(2)}
+                  <span style={{ fontWeight: 800, fontSize: 18, color: "#e94560" }}>
+                    {formatVND(order.totalAmount || 0)}
                   </span>
                 </div>
               </div>

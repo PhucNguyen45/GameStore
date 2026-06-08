@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GameStore.DTOs.Admin;
+using GameStore.DTOs.Common;
 using GameStore.Entities.Auth;
 using GameStore.Entities.Games;
 using GameStore.Entities.Store;
@@ -80,9 +81,10 @@ public class AdminService : IAdminService
 
     // ================= GAMES =================
     public async Task<(IEnumerable<Game> Games, int TotalCount)> GetGamesAsync(
-        string? keyword, int? genreId, decimal? minPrice, decimal? maxPrice,
+        string? keyword, int? genreId, long? minPrice, long? maxPrice,
         string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var (games, totalCount) = await _gameService.Search(
             keyword, genreId, minPrice, maxPrice,
             sortBy ?? "CreatedAt", desc,
@@ -186,6 +188,7 @@ public class AdminService : IAdminService
         string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
         string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Users.AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
@@ -238,6 +241,7 @@ public class AdminService : IAdminService
         string? keyword, DateTime? fromDate, DateTime? toDate, string? status,
         string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Orders.Include(o => o.User).AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
@@ -287,8 +291,10 @@ public class AdminService : IAdminService
     }
 
     // ================= CATEGORIES (Genres) =================
-    public async Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize)
+    public async Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames,
+        string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Genres.AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
@@ -301,7 +307,20 @@ public class AdminService : IAdminService
             query = query.Where(g => !_context.GameGenres.Any(gg => gg.GenreId == g.Id));
 
         var totalCount = await query.CountAsync();
-        var data = await query.OrderBy(g => g.Name).Skip((page - 1) * pageSize).Take(pageSize)
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(g => g.Id) : query.OrderBy(g => g.Id),
+            "name" => desc ? query.OrderByDescending(g => g.Name) : query.OrderBy(g => g.Name),
+            "description" => desc ? query.OrderByDescending(g => g.Description) : query.OrderBy(g => g.Description),
+            "isactive" => desc ? query.OrderByDescending(g => g.IsActive) : query.OrderBy(g => g.IsActive),
+            "gamecount" => desc
+                ? query.OrderByDescending(g => _context.GameGenres.Count(gg => gg.GenreId == g.Id))
+                : query.OrderBy(g => _context.GameGenres.Count(gg => gg.GenreId == g.Id)),
+            _ => query.OrderBy(g => g.Name)
+        };
+
+        var data = await query.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(g => new
             {
                 g.Id,
@@ -347,8 +366,10 @@ public class AdminService : IAdminService
     }
 
     // ================= GAME KEYS =================
-    public async Task<object> GetGameKeysAsync(string? keyword, int? gameId, string? status, int page, int pageSize)
+    public async Task<object> GetGameKeysAsync(string? keyword, int? gameId, string? status,
+        string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.GameKeys.Include(k => k.Game).AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
@@ -359,7 +380,18 @@ public class AdminService : IAdminService
         else if (status == "expired") query = query.Where(k => k.ExpiresAt != null && k.ExpiresAt <= DateTime.UtcNow && !k.IsUsed);
 
         var totalCount = await query.CountAsync();
-        var data = await query.OrderByDescending(k => k.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize)
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(k => k.Id) : query.OrderBy(k => k.Id),
+            "gametitle" => desc ? query.OrderByDescending(k => k.Game.Title) : query.OrderBy(k => k.Game.Title),
+            "keycode" => desc ? query.OrderByDescending(k => k.KeyCode) : query.OrderBy(k => k.KeyCode),
+            "createdat" => desc ? query.OrderByDescending(k => k.CreatedAt) : query.OrderBy(k => k.CreatedAt),
+            "expiresat" => desc ? query.OrderByDescending(k => k.ExpiresAt) : query.OrderBy(k => k.ExpiresAt),
+            _ => query.OrderByDescending(k => k.CreatedAt)
+        };
+
+        var data = await query.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(k => new
             {
                 k.Id,
@@ -430,8 +462,9 @@ public class AdminService : IAdminService
 
     // ================= PAYMENTS =================
     public async Task<object> GetPaymentsAsync(string? keyword, string? status, string? method,
-        DateTime? fromDate, DateTime? toDate, int page, int pageSize)
+        DateTime? fromDate, DateTime? toDate, string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Payments.Include(p => p.Order).ThenInclude(o => o.User).AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
@@ -447,7 +480,20 @@ public class AdminService : IAdminService
         if (toDate.HasValue) query = query.Where(p => p.PaidAt <= toDate.Value);
 
         var totalCount = await query.CountAsync();
-        var data = await query.OrderByDescending(p => p.PaidAt).Skip((page - 1) * pageSize).Take(pageSize)
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
+            "orderid" => desc ? query.OrderByDescending(p => p.OrderId) : query.OrderBy(p => p.OrderId),
+            "username" => desc ? query.OrderByDescending(p => p.Order.User.Username) : query.OrderBy(p => p.Order.User.Username),
+            "amount" => desc ? query.OrderByDescending(p => p.Amount) : query.OrderBy(p => p.Amount),
+            "paymentmethod" => desc ? query.OrderByDescending(p => p.PaymentMethod) : query.OrderBy(p => p.PaymentMethod),
+            "status" => desc ? query.OrderByDescending(p => p.Status) : query.OrderBy(p => p.Status),
+            "paidat" => desc ? query.OrderByDescending(p => p.PaidAt) : query.OrderBy(p => p.PaidAt),
+            _ => query.OrderByDescending(p => p.PaidAt)
+        };
+
+        var data = await query.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(p => new
             {
                 p.Id,
@@ -505,8 +551,10 @@ public class AdminService : IAdminService
     }
 
     // ================= ROLES =================
-    public async Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize)
+    public async Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers,
+        string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Roles.Where(r => !r.IsDeleted).AsQueryable();
         if (!string.IsNullOrEmpty(keyword)) query = query.Where(r => r.Name.Contains(keyword) || r.Description.Contains(keyword));
         if (isActive.HasValue)
@@ -517,7 +565,19 @@ public class AdminService : IAdminService
             query = query.Where(r => !_context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
 
         var totalCount = await query.CountAsync();
-        var data = await query.OrderBy(r => r.Name).Skip((page - 1) * pageSize).Take(pageSize)
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(r => r.Id) : query.OrderBy(r => r.Id),
+            "name" => desc ? query.OrderByDescending(r => r.Name) : query.OrderBy(r => r.Name),
+            "description" => desc ? query.OrderByDescending(r => r.Description) : query.OrderBy(r => r.Description),
+            "usercount" => desc
+                ? query.OrderByDescending(r => _context.UserRoles.Count(ur => ur.RoleId == r.Id && !ur.IsDeleted))
+                : query.OrderBy(r => _context.UserRoles.Count(ur => ur.RoleId == r.Id && !ur.IsDeleted)),
+            _ => query.OrderBy(r => r.Name)
+        };
+
+        var data = await query.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(r => new
             {
                 r.Id,
@@ -604,8 +664,10 @@ public class AdminService : IAdminService
     }
 
     // ================= STAFF =================
-    public async Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive, int page, int pageSize)
+    public async Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive,
+        string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Users
             .Where(u => u.UserRoles.Any(ur => !ur.IsDeleted && ur.Role.Name != "User"))
             .AsQueryable();
@@ -615,7 +677,17 @@ public class AdminService : IAdminService
             query = query.Where(u => u.IsActive == isActive.Value);
 
         var totalCount = await query.CountAsync();
-        var data = await query.OrderBy(u => u.Username).Skip((page - 1) * pageSize).Take(pageSize)
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(u => u.Id) : query.OrderBy(u => u.Id),
+            "username" => desc ? query.OrderByDescending(u => u.Username) : query.OrderBy(u => u.Username),
+            "displayname" => desc ? query.OrderByDescending(u => u.DisplayName) : query.OrderBy(u => u.DisplayName),
+            "email" => desc ? query.OrderByDescending(u => u.Email) : query.OrderBy(u => u.Email),
+            _ => query.OrderBy(u => u.Username)
+        };
+
+        var data = await query.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(u => new
             {
                 u.Id,

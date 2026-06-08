@@ -5,9 +5,13 @@ import { useAuth } from "../contexts/AuthContext";
 import { wishlistAPI } from "../services/api";
 import { Heart, Trash2, ShoppingCart, Star } from "lucide-react";
 import useCartStore from "../stores/cartStore";
+import { GameCardSkeletonGrid } from "../components/games/GameCardSkeleton";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
+import { formatVND } from "../utils/format";
 
 export default function WishlistPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,19 +34,31 @@ export default function WishlistPage() {
   const remove = async (gameId) => {
     await wishlistAPI.remove(gameId);
     setItems(items.filter((i) => i.gameId !== gameId));
-    toast.success("Removed from wishlist");
+    toast.success(t("wishlist.removed"));
   };
 
   if (!user)
     return (
       <div style={{ textAlign: "center", padding: 80, color: "#888" }}>
-        Sign in to view your wishlist.
+        {t("wishlist.loginRequired")}
       </div>
     );
   if (loading)
     return (
-      <div style={{ textAlign: "center", padding: 80, color: "#888" }}>
-        Loading...
+      <div className="container" style={{ paddingTop: 30 }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            fontSize: 26,
+            fontWeight: 700,
+            marginBottom: 24,
+          }}
+        >
+          <Heart size={28} fill="#e94560" color="#e94560" /> {t("wishlist.title")}
+        </div>
+        <GameCardSkeletonGrid count={8} />
       </div>
     );
 
@@ -58,19 +74,19 @@ export default function WishlistPage() {
           marginBottom: 24,
         }}
       >
-        <Heart size={28} fill="#e94560" color="#e94560" /> My Wishlist (
+        <Heart size={28} fill="#e94560" color="#e94560" /> {t("wishlist.title")} (
         {items.length})
       </h1>
       {items.length === 0 ? (
         <div style={{ textAlign: "center", padding: 60, color: "#888" }}>
           <Heart size={48} color="#444" />
-          <p style={{ marginTop: 16 }}>Your wishlist is empty.</p>
+          <p style={{ marginTop: 16 }}>{t("wishlist.empty")}</p>
           <Link
             to="/store"
             className="btn-primary"
             style={{ marginTop: 16, display: "inline-block" }}
           >
-            Browse Games
+            {t("wishlist.browseGames")}
           </Link>
         </div>
       ) : (
@@ -127,7 +143,7 @@ export default function WishlistPage() {
                 <span
                   style={{ color: "#e94560", fontWeight: 600, fontSize: 14 }}
                 >
-                  ${(item.discountPrice || item.price)?.toFixed(2)}
+                  {formatVND(item.discountPrice || item.price || 0)}
                 </span>
               </Link>
               <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
@@ -140,7 +156,7 @@ export default function WishlistPage() {
                       discountPrice: item.discountPrice,
                       coverImageUrl: item.coverImageUrl,
                     });
-                    toast.success("Added to cart");
+                    toast.success(t("wishlist.addedToCart"));
                   }}
                   style={{
                     flex: 1,
@@ -156,7 +172,7 @@ export default function WishlistPage() {
                     gap: 4,
                   }}
                 >
-                  <ShoppingCart size={14} /> Add to Cart
+                  <ShoppingCart size={14} /> {t("wishlist.addToCart")}
                 </button>
                 <button
                   onClick={() => remove(item.gameId)}

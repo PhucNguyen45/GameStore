@@ -5,9 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using GameStore.Entities.Store;
 using GameStore.Services;
 using System.Security.Claims;
 using GameStore.DTOs.Orders;
+using GameStore.DTOs.Common;
 
 namespace GameStore.APIService.Controllers;
 
@@ -37,8 +39,11 @@ public class OrdersController : ControllerBase
 
     [HttpGet("all")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20) =>
-        Ok(await _orderService.GetAll(page, pageSize));
+    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    {
+        var (items, totalCount) = await _orderService.GetAll(page, pageSize);
+        return Ok(PagedResponse<Order>.Create(items, totalCount, page, pageSize));
+    }
 
     [HttpGet("search")]
     [Authorize(Roles = "Admin")]
@@ -48,7 +53,8 @@ public class OrdersController : ControllerBase
         [FromQuery] DateTime? toDate = null, [FromQuery] string? status = null)
     {
         var result = await _orderService.SearchOrders(page, pageSize, keyword, fromDate, toDate, status);
-        return Ok(new { data = result.Items.Select(o => new { o.Id, o.UserId, o.OrderDate, o.TotalAmount, o.Status, o.PaymentMethod, Username = o.User?.Username }), totalCount = result.TotalCount });
+        var mappedOrders = result.Items.Select(o => new { o.Id, o.UserId, o.OrderDate, o.TotalAmount, o.Status, o.PaymentMethod, Username = o.User?.Username }).ToList();
+        return Ok(PagedResponse<object>.Create(mappedOrders, result.TotalCount, page, pageSize));
     }
 
     [HttpPut("{id}/status")]

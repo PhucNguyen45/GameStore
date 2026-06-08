@@ -1,5 +1,6 @@
 // GameStore.WebClient/src/App.jsx
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { AnimatePresence } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./contexts/AuthContext";
 import ErrorBoundary from "./components/common/ErrorBoundary";
@@ -16,8 +17,13 @@ import PaymentPage from "./pages/PaymentPage";
 import InvoicePage from "./pages/InvoicePage";
 import WishlistPage from "./pages/WishlistPage";
 import PurchaseHistoryPage from "./pages/PurchaseHistoryPage";
+import ProfilePage from "./pages/ProfilePage";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 export default function App() {
+  const location = useLocation();
+
   return (
     <>
       <Toaster
@@ -36,7 +42,8 @@ export default function App() {
       />
       <AuthProvider>
         <ErrorBoundary>
-          <Routes>
+          <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
             <Route element={<MainLayout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/store" element={<StorePage />} />
@@ -50,8 +57,12 @@ export default function App() {
               <Route path="/invoice/:id" element={<InvoicePage />} />
               <Route path="/wishlist" element={<WishlistPage />} />
               <Route path="/orders" element={<PurchaseHistoryPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
             </Route>
           </Routes>
+          </AnimatePresence>
         </ErrorBoundary>
       </AuthProvider>
     </>

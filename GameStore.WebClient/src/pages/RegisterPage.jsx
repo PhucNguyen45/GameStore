@@ -3,8 +3,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { UserPlus, User, Lock, Mail, Phone, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function RegisterPage() {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     username: "",
     password: "",
@@ -20,7 +22,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.password.length < 6) {
-      setError("Password must be at least 6 characters");
+      setError(t("auth.passwordMinError"));
       return;
     }
     setLoading(true);
@@ -29,7 +31,7 @@ export default function RegisterPage() {
       await register(form);
       navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
+      setError(err.response?.data?.message || t("auth.registrationFailed"));
     } finally {
       setLoading(false);
     }
@@ -69,9 +71,9 @@ export default function RegisterPage() {
           >
             <UserPlus size={28} color="#fff" />
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700 }}>Create Account</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 700 }}>{t("auth.registerTitle")}</h1>
           <p style={{ color: "#6b6b8e", fontSize: 14, marginTop: 6 }}>
-            Join the GameStore community
+            {t("auth.registerSubtitle")}
           </p>
         </div>
 
@@ -97,33 +99,33 @@ export default function RegisterPage() {
           {[
             {
               icon: User,
-              placeholder: "Username *",
+              placeholder: t("auth.usernamePlaceholder"),
               value: form.username,
               key: "username",
             },
             {
               icon: Lock,
-              placeholder: "Password *",
+              placeholder: t("auth.passwordPlaceholder"),
               value: form.password,
               key: "password",
               type: "password",
             },
             {
               icon: User,
-              placeholder: "Display Name",
+              placeholder: t("auth.displayName"),
               value: form.displayName,
               key: "displayName",
             },
             {
               icon: Mail,
-              placeholder: "Email",
+              placeholder: t("auth.email"),
               value: form.email,
               key: "email",
               type: "email",
             },
             {
               icon: Phone,
-              placeholder: "Phone",
+              placeholder: t("auth.phone"),
               value: form.phone,
               key: "phone",
             },
@@ -149,7 +151,7 @@ export default function RegisterPage() {
                   fontSize: 14,
                   outline: "none",
                 }}
-                required={placeholder.includes("*")}
+                required={key === "username" || key === "password"}
               />
             </div>
           ))}
@@ -159,7 +161,7 @@ export default function RegisterPage() {
             className="btn-primary"
             style={{ width: "100%", padding: 14, fontSize: 16, marginTop: 8 }}
           >
-            {loading ? "Creating account..." : "Register"}
+            {loading ? t("auth.creatingAccount") : t("auth.register")}
           </button>
         </form>
         <p
@@ -170,9 +172,9 @@ export default function RegisterPage() {
             fontSize: 13,
           }}
         >
-          Already have an account?{" "}
+          {t("auth.haveAccount")}{" "}
           <Link to="/login" style={{ color: "#e94560", fontWeight: 600 }}>
-            Login here
+            {t("auth.loginLink")}
           </Link>
         </p>
       </div>

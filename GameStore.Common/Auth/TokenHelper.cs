@@ -49,10 +49,10 @@ public static class TokenHelper
         );
     }
 
-    public static string GenerateToken(string secretKey, int expireMinutes, string userId, string username, string role)
+    public static string GenerateToken(string secretKey, int expireMinutes, string userId, string username, string role, string? issuer = null, string? audience = null)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
-        var key = Encoding.UTF8.GetBytes(secretKey); // nên dùng UTF8
+        var key = Encoding.UTF8.GetBytes(secretKey);
 
         var claims = new[]
         {
@@ -65,6 +65,8 @@ public static class TokenHelper
         {
             Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(expireMinutes),
+            Issuer = issuer,
+            Audience = audience,
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(key),
                 SecurityAlgorithms.HmacSha256

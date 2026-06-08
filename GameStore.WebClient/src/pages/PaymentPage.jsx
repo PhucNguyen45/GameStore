@@ -5,9 +5,12 @@ import { useAuth } from "../contexts/AuthContext";
 import { orderAPI } from "../services/api";
 import useCartStore from "../stores/cartStore";
 import toast from "react-hot-toast";
-import { CreditCard, Wallet, ShieldCheck, Loader2 } from "lucide-react";
+import { Wallet, ShieldCheck, Loader2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { formatVND } from "../utils/format";
 
 export default function PaymentPage() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, updateUser } = useAuth();
@@ -28,19 +31,17 @@ export default function PaymentPage() {
   const handlePayment = async () => {
     setIsProcessing(true);
 
-    // Simulate payment delay
     await new Promise((resolve) => setTimeout(resolve, 2000));
 
     try {
       if (paymentMethod === "wallet") {
         if (user.wallet < orderData.total) {
-          toast.error("Insufficient wallet balance!");
+          toast.error(t("payment.insufficientBalance"));
           setIsProcessing(false);
           return;
         }
       }
 
-      // Create order
       const response = await orderAPI.create({
         items: orderData.items.map((i) => ({
           gameId: i.gameId,
@@ -53,22 +54,20 @@ export default function PaymentPage() {
 
       const orderId = response.data?.id || Math.floor(Math.random() * 100000);
 
-      // Update wallet if used
       if (paymentMethod === "wallet") {
         updateUser({ wallet: user.wallet - orderData.total });
       }
 
       clearCart();
-      toast.success("Payment Successful!");
+      toast.success(t("payment.success"));
 
-      // Redirect to invoice page
       navigate(`/invoice/${orderId}`, {
         state: { order: { ...orderData, id: orderId, status: "Pending" } },
       });
     } catch (error) {
       console.error(error);
       const msg =
-        error.response?.data?.message || "Payment failed. Please try again.";
+        error.response?.data?.message || t("payment.failed");
       toast.error(msg);
     } finally {
       setIsProcessing(false);
@@ -85,7 +84,7 @@ export default function PaymentPage() {
           textAlign: "center",
         }}
       >
-        Checkout & Payment
+        {t("payment.title")}
       </h1>
 
       <div
@@ -98,7 +97,7 @@ export default function PaymentPage() {
       >
         <div style={{ marginBottom: 24 }}>
           <h3 style={{ fontSize: 18, marginBottom: 16, color: "#e94560" }}>
-            Order Summary
+            {t("payment.orderSummary")}
           </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {orderData.items.map((item, idx) => (
@@ -113,7 +112,7 @@ export default function PaymentPage() {
                 <span>
                   {item.title} x {item.quantity}
                 </span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
+                <span>{formatVND(item.price * item.quantity)}</span>
               </div>
             ))}
             <div
@@ -127,9 +126,9 @@ export default function PaymentPage() {
                 fontSize: 20,
               }}
             >
-              <span>Total</span>
+              <span>{t("payment.total")}</span>
               <span style={{ color: "#e94560" }}>
-                ${orderData.total.toFixed(2)}
+                {formatVND(orderData.total)}
               </span>
             </div>
           </div>
@@ -137,7 +136,7 @@ export default function PaymentPage() {
 
         <div style={{ marginBottom: 24 }}>
           <h3 style={{ fontSize: 18, marginBottom: 16, color: "#e94560" }}>
-            Contact Information
+            {t("payment.contactInfo")}
           </h3>
           <div
             style={{
@@ -149,13 +148,13 @@ export default function PaymentPage() {
             }}
           >
             <span>Email: {orderData.email}</span>
-            <span>Phone: {orderData.phone}</span>
+            <span>{t("payment.phoneLabel")}: {orderData.phone}</span>
           </div>
         </div>
 
         <div style={{ marginBottom: 30 }}>
           <h3 style={{ fontSize: 18, marginBottom: 16, color: "#e94560" }}>
-            Select Payment Method
+            {t("payment.selectMethod")}
           </h3>
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             <label
@@ -176,9 +175,9 @@ export default function PaymentPage() {
                 color={paymentMethod === "wallet" ? "#e94560" : "#6b6b8e"}
               />
               <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600 }}>GameStore Wallet</div>
+                <div style={{ fontWeight: 600 }}>{t("payment.wallet")}</div>
                 <div style={{ fontSize: 12, color: "#6b6b8e" }}>
-                  Balance: ${user?.wallet?.toFixed(2)}
+                  {t("payment.balance", { balance: formatVND(user?.wallet || 0) })}
                 </div>
               </div>
             </label>
@@ -201,11 +200,11 @@ export default function PaymentPage() {
         >
           {isProcessing ? (
             <>
-              <Loader2 className="animate-spin" size={20} /> Processing...
+              <Loader2 className="animate-spin" size={20} /> {t("payment.processing")}
             </>
           ) : (
             <>
-              <ShieldCheck size={20} /> Pay Now
+              <ShieldCheck size={20} /> {t("payment.payNow")}
             </>
           )}
         </button>

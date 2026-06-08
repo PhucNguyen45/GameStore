@@ -12,6 +12,6 @@ public class AdminUserUpdateDto
     public string? Email { get; set; }
     public string? Phone { get; set; }
     public string? AvatarUrl { get; set; }
-    public decimal? Wallet { get; set; }
+    public long? Wallet { get; set; }
     public bool? IsActive { get; set; }
 }

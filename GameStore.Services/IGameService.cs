@@ -13,7 +13,7 @@ public interface IGameService
     Task<Game?> GetWithDetails(int id);
     Task<List<Game>> GetFeatured(int count = 10);
     Task<List<Game>> GetByGenre(int genreId);
-    Task<(List<Game> Games, int TotalCount)> Search(string? keyword, int? genreId, decimal? minPrice, decimal? maxPrice, string? sortBy, bool descending, int page, int pageSize);
+    Task<(List<Game> Games, int TotalCount)> Search(string? keyword, int? genreId, long? minPrice, long? maxPrice, string? sortBy, bool descending, int page, int pageSize);
     Task<Game> Create(Game game);
     Task Update(Game game);
     Task Delete(int id);

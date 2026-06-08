@@ -11,7 +11,7 @@ public class WishlistItemDto
     public int GameId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string? CoverImageUrl { get; set; }
-    public decimal Price { get; set; }
-    public decimal? DiscountPrice { get; set; }
+    public long Price { get; set; }
+    public long? DiscountPrice { get; set; }
     public DateTime AddedAt { get; set; }
 }

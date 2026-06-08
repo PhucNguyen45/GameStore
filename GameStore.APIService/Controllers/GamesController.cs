@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using GameStore.Entities.Games;
 using GameStore.Services;
 using GameStore.DTOs.Games;
+using GameStore.DTOs.Common;
 
 namespace GameStore.APIService.Controllers;
 
@@ -20,10 +21,10 @@ public class GamesController : ControllerBase
     public GamesController(IGameService gameService) => _gameService = gameService;
 
     [HttpGet]
-    public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string? sortBy, [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 12)
+    public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId, [FromQuery] long? minPrice, [FromQuery] long? maxPrice, [FromQuery] string? sortBy, [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 12)
     {
         var (games, totalCount) = await _gameService.Search(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
-        return Ok(new { data = games, totalCount, page, pageSize, totalPages = (int)Math.Ceiling((double)totalCount / pageSize) });
+        return Ok(PagedResponse<Game>.Create(games, totalCount, page, pageSize));
     }
 
     [HttpGet("featured")]

@@ -18,7 +18,7 @@ public class User
     public string Email { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
     public string AvatarUrl { get; set; } = string.Empty;
-    public decimal Wallet { get; set; } = 0;
+    public long Wallet { get; set; } = 0;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

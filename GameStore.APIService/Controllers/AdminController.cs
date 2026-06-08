@@ -5,7 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using GameStore.Repository;
 using GameStore.Services;
 using GameStore.Entities.Games;
+using GameStore.Entities.Store;
+using GameStore.Entities.Users;
 using GameStore.DTOs.Admin;
+using GameStore.DTOs.Common;
 
 namespace GameStore.APIService.Controllers;
 
@@ -25,11 +28,11 @@ public class AdminController : ControllerBase
     // Games Admin
     [HttpGet("games")]
     public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId,
-        [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice, [FromQuery] string? sortBy,
+        [FromQuery] long? minPrice, [FromQuery] long? maxPrice, [FromQuery] string? sortBy,
         [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var (games, totalCount) = await _adminService.GetGamesAsync(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
-        return Ok(new { data = games, totalCount });
+        return Ok(PagedResponse<Game>.Create(games, totalCount, page, pageSize));
     }
 
     [HttpPost("games")]
@@ -61,7 +64,7 @@ public class AdminController : ControllerBase
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var (users, totalCount) = await _adminService.GetUsersAsync(keyword, isActive, fromDate, toDate, sortBy, desc, page, pageSize);
-        return Ok(new { data = users, totalCount });
+        return Ok(PagedResponse<User>.Create(users, totalCount, page, pageSize));
     }
 
     [HttpPut("users/{id}")]
@@ -85,7 +88,7 @@ public class AdminController : ControllerBase
         [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var (orders, totalCount) = await _adminService.GetOrdersAsync(keyword, fromDate, toDate, status, sortBy, desc, page, pageSize);
-        return Ok(new { data = orders, totalCount });
+        return Ok(PagedResponse<Order>.Create(orders, totalCount, page, pageSize));
     }
 
     [HttpPut("orders/{id}/status")]
@@ -98,9 +101,11 @@ public class AdminController : ControllerBase
     // Categories
     [HttpGet("categories")]
     public async Task<IActionResult> GetCategories([FromQuery] string? keyword, [FromQuery] string? status,
-        [FromQuery] bool? hasGames, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [FromQuery] bool? hasGames, [FromQuery] string? sortBy, [FromQuery] bool desc = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetCategoriesAsync(keyword, status, hasGames, page, pageSize));
+        var (vPage, vPageSize) = PaginationHelper.Validate(page, pageSize);
+        return Ok(await _adminService.GetCategoriesAsync(keyword, status, hasGames, sortBy, desc, vPage, vPageSize));
     }
 
     [HttpPost("categories")]
@@ -127,9 +132,11 @@ public class AdminController : ControllerBase
     // Game Keys
     [HttpGet("gamekeys")]
     public async Task<IActionResult> GetGameKeys([FromQuery] string? keyword, [FromQuery] int? gameId,
-        [FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [FromQuery] string? status, [FromQuery] string? sortBy, [FromQuery] bool desc = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetGameKeysAsync(keyword, gameId, status, page, pageSize));
+        var (vPage, vPageSize) = PaginationHelper.Validate(page, pageSize);
+        return Ok(await _adminService.GetGameKeysAsync(keyword, gameId, status, sortBy, desc, vPage, vPageSize));
     }
 
     [HttpPost("gamekeys")]
@@ -164,9 +171,11 @@ public class AdminController : ControllerBase
     [HttpGet("payments")]
     public async Task<IActionResult> GetPayments([FromQuery] string? keyword, [FromQuery] string? status,
         [FromQuery] string? method, [FromQuery] DateTime? fromDate, [FromQuery] DateTime? toDate,
+        [FromQuery] string? sortBy, [FromQuery] bool desc = false,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetPaymentsAsync(keyword, status, method, fromDate, toDate, page, pageSize));
+        var (vPage, vPageSize) = PaginationHelper.Validate(page, pageSize);
+        return Ok(await _adminService.GetPaymentsAsync(keyword, status, method, fromDate, toDate, sortBy, desc, vPage, vPageSize));
     }
 
     [HttpGet("payments/order/{orderId}")]
@@ -185,9 +194,11 @@ public class AdminController : ControllerBase
     // Roles
     [HttpGet("roles")]
     public async Task<IActionResult> GetRoles([FromQuery] string? keyword, [FromQuery] bool? isActive,
-        [FromQuery] bool? hasUsers, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [FromQuery] bool? hasUsers, [FromQuery] string? sortBy, [FromQuery] bool desc = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetRolesAsync(keyword, isActive, hasUsers, page, pageSize));
+        var (vPage, vPageSize) = PaginationHelper.Validate(page, pageSize);
+        return Ok(await _adminService.GetRolesAsync(keyword, isActive, hasUsers, sortBy, desc, vPage, vPageSize));
     }
 
     [HttpPost("roles")]
@@ -214,9 +225,11 @@ public class AdminController : ControllerBase
     // Staff
     [HttpGet("staff")]
     public async Task<IActionResult> GetStaff([FromQuery] string? keyword, [FromQuery] int? roleId,
-        [FromQuery] bool? isActive, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        [FromQuery] bool? isActive, [FromQuery] string? sortBy, [FromQuery] bool desc = false,
+        [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _adminService.GetStaffAsync(keyword, roleId, isActive, page, pageSize));
+        var (vPage, vPageSize) = PaginationHelper.Validate(page, pageSize);
+        return Ok(await _adminService.GetStaffAsync(keyword, roleId, isActive, sortBy, desc, vPage, vPageSize));
     }
 
     [HttpPost("staff/assign")]

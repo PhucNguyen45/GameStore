@@ -1,5 +1,9 @@
 // GameStore.WebClient/src/components/layout/Footer.jsx
+import { useTranslation } from "react-i18next";
+
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer
       style={{
@@ -29,11 +33,11 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            TÀI NGUYÊN
+            {t("footer.resources")}
           </h4>
-          <p style={{ marginBottom: 6 }}>Hỗ Trợ</p>
-          <p style={{ marginBottom: 6 }}>FAQ</p>
-          <p style={{ marginBottom: 6 }}>Quy định cộng đồng</p>
+          <p style={{ marginBottom: 6 }}>{t("footer.support")}</p>
+          <p style={{ marginBottom: 6 }}>{t("footer.faq")}</p>
+          <p style={{ marginBottom: 6 }}>{t("footer.community")}</p>
         </div>
         <div>
           <h4
@@ -45,11 +49,11 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Công ty
+            {t("footer.company")}
           </h4>
-          <p style={{ marginBottom: 6 }}>Giới thiệu</p>
-          <p style={{ marginBottom: 6 }}>Tuyển dụng</p>
-          <p style={{ marginBottom: 6 }}>Tin tức</p>
+          <p style={{ marginBottom: 6 }}>{t("footer.about")}</p>
+          <p style={{ marginBottom: 6 }}>{t("footer.careers")}</p>
+          <p style={{ marginBottom: 6 }}>{t("footer.news")}</p>
         </div>
         <div>
           <h4
@@ -61,11 +65,11 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Pháp lý
+            {t("footer.legal")}
           </h4>
-          <p style={{ marginBottom: 6 }}>Điều khoản dịch vụ</p>
-          <p style={{ marginBottom: 6 }}>Chính sách bảo mật</p>
-          <p style={{ marginBottom: 6 }}>Chính sách sử dụng Cookie</p>
+          <p style={{ marginBottom: 6 }}>{t("footer.terms")}</p>
+          <p style={{ marginBottom: 6 }}>{t("footer.privacy")}</p>
+          <p style={{ marginBottom: 6 }}>{t("footer.cookies")}</p>
         </div>
         <div>
           <h4
@@ -77,7 +81,7 @@ export default function Footer() {
               letterSpacing: 1,
             }}
           >
-            Theo dõi chúng tôi
+            {t("footer.follow")}
           </h4>
           <p style={{ marginBottom: 6 }}>Twitter</p>
           <p style={{ marginBottom: 6 }}>Facebook</p>
@@ -95,7 +99,7 @@ export default function Footer() {
           color: "#555",
         }}
       >
-        © {new Date().getFullYear()} GameStore. Đã đăng ký bản quyền.
+        {t("footer.copyright", { year: new Date().getFullYear() })}
       </div>
     </footer>
   );

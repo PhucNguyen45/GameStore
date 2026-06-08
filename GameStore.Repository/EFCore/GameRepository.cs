@@ -12,7 +12,7 @@ public class GameRepository : Repository<Game>, IGameRepository
 {
     public GameRepository(GameStoreDbContext context) : base(context) { }
 
-    public async Task<(List<Game> Games, int TotalCount)> SearchAsync(string? keyword, int? genreId, decimal? minPrice, decimal? maxPrice, string? sortBy, bool descending, int page, int pageSize)
+    public async Task<(List<Game> Games, int TotalCount)> SearchAsync(string? keyword, int? genreId, long? minPrice, long? maxPrice, string? sortBy, bool descending, int page, int pageSize)
     {
         var query = _dbSet
             .AsNoTracking()
@@ -39,10 +39,14 @@ public class GameRepository : Repository<Game>, IGameRepository
                                   : query.OrderBy(g => g.DiscountPrice ?? g.Price),
             "rating" => descending ? query.OrderByDescending(g => g.Rating)
                                    : query.OrderBy(g => g.Rating),
-            "sales" => descending ? query.OrderByDescending(g => g.TotalSales)
-                                  : query.OrderBy(g => g.TotalSales),
-            "release" => descending ? query.OrderByDescending(g => g.ReleaseDate)
-                                    : query.OrderBy(g => g.ReleaseDate),
+            "sales" or "totalsales" => descending ? query.OrderByDescending(g => g.TotalSales)
+                                                  : query.OrderBy(g => g.TotalSales),
+            "release" or "releasedate" => descending ? query.OrderByDescending(g => g.ReleaseDate)
+                                                     : query.OrderBy(g => g.ReleaseDate),
+            "title" => descending ? query.OrderByDescending(g => g.Title)
+                                  : query.OrderBy(g => g.Title),
+            "createdat" or "created" => descending ? query.OrderByDescending(g => g.CreatedAt)
+                                                    : query.OrderBy(g => g.CreatedAt),
             _ => query.OrderByDescending(g => g.TotalSales)
         };
 

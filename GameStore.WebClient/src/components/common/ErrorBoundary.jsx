@@ -1,7 +1,8 @@
 // GameStore.WebClient/src/components/common/ErrorBoundary.jsx
 import { Component } from "react";
+import { withTranslation } from "react-i18next";
 
-export default class ErrorBoundary extends Component {
+class ErrorBoundary extends Component {
   constructor(props) {
     super(props);
     this.state = { hasError: false, error: null };
@@ -27,6 +28,8 @@ export default class ErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
+      const { t } = this.props;
+
       return (
         <div
           style={{
@@ -42,16 +45,16 @@ export default class ErrorBoundary extends Component {
           }}
         >
           <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 12 }}>
-            Something went wrong
+            {t("error.title")}
           </h1>
           <p style={{ color: "#888", marginBottom: 8, maxWidth: 400 }}>
-            An unexpected error occurred. Please try reloading the page.
+            {t("error.description")}
           </p>
           {this.state.error?.message && (
             <details
               style={{ color: "#e94560", marginBottom: 20, fontSize: 13 }}
             >
-              <summary>Error details</summary>
+              <summary>{t("error.details")}</summary>
               {this.state.error.message}
             </details>
           )}
@@ -61,14 +64,14 @@ export default class ErrorBoundary extends Component {
               className="btn-primary"
               style={{ padding: "10px 20px" }}
             >
-              Reload Page
+              {t("error.reload")}
             </button>
             <button
               onClick={this.handleGoHome}
               className="btn-outline"
               style={{ padding: "10px 20px" }}
             >
-              Go to Home
+              {t("error.goHome")}
             </button>
           </div>
         </div>
@@ -78,3 +81,5 @@ export default class ErrorBoundary extends Component {
     return this.props.children;
   }
 }
+
+export default withTranslation()(ErrorBoundary);

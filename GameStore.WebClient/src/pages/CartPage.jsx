@@ -4,17 +4,18 @@ import { Link, useNavigate } from "react-router-dom";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
+import { formatVND } from "../utils/format";
 import {
   ShoppingCart,
   Trash2,
-  Plus,
-  Minus,
   ShoppingBag,
   ArrowLeft,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function CartPage() {
-  const { items, removeItem, updateQuantity, clearCart, total, count } =
+  const { t } = useTranslation();
+  const { items, removeItem, clearCart, total, count } =
     useCartStore();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -23,13 +24,13 @@ export default function CartPage() {
 
   const handleCheckout = () => {
     if (!user) {
-      toast.error("Vui lòng đăng nhập để tiếp tục thanh toán");
+      toast.error(t("cart.checkoutLoginMsg"));
       navigate("/login");
       return;
     }
 
     if (!email || !phone) {
-      toast.error("Vui lòng nhập email và số điện thoại");
+      toast.error(t("cart.fillInfo"));
       return;
     }
 
@@ -61,12 +62,12 @@ export default function CartPage() {
         }}
       >
         <ShoppingCart size={64} color="#6b6b8e" />
-        <h2 style={{ marginTop: 20 }}>Giỏ hàng đang trống</h2>
+        <h2 style={{ marginTop: 20 }}>{t("cart.empty")}</h2>
         <p style={{ color: "#6b6b8e", margin: "8px 0 20px" }}>
-          Bắt đầu mua game thôi!
+          {t("cart.emptyDesc")}
         </p>
         <Link to="/store">
-          <button className="btn-primary">Xem cửa hàng</button>
+          <button className="btn-primary">{t("cart.viewStore")}</button>
         </Link>
       </div>
     );
@@ -83,7 +84,7 @@ export default function CartPage() {
           marginBottom: 24,
         }}
       >
-        <ArrowLeft size={16} /> Tiếp tục mua sắm
+        <ArrowLeft size={16} /> {t("cart.continueShopping")}
       </Link>
       <h1
         style={{
@@ -95,7 +96,7 @@ export default function CartPage() {
           marginBottom: 24,
         }}
       >
-        <ShoppingBag size={28} color="#e94560" /> Giỏ hàng ({count()} items)
+        <ShoppingBag size={28} color="#e94560" /> {t("cart.title")} ({t("cart.items", { count: count() })})
       </h1>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
@@ -143,7 +144,7 @@ export default function CartPage() {
             <div style={{ flex: 1 }}>
               <h3 style={{ fontSize: 16, fontWeight: 600 }}>{item.title}</h3>
               <span style={{ color: "#e94560", fontWeight: 700, fontSize: 15 }}>
-                ${(item.discountPrice || item.price)?.toFixed(2)}
+                {formatVND(item.discountPrice || item.price || 0)}
               </span>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -180,9 +181,9 @@ export default function CartPage() {
             alignItems: "center",
           }}
         >
-          <span style={{ fontSize: 18, color: "#6b6b8e" }}>Total:</span>
+          <span style={{ fontSize: 18, color: "#6b6b8e" }}>{t("cart.total")}</span>
           <span style={{ fontSize: 28, fontWeight: 800, color: "#e94560" }}>
-            ${total().toFixed(2)}
+            {formatVND(total())}
           </span>
         </div>
 
@@ -195,7 +196,7 @@ export default function CartPage() {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Email</label>
+            <label style={{ color: "#6b6b8e", fontSize: 14 }}>{t("cart.email")}</label>
             <input
               type="email"
               value={email}
@@ -206,7 +207,7 @@ export default function CartPage() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <label style={{ color: "#6b6b8e", fontSize: 14 }}>
-              Số điện thoại
+              {t("cart.phoneLabel")}
             </label>
             <input
               type="tel"
@@ -224,14 +225,14 @@ export default function CartPage() {
             className="btn-outline"
             style={{ flex: 1 }}
           >
-            Xóa giỏ hàng
+            {t("cart.clearCart")}
           </button>
           <button
             onClick={handleCheckout}
             className="btn-primary"
             style={{ flex: 1, padding: 14, fontSize: 16 }}
           >
-            Tiến hành thanh toán
+            {t("cart.checkout")}
           </button>
         </div>
         {!user && (
@@ -243,7 +244,7 @@ export default function CartPage() {
               fontSize: 13,
             }}
           >
-            ⚠ Bạn cần đăng nhập để thanh toán
+            {t("cart.loginRequired")}
           </p>
         )}
       </div>

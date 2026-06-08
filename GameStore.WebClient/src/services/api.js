@@ -27,6 +27,9 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (d) => api.post("/auth/login", d),
   register: (d) => api.post("/auth/register", d),
+  forgotPassword: (email) => api.post("/auth/forgot-password", { email }),
+  resetPassword: (token, newPassword) =>
+    api.post("/auth/reset-password", { token, newPassword }),
 };
 export const gameAPI = {
   getFeatured: (n = 12) => api.get("/games/featured", { params: { count: n } }),
@@ -47,6 +50,8 @@ export const orderAPI = {
 export const userAPI = {
   getWallet: () => api.get("/users/wallet"),
   topUp: (amount) => api.post("/users/wallet/topup", { amount }),
+  getProfile: () => api.get("/users/profile"),
+  updateProfile: (data) => api.put("/users/profile", data),
 };
 export const libraryAPI = {
   getMyLibrary: () => api.get("/library"),

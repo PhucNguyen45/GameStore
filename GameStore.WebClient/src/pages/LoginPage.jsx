@@ -3,8 +3,10 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { LogIn, User, Lock, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -14,8 +16,8 @@ export default function LoginPage() {
 
   const validateForm = () => {
     const errors = {};
-    if (!form.username.trim()) errors.username = "Username is required";
-    if (!form.password) errors.password = "Password is required";
+    if (!form.username.trim()) errors.username = t("auth.usernameRequired");
+    if (!form.password) errors.password = t("auth.passwordRequired");
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -32,9 +34,8 @@ export default function LoginPage() {
         navigate("/");
       }
     } catch (err) {
-      // Chỉ set error 1 lần duy nhất
       if (!error) {
-        setError("Invalid username or password");
+        setError(t("auth.invalidCredentials"));
       }
     } finally {
       setLoading(false);
@@ -81,15 +82,12 @@ export default function LoginPage() {
               color="#e94560"
               style={{ marginBottom: 16 }}
             />
-            <h2 style={{ color: "#fff", marginBottom: 8 }}>Login Failed</h2>
+            <h2 style={{ color: "#fff", marginBottom: 8 }}>{t("auth.loginFailed")}</h2>
             <p style={{ color: "#e94560", marginBottom: 24, fontSize: 16 }}>
               {error}
             </p>
             <button
-              onClick={() => {
-                setError(""); // Tắt modal
-                // KHÔNG reset form
-              }}
+              onClick={() => setError("")}
               style={{
                 padding: "12px 40px",
                 background: "#e94560",
@@ -101,7 +99,7 @@ export default function LoginPage() {
                 cursor: "pointer",
               }}
             >
-              OK
+              {t("common.ok")}
             </button>
           </div>
         </div>
@@ -133,9 +131,9 @@ export default function LoginPage() {
           >
             <LogIn size={28} color="#fff" />
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700 }}>Welcome Back</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 700 }}>{t("auth.loginTitle")}</h1>
           <p style={{ color: "#6b6b8e", fontSize: 14, marginTop: 6 }}>
-            Login to your GameStore account
+            {t("auth.loginSubtitle")}
           </p>
         </div>
 
@@ -147,7 +145,7 @@ export default function LoginPage() {
               style={{ position: "absolute", left: 14, top: 14 }}
             />
             <input
-              placeholder="Username"
+              placeholder={t("auth.username")}
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
               style={{
@@ -171,7 +169,7 @@ export default function LoginPage() {
             />
             <input
               type="password"
-              placeholder="Password"
+              placeholder={t("auth.password")}
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               style={{
@@ -193,9 +191,19 @@ export default function LoginPage() {
             className="btn-primary"
             style={{ width: "100%", padding: 14, fontSize: 16 }}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? t("auth.loggingIn") : t("auth.login")}
           </button>
         </form>
+        <div style={{ textAlign: "center", marginTop: 12 }}>
+          <Link
+            to="/forgot-password"
+            style={{ color: "#6b6b8e", fontSize: 12, textDecoration: "none" }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = "#4fc3f7")}
+            onMouseLeave={(e) => (e.currentTarget.style.color = "#6b6b8e")}
+          >
+            {t("auth.forgotPassword")}
+          </Link>
+        </div>
         <p
           style={{
             textAlign: "center",
@@ -204,9 +212,9 @@ export default function LoginPage() {
             fontSize: 13,
           }}
         >
-          Don't have an account?{" "}
+          {t("auth.noAccount")}{" "}
           <Link to="/register" style={{ color: "#e94560", fontWeight: 600 }}>
-            Register here
+            {t("auth.registerNow")}
           </Link>
         </p>
       </div>

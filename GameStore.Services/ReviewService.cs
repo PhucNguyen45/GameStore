@@ -16,10 +16,14 @@ public class ReviewService : IReviewService
 
     public ReviewService(GameStoreDbContext context) => _context = context;
 
-    public async Task<IEnumerable<ReviewDto>> GetGameReviewsAsync(int gameId, int page = 1, int pageSize = 10)
+    public async Task<(IEnumerable<ReviewDto> Reviews, int TotalCount)> GetGameReviewsAsync(int gameId, int page = 1, int pageSize = 10)
     {
-        return await _context.Reviews
-            .Where(r => r.GameId == gameId)
+        var query = _context.Reviews
+            .Where(r => r.GameId == gameId);
+
+        var totalCount = await query.CountAsync();
+
+        var reviews = await query
             .Include(r => r.User)
             .OrderByDescending(r => r.CreatedAt)
             .Skip((page - 1) * pageSize)
@@ -36,6 +40,8 @@ public class ReviewService : IReviewService
                 CreatedAt = r.CreatedAt
             })
             .ToListAsync();
+
+        return (reviews, totalCount);
     }
 
     public async Task<ReviewDto> AddReviewAsync(int userId, CreateReviewDto dto)

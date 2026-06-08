@@ -1,13 +1,15 @@
 // GameStore.WebClient/src/components/admin/CategoriesTab.jsx
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { Plus, Edit, Trash2, X, Tag } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "./Pagination";
-import { thStyle, sortFn, filterInputStyle } from "./adminStyles";
+import { thStyle, filterInputStyle } from "./adminStyles";
 import { adminAPI } from "../../services/api";
 
 function CategoryModal({ category, onClose, onSave }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     name: category?.name || "",
     description: category?.description || "",
@@ -22,7 +24,7 @@ function CategoryModal({ category, onClose, onSave }) {
     try {
       if (category) await adminAPI.updateCategory(category.id, form);
       else await adminAPI.createCategory(form);
-      toast.success(category ? "Cập nhật danh mục thành công!" : "Tạo danh mục thành công!");
+      toast.success(category ? t("admin.categoryUpdated") : t("admin.categoryCreated"));
       onSave();
     } catch (err) {
       toast.error(err.response?.data?.message || err.message);
@@ -63,24 +65,24 @@ function CategoryModal({ category, onClose, onSave }) {
             fontWeight: 700,
           }}
         >
-          {category ? "✏️ Chỉnh sửa danh mục" : "➕ Thêm danh mục"}
+          {category ? `✏️ ${t("admin.editCategory")}` : `➕ ${t("admin.addCategoryTitle")}`}
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
           <input
-            placeholder="Tên *"
+            placeholder={`${t("admin.nameColumn")} *`}
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             style={iStyle}
             required
           />
           <textarea
-            placeholder="Mô tả"
+            placeholder={t("admin.description")}
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
             style={{ ...iStyle, minHeight: 60, resize: "vertical" }}
           />
           <input
-            placeholder="URL icon (tùy chọn)"
+            placeholder={t("admin.iconUrl")}
             value={form.iconUrl}
             onChange={(e) => setForm({ ...form, iconUrl: e.target.value })}
             style={iStyle}
@@ -99,7 +101,7 @@ function CategoryModal({ category, onClose, onSave }) {
               checked={form.isActive}
               onChange={(e) => setForm({ ...form, isActive: e.target.checked })}
             />
-            Đang hoạt động
+            {t("admin.isActive")}
           </label>
           <div
             style={{
@@ -121,7 +123,7 @@ function CategoryModal({ category, onClose, onSave }) {
                 cursor: "pointer",
               }}
             >
-              Hủy
+              {t("common.cancel")}
             </button>
             <button
               type="submit"
@@ -136,7 +138,7 @@ function CategoryModal({ category, onClose, onSave }) {
                 fontWeight: 600,
               }}
             >
-              {saving ? "Đang lưu..." : category ? "Cập nhật" : "Tạo mới"}
+              {saving ? t("admin.saving") : category ? t("admin.update") : t("admin.createNew")}
             </button>
           </div>
         </form>
@@ -146,6 +148,7 @@ function CategoryModal({ category, onClose, onSave }) {
 }
 
 export default function CategoriesTab() {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -158,7 +161,7 @@ export default function CategoriesTab() {
 
   const load = async () => {
     try {
-      const params = { page, pageSize };
+      const params = { page, pageSize, sortBy: sort.field, desc: sort.dir === "desc" };
       if (search.keyword) params.keyword = search.keyword;
       if (search.status) params.status = search.status;
       if (search.hasGames !== "") params.hasGames = search.hasGames === "yes";
@@ -173,17 +176,17 @@ export default function CategoriesTab() {
 
   useEffect(() => {
     setPage(1);
-  }, [search, pageSize]);
+  }, [search, pageSize, sort]);
   useEffect(() => {
     const t = setTimeout(load, 300);
     return () => clearTimeout(t);
-  }, [page, pageSize, search]);
+  }, [page, pageSize, search, sort]);
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
     try {
       await adminAPI.deleteCategory(deleteTarget.id);
-      toast.success(`Đã xóa danh mục "${deleteTarget.name}"!`);
+      toast.success(t("admin.categoryDeleted", { name: deleteTarget.name }));
       setDeleteTarget(null);
       load();
     } catch (err) {
@@ -191,7 +194,6 @@ export default function CategoriesTab() {
     }
   };
 
-  const sorted = sortFn(categories, sort.field, sort.dir);
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
 
   return (
@@ -200,7 +202,7 @@ export default function CategoriesTab() {
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Tìm danh mục..."
+          placeholder={t("admin.searchCategories")}
           value={search.keyword}
           onChange={(e) => setSearch({ ...search, keyword: e.target.value })}
           style={{ ...filterInputStyle, flex: 1, maxWidth: 220 }}
@@ -210,20 +212,20 @@ export default function CategoriesTab() {
           onChange={(e) => setSearch({ ...search, status: e.target.value })}
           style={filterInputStyle}
         >
-          <option value="">Tất cả trạng thái</option>
-          <option value="active">Hoạt động</option>
-          <option value="inactive">Không hoạt động</option>
+          <option value="">{t("admin.allStatuses")}</option>
+          <option value="active">{t("admin.active")}</option>
+          <option value="inactive">{t("admin.inactive")}</option>
         </select>
         <select
           value={search.hasGames}
           onChange={(e) => setSearch({ ...search, hasGames: e.target.value })}
           style={filterInputStyle}
         >
-          <option value="">Tất cả</option>
-          <option value="yes">Có game</option>
-          <option value="no">Chưa có game</option>
+          <option value="">{t("admin.all")}</option>
+          <option value="yes">{t("admin.hasGames")}</option>
+          <option value="no">{t("admin.noGames")}</option>
         </select>
-        {(search.keyword || search.status || search.hasGames) && (
+        {(search.keyword || search.status || search.hasGames !== "") && (
           <button
             onClick={() => setSearch({ keyword: "", status: "", hasGames: "" })}
             style={{
@@ -239,7 +241,7 @@ export default function CategoriesTab() {
               gap: 4,
             }}
           >
-            <X size={12} /> Xóa lọc
+            <X size={12} /> {t("admin.clearFilter")}
           </button>
         )}
         <button
@@ -262,7 +264,7 @@ export default function CategoriesTab() {
             marginLeft: "auto",
           }}
         >
-          <Plus size={14} /> Thêm danh mục
+          <Plus size={14} /> {t("admin.addCategory")}
         </button>
       </div>
       <div
@@ -282,20 +284,20 @@ export default function CategoriesTab() {
                 #
               </SortableHeader>
               <SortableHeader field="name" sort={sort} setSort={setSort}>
-                Tên
+                {t("admin.nameColumn")}
               </SortableHeader>
               <SortableHeader field="description" sort={sort} setSort={setSort}>
-                Mô tả
+                {t("admin.description")}
               </SortableHeader>
               <SortableHeader field="gameCount" sort={sort} setSort={setSort}>
-                Số game
+                {t("admin.gameCount")}
               </SortableHeader>
-              <th style={{ ...thStyle, cursor: "default" }}>Trạng thái</th>
+              <th style={{ ...thStyle, cursor: "default" }}>{t("admin.status")}</th>
               <th style={{ ...thStyle, cursor: "default" }}></th>
             </tr>
           </thead>
           <tbody>
-            {sorted.map((cat) => (
+            {categories.map((cat) => (
               <tr key={cat.id} style={{ borderBottom: "1px solid #1a1a1a" }}>
                 <td style={{ padding: "9px 14px", color: "#555" }}>
                   #{cat.id}
@@ -353,7 +355,7 @@ export default function CategoriesTab() {
                         fontSize: 11,
                       }}
                     >
-                      {cat.isActive ? "Hoạt động" : "Không hoạt động"}
+                      {cat.isActive ? t("admin.active") : t("admin.inactive")}
                     </span>
                   </span>
                 </td>
@@ -388,13 +390,13 @@ export default function CategoriesTab() {
                 </td>
               </tr>
             ))}
-            {sorted.length === 0 && (
+            {categories.length === 0 && (
               <tr>
                 <td
                   colSpan="6"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  Không tìm thấy danh mục
+                  {t("admin.noCategories")}
                 </td>
               </tr>
             )}
@@ -427,13 +429,12 @@ export default function CategoriesTab() {
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
           <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 360, textAlign: "center", border: "1px solid #e94560" }} onClick={(e) => e.stopPropagation()}>
             <Trash2 size={36} color="#e94560" style={{ marginBottom: 10 }} />
-            <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>Xóa danh mục?</h3>
-            <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
-              Bạn có chắc muốn xóa <strong style={{ color: "#fff" }}>"{deleteTarget.name}"</strong>?
-            </p>
+            <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>{t("admin.deleteCategory")}</h3>              <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
+                {t("admin.confirmDeleteCategory", { name: deleteTarget.name })}
+              </p>
             <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-              <button onClick={() => setDeleteTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>Hủy</button>
-              <button onClick={handleDelete} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>Xóa</button>
+              <button onClick={() => setDeleteTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>{t("common.cancel")}</button>
+              <button onClick={handleDelete} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>{t("admin.confirmDelete")}</button>
             </div>
           </div>
         </div>

@@ -12,8 +12,8 @@ namespace GameStore.Entities.Games
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public decimal Price { get; set; }
-        public decimal? DiscountPrice { get; set; }
+        public long Price { get; set; }
+        public long? DiscountPrice { get; set; }
         public string Developer { get; set; } = string.Empty;
         public string Publisher { get; set; } = string.Empty;
         public DateTime ReleaseDate { get; set; }

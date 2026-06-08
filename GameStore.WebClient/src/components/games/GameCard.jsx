@@ -5,6 +5,7 @@ import { Star, ShoppingCart, Check, Heart } from "lucide-react";
 import useCartStore from "../../stores/cartStore";
 import { useAuth } from "../../contexts/AuthContext";
 import { libraryAPI, wishlistAPI } from "../../services/api";
+import { formatVND } from "../../utils/format";
 
 export default function GameCard({ game }) {
   const addItem = useCartStore((s) => s.addItem);
@@ -81,7 +82,7 @@ export default function GameCard({ game }) {
             gap: 3,
           }}
         >
-          <Check size={12} /> OWNED
+          <Check size={12} /> ĐÃ SỞ HỮU
         </div>
       )}
       {/* Wishlist heart */}
@@ -179,11 +180,11 @@ export default function GameCard({ game }) {
                   marginRight: 4,
                 }}
               >
-                ${game.price?.toFixed(2)}
+                {formatVND(game.price)}
               </span>
             )}
             <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>
-              ${(game.discountPrice || game.price)?.toFixed(2)}
+              {formatVND(game.discountPrice || game.price)}
             </span>
           </div>
           {owned ? (

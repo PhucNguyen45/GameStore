@@ -2,6 +2,7 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import { Link } from "react-router-dom";
+import { formatVND } from "../../utils/format";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
@@ -89,7 +90,7 @@ export default function FeaturedSlider({ games }) {
                       fontSize: 20,
                     }}
                   >
-                    ${(game.discountPrice || game.price)?.toFixed(2)}
+                    {formatVND(game.discountPrice || game.price)}
                   </span>
                   <span
                     style={{
