@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Edit2, Trash2, X } from "lucide-react";
 import SortableHeader from "./SortableHeader";
-import Pagination from "./Pagination";
+import Pagination from "../common/Pagination";
 import { thStyle, actionBtnStyle, filterInputStyle } from "./adminStyles";
 import { formatVND } from "../../utils/format";
 

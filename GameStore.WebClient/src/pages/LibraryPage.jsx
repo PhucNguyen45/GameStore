@@ -7,11 +7,10 @@ import {
   Library,
   Gamepad2,
   Star,
-  Play,
-  Download,
   Search,
   Grid3X3,
   List,
+  KeyRound,
 } from "lucide-react";
 import { GameCardSkeletonGrid } from "../components/games/GameCardSkeleton";
 import { useTranslation } from "react-i18next";
@@ -60,10 +59,8 @@ export default function LibraryPage() {
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      <div
-        style={{ padding: "40px 40px 30px", borderBottom: "1px solid #222" }}
-      >
-        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+      <div style={{ borderBottom: "1px solid #222" }}>
+        <div className="container" style={{ paddingTop: 40, paddingBottom: 30 }}>
           <h1
             style={{
               fontSize: 32,
@@ -75,7 +72,7 @@ export default function LibraryPage() {
           >
             {t("library.title")}
           </h1>
-          <p style={{ color: "#888", fontSize: 14 }}>
+          <p style={{ color: "#888", fontSize: 14, margin: 0 }}>
             {t("library.gameCount", { count: games.length })}
           </p>
         </div>
@@ -91,15 +88,15 @@ export default function LibraryPage() {
         }}
       >
         <div
+          className="container"
           style={{
-            maxWidth: 1400,
-            margin: "0 auto",
-            padding: "12px 40px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            gap: 16,
+            gap: 12,
             flexWrap: "wrap",
+            paddingTop: 12,
+            paddingBottom: 12,
           }}
         >
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -195,7 +192,7 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px 40px" }}>
+      <div className="container" style={{ paddingTop: 24, paddingBottom: 24 }}>
         {loading ? (
           <GameCardSkeletonGrid count={12} compact />
         ) : filteredGames.length === 0 ? (
@@ -284,9 +281,9 @@ function GridView({ games }) {
                   opacity: 0,
                   transition: "opacity 0.2s",
                 }}
-                className="hover-overlay"
+                className="            hover-overlay"
               >
-                <Play size={32} fill="#fff" color="#fff" />
+                <KeyRound size={32} color="#10b981" />
               </div>
             </div>
 
@@ -342,23 +339,18 @@ function GridView({ games }) {
                     : ""}
                 </span>
               </div>
-              <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
-                <button
-                  style={smallBtnStyle}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <Play size={12} /> {t("library.play")}
-                </button>
-                <button
-                  style={{
-                    ...smallBtnStyle,
-                    background: "#2a2a2a",
-                    color: "#888",
-                  }}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <Download size={12} />
-                </button>
+              <div
+                style={{
+                  marginTop: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  fontSize: 11,
+                  color: "#10b981",
+                }}
+              >
+                <KeyRound size={11} />
+                {t("library.keyAvailable")}
               </div>
             </div>
           </div>
@@ -602,18 +594,4 @@ const viewBtnStyle = {
   transition: "all 0.2s",
 };
 
-const smallBtnStyle = {
-  padding: "6px 10px",
-  borderRadius: 4,
-  border: "none",
-  fontSize: 11,
-  fontWeight: 600,
-  cursor: "pointer",
-  background: "#fff",
-  color: "#000",
-  display: "flex",
-  alignItems: "center",
-  gap: 4,
-  flex: 1,
-  justifyContent: "center",
-};
+

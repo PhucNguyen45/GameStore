@@ -1,7 +1,8 @@
 // GameStore.WebClient/src/pages/GameDetailPage.jsx
-import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect, useMemo } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { formatVND } from "../utils/format";
+import { useResponsive } from "../hooks/useResponsive";
 import {
   gameAPI,
   libraryAPI,
@@ -12,20 +13,25 @@ import {
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
 import toast from "react-hot-toast";
+import TrailerPlayer from "../components/games/TrailerPlayer";
+import GameDetailSkeleton from "../components/games/GameDetailSkeleton";
+import GameNotFound from "../components/games/GameNotFound";
+import RequirementsSection from "../components/games/RequirementsSection";
+import GameKeysSection from "../components/games/GameKeysSection";
+import ReviewSection from "../components/games/ReviewSection";
 import {
   Star,
   ShoppingCart,
   Monitor,
-  Cpu,
-  HardDrive,
-  Gamepad2,
   Heart,
   Users,
   Check,
-  Play,
-  MessageSquare,
+  ChevronLeft,
+  ChevronRight,
+  Image,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { epicPrimaryBtn, epicSecondaryBtn, epicWishlistBtn } from "../components/games/gameDetailStyles";
 
 export default function GameDetailPage() {
   const { t } = useTranslation();
@@ -37,6 +43,7 @@ export default function GameDetailPage() {
   const { user } = useAuth();
   const addItem = useCartStore((s) => s.addItem);
   const navigate = useNavigate();
+  const { isMobile } = useResponsive();
 
   const [wishlisted, setWishlisted] = useState(false);
 
@@ -45,12 +52,18 @@ export default function GameDetailPage() {
   const [totalReviewPages, setTotalReviewPages] = useState(1);
   const [hasReviewed, setHasReviewed] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [gameKeys, setGameKeys] = useState([]);
+  const [keysLoading, setKeysLoading] = useState(false);
   const [reviewForm, setReviewForm] = useState({
     rating: 5,
     content: "",
     isRecommended: true,
   });
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [screenshotIndex, setScreenshotIndex] = useState(0);
+  const [screenshotError, setScreenshotError] = useState(false);
+  const [thumbLoaded, setThumbLoaded] = useState(new Set());
+  const [thumbErrored, setThumbErrored] = useState(new Set());
 
   useEffect(() => {
     gameAPI
@@ -94,7 +107,15 @@ export default function GameDetailPage() {
           .catch(() => {});
       }
     }
-  }, [activeTab, id, user]);
+    if (activeTab === "keys" && id && owned) {
+      setKeysLoading(true);
+      libraryAPI
+        .getGameKeys(id)
+        .then((res) => setGameKeys(res.data || []))
+        .catch(() => setGameKeys([]))
+        .finally(() => setKeysLoading(false));
+    }
+  }, [activeTab, id, user, owned]);
 
   const toggleWishlist = async () => {
     if (!user) {
@@ -145,13 +166,62 @@ export default function GameDetailPage() {
     }
   };
 
-  if (loading) return <LoadingSkeleton />;
-  if (!game) return <NotFound />;
-
-  const discount = game.discountPrice
+  // All hooks BEFORE early returns — React Rules of Hooks
+  const discount = useMemo(() => game?.discountPrice
     ? Math.round((1 - game.discountPrice / game.price) * 100)
-    : 0;
-  const finalPrice = game.discountPrice || game.price;
+    : 0, [game?.discountPrice, game?.price]);
+  const finalPrice = useMemo(() => game?.discountPrice || game?.price, [game?.discountPrice, game?.price]);
+
+  const screenshots = useMemo(() => {
+    try {
+      const parsed = JSON.parse(game?.screenshots || "[]");
+      return Array.isArray(parsed) ? parsed : [];
+    } catch { return []; }
+  }, [game?.screenshots]);
+
+  const formattedReleaseDate = useMemo(() =>
+    game?.releaseDate ? new Date(game.releaseDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "",
+    [game?.releaseDate]
+  );
+  const formattedShortDate = useMemo(() =>
+    game?.releaseDate ? new Date(game.releaseDate).toLocaleDateString() : "",
+    [game?.releaseDate]
+  );
+  const genreNames = useMemo(() =>
+    game?.gameGenres?.map((g) => g.genre?.name).join(", ") || "-",
+    [game?.gameGenres]
+  );
+
+  // Reset screenshotIndex when game changes
+  useEffect(() => {
+    setScreenshotIndex(0);
+    setScreenshotError(false);
+    setThumbLoaded(new Set());
+    setThumbErrored(new Set());
+  }, [game?.id]);
+
+  const prevScreenshot = () => {
+    setScreenshotIndex((i) => (i <= 0 ? screenshots.length - 1 : i - 1));
+    setScreenshotError(false);
+  };
+  const nextScreenshot = () => {
+    setScreenshotIndex((i) => (i >= screenshots.length - 1 ? 0 : i + 1));
+    setScreenshotError(false);
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKey = (e) => {
+      if (activeTab !== "overview" || screenshots.length <= 1) return;
+      if (e.key === "ArrowLeft") { e.preventDefault(); prevScreenshot(); }
+      if (e.key === "ArrowRight") { e.preventDefault(); nextScreenshot(); }
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [activeTab, screenshots.length]);
+
+  if (loading) return <GameDetailSkeleton />;
+  if (!game) return <GameNotFound />;
 
   return (
     <div
@@ -182,10 +252,9 @@ export default function GameDetailPage() {
           }}
         />
         <div
+          className="container"
           style={{
-            maxWidth: 1400,
-            margin: "0 auto",
-            padding: "0 40px 60px",
+            paddingBottom: 60,
             width: "100%",
             position: "relative",
             zIndex: 1,
@@ -271,13 +340,10 @@ export default function GameDetailPage() {
                 <button style={{ ...epicPrimaryBtn, background: "#4caf50", cursor: "default" }}>
                   <Check size={16} style={{ marginRight: 6 }} /> {t("gameDetail.ownedLib")}
                 </button>
-                <button style={epicSecondaryBtn} onClick={() => navigate("/library")}>
-                  {t("gameDetail.goToLibrary")}
-                </button>
               </>
             ) : game.price === 0 ? (
               <button
-                style={epicPrimaryBtn}
+                style={{ ...epicPrimaryBtn, width: isMobile ? "100%" : "auto" }}
                 onClick={async () => {
                   if (!user) { navigate("/login"); return; }
                   try {
@@ -293,7 +359,7 @@ export default function GameDetailPage() {
               </button>
             ) : (
               <>
-                <button style={epicPrimaryBtn} onClick={handleBuyNow}>
+                <button style={{ ...epicPrimaryBtn, width: isMobile ? "100%" : "auto", justifyContent: "center" }} onClick={handleBuyNow}>
                   {t("gameDetail.buyNow")}
                   <span style={{ marginLeft: 10, fontSize: 14, fontWeight: 400, opacity: 0.9 }}>
                     {discount > 0 && (
@@ -305,7 +371,7 @@ export default function GameDetailPage() {
                   </span>
                 </button>
                 <button
-                  style={epicSecondaryBtn}
+                  style={{ ...epicSecondaryBtn, width: isMobile ? "100%" : "auto", justifyContent: "center" }}
                   onClick={() => { addItem(game); toast.success(t("gameDetail.addedToCart")); }}
                 >
                   <ShoppingCart size={16} /> {t("gameDetail.addToCart")}
@@ -339,18 +405,19 @@ export default function GameDetailPage() {
       </div>
 
       {/* TABS */}
-      <div style={{ background: "#1a1a1a", borderBottom: "1px solid #333", position: "sticky", top: 0, zIndex: 100 }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px", display: "flex", gap: 0 }}>
+      <div style={{ background: "#1a1a1a", borderBottom: "1px solid #333", position: "sticky", top: 0, zIndex: 100, overflowX: "auto" }}>
+        <div className="container" style={{ display: "flex", gap: 0, minWidth: "fit-content" }}>
           {[
             { id: "overview", label: t("gameDetail.tabOverview") },
             { id: "requirements", label: t("gameDetail.tabRequirements") },
+            { id: "keys", label: t("gameDetail.tabKeys") },
             { id: "reviews", label: t("gameDetail.tabReviews") },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               style={{
-                padding: "18px 28px",
+                padding: "18px 24px",
                 border: "none",
                 cursor: "pointer",
                 fontSize: 11,
@@ -360,6 +427,7 @@ export default function GameDetailPage() {
                 color: activeTab === tab.id ? "#fff" : "#888",
                 borderBottom: activeTab === tab.id ? "3px solid #fff" : "3px solid transparent",
                 transition: "all 0.2s",
+                whiteSpace: "nowrap",
               }}
             >
               {tab.label}
@@ -369,9 +437,9 @@ export default function GameDetailPage() {
       </div>
 
       {/* TAB CONTENT */}
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "40px" }}>
+      <div className="container" style={{ paddingTop: 40, paddingBottom: 40 }}>
         {activeTab === "overview" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 60 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 60 }} className="game-detail-grid">
             <div>
               <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 20, letterSpacing: -0.5 }}>
                 {t("gameDetail.about", { game: game.title?.toUpperCase() })}
@@ -379,13 +447,232 @@ export default function GameDetailPage() {
               <p style={{ color: "#aaa", fontSize: 14, lineHeight: 1.8, marginBottom: 30 }}>
                 {game.description}
               </p>
+
+              {/* TRAILER PLAYER */}
+              {game.trailerUrl && (
+                <TrailerPlayer
+                  trailerUrl={game.trailerUrl}
+                  poster={screenshots[0] || game.coverImageUrl}
+                  title={game.title}
+                />
+              )}
+
+              {/* SCREENSHOTS CAROUSEL */}
+              {screenshots.length > 0 && (
+                <div style={{ marginBottom: 40 }}>
+                  <div
+                    className="carousel-container"
+                    style={{
+                      position: "relative",
+                      borderRadius: 8,
+                      overflow: "hidden",
+                      background: "#1a1a1a",
+                      aspectRatio: "16 / 9",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {screenshotError ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          position: "absolute",
+                          inset: 0,
+                          color: "#555",
+                          flexDirection: "column",
+                          gap: 8,
+                        }}
+                      >
+                        <Image size={32} />
+                        <span style={{ fontSize: 12 }}>{t("gameDetail.screenshotNotFound")}</span>
+                      </div>
+                    ) : (
+                      <img
+                        src={screenshots[screenshotIndex]}
+                        alt={`Screenshot ${screenshotIndex + 1}`}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          display: "block",
+                          transition: "opacity 0.3s ease",
+                        }}
+                        onError={() => setScreenshotError(true)}
+                      />
+                    )}
+
+                    {/* NAV ARROWS */}
+                    {screenshots.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevScreenshot}
+                          style={{
+                            position: "absolute",
+                            left: 12,
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            width: 40,
+                            height: 40,
+                            borderRadius: "50%",
+                            border: "none",
+                            background: "rgba(0,0,0,0.6)",
+                            color: "#fff",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            transition: "all 0.2s",
+                            opacity: 0,
+                            zIndex: 2,
+                          }}
+                          className="carousel-arrow"
+                        >
+                          <ChevronLeft size={20} />
+                        </button>
+                        <button
+                          onClick={nextScreenshot}
+                          style={{
+                            position: "absolute",
+                            right: 12,
+                            top: "50%",
+                            transform: "translateY(-50%)",
+                            width: 40,
+                            height: 40,
+                            borderRadius: "50%",
+                            border: "none",
+                            background: "rgba(0,0,0,0.6)",
+                            color: "#fff",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            transition: "all 0.2s",
+                            opacity: 0,
+                            zIndex: 2,
+                          }}
+                          className="carousel-arrow"
+                        >
+                          <ChevronRight size={20} />
+                        </button>
+                      </>
+                    )}
+
+                    {/* COUNTER BADGE */}
+                    {screenshots.length > 1 && (
+                      <span
+                        style={{
+                          position: "absolute",
+                          bottom: 12,
+                          right: 12,
+                          padding: "4px 10px",
+                          borderRadius: 4,
+                          fontSize: 11,
+                          fontWeight: 700,
+                          background: "rgba(0,0,0,0.7)",
+                          color: "#fff",
+                          letterSpacing: 0.5,
+                          zIndex: 2,
+                        }}
+                      >
+                        {screenshotIndex + 1} / {screenshots.length}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* THUMBNAIL STRIP */}
+                  {screenshots.length > 1 && (
+                    <div
+                      className="thumbnail-strip"
+                      style={{
+                        display: "flex",
+                        gap: 8,
+                        marginTop: 10,
+                        overflowX: "auto",
+                        paddingBottom: 4,
+                      }}
+                    >
+                      {screenshots.map((url, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setScreenshotIndex(i)}
+                          style={{
+                            position: "relative",
+                            flexShrink: 0,
+                            width: 120,
+                            height: 68,
+                            borderRadius: 4,
+                            overflow: "hidden",
+                            border: i === screenshotIndex ? "2px solid #fff" : "2px solid transparent",
+                            background: "#1a1a1a",
+                            cursor: "pointer",
+                            padding: 0,
+                            transition: "all 0.2s",
+                            opacity: i === screenshotIndex ? 1 : 0.5,
+                          }}
+                          onMouseEnter={(e) => { if (i !== screenshotIndex) e.currentTarget.style.opacity = "0.8"; }}
+                          onMouseLeave={(e) => { if (i !== screenshotIndex) e.currentTarget.style.opacity = "0.5"; }}
+                        >
+                          {/* Skeleton placeholder (behind image) */}
+                          {!thumbLoaded.has(i) && !thumbErrored.has(i) && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                inset: 0,
+                                background: "linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%)",
+                                backgroundSize: "200% 100%",
+                                animation: "shimmer 1.5s ease-in-out infinite",
+                              }}
+                            />
+                          )}
+                          {/* Error fallback (over image) */}
+                          {thumbErrored.has(i) && (
+                            <div
+                              style={{
+                                position: "absolute",
+                                inset: 0,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                background: "#1a1a1a",
+                              }}
+                            >
+                              <Image size={16} color="#444" />
+                            </div>
+                          )}
+                          {/* Actual image (always rendered for lazy to work) */}
+                          <img
+                            src={url}
+                            alt={`Thumbnail ${i + 1}`}
+                            loading="lazy"
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                              display: "block",
+                              opacity: thumbLoaded.has(i) || thumbErrored.has(i) ? 1 : 0,
+                              transition: "opacity 0.25s ease",
+                            }}
+                            onLoad={() => setThumbLoaded((prev) => new Set([...prev, i]))}
+                            onError={() => {
+                              setThumbErrored((prev) => new Set([...prev, i]));
+                            }}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
                 {[
                   { label: t("gameDetail.developer"), value: game.developer },
                   { label: t("gameDetail.publisher"), value: game.publisher },
                   {
                     label: t("gameDetail.releaseDate"),
-                    value: new Date(game.releaseDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
+                    value: formattedReleaseDate,
                   },
                   { label: t("gameDetail.platform"), value: t("gameDetail.windowsPc") },
                 ].map(({ label, value }) => (
@@ -420,7 +707,7 @@ export default function GameDetailPage() {
                 </div>
                 <button
                   onClick={() => setActiveTab("reviews")}
-                  style={{ width: "100%", padding: "10px", background: "transparent", color: "#fff", border: "1px solid #444", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, letterSpacing: 1 }}
+                  style={{ width: "100%", padding: "10px", background: "transparent", color: "#fff", border: "1px solid #444", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, letterSpacing: 1, whiteSpace: "nowrap" }}
                 >
                   {t("gameDetail.viewAllReviews")}
                 </button>
@@ -431,11 +718,11 @@ export default function GameDetailPage() {
                 </h3>
                 <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {[
-                    [t("gameDetail.genre"), game.gameGenres?.map((g) => g.genre?.name).join(", ")],
-                    [t("gameDetail.releaseDate"), new Date(game.releaseDate).toLocaleDateString()],
+                    [t("gameDetail.genre"), genreNames],
+                    [t("gameDetail.releaseDate"), formattedShortDate],
                     [t("gameDetail.platform"), t("gameDetail.windowsPc")],
-                    [t("gameDetail.developer"), game.developer],
-                    [t("gameDetail.publisher"), game.publisher],
+                    [t("gameDetail.developer"), game.developer || "-"],
+                    [t("gameDetail.publisher"), game.publisher || "-"],
                   ].map(([label, value]) => (
                     <div key={label} style={{ display: "flex", justifyContent: "space-between" }}>
                       <span style={{ fontSize: 12, color: "#888" }}>{label}</span>
@@ -449,236 +736,37 @@ export default function GameDetailPage() {
         )}
 
         {activeTab === "requirements" && (
-          <div style={{ maxWidth: 700 }}>
-            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 30, letterSpacing: -0.5 }}>
-              {t("gameDetail.tabRequirements")}
-            </h2>
-            <div style={{ background: "#1e1e1e", borderRadius: 8, padding: "30px 32px", border: "1px solid #333" }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                {[
-                  { icon: Monitor, label: t("gameDetail.os"), value: game.minimumOS },
-                  { icon: Cpu, label: t("gameDetail.processor"), value: game.minimumProcessor },
-                  { icon: HardDrive, label: t("gameDetail.memory"), value: game.minimumMemory },
-                  { icon: Gamepad2, label: t("gameDetail.graphics"), value: game.minimumGraphics },
-                  { icon: HardDrive, label: t("gameDetail.storage"), value: game.minimumStorage },
-                ]
-                  .filter((r) => r.value)
-                  .map(({ icon: Icon, label, value }) => (
-                    <div key={label} style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                      <Icon size={16} color="#666" />
-                      <span style={{ fontSize: 12, color: "#888", minWidth: 120, textTransform: "uppercase", letterSpacing: 1 }}>{label}</span>
-                      <span style={{ fontSize: 14, color: "#ccc" }}>{value}</span>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          </div>
+          <RequirementsSection game={game} />
+        )}
+
+        {activeTab === "keys" && (
+          <GameKeysSection
+            user={user}
+            owned={owned}
+            gameKeys={gameKeys}
+            keysLoading={keysLoading}
+            handleBuyNow={handleBuyNow}
+          />
         )}
 
         {activeTab === "reviews" && (
-          <div style={{ maxWidth: 800, margin: "0 auto" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 30 }}>
-              <h2 style={{ fontSize: 20, fontWeight: 700, letterSpacing: -0.5 }}>
-                {t("gameDetail.playerReviews")}
-              </h2>
-              {owned && !hasReviewed && !showReviewForm && (
-                <button
-                  onClick={() => setShowReviewForm(true)}
-                  style={{ padding: "10px 24px", background: "#fff", color: "#000", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, letterSpacing: 1 }}
-                >
-                  {t("gameDetail.writeReview")}
-                </button>
-              )}
-            </div>
-
-            {showReviewForm && (
-              <form
-                onSubmit={submitReview}
-                style={{ background: "#1e1e1e", borderRadius: 8, padding: 24, marginBottom: 30, border: "1px solid #333" }}
-              >
-                <h3 style={{ marginBottom: 16, fontSize: 14, fontWeight: 600 }}>
-                  {t("gameDetail.yourReview")}
-                </h3>
-                <div style={{ marginBottom: 12 }}>
-                  <label style={{ display: "block", marginBottom: 6, color: "#888", fontSize: 12 }}>
-                    {t("gameDetail.ratingLabel")}
-                  </label>
-                  <div style={{ display: "flex", gap: 4 }}>
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <Star
-                        key={s}
-                        size={20}
-                        fill={s <= reviewForm.rating ? "#f7b731" : "none"}
-                        color="#f7b731"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => setReviewForm({ ...reviewForm, rating: s })}
-                      />
-                    ))}
-                  </div>
-                </div>
-                <div style={{ marginBottom: 12 }}>
-                  <label style={{ display: "block", marginBottom: 6, color: "#888", fontSize: 12 }}>
-                    {t("gameDetail.content")}
-                  </label>
-                  <textarea
-                    value={reviewForm.content}
-                    onChange={(e) => setReviewForm({ ...reviewForm, content: e.target.value })}
-                    placeholder={t("gameDetail.reviewPlaceholder")}
-                    rows={4}
-                    style={{ width: "100%", padding: "12px", background: "#0a0a10", border: "1px solid #333", borderRadius: 4, color: "#fff", fontSize: 13, resize: "vertical", outline: "none" }}
-                    required
-                  />
-                </div>
-                <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc", fontSize: 13, marginBottom: 12, cursor: "pointer" }}>
-                  <input
-                    type="checkbox"
-                    checked={reviewForm.isRecommended}
-                    onChange={(e) => setReviewForm({ ...reviewForm, isRecommended: e.target.checked })}
-                  />
-                  {t("gameDetail.recommend")}
-                </label>
-                <div style={{ display: "flex", gap: 10 }}>
-                  <button type="submit" disabled={submittingReview} className="btn-primary" style={{ padding: "10px 20px" }}>
-                    {submittingReview ? t("gameDetail.submitting") : t("gameDetail.submitReview")}
-                  </button>
-                  <button type="button" onClick={() => setShowReviewForm(false)} className="btn-outline" style={{ padding: "10px 20px" }}>
-                    {t("gameDetail.cancel")}
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {reviews.length === 0 ? (
-              <div style={{ textAlign: "center", padding: 60 }}>
-                <Star size={64} color="#333" />
-                <h2 style={{ fontSize: 20, fontWeight: 700, marginTop: 20, letterSpacing: -0.5 }}>
-                  {t("gameDetail.noReviews")}
-                </h2>
-                <p style={{ color: "#888", marginTop: 8, fontSize: 14 }}>
-                  {t("gameDetail.beFirst", { game: game.title })}
-                </p>
-              </div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                {reviews.map((review) => (
-                  <div key={review.id} style={{ background: "#1e1e1e", borderRadius: 8, padding: 20, border: "1px solid #333" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <span style={{ fontWeight: 600, fontSize: 14 }}>{review.username}</span>
-                        <div style={{ display: "flex", gap: 2 }}>
-                          {[1, 2, 3, 4, 5].map((s) => (
-                            <Star key={s} size={12} fill={s <= review.rating ? "#f7b731" : "none"} color="#f7b731" />
-                          ))}
-                        </div>
-                      </div>
-                      <span style={{ color: "#888", fontSize: 11 }}>
-                        {new Date(review.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p style={{ color: "#ccc", fontSize: 13, lineHeight: 1.5 }}>{review.content}</p>
-                    {review.isRecommended && (
-                      <p style={{ color: "#4caf50", fontSize: 11, marginTop: 8 }}>
-                        {t("gameDetail.recommended")}
-                      </p>
-                    )}
-                  </div>
-                ))}
-                {totalReviewPages > 1 && (
-                  <div style={{ display: "flex", justifyContent: "center", gap: 8, marginTop: 16 }}>
-                    <button
-                      disabled={reviewPage === 1}
-                      onClick={() => loadReviews(reviewPage - 1)}
-                      style={{ padding: "6px 12px", background: "#2a2a2a", border: "none", borderRadius: 4, color: "#fff", cursor: "pointer" }}
-                    >
-                      ←
-                    </button>
-                    <span style={{ color: "#888", fontSize: 13, padding: "6px 0" }}>
-                      {t("gameDetail.pageOf", { page: reviewPage, total: totalReviewPages })}
-                    </span>
-                    <button
-                      disabled={reviewPage === totalReviewPages}
-                      onClick={() => loadReviews(reviewPage + 1)}
-                      style={{ padding: "6px 12px", background: "#2a2a2a", border: "none", borderRadius: 4, color: "#fff", cursor: "pointer" }}
-                    >
-                      →
-                    </button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          <ReviewSection
+            reviews={reviews}
+            reviewPage={reviewPage}
+            totalReviewPages={totalReviewPages}
+            hasReviewed={hasReviewed}
+            showReviewForm={showReviewForm}
+            reviewForm={reviewForm}
+            submittingReview={submittingReview}
+            owned={owned}
+            gameTitle={game.title}
+            submitReview={submitReview}
+            loadReviews={loadReviews}
+            setShowReviewForm={setShowReviewForm}
+            setReviewForm={setReviewForm}
+          />
         )}
       </div>
-    </div>
-  );
-}
-
-const epicPrimaryBtn = {
-  padding: "12px 28px",
-  background: "#fff",
-  color: "#000",
-  border: "none",
-  borderRadius: 4,
-  cursor: "pointer",
-  fontSize: 12,
-  fontWeight: 700,
-  letterSpacing: 1.5,
-  display: "flex",
-  alignItems: "center",
-  transition: "opacity 0.2s",
-};
-
-const epicSecondaryBtn = {
-  padding: "12px 28px",
-  background: "transparent",
-  color: "#fff",
-  border: "1px solid #fff",
-  borderRadius: 4,
-  cursor: "pointer",
-  fontSize: 12,
-  fontWeight: 700,
-  letterSpacing: 1.5,
-  display: "flex",
-  alignItems: "center",
-  gap: 6,
-  transition: "all 0.2s",
-};
-
-const epicWishlistBtn = {
-  padding: "12px",
-  background: "transparent",
-  color: "#fff",
-  border: "1px solid #fff",
-  borderRadius: 4,
-  cursor: "pointer",
-  display: "flex",
-  alignItems: "center",
-  transition: "all 0.2s",
-};
-
-function LoadingSkeleton() {
-  return (
-    <div style={{ background: "#121212", minHeight: "100vh" }}>
-      <div style={{ height: "70vh", background: "#1e1e1e", display: "flex", alignItems: "flex-end", padding: "60px 40px" }}>
-        <div>
-          <div style={{ width: 300, height: 48, background: "#333", borderRadius: 4, marginBottom: 16 }} />
-          <div style={{ width: 500, height: 20, background: "#333", borderRadius: 4, marginBottom: 24 }} />
-          <div style={{ width: 200, height: 48, background: "#333", borderRadius: 4 }} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function NotFound() {
-  const { t } = useTranslation();
-  return (
-    <div style={{ textAlign: "center", padding: 100, background: "#121212", minHeight: "100vh", color: "#888" }}>
-      <Gamepad2 size={64} />
-      <h2 style={{ marginTop: 16, color: "#fff" }}>{t("gameDetail.notFound")}</h2>
-      <Link to="/store" style={{ color: "#fff", marginTop: 12, display: "inline-block", textDecoration: "underline" }}>
-        {t("gameDetail.backToStore")}
-      </Link>
     </div>
   );
 }

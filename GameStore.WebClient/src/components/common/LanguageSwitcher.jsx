@@ -28,8 +28,6 @@ export default function LanguageSwitcher({ variant = "icon" }) {
     [current, i18n]
   );
 
-  const currentLang = languages.find((l) => l.code === current) || languages[0];
-
   // Pill/button shared styles
   const btnBase = {
     border: "none",
@@ -140,33 +138,6 @@ export default function LanguageSwitcher({ variant = "icon" }) {
         </button>
       ))}
 
-      {/* Smooth crossfade language name */}
-      <div
-        style={{
-          position: "relative",
-          width: 52,
-          height: 14,
-          marginLeft: 2,
-          overflow: "hidden",
-        }}
-      >
-        <span
-          key={current}
-          style={{
-            position: "absolute",
-            left: 0,
-            top: "50%",
-            transform: "translateY(-50%)",
-            fontSize: 9,
-            color: "#888",
-            fontWeight: 500,
-            whiteSpace: "nowrap",
-            animation: "langFadeIn 0.3s ease-out",
-          }}
-        >
-          {currentLang.full}
-        </span>
-      </div>
     </div>
   );
 }

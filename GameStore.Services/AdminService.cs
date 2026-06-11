@@ -81,12 +81,12 @@ public class AdminService : IAdminService
 
     // ================= GAMES =================
     public async Task<(IEnumerable<Game> Games, int TotalCount)> GetGamesAsync(
-        string? keyword, int? genreId, long? minPrice, long? maxPrice,
+        string? keyword, int[]? genreIds, long? minPrice, long? maxPrice,
         string? sortBy, bool desc, int page, int pageSize)
     {
         (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var (games, totalCount) = await _gameService.Search(
-            keyword, genreId, minPrice, maxPrice,
+            keyword, genreIds, minPrice, maxPrice,
             sortBy ?? "CreatedAt", desc,
             page, pageSize
         );

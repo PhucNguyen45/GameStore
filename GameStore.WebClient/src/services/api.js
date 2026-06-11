@@ -5,6 +5,19 @@ import axios from "axios";
 const api = axios.create({
   baseURL: "/api",
   headers: { "Content-Type": "application/json" },
+  paramsSerializer: {
+    serialize: (params) => {
+      const searchParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((v) => searchParams.append(key, v));
+        } else {
+          searchParams.append(key, value);
+        }
+      });
+      return searchParams.toString();
+    },
+  },
 });
 
 api.interceptors.request.use((c) => {
@@ -56,6 +69,7 @@ export const userAPI = {
 export const libraryAPI = {
   getMyLibrary: () => api.get("/library"),
   checkOwned: (gameId) => api.get(`/library/check/${gameId}`),
+  getGameKeys: (gameId) => api.get(`/library/${gameId}/keys`),
 };
 export const wishlistAPI = {
   get: () => api.get("/wishlist"),

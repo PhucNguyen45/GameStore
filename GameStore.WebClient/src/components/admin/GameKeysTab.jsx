@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2, X, Key, Upload, Edit } from "lucide-react";
 import SortableHeader from "./SortableHeader";
-import Pagination from "./Pagination";
+import Pagination from "../common/Pagination";
 import { thStyle, filterInputStyle } from "./adminStyles";
 import { adminAPI } from "../../services/api";
 import api from "../../services/api";

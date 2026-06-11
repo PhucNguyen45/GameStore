@@ -84,6 +84,8 @@ export default function ProfilePage() {
     if (!profile.email.trim()) errs.email = "Email không được để trống";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email))
       errs.email = "Email không hợp lệ";
+    if (profile.phone.trim() && !/^0[35789][0-9]{8}$/.test(profile.phone))
+      errs.phone = "Số điện thoại không hợp lệ (VD: 0912345678)";
     return errs;
   };
 
@@ -177,7 +179,7 @@ export default function ProfilePage() {
             background: "#16162a",
             borderRadius: 16,
             border: "1px solid #2a2a4a",
-            padding: 32,
+            padding: "clamp(20px, 3vw, 32px)",
             marginBottom: 24,
           }}
         >
@@ -200,10 +202,11 @@ export default function ProfilePage() {
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 20,
+              gap: "clamp(12px, 2.5vw, 20px)",
               marginBottom: 28,
               paddingBottom: 28,
               borderBottom: "1px solid #2a2a4a",
+              flexWrap: "wrap",
             }}
           >
             <div style={{ position: "relative" }}>
@@ -405,22 +408,31 @@ export default function ProfilePage() {
                 />
                 <input
                   value={profile.phone}
-                  onChange={(e) =>
-                    setProfile({ ...profile, phone: e.target.value })
-                  }
-                  placeholder="Nhập số điện thoại"
+                  onChange={(e) => {
+                    setProfile({ ...profile, phone: e.target.value });
+                    if (errors.phone) {
+                      setErrors((prev) => ({ ...prev, phone: "" }));
+                    }
+                  }}
+                  placeholder="0912345678"
                   style={{
                     width: "100%",
                     padding: "12px 14px 12px 42px",
                     background: "#0a0a15",
-                    border: "1px solid #2a2a4a",
+                    border: `1px solid ${errors.phone ? "#e94560" : "#2a2a4a"}`,
                     borderRadius: 10,
                     color: "#e0e0e0",
                     fontSize: 14,
                     outline: "none",
+                    transition: "border-color 0.2s",
                   }}
                 />
               </div>
+              {errors.phone && (
+                <p style={{ color: "#e94560", fontSize: 12, marginTop: 4 }}>
+                  {errors.phone}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -431,7 +443,7 @@ export default function ProfilePage() {
             background: "#16162a",
             borderRadius: 16,
             border: "1px solid #2a2a4a",
-            padding: 32,
+            padding: "clamp(20px, 3vw, 32px)",
             marginBottom: 24,
           }}
         >
@@ -642,15 +654,15 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Submit Button */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: 12,
-            alignItems: "center",
-          }}
-        >
+        {/* Submit Button */}          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 12,
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+          >
           <button
             type="button"
             onClick={() => navigate(-1)}

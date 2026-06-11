@@ -38,4 +38,20 @@ public class LibraryService : ILibraryService
     {
         return await _context.Libraries.AnyAsync(l => l.UserId == userId && l.GameId == gameId);
     }
+
+    public async Task<IEnumerable<object>> GetGameKeysAsync(int userId, int gameId)
+    {
+        return await _context.Libraries
+            .Where(l => l.UserId == userId && l.GameId == gameId && l.GameKeyId != null)
+            .Join(_context.GameKeys, l => l.GameKeyId, gk => gk.Id, (l, gk) => new
+            {
+                gk.Id,
+                gk.KeyCode,
+                gk.IsUsed,
+                gk.UsedAt,
+                gk.ExpiresAt,
+                l.AcquiredAt
+            })
+            .ToListAsync();
+    }
 }

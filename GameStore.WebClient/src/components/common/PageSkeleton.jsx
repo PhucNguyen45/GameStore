@@ -22,68 +22,6 @@ const shimmer = {
   borderRadius: 6,
 };
 
-// ===== HOME PAGE SKELETON =====
-export function HomePageSkeleton() {
-  useEffect(() => { injectShimmer(); }, []);
-
-  return (
-    <div>
-      {/* Featured slider skeleton */}
-      <div style={{ height: "60vh", background: "#1a1a1a", display: "flex", alignItems: "flex-end", padding: "40px" }}>
-        <div>
-          <div style={{ width: 200, height: 20, marginBottom: 12, ...shimmer }} />
-          <div style={{ width: 400, height: 80, marginBottom: 16, ...shimmer }} />
-          <div style={{ width: 160, height: 48, ...shimmer }} />
-        </div>
-      </div>
-
-      {/* Hero section skeleton */}
-      <div style={{ padding: "60px 0" }}>
-        <div className="container">
-          <div style={{ maxWidth: 600 }}>
-            <div style={{ width: 300, height: 80, marginBottom: 16, ...shimmer }} />
-            <div style={{ width: "100%", height: 48, marginBottom: 32, ...shimmer }} />
-            <div style={{ width: 180, height: 48, ...shimmer }} />
-          </div>
-        </div>
-      </div>
-
-      {/* Featured games grid */}
-      <div className="container" style={{ marginTop: -20 }}>
-        <div style={{ width: 200, height: 20, marginBottom: 16, ...shimmer }} />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
-          {Array.from({ length: 6 }, (_, i) => (
-            <div key={i} className="card">
-              <div style={{ width: "100%", aspectRatio: "16/9", ...shimmer, borderRadius: 0 }} />
-              <div style={{ padding: 12 }}>
-                <div style={{ height: 14, width: "70%", marginBottom: 6, ...shimmer }} />
-                <div style={{ height: 12, width: "50%", marginBottom: 8, ...shimmer }} />
-                <div style={{ height: 14, width: "30%", ...shimmer }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Trending section */}
-      <div className="container" style={{ marginTop: 40 }}>
-        <div style={{ width: 200, height: 20, marginBottom: 16, ...shimmer }} />
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 }}>
-          {Array.from({ length: 4 }, (_, i) => (
-            <div key={i} className="card">
-              <div style={{ width: "100%", aspectRatio: "16/9", ...shimmer, borderRadius: 0 }} />
-              <div style={{ padding: 12 }}>
-                <div style={{ height: 14, width: "60%", marginBottom: 6, ...shimmer }} />
-                <div style={{ height: 12, width: "40%", ...shimmer }} />
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ===== ORDER HISTORY SKELETON =====
 export function OrderHistorySkeleton() {
   useEffect(() => { injectShimmer(); }, []);

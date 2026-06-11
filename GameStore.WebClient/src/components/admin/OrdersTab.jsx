@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { formatVND } from "../../utils/format";
 import SortableHeader from "./SortableHeader";
-import Pagination from "./Pagination";
+import Pagination from "../common/Pagination";
 import { thStyle, filterInputStyle } from "./adminStyles";
 import api from "../../services/api";
 import { Link } from "react-router-dom";

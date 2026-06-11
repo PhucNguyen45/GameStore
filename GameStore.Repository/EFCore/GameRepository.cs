@@ -12,7 +12,7 @@ public class GameRepository : Repository<Game>, IGameRepository
 {
     public GameRepository(GameStoreDbContext context) : base(context) { }
 
-    public async Task<(List<Game> Games, int TotalCount)> SearchAsync(string? keyword, int? genreId, long? minPrice, long? maxPrice, string? sortBy, bool descending, int page, int pageSize)
+    public async Task<(List<Game> Games, int TotalCount)> SearchAsync(string? keyword, int[]? genreIds, long? minPrice, long? maxPrice, string? sortBy, bool descending, int page, int pageSize)
     {
         var query = _dbSet
             .AsNoTracking()
@@ -24,8 +24,8 @@ public class GameRepository : Repository<Game>, IGameRepository
             query = query.Where(g => g.Title.ToLower().Contains(keyword)
                 || g.Description.ToLower().Contains(keyword));
         }
-        if (genreId.HasValue)
-            query = query.Where(g => g.GameGenres.Any(gg => gg.GenreId == genreId));
+        if (genreIds != null && genreIds.Length > 0)
+            query = query.Where(g => g.GameGenres.Any(gg => genreIds.Contains(gg.GenreId)));
         if (minPrice.HasValue)
             query = query.Where(g => (g.DiscountPrice ?? g.Price) >= minPrice);
         if (maxPrice.HasValue)

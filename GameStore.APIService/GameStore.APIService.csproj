@@ -31,4 +31,10 @@
     <ProjectReference Include="..\GameStore.DTOs\GameStore.DTOs.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\database\seeds\seed_data.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

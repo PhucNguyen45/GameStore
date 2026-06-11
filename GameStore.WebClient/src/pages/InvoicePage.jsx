@@ -109,8 +109,8 @@ export default function InvoicePage() {
         <ArrowLeft size={18} /> {t("invoice.backToStore")}
       </Link>
 
-      <div
-        style={{
+      <div          className="invoice-stepper"
+          style={{
           background: "#16162a",
           padding: "30px 40px",
           borderRadius: 20,
@@ -121,9 +121,9 @@ export default function InvoicePage() {
           alignItems: "center",
         }}
       >
-        {steps.map((step, idx) => (
-          <div
+        {steps.map((step, idx) => (            <div
             key={idx}
+            className="step"
             style={{
               flex: 1,
               display: "flex",
@@ -167,6 +167,7 @@ export default function InvoicePage() {
             </span>
             {idx < steps.length - 1 && (
               <div
+                className="step-connector"
                 style={{
                   position: "absolute",
                   top: 25,
@@ -199,6 +200,8 @@ export default function InvoicePage() {
             alignItems: "center",
             justifyContent: "space-between",
             borderBottom: "1px solid #2a2a4a",
+            flexWrap: "wrap",
+            gap: 16,
           }}
         >
           <div>
@@ -226,11 +229,11 @@ export default function InvoicePage() {
           </div>
         </div>
 
-        <div style={{ padding: 40 }}>
+        <div style={{ padding: "clamp(20px, 4vw, 40px)" }}>
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
               gap: 40,
               marginBottom: 40,
             }}
@@ -360,7 +363,7 @@ export default function InvoicePage() {
             </div>
           </div>
 
-          <div style={{ marginTop: 50, display: "flex", gap: 15 }}>
+          <div style={{ marginTop: 50, display: "flex", gap: 15, flexWrap: "wrap" }}>
             <button
               className="btn-outline"
               style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px" }}

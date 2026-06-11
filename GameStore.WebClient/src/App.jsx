@@ -1,11 +1,10 @@
 // GameStore.WebClient/src/App.jsx
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "./contexts/AuthContext";
 import ErrorBoundary from "./components/common/ErrorBoundary";
 import MainLayout from "./components/layout/MainLayout";
-import HomePage from "./pages/HomePage";
 import StorePage from "./pages/StorePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
@@ -45,7 +44,7 @@ export default function App() {
           <AnimatePresence mode="wait">
           <Routes location={location} key={location.pathname}>
             <Route element={<MainLayout />}>
-              <Route path="/" element={<HomePage />} />
+              <Route path="/" element={<Navigate to="/store" replace />} />
               <Route path="/store" element={<StorePage />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />

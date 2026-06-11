@@ -1,9 +1,12 @@
 // GameStore.WebClient/src/pages/RegisterPage.jsx
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { UserPlus, User, Lock, Mail, Phone, AlertCircle } from "lucide-react";
+import { UserPlus, User, Lock, Mail, Phone, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^0[35789][0-9]{8}$/;
 
 export default function RegisterPage() {
   const { t } = useTranslation();
@@ -15,16 +18,64 @@ export default function RegisterPage() {
     phone: "",
   });
   const [error, setError] = useState("");
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const validateField = useCallback((field, value) => {
+    switch (field) {
+      case "username":
+        if (!value.trim()) return "Vui lòng nhập tên đăng nhập";
+        if (value.trim().length < 3) return "Tên đăng nhập phải có ít nhất 3 ký tự";
+        if (!/^[a-zA-Z0-9_]+$/.test(value)) return "Tên đăng nhập chỉ gồm chữ, số và dấu gạch dưới";
+        return "";
+      case "password":
+        if (!value) return "Vui lòng nhập mật khẩu";
+        if (value.length < 6) return "Mật khẩu phải có ít nhất 6 ký tự";
+        return "";
+      case "displayName":
+        return ""; // optional
+      case "email":
+        if (!value.trim()) return ""; // optional
+        if (!EMAIL_REGEX.test(value)) return "Email không hợp lệ";
+        return "";
+      case "phone":
+        if (!value.trim()) return ""; // optional
+        if (!PHONE_REGEX.test(value)) return "Số điện thoại không hợp lệ (VD: 0912345678)";
+        return "";
+      default:
+        return "";
+    }
+  }, []);
+
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    setErrors((prev) => ({ ...prev, [field]: validateField(field, form[field]) }));
+  };
+
+  const handleChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    if (touched[field]) {
+      setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    Object.keys(form).forEach((key) => {
+      const err = validateField(key, form[key]);
+      if (err) newErrors[key] = err;
+    });
+    setErrors(newErrors);
+    setTouched({ username: true, password: true, displayName: true, email: true, phone: true });
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.password.length < 6) {
-      setError(t("auth.passwordMinError"));
-      return;
-    }
+    if (!validateForm()) return;
     setLoading(true);
     setError("");
     try {
@@ -36,6 +87,11 @@ export default function RegisterPage() {
       setLoading(false);
     }
   };
+
+  const hasError = (field) => touched[field] && errors[field];
+  const isValid = (field) => touched[field] && !errors[field] && form[field].length > 0;
+  const borderColor = (field) =>
+    hasError(field) ? "#e94560" : isValid(field) ? "#4caf50" : "#2a2a4a";
 
   return (
     <div
@@ -100,59 +156,77 @@ export default function RegisterPage() {
             {
               icon: User,
               placeholder: t("auth.usernamePlaceholder"),
-              value: form.username,
               key: "username",
+              required: true,
             },
             {
               icon: Lock,
               placeholder: t("auth.passwordPlaceholder"),
-              value: form.password,
               key: "password",
               type: "password",
+              required: true,
             },
             {
               icon: User,
               placeholder: t("auth.displayName"),
-              value: form.displayName,
               key: "displayName",
             },
             {
               icon: Mail,
               placeholder: t("auth.email"),
-              value: form.email,
               key: "email",
               type: "email",
             },
             {
               icon: Phone,
               placeholder: t("auth.phone"),
-              value: form.phone,
               key: "phone",
             },
-          ].map(({ icon: Icon, key, placeholder, type }) => (
+          ].map(({ icon: Icon, key, placeholder, type, required }) => (
             <div key={key} style={{ marginBottom: 12, position: "relative" }}>
               <Icon
                 size={18}
                 color="#6b6b8e"
-                style={{ position: "absolute", left: 14, top: 14 }}
+                style={{ position: "absolute", left: 14, top: 14, zIndex: 1 }}
               />
               <input
                 type={type || "text"}
                 placeholder={placeholder}
                 value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                onChange={(e) => handleChange(key, e.target.value)}
+                onBlur={() => handleBlur(key)}
                 style={{
                   width: "100%",
-                  padding: "14px 14px 14px 42px",
+                  padding: "14px 40px 14px 42px",
                   background: "#0a0a15",
-                  border: "1px solid #2a2a4a",
+                  border: `1px solid ${borderColor(key)}`,
                   borderRadius: 10,
                   color: "#e0e0e0",
                   fontSize: 14,
                   outline: "none",
+                  transition: "border-color 0.2s",
                 }}
-                required={key === "username" || key === "password"}
+                required={required}
               />
+              {isValid(key) && (
+                <CheckCircle2
+                  size={16}
+                  color="#4caf50"
+                  style={{ position: "absolute", right: 12, top: 15, zIndex: 1 }}
+                />
+              )}
+              {hasError(key) && (
+                <AlertCircle
+                  size={16}
+                  color="#e94560"
+                  style={{ position: "absolute", right: 12, top: 15, zIndex: 1 }}
+                />
+              )}
+              {hasError(key) && (
+                <p style={{ color: "#e94560", fontSize: 12, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                  <AlertCircle size={11} /> {errors[key]}
+                </p>
+              )}
             </div>
           ))}
           <button

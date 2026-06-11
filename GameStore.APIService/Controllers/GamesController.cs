@@ -21,9 +21,9 @@ public class GamesController : ControllerBase
     public GamesController(IGameService gameService) => _gameService = gameService;
 
     [HttpGet]
-    public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId, [FromQuery] long? minPrice, [FromQuery] long? maxPrice, [FromQuery] string? sortBy, [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 12)
+    public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int[]? genreIds, [FromQuery] long? minPrice, [FromQuery] long? maxPrice, [FromQuery] string? sortBy, [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 12)
     {
-        var (games, totalCount) = await _gameService.Search(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
+        var (games, totalCount) = await _gameService.Search(keyword, genreIds, minPrice, maxPrice, sortBy, desc, page, pageSize);
         return Ok(PagedResponse<Game>.Create(games, totalCount, page, pageSize));
     }
 

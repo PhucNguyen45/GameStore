@@ -17,7 +17,7 @@ public interface IAdminService
 
     // Games
     Task<(IEnumerable<Game> Games, int TotalCount)> GetGamesAsync(
-        string? keyword, int? genreId, long? minPrice, long? maxPrice,
+        string? keyword, int[]? genreIds, long? minPrice, long? maxPrice,
         string? sortBy, bool desc, int page, int pageSize);
     Task<Game> CreateGameAsync(AdminGameCreateDto dto);
     Task UpdateGameAsync(int id, AdminGameUpdateDto dto);

@@ -85,15 +85,13 @@ export default function PaymentPage() {
         }}
       >
         {t("payment.title")}
-      </h1>
-
-      <div
-        style={{
-          background: "#16162a",
-          padding: 30,
-          borderRadius: 16,
-          border: "1px solid #2a2a4a",
-        }}
+      </h1>        <div
+          style={{
+            background: "#16162a",
+            padding: "clamp(20px, 4vw, 30px)",
+            borderRadius: 16,
+            border: "1px solid #2a2a4a",
+          }}
       >
         <div style={{ marginBottom: 24 }}>
           <h3 style={{ fontSize: 18, marginBottom: 16, color: "#e94560" }}>

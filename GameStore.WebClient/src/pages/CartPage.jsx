@@ -1,5 +1,5 @@
 // GameStore.WebClient/src/pages/CartPage.jsx
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
@@ -10,8 +10,25 @@ import {
   Trash2,
   ShoppingBag,
   ArrowLeft,
+  AlertCircle,
+  CheckCircle2,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^0[35789][0-9]{8}$/;
+
+function validateEmail(email) {
+  if (!email.trim()) return "Vui lòng nhập email";
+  if (!EMAIL_REGEX.test(email)) return "Email không hợp lệ";
+  return "";
+}
+
+function validatePhone(phone) {
+  if (!phone.trim()) return "Vui lòng nhập số điện thoại";
+  if (!PHONE_REGEX.test(phone)) return "Số điện thoại không hợp lệ (VD: 0912345678)";
+  return "";
+}
 
 export default function CartPage() {
   const { t } = useTranslation();
@@ -21,6 +38,28 @@ export default function CartPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState(user?.phoneNumber || "");
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
+
+  const validateField = useCallback((field, value) => {
+    if (field === "email") return validateEmail(value);
+    if (field === "phone") return validatePhone(value);
+    return "";
+  }, []);
+
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    const value = field === "email" ? email : phone;
+    setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
+  };
+
+  const handleChange = (field, value) => {
+    if (field === "email") setEmail(value);
+    else setPhone(value);
+    if (touched[field]) {
+      setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
+    }
+  };
 
   const handleCheckout = () => {
     if (!user) {
@@ -29,8 +68,14 @@ export default function CartPage() {
       return;
     }
 
-    if (!email || !phone) {
-      toast.error(t("cart.fillInfo"));
+    const emailErr = validateEmail(email);
+    const phoneErr = validatePhone(phone);
+    const newErrors = { email: emailErr, phone: phoneErr };
+    setErrors(newErrors);
+    setTouched({ email: true, phone: true });
+
+    if (emailErr || phoneErr) {
+      toast.error(emailErr || phoneErr || "Vui lòng nhập đầy đủ thông tin");
       return;
     }
 
@@ -52,6 +97,7 @@ export default function CartPage() {
   if (count() === 0)
     return (
       <div
+        className="container"
         style={{
           display: "flex",
           flexDirection: "column",
@@ -59,6 +105,7 @@ export default function CartPage() {
           justifyContent: "center",
           minHeight: "60vh",
           textAlign: "center",
+          paddingTop: "clamp(40px, 5vw, 80px)",
         }}
       >
         <ShoppingCart size={64} color="#6b6b8e" />
@@ -67,7 +114,7 @@ export default function CartPage() {
           {t("cart.emptyDesc")}
         </p>
         <Link to="/store">
-          <button className="btn-primary">{t("cart.viewStore")}</button>
+          <button className="btn-primary" style={{ whiteSpace: "nowrap" }}>{t("cart.viewStore")}</button>
         </Link>
       </div>
     );
@@ -105,12 +152,13 @@ export default function CartPage() {
             key={item.id}
             style={{
               display: "flex",
-              gap: 16,
-              padding: 20,
+              gap: "clamp(12px, 2.5vw, 16px)",
+              padding: "clamp(14px, 2.5vw, 20px)",
               background: "#16162a",
               borderRadius: 12,
               border: "1px solid #2a2a4a",
               alignItems: "center",
+              flexWrap: "wrap",
             }}
           >
             <div
@@ -141,8 +189,8 @@ export default function CartPage() {
                 "🎮"
               )}
             </div>
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 600 }}>{item.title}</h3>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <h3 style={{ fontSize: "clamp(14px, 2vw, 16px)", fontWeight: 600 }}>{item.title}</h3>
               <span style={{ color: "#e94560", fontWeight: 700, fontSize: 15 }}>
                 {formatVND(item.discountPrice || item.price || 0)}
               </span>
@@ -165,14 +213,13 @@ export default function CartPage() {
         ))}
       </div>
 
-      <div
-        style={{
-          marginTop: 24,
-          padding: 24,
-          background: "#16162a",
-          borderRadius: 12,
-          border: "1px solid #2a2a4a",
-        }}
+      <div          style={{
+            marginTop: 24,
+            padding: "clamp(16px, 3vw, 24px)",
+            background: "#16162a",
+            borderRadius: 12,
+            border: "1px solid #2a2a4a",
+          }}
       >
         <div
           style={{
@@ -196,26 +243,80 @@ export default function CartPage() {
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ color: "#6b6b8e", fontSize: 14 }}>{t("cart.email")}</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@gmail.com"
-              style={inputStyle}
-            />
+            <label style={{ color: "#6b6b8e", fontSize: 14 }}>
+              {t("cart.email")} <span style={{ color: "#e94560" }}>*</span>
+            </label>
+            <div style={{ position: "relative" }}>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => handleChange("email", e.target.value)}
+                onBlur={() => handleBlur("email")}
+                placeholder="example@gmail.com"
+                style={{
+                  ...inputStyle,
+                  borderColor: touched.email && errors.email ? "#e94560" : touched.email && !errors.email ? "#4caf50" : "#2a2a4a",
+                  paddingRight: 40,
+                }}
+              />
+              {touched.email && !errors.email && (
+                <CheckCircle2
+                  size={18}
+                  color="#4caf50"
+                  style={{ position: "absolute", right: 12, top: 14 }}
+                />
+              )}
+              {touched.email && errors.email && (
+                <AlertCircle
+                  size={18}
+                  color="#e94560"
+                  style={{ position: "absolute", right: 12, top: 14 }}
+                />
+              )}
+            </div>
+            {touched.email && errors.email && (
+              <p style={{ color: "#e94560", fontSize: 12, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                <AlertCircle size={12} /> {errors.email}
+              </p>
+            )}
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             <label style={{ color: "#6b6b8e", fontSize: 14 }}>
-              {t("cart.phoneLabel")}
+              {t("cart.phoneLabel")} <span style={{ color: "#e94560" }}>*</span>
             </label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="0123456789"
-              style={inputStyle}
-            />
+            <div style={{ position: "relative" }}>
+              <input
+                type="tel"
+                value={phone}
+                onChange={(e) => handleChange("phone", e.target.value)}
+                onBlur={() => handleBlur("phone")}
+                placeholder="0912345678"
+                style={{
+                  ...inputStyle,
+                  borderColor: touched.phone && errors.phone ? "#e94560" : touched.phone && !errors.phone ? "#4caf50" : "#2a2a4a",
+                  paddingRight: 40,
+                }}
+              />
+              {touched.phone && !errors.phone && (
+                <CheckCircle2
+                  size={18}
+                  color="#4caf50"
+                  style={{ position: "absolute", right: 12, top: 14 }}
+                />
+              )}
+              {touched.phone && errors.phone && (
+                <AlertCircle
+                  size={18}
+                  color="#e94560"
+                  style={{ position: "absolute", right: 12, top: 14 }}
+                />
+              )}
+            </div>
+            {touched.phone && errors.phone && (
+              <p style={{ color: "#e94560", fontSize: 12, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                <AlertCircle size={12} /> {errors.phone}
+              </p>
+            )}
           </div>
         </div>
 
@@ -223,14 +324,14 @@ export default function CartPage() {
           <button
             onClick={clearCart}
             className="btn-outline"
-            style={{ flex: 1 }}
+            style={{ flex: 1, whiteSpace: "nowrap" }}
           >
             {t("cart.clearCart")}
           </button>
           <button
             onClick={handleCheckout}
             className="btn-primary"
-            style={{ flex: 1, padding: 14, fontSize: 16 }}
+            style={{ flex: 1, padding: 14, fontSize: 16, whiteSpace: "nowrap" }}
           >
             {t("cart.checkout")}
           </button>

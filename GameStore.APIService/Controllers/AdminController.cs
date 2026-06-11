@@ -27,11 +27,11 @@ public class AdminController : ControllerBase
 
     // Games Admin
     [HttpGet("games")]
-    public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int? genreId,
+    public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int[]? genreIds,
         [FromQuery] long? minPrice, [FromQuery] long? maxPrice, [FromQuery] string? sortBy,
         [FromQuery] bool desc = false, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var (games, totalCount) = await _adminService.GetGamesAsync(keyword, genreId, minPrice, maxPrice, sortBy, desc, page, pageSize);
+        var (games, totalCount) = await _adminService.GetGamesAsync(keyword, genreIds, minPrice, maxPrice, sortBy, desc, page, pageSize);
         return Ok(PagedResponse<Game>.Create(games, totalCount, page, pageSize));
     }
 
