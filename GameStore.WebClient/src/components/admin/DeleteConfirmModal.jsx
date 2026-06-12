@@ -49,31 +49,13 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
           <strong style={{ color: "#fff" }}>"{game.title}"</strong>?
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-          <button
-            onClick={onClose}
-            style={{
-              padding: "8px 20px",
-              background: "#2a2a2a",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              cursor: "pointer",
-            }}
-          >
+          <button onClick={onClose} className="btn btn-ghost btn-sm">
             Hủy
           </button>
           <button
             onClick={handleDelete}
             disabled={deleting}
-            style={{
-              padding: "8px 20px",
-              background: "#e94560",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              cursor: "pointer",
-              fontWeight: 600,
-            }}
+            className="btn btn-danger btn-sm"
           >
             {deleting ? "Đang xóa..." : "Xóa"}
           </button>

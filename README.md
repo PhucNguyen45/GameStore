@@ -48,7 +48,7 @@ GameStore is a **full-stack web application** simulating a digital game distribu
 - **Full admin panel** — dashboard, CRUD games/users/orders, game keys, payments, roles, staff
 - **i18n** — Hỗ trợ Tiếng Việt & English
 - **Responsive dark UI** inspired by Epic Games Store
-- **48 games** pre-loaded for pagination testing
+- **46 paid games** pre-loaded for pagination testing (all real Steam titles)
 
 ### 🏫 University Course Project
 
@@ -270,6 +270,10 @@ GameStore/
 │   ├── vite.config.js
 │   └── package.json
 │
+├── database/
+│   └── seeds/
+│       ├── seed_data.sql          # Full seed data (games, genres, users, reviews, keys)
+│       └── insert_relations.sql   # Relations seed (orders, libraries, wishlists, payments)
 ├── run-all.sh                     # Start all services (--rebuild, --clean flags)
 ├── kill-all.sh                    # Stop all services (--force, --clean flags)
 ├── GameStore.sln / GameStore.slnx # Solution files
@@ -317,11 +321,19 @@ Orders ── Payments
 | Table | Rows |
 |-------|------|
 | Roles | 3 (Admin, User, Publisher) |
-| Users | 1 (admin) |
+| Users | 5 (1 admin + 4 test users) |
 | UserRoles | 1 (admin → Admin) |
 | Genres | 35 |
-| Games | **48** (12 original + 36 pagination test) |
-| GameGenres | 167+ |
+| Games | **46** (all paid, based on real Steam titles) |
+| GameGenres | 235+ |
+| GameKeys | 119 |
+| Reviews | 30 (realistic Steam-inspired ratings) |
+| Orders | 18 (16 completed, 1 cancelled, 2 pending) |
+| OrderDetails | 34 |
+| Libraries | 23 |
+| Wishlists | 24 |
+| Payments | 14 |
+| Notifications | 7 |
 
 ---
 

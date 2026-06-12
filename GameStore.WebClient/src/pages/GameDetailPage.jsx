@@ -19,6 +19,7 @@ import GameNotFound from "../components/games/GameNotFound";
 import RequirementsSection from "../components/games/RequirementsSection";
 import GameKeysSection from "../components/games/GameKeysSection";
 import ReviewSection from "../components/games/ReviewSection";
+import OverviewSection from "../components/games/OverviewSection";
 import {
   Star,
   ShoppingCart,
@@ -179,18 +180,7 @@ export default function GameDetailPage() {
     } catch { return []; }
   }, [game?.screenshots]);
 
-  const formattedReleaseDate = useMemo(() =>
-    game?.releaseDate ? new Date(game.releaseDate).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }) : "",
-    [game?.releaseDate]
-  );
-  const formattedShortDate = useMemo(() =>
-    game?.releaseDate ? new Date(game.releaseDate).toLocaleDateString() : "",
-    [game?.releaseDate]
-  );
-  const genreNames = useMemo(() =>
-    game?.gameGenres?.map((g) => g.genre?.name).join(", ") || "-",
-    [game?.gameGenres]
-  );
+
 
   // Reset screenshotIndex when game changes
   useEffect(() => {
@@ -439,300 +429,102 @@ export default function GameDetailPage() {
       {/* TAB CONTENT */}
       <div className="container" style={{ paddingTop: 40, paddingBottom: 40 }}>
         {activeTab === "overview" && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 60 }} className="game-detail-grid">
-            <div>
-              <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 20, letterSpacing: -0.5 }}>
-                {t("gameDetail.about", { game: game.title?.toUpperCase() })}
-              </h2>
-              <p style={{ color: "#aaa", fontSize: 14, lineHeight: 1.8, marginBottom: 30 }}>
-                {game.description}
-              </p>
+          <OverviewSection game={game} setActiveTab={setActiveTab}>
+            {/* GAME DESCRIPTION */}
+            <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 20, letterSpacing: -0.5 }}>
+              {t("gameDetail.about", { game: game.title?.toUpperCase() })}
+            </h2>
+            <p style={{ color: "#aaa", fontSize: 14, lineHeight: 1.8, marginBottom: 30 }}>
+              {game.description}
+            </p>
 
-              {/* TRAILER PLAYER */}
-              {game.trailerUrl && (
-                <TrailerPlayer
-                  trailerUrl={game.trailerUrl}
-                  poster={screenshots[0] || game.coverImageUrl}
-                  title={game.title}
-                />
-              )}
+            {/* TRAILER PLAYER */}
+            {game.trailerUrl && (
+              <TrailerPlayer
+                trailerUrl={game.trailerUrl}
+                poster={screenshots[0] || game.coverImageUrl}
+                title={game.title}
+              />
+            )}
 
-              {/* SCREENSHOTS CAROUSEL */}
-              {screenshots.length > 0 && (
-                <div style={{ marginBottom: 40 }}>
-                  <div
-                    className="carousel-container"
-                    style={{
-                      position: "relative",
-                      borderRadius: 8,
-                      overflow: "hidden",
-                      background: "#1a1a1a",
-                      aspectRatio: "16 / 9",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {screenshotError ? (
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          position: "absolute",
-                          inset: 0,
-                          color: "#555",
-                          flexDirection: "column",
-                          gap: 8,
-                        }}
-                      >
-                        <Image size={32} />
-                        <span style={{ fontSize: 12 }}>{t("gameDetail.screenshotNotFound")}</span>
-                      </div>
-                    ) : (
-                      <img
-                        src={screenshots[screenshotIndex]}
-                        alt={`Screenshot ${screenshotIndex + 1}`}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          display: "block",
-                          transition: "opacity 0.3s ease",
-                        }}
-                        onError={() => setScreenshotError(true)}
-                      />
-                    )}
-
-                    {/* NAV ARROWS */}
-                    {screenshots.length > 1 && (
-                      <>
-                        <button
-                          onClick={prevScreenshot}
-                          style={{
-                            position: "absolute",
-                            left: 12,
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            width: 40,
-                            height: 40,
-                            borderRadius: "50%",
-                            border: "none",
-                            background: "rgba(0,0,0,0.6)",
-                            color: "#fff",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            transition: "all 0.2s",
-                            opacity: 0,
-                            zIndex: 2,
-                          }}
-                          className="carousel-arrow"
-                        >
-                          <ChevronLeft size={20} />
-                        </button>
-                        <button
-                          onClick={nextScreenshot}
-                          style={{
-                            position: "absolute",
-                            right: 12,
-                            top: "50%",
-                            transform: "translateY(-50%)",
-                            width: 40,
-                            height: 40,
-                            borderRadius: "50%",
-                            border: "none",
-                            background: "rgba(0,0,0,0.6)",
-                            color: "#fff",
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            transition: "all 0.2s",
-                            opacity: 0,
-                            zIndex: 2,
-                          }}
-                          className="carousel-arrow"
-                        >
-                          <ChevronRight size={20} />
-                        </button>
-                      </>
-                    )}
-
-                    {/* COUNTER BADGE */}
-                    {screenshots.length > 1 && (
-                      <span
-                        style={{
-                          position: "absolute",
-                          bottom: 12,
-                          right: 12,
-                          padding: "4px 10px",
-                          borderRadius: 4,
-                          fontSize: 11,
-                          fontWeight: 700,
-                          background: "rgba(0,0,0,0.7)",
-                          color: "#fff",
-                          letterSpacing: 0.5,
-                          zIndex: 2,
-                        }}
-                      >
-                        {screenshotIndex + 1} / {screenshots.length}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* THUMBNAIL STRIP */}
-                  {screenshots.length > 1 && (
-                    <div
-                      className="thumbnail-strip"
-                      style={{
-                        display: "flex",
-                        gap: 8,
-                        marginTop: 10,
-                        overflowX: "auto",
-                        paddingBottom: 4,
-                      }}
-                    >
-                      {screenshots.map((url, i) => (
-                        <button
-                          key={i}
-                          onClick={() => setScreenshotIndex(i)}
-                          style={{
-                            position: "relative",
-                            flexShrink: 0,
-                            width: 120,
-                            height: 68,
-                            borderRadius: 4,
-                            overflow: "hidden",
-                            border: i === screenshotIndex ? "2px solid #fff" : "2px solid transparent",
-                            background: "#1a1a1a",
-                            cursor: "pointer",
-                            padding: 0,
-                            transition: "all 0.2s",
-                            opacity: i === screenshotIndex ? 1 : 0.5,
-                          }}
-                          onMouseEnter={(e) => { if (i !== screenshotIndex) e.currentTarget.style.opacity = "0.8"; }}
-                          onMouseLeave={(e) => { if (i !== screenshotIndex) e.currentTarget.style.opacity = "0.5"; }}
-                        >
-                          {/* Skeleton placeholder (behind image) */}
-                          {!thumbLoaded.has(i) && !thumbErrored.has(i) && (
-                            <div
-                              style={{
-                                position: "absolute",
-                                inset: 0,
-                                background: "linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%)",
-                                backgroundSize: "200% 100%",
-                                animation: "shimmer 1.5s ease-in-out infinite",
-                              }}
-                            />
-                          )}
-                          {/* Error fallback (over image) */}
-                          {thumbErrored.has(i) && (
-                            <div
-                              style={{
-                                position: "absolute",
-                                inset: 0,
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                background: "#1a1a1a",
-                              }}
-                            >
-                              <Image size={16} color="#444" />
-                            </div>
-                          )}
-                          {/* Actual image (always rendered for lazy to work) */}
-                          <img
-                            src={url}
-                            alt={`Thumbnail ${i + 1}`}
-                            loading="lazy"
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              objectFit: "cover",
-                              display: "block",
-                              opacity: thumbLoaded.has(i) || thumbErrored.has(i) ? 1 : 0,
-                              transition: "opacity 0.25s ease",
-                            }}
-                            onLoad={() => setThumbLoaded((prev) => new Set([...prev, i]))}
-                            onError={() => {
-                              setThumbErrored((prev) => new Set([...prev, i]));
-                            }}
-                          />
-                        </button>
-                      ))}
+            {/* SCREENSHOTS CAROUSEL */}
+            {screenshots.length > 0 && (
+              <div style={{ marginBottom: 40 }}>
+                <div
+                  className="carousel-container"
+                  style={{
+                    position: "relative",
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    background: "#1a1a1a",
+                    aspectRatio: "16 / 9",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {screenshotError ? (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "absolute", inset: 0, color: "#555", flexDirection: "column", gap: 8 }}>
+                      <Image size={32} />
+                      <span style={{ fontSize: 12 }}>{t("gameDetail.screenshotNotFound")}</span>
                     </div>
+                  ) : (
+                    <img
+                      src={screenshots[screenshotIndex]}
+                      alt={`Screenshot ${screenshotIndex + 1}`}
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "opacity 0.3s ease" }}
+                      onError={() => setScreenshotError(true)}
+                    />
+                  )}
+                  {screenshots.length > 1 && (
+                    <>
+                      <button onClick={prevScreenshot} className="carousel-arrow" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 40, height: 40, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.6)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s", opacity: 0, zIndex: 2 }}>
+                        <ChevronLeft size={20} />
+                      </button>
+                      <button onClick={nextScreenshot} className="carousel-arrow" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 40, height: 40, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.6)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s", opacity: 0, zIndex: 2 }}>
+                        <ChevronRight size={20} />
+                      </button>
+                    </>
+                  )}
+                  {screenshots.length > 1 && (
+                    <span style={{ position: "absolute", bottom: 12, right: 12, padding: "4px 10px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: "rgba(0,0,0,0.7)", color: "#fff", letterSpacing: 0.5, zIndex: 2 }}>
+                      {screenshotIndex + 1} / {screenshots.length}
+                    </span>
                   )}
                 </div>
-              )}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-                {[
-                  { label: t("gameDetail.developer"), value: game.developer },
-                  { label: t("gameDetail.publisher"), value: game.publisher },
-                  {
-                    label: t("gameDetail.releaseDate"),
-                    value: formattedReleaseDate,
-                  },
-                  { label: t("gameDetail.platform"), value: t("gameDetail.windowsPc") },
-                ].map(({ label, value }) => (
-                  <div key={label}>
-                    <p style={{ fontSize: 10, color: "#666", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>
-                      {label}
-                    </p>
-                    <p style={{ fontSize: 13, color: "#ccc" }}>{value}</p>
+                {screenshots.length > 1 && (
+                  <div className="thumbnail-strip" style={{ display: "flex", gap: 8, marginTop: 10, overflowX: "auto", paddingBottom: 4 }}>
+                    {screenshots.map((url, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setScreenshotIndex(i)}
+                        style={{ position: "relative", flexShrink: 0, width: 120, height: 68, borderRadius: 4, overflow: "hidden", border: i === screenshotIndex ? "2px solid #fff" : "2px solid transparent", background: "#1a1a1a", cursor: "pointer", padding: 0, transition: "all 0.2s", opacity: i === screenshotIndex ? 1 : 0.5 }}
+                        onMouseEnter={(e) => { if (i !== screenshotIndex) e.currentTarget.style.opacity = "0.8"; }}
+                        onMouseLeave={(e) => { if (i !== screenshotIndex) e.currentTarget.style.opacity = "0.5"; }}
+                      >
+                        {!thumbLoaded.has(i) && !thumbErrored.has(i) && (
+                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s ease-in-out infinite" }} />
+                        )}
+                        {thumbErrored.has(i) && (
+                          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "#1a1a1a" }}>
+                            <Image size={16} color="#444" />
+                          </div>
+                        )}
+                        <img
+                          src={url}
+                          alt={`Thumbnail ${i + 1}`}
+                          loading="lazy"
+                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", opacity: thumbLoaded.has(i) || thumbErrored.has(i) ? 1 : 0, transition: "opacity 0.25s ease" }}
+                          onLoad={() => setThumbLoaded((prev) => new Set([...prev, i]))}
+                          onError={() => setThumbErrored((prev) => new Set([...prev, i]))}
+                        />
+                      </button>
+                    ))}
                   </div>
-                ))}
+                )}
               </div>
-            </div>
-            <div>
-              <div style={{ background: "#1e1e1e", borderRadius: 8, padding: 20, border: "1px solid #333", marginBottom: 20 }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16, textTransform: "uppercase", letterSpacing: 1 }}>
-                  {t("gameDetail.playerReviews")}
-                </h3>
-                <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16 }}>
-                  <div style={{ width: 56, height: 56, borderRadius: "50%", border: "2px solid #f7b731", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ fontSize: 20, fontWeight: 800, color: "#f7b731" }}>{game.rating?.toFixed(1)}</span>
-                  </div>
-                  <div>
-                    <div style={{ display: "flex", gap: 2 }}>
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <Star key={s} size={16} fill={s <= Math.round(game.rating) ? "#f7b731" : "none"} color="#f7b731" />
-                      ))}
-                    </div>
-                    <p style={{ fontSize: 12, color: "#888", marginTop: 4 }}>
-                      {t("gameDetail.reviewsCount", { count: game.ratingCount })}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setActiveTab("reviews")}
-                  style={{ width: "100%", padding: "10px", background: "transparent", color: "#fff", border: "1px solid #444", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 600, letterSpacing: 1, whiteSpace: "nowrap" }}
-                >
-                  {t("gameDetail.viewAllReviews")}
-                </button>
-              </div>
-              <div style={{ background: "#1e1e1e", borderRadius: 8, padding: 20, border: "1px solid #333" }}>
-                <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 16, textTransform: "uppercase", letterSpacing: 1 }}>
-                  {t("gameDetail.info")}
-                </h3>
-                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                  {[
-                    [t("gameDetail.genre"), genreNames],
-                    [t("gameDetail.releaseDate"), formattedShortDate],
-                    [t("gameDetail.platform"), t("gameDetail.windowsPc")],
-                    [t("gameDetail.developer"), game.developer || "-"],
-                    [t("gameDetail.publisher"), game.publisher || "-"],
-                  ].map(([label, value]) => (
-                    <div key={label} style={{ display: "flex", justifyContent: "space-between" }}>
-                      <span style={{ fontSize: 12, color: "#888" }}>{label}</span>
-                      <span style={{ fontSize: 12, color: "#ccc", textAlign: "right", maxWidth: 180 }}>{value || "-"}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+            )}
+          </OverviewSection>
         )}
 
         {activeTab === "requirements" && (

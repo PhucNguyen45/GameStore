@@ -273,32 +273,13 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               marginTop: 8,
             }}
           >
-            <button
-              type="button"
-              onClick={onClose}
-              style={{
-                padding: "8px 20px",
-                background: "#2a2a2a",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
-            >
+            <button type="button" onClick={onClose} className="btn btn-ghost btn-sm">
               Hủy
             </button>
             <button
               type="submit"
               disabled={saving}
-              style={{
-                padding: "8px 20px",
-                background: "var(--accent)",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-                fontWeight: 600,
-              }}
+              className="btn btn-primary btn-sm"
             >
               {saving ? "Đang lưu..." : game ? "Cập nhật" : "Tạo mới"}
             </button>

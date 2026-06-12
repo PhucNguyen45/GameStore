@@ -180,21 +180,13 @@ export default function UserFormModal({ user, onClose, onSave }) {
             <button
               type="button"
               onClick={onClose}
-              style={{
-                padding: "10px 20px",
-                background: "transparent",
-                border: "1px solid #333",
-                color: "#ccc",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
+              className="btn btn-ghost btn-sm"
             >
               Hủy
             </button>
             <button
               type="submit"
-              className="btn-primary"
-              style={{ padding: "10px 20px", borderRadius: 6 }}
+              className="btn btn-primary btn-sm"
             >
               Lưu thay đổi
             </button>

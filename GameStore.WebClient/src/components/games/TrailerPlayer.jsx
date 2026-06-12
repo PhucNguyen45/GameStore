@@ -1,6 +1,5 @@
 // GameStore.WebClient/src/components/games/TrailerPlayer.jsx
 import { useEffect, useRef, useState } from "react";
-import dashjs from "dashjs";
 import { Play, Pause, Maximize, Volume2, VolumeX } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -8,7 +7,6 @@ export default function TrailerPlayer({ trailerUrl, poster, title }) {
   const { t } = useTranslation();
   const videoRef = useRef(null);
   const containerRef = useRef(null);
-  const playerRef = useRef(null);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -21,56 +19,61 @@ export default function TrailerPlayer({ trailerUrl, poster, title }) {
   useEffect(() => {
     if (!videoRef.current || !trailerUrl) return;
 
-    const player = dashjs.MediaPlayer().create();
-    playerRef.current = player;
+    const video = videoRef.current;
+    setLoading(true);
 
-    player.on(dashjs.MediaPlayer.events.PLAYBACK_STARTED, () => {
+    const handlePlayStart = () => {
       setPlaying(true);
       setLoading(false);
-    });
-    player.on(dashjs.MediaPlayer.events.PLAYBACK_PAUSED, () => setPlaying(false));
-    player.on(dashjs.MediaPlayer.events.PLAYBACK_TIME_UPDATED, () => {
-      const t = player.time();
-      setProgress(t / (player.duration() || 1));
-    });
-    player.on(dashjs.MediaPlayer.events.PLAYBACK_METADATA_LOADED, () => {
-      setDuration(player.duration() || 0);
+    };
+    const handlePause = () => setPlaying(false);
+    const handleTimeUpdate = () => {
+      setProgress(video.duration ? video.currentTime / video.duration : 0);
+    };
+    const handleLoadedMetadata = () => {
+      setDuration(video.duration || 0);
       setLoading(false);
-    });
-    player.on(dashjs.MediaPlayer.events.ERROR, () => {
+    };
+    const handleError = () => {
       setError(true);
       setLoading(false);
-    });
-    player.on(dashjs.MediaPlayer.events.PLAYBACK_ENDED, () => {
+    };
+    const handleEnded = () => {
       setPlaying(false);
       setProgress(1);
-    });
+    };
 
-    player.initialize(videoRef.current, trailerUrl, false);
-    player.setMute(true);
+    video.addEventListener("play", handlePlayStart);
+    video.addEventListener("pause", handlePause);
+    video.addEventListener("timeupdate", handleTimeUpdate);
+    video.addEventListener("loadedmetadata", handleLoadedMetadata);
+    video.addEventListener("error", handleError);
+    video.addEventListener("ended", handleEnded);
 
     return () => {
-      if (playerRef.current) {
-        playerRef.current.destroy();
-        playerRef.current = null;
-      }
+      video.removeEventListener("play", handlePlayStart);
+      video.removeEventListener("pause", handlePause);
+      video.removeEventListener("timeupdate", handleTimeUpdate);
+      video.removeEventListener("loadedmetadata", handleLoadedMetadata);
+      video.removeEventListener("error", handleError);
+      video.removeEventListener("ended", handleEnded);
       if (controlsTimer.current) clearTimeout(controlsTimer.current);
     };
   }, [trailerUrl]);
 
   const togglePlay = () => {
-    if (!playerRef.current) return;
+    if (!videoRef.current) return;
     if (playing) {
-      playerRef.current.pause();
+      videoRef.current.pause();
     } else {
-      playerRef.current.play();
+      videoRef.current.play();
     }
   };
 
   const toggleMute = () => {
-    if (!playerRef.current) return;
+    if (!videoRef.current) return;
     const newMuted = !muted;
-    playerRef.current.setMute(newMuted);
+    videoRef.current.muted = newMuted;
     setMuted(newMuted);
   };
 
@@ -79,7 +82,7 @@ export default function TrailerPlayer({ trailerUrl, poster, title }) {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     } else {
-      containerRef.current.requestFullscreen();
+      containerRef.current.requestFullscreen().catch(() => {});
     }
   };
 
@@ -222,7 +225,12 @@ export default function TrailerPlayer({ trailerUrl, poster, title }) {
               }}
               className="trailer-play-btn"
             >
-              <Play size={28} fill="#fff" color="#fff" style={{ marginLeft: 3 }} />
+              <Play
+                size={28}
+                fill="#fff"
+                color="#fff"
+                style={{ marginLeft: 3 }}
+              />
             </div>
           </div>
         )}
@@ -244,10 +252,10 @@ export default function TrailerPlayer({ trailerUrl, poster, title }) {
           {/* PROGRESS BAR */}
           <div
             onClick={(e) => {
-              if (!playerRef.current || !duration) return;
+              if (!videoRef.current || !duration) return;
               const rect = e.currentTarget.getBoundingClientRect();
               const ratio = (e.clientX - rect.left) / rect.width;
-              playerRef.current.seek(ratio * duration);
+              videoRef.current.currentTime = ratio * duration;
             }}
             style={{
               width: "100%",
@@ -273,23 +281,54 @@ export default function TrailerPlayer({ trailerUrl, poster, title }) {
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <button
               onClick={togglePlay}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", padding: 0, display: "flex" }}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "#fff",
+                padding: 0,
+                display: "flex",
+              }}
             >
-              {playing ? <Pause size={16} fill="#fff" /> : <Play size={16} fill="#fff" />}
+              {playing ? (
+                <Pause size={16} fill="#fff" />
+              ) : (
+                <Play size={16} fill="#fff" />
+              )}
             </button>
             <button
               onClick={toggleMute}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", padding: 0, display: "flex" }}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "#fff",
+                padding: 0,
+                display: "flex",
+              }}
             >
               {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
             </button>
-            <span style={{ fontSize: 11, color: "#ccc", fontVariantNumeric: "tabular-nums" }}>
+            <span
+              style={{
+                fontSize: 11,
+                color: "#ccc",
+                fontVariantNumeric: "tabular-nums",
+              }}
+            >
               {formatTime(progress * duration)} / {formatTime(duration)}
             </span>
             <div style={{ flex: 1 }} />
             <button
               onClick={toggleFullscreen}
-              style={{ background: "none", border: "none", cursor: "pointer", color: "#fff", padding: 0, display: "flex" }}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "#fff",
+                padding: 0,
+                display: "flex",
+              }}
             >
               <Maximize size={16} />
             </button>

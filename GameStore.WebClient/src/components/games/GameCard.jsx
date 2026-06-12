@@ -2,12 +2,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Star, ShoppingCart, Check, Heart } from "lucide-react";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import useCartStore from "../../stores/cartStore";
 import { useAuth } from "../../contexts/AuthContext";
 import { libraryAPI, wishlistAPI } from "../../services/api";
 import { formatVND } from "../../utils/format";
 
 export default function GameCard({ game }) {
+  const { t } = useTranslation();
   const addItem = useCartStore((s) => s.addItem);
   const { user } = useAuth();
   const [owned, setOwned] = useState(false);
@@ -32,16 +35,27 @@ export default function GameCard({ game }) {
 
   const toggleWishlist = async (e) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user) {
+      toast.error(
+        t("gameDetail.wishlistError") || "Please login to use wishlist",
+      );
+      return;
+    }
     try {
       if (wishlisted) {
         await wishlistAPI.remove(game.id);
         setWishlisted(false);
+        toast.success(
+          t("gameDetail.removedFromWishlist") || "Removed from wishlist",
+        );
       } else {
         await wishlistAPI.add(game.id);
         setWishlisted(true);
+        toast.success(t("gameDetail.addedToWishlist") || "Added to wishlist");
       }
-    } catch {}
+    } catch (err) {
+      toast.error(t("gameDetail.wishlistError") || "Failed to update wishlist");
+    }
   };
 
   return (
@@ -208,7 +222,10 @@ export default function GameCard({ game }) {
             </button>
           ) : (
             <button
-              onClick={() => addItem(game)}
+              onClick={() => {
+                addItem(game);
+                toast.success(t("cart.itemAdded") || "Added to cart");
+              }}
               style={{
                 background: "var(--accent)",
                 border: "none",

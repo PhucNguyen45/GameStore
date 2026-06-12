@@ -1,20 +1,51 @@
 -- ============================================================================
--- GameStore — Seed Data Script
+-- GameStore — Seed Data Script (PAID GAMES ONLY)
 -- Nguồn dữ liệu: Steam API (store.steampowered.com/api/appdetails)
 -- Hình ảnh: Steam CDN (cdn.cloudflare.steamstatic.com / shared.akamai.steamstatic.com)
 -- Tra cứu thêm: https://steamdb.info/
 --
 -- Cách chạy:
---   sqlcmd -S <server> -d <database> -i database/seeds/seed_data.sql
+--   sqlcmd -S <server> -d <database> -C -i database/seeds/seed_data.sql
 -- Hoặc chạy trong SQL Server Management Studio (SSMS)
 -- ============================================================================
 
 -- ============================================================================
+-- 0. CLEANUP — Xoá toàn bộ dữ liệu cũ trước khi seed lại
+-- ============================================================================
+PRINT '=== Cleaning existing data... ===';
+DELETE FROM Notifications;
+DELETE FROM Libraries;
+DELETE FROM Wishlists;
+DELETE FROM Payments;
+DELETE FROM OrderDetails;
+DELETE FROM Orders;
+DELETE FROM GameKeys;
+DELETE FROM Reviews;
+DELETE FROM GameGenres;
+DELETE FROM Games;
+DELETE FROM Genres;
+DELETE FROM Users WHERE Id > 1;
+DELETE FROM UserRoles WHERE Id > 1;
+PRINT '=== Cleanup complete! ===';
+GO
+
+DBCC CHECKIDENT ('Genres', RESEED, 0);
+DBCC CHECKIDENT ('Games', RESEED, 0);
+DBCC CHECKIDENT ('GameGenres', RESEED, 0);
+DBCC CHECKIDENT ('GameKeys', RESEED, 0);
+DBCC CHECKIDENT ('Reviews', RESEED, 0);
+DBCC CHECKIDENT ('Orders', RESEED, 0);
+DBCC CHECKIDENT ('OrderDetails', RESEED, 0);
+DBCC CHECKIDENT ('Payments', RESEED, 0);
+DBCC CHECKIDENT ('Libraries', RESEED, 0);
+DBCC CHECKIDENT ('Wishlists', RESEED, 0);
+DBCC CHECKIDENT ('Notifications', RESEED, 0);
+GO
+
+-- ============================================================================
 -- 1. GENRES (35 thể loại)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM Genres WHERE Id = 1)
-BEGIN
-    SET IDENTITY_INSERT Genres ON;
+SET IDENTITY_INSERT Genres ON;
     INSERT INTO Genres (Id, Name, Description, IconUrl, IsActive) VALUES
     (1,  N'Action',       N'Action games',                                    '', 1),
     (2,  N'RPG',          N'Role-Playing games',                              '', 1),
@@ -52,68 +83,17 @@ BEGIN
     (34, N'Party',        N'Party and social games',                          '', 1),
     (35, N'Narrative',    N'Story-rich narrative games',                      '', 1);
     SET IDENTITY_INSERT Genres OFF;
-END
 GO
 
 -- ============================================================================
--- 2. GAMES (33 tựa game Steam thật)
+-- 2. GAMES (26 paid Steam games, IDs 5-33)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM Games WHERE Id = 1)
-BEGIN
-    SET IDENTITY_INSERT Games ON;
-
-    -- Counter-Strike 2 (AppID: 730)
-    INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
-        CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
-    VALUES (1,
-        N'Counter-Strike 2',
-        N'For over two decades, Counter-Strike has offered an elite competitive experience, one shaped by millions of players from across the globe. And now the next chapter in the CS story is about to begin. Counter-Strike 2 is the largest technical leap in Counter-Strike''s history, built on the Source 2 engine.',
-        0, N'Valve', N'Valve', '2012-08-21',
-        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/730/header.jpg',
-        '[]', 25000000, 4.5, 1800000, 1, GETUTCDATE(),
-        N'Windows 10', N'4 hardware CPU threads - Intel Core i5 750 or better', N'8 GB RAM', N'NVIDIA GeForce GTX 650 or better', N'85 GB available space', '');
-
-    -- Dota 2 (AppID: 570)
-    INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
-        CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
-    VALUES (2,
-        N'Dota 2',
-        N'Every day, millions of players worldwide enter battle as one of over a hundred Dota heroes. And no matter if it''s their 10th hour of play or 1,000th, there''s always something new to discover. With regular updates that ensure a constantly evolving gameplay, features, and heroes, Dota 2 has taken on a life of its own.',
-        0, N'Valve', N'Valve', '2013-07-09',
-        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/570/header.jpg',
-        '[]', 15000000, 4.4, 1200000, 1, GETUTCDATE(),
-        N'Windows 7 or newer', N'Dual core from Intel or AMD at 2.8 GHz', N'4 GB RAM', N'NVIDIA GeForce 8600/9600GT or AMD equivalent', N'60 GB available space', '');
-
-    -- PUBG: BATTLEGROUNDS (AppID: 578080)
-    INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
-        CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
-    VALUES (3,
-        N'PUBG: BATTLEGROUNDS',
-        N'PUBG: BATTLEGROUNDS, the high-stakes winner-take-all shooter that started the Battle Royale craze, is free-to-play! Drop into diverse maps, loot unique weapons and supplies, and survive in an ever-shrinking battlefield.',
-        0, N'PUBG Corporation', N'KRAFTON, Inc.', '2017-12-21',
-        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/578080/header.jpg',
-        '[]', 50000000, 4.1, 2800000, 1, GETUTCDATE(),
-        N'64-bit Windows 10', N'Intel Core i5-4430 or AMD FX-6300', N'8 GB RAM', N'NVIDIA GeForce GTX 960 or AMD Radeon R7 370', N'40 GB available space', '');
-
-    -- Apex Legends (AppID: 1172470)
-    INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
-        CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
-    VALUES (4,
-        N'Apex Legends',
-        N'Apex Legends is the award-winning, free-to-play Hero Shooter from Respawn Entertainment. Master an ever-growing roster of legendary characters with powerful abilities, and experience strategic squad play in thrilling 60-player battles.',
-        0, N'Respawn', N'Electronic Arts', '2020-11-04',
-        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1172470/header.jpg',
-        '[]', 80000000, 4.3, 2200000, 1, GETUTCDATE(),
-        N'64-bit Windows 10', N'Intel Core i3-6300 or AMD FX-4350', N'6 GB RAM', N'NVIDIA GeForce GT 640 or AMD Radeon HD 7700', N'56 GB available space', '');
+SET IDENTITY_INSERT Games ON;
 
     -- Grand Theft Auto V (AppID: 271590)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (5,
         N'Grand Theft Auto V',
         N'Grand Theft Auto V for PC offers players the option to explore the award-winning world of Los Santos and Blaine County in resolutions of up to 4k and beyond, as well as the chance to experience the game at 60 frames per second.',
@@ -125,7 +105,7 @@ BEGIN
     -- ELDEN RING (AppID: 1245620)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (6,
         N'ELDEN RING',
         N'THE CRITICALLY ACCLAIMED FANTASY ACTION RPG. Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between. A vast world full of excitement and secrets awaits.',
@@ -137,7 +117,7 @@ BEGIN
     -- Cyberpunk 2077 (AppID: 1091500)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (7,
         N'Cyberpunk 2077',
         N'Cyberpunk 2077 is an open-world, action-adventure RPG set in the dark future of Night City — a dangerous megalopolis obsessed with power, glamor, and ceaseless body modification. Play as V, a mercenary outlaw in a city of dreams and nightmares.',
@@ -149,7 +129,7 @@ BEGIN
     -- Baldur's Gate 3 (AppID: 1086940)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (8,
         N'Baldur''s Gate 3',
         N'Baldur''s Gate 3 is a story-rich, party-based RPG set in the universe of Dungeons & Dragons, where your choices shape a tale of fellowship and betrayal, survival and sacrifice, and the lure of absolute power.',
@@ -161,7 +141,7 @@ BEGIN
     -- Red Dead Redemption 2 (AppID: 1174180)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (9,
         N'Red Dead Redemption 2',
         N'Arthur Morgan and the Van der Linde Gang are outlaws on the run. With federal agents and bounty hunters massing on their heels, the gang must rob, steal, and fight their way across the rugged heartland of America in an epic Western saga.',
@@ -173,7 +153,7 @@ BEGIN
     -- The Witcher 3: Wild Hunt (AppID: 292030)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (10,
         N'The Witcher 3: Wild Hunt',
         N'You are Geralt of Rivia, mercenary monster slayer. Before you stands a war-torn, monster-infested continent you can explore at will. Your current contract? Tracking down Ciri — the Child of Prophecy, a living weapon that can change the shape of the world.',
@@ -185,7 +165,7 @@ BEGIN
     -- Monster Hunter: World (AppID: 582010)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (11,
         N'Monster Hunter: World',
         N'Welcome to a new world! In Monster Hunter: World, the latest installment in the series, you can enjoy the ultimate hunting experience, using everything at your disposal to hunt monsters in a new world teeming with surprises and excitement.',
@@ -197,7 +177,7 @@ BEGIN
     -- Stardew Valley (AppID: 413150)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (12,
         N'Stardew Valley',
         N'You''ve inherited your grandfather''s old farm plot in Stardew Valley. Armed with hand-me-down tools and a few coins, you set out to begin your new life. Can you learn to live off the land and turn these overgrown fields into a thriving home?',
@@ -209,7 +189,7 @@ BEGIN
     -- Terraria (AppID: 105600)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (13,
         N'Terraria',
         N'Dig, fight, explore, build! Nothing is impossible in this action-packed adventure game. The world is your canvas and the ground itself is your paint. With over 20 biomes to explore, thousands of items to craft, and countless enemies to defeat.',
@@ -221,7 +201,7 @@ BEGIN
     -- Left 4 Dead 2 (AppID: 550)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (14,
         N'Left 4 Dead 2',
         N'Set in the zombie apocalypse, Left 4 Dead 2 is a co-operative action horror FPS that takes you and your friends through the cities, swamps and cemeteries of the Deep South, from Savannah to New Orleans across five expansive campaigns.',
@@ -233,7 +213,7 @@ BEGIN
     -- Garry's Mod (AppID: 4000)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (15,
         N'Garry''s Mod',
         N'Garry''s Mod is a physics sandbox. There aren''t any predefined aims or goals. We give you the tools and leave you to play. Create contraptions, build machines, and experiment with physics in this open-ended sandbox game.',
@@ -245,7 +225,7 @@ BEGIN
     -- Among Us (AppID: 945360)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (16,
         N'Among Us',
         N'An online and local party game of teamwork and betrayal for 4-15 players...in space! Join your crewmates in a multiplayer game of teamwork and betrayal as you work together to keep your ship in order while identifying the Impostor among you.',
@@ -257,7 +237,7 @@ BEGIN
     -- Phasmophobia (AppID: 739630)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (17,
         N'Phasmophobia',
         N'Phasmophobia is a 4 player online co-op psychological horror. Paranormal activity is on the rise and it''s up to you and your team to use all the ghost-hunting equipment at your disposal in order to gather as much evidence as you can.',
@@ -269,7 +249,7 @@ BEGIN
     -- Valheim (AppID: 892970)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (18,
         N'Valheim',
         N'A brutal exploration and survival game for 1-10 players, set in a procedurally-generated purgatory inspired by viking culture. Battle, build, and conquer your way to a saga worthy of Odin''s patronage!',
@@ -281,7 +261,7 @@ BEGIN
     -- Rust (AppID: 252490)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (19,
         N'Rust',
         N'The only aim in Rust is to survive. Everything wants you to die - the island''s wildlife, other inhabitants, the environment, and other survivors. Do whatever it takes to last another night. Build bases, craft weapons, and form alliances.',
@@ -293,7 +273,7 @@ BEGIN
     -- ARK: Survival Evolved (AppID: 346110)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (20,
         N'ARK: Survival Evolved',
         N'Stranded on the shores of a mysterious island, you must learn to survive. Use your cunning to kill or tame the primeval creatures roaming the land, and encounter other players to survive, dominate... and escape!',
@@ -305,7 +285,7 @@ BEGIN
     -- Hogwarts Legacy (AppID: 990080)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (21,
         N'Hogwarts Legacy',
         N'Hogwarts Legacy is an immersive, open-world action RPG. Now you can take control of the action and be at the center of your own adventure in the wizarding world. Explore Hogwarts, learn magical spells, and uncover hidden mysteries.',
@@ -317,7 +297,7 @@ BEGIN
     -- Sid Meier's Civilization VI (AppID: 289070)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (22,
         N'Sid Meier''s Civilization VI',
         N'Expand your empire, advance your culture and go head-to-head against history''s greatest leaders. Will your civilization stand the test of time? Build wonders, wage wars, and discover new technologies in this award-winning strategy game.',
@@ -329,7 +309,7 @@ BEGIN
     -- Euro Truck Simulator 2 (AppID: 227300)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (23,
         N'Euro Truck Simulator 2',
         N'Travel across Europe as king of the road, a trucker who delivers important cargo across impressive distances! With dozens of cities to explore, your endurance, skill and speed will all be pushed to their limits.',
@@ -338,34 +318,10 @@ BEGIN
         '[]', 18000000, 4.7, 420000, 1, GETUTCDATE(),
         N'Windows 10 64-bit', N'Intel Core i5-6400 or AMD Ryzen 3 1200', N'8 GB RAM', N'NVIDIA GeForce GTX 660 or AMD Radeon HD 7850', N'12 GB available space', '');
 
-    -- Rainbow Six Siege (AppID: 359550)
-    INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
-        CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
-    VALUES (24,
-        N'Tom Clancy''s Rainbow Six Siege',
-        N'Tom Clancy''s Rainbow Six Siege is an elite, tactical team-based shooter where superior planning and execution triumph. Master the art of destruction and gadgetry in intense close-quarters combat.',
-        0, N'Ubisoft Montreal', N'Ubisoft', '2015-12-01',
-        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/359550/header.jpg',
-        '[]', 25000000, 4.4, 900000, 1, GETUTCDATE(),
-        N'Windows 10 or 11 (64-bit)', N'AMD Ryzen 3 3100 or Intel Core i5-4460', N'8 GB RAM', N'NVIDIA GeForce GTX 960 or AMD R9 380', N'85 GB available space', '');
-
-    -- Team Fortress 2 (AppID: 440)
-    INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
-        CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
-    VALUES (25,
-        N'Team Fortress 2',
-        N'Nine distinct classes provide a broad range of tactical abilities and personalities. Constantly updated with new game modes, maps, equipment and, most importantly, hats! Team Fortress 2 is the most hilarious competitive shooter ever made.',
-        0, N'Valve', N'Valve', '2007-10-10',
-        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/440/header.jpg',
-        '[]', 30000000, 4.5, 650000, 1, GETUTCDATE(),
-        N'Windows 7 (32/64-bit)/Vista/XP', N'1.7 GHz Processor or better', N'512 MB RAM', N'DirectX 8.1 compatible GPU', N'15 GB available space', '');
-
     -- Fallout 4 (AppID: 377160)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (26,
         N'Fallout 4',
         N'From Bethesda Game Studios, the award-winning creators of Starfield and The Elder Scrolls V: Skyrim, comes Fallout 4. A landmark in open-world RPG design and winner of over 200 Best Of honors, including the DICE Game of the Year.',
@@ -377,7 +333,7 @@ BEGIN
     -- Skyrim Special Edition (AppID: 489830)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (27,
         N'The Elder Scrolls V: Skyrim Special Edition',
         N'Winner of more than 200 Game of the Year Awards, Skyrim Special Edition brings the epic fantasy to life in stunning detail. The Special Edition includes the critically acclaimed game and all official add-ons with remastered art and effects.',
@@ -389,7 +345,7 @@ BEGIN
     -- Dark Souls III (AppID: 374320)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (28,
         N'DARK SOULS III',
         N'Dark Souls continues to push the boundaries with the latest, ambitious chapter in the critically-acclaimed and genre-defining series. Prepare yourself and Embrace The Darkness! A world drenched in desolation and darkness awaits.',
@@ -401,7 +357,7 @@ BEGIN
     -- Sekiro: Shadows Die Twice (AppID: 814380)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (29,
         N'Sekiro: Shadows Die Twice',
         N'Game of the Year - The Game Awards 2019. Carve your own clever path to vengeance in the award winning adventure from developer FromSoftware. Explore a beautiful yet deadly world and master the art of the blade in visceral combat.',
@@ -413,7 +369,7 @@ BEGIN
     -- God of War (AppID: 1593500)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (30,
         N'God of War',
         N'His vengeance against the Gods of Olympus years behind him, Kratos now lives as a man in the realm of Norse Gods and monsters. It is in this harsh, unforgiving world that he must fight to survive... and teach his son to do the same.',
@@ -425,7 +381,7 @@ BEGIN
     -- Marvel's Spider-Man Remastered (AppID: 1817070)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (31,
         N'Marvel''s Spider-Man Remastered',
         N'In Marvel''s Spider-Man Remastered, the worlds of Peter Parker and Spider-Man collide in an original action-packed story. Play as an experienced Peter Parker, fighting big crime and iconic villains in Marvel''s New York.',
@@ -437,7 +393,7 @@ BEGIN
     -- Horizon Zero Dawn Complete Edition (AppID: 1151640)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (32,
         N'Horizon Zero Dawn Complete Edition',
         N'Experience Aloy''s legendary quest to unravel the mysteries of a future Earth ruled by Machines. Use devastating tactical attacks against your prey and explore a majestic open world in this award-winning action RPG.',
@@ -449,7 +405,7 @@ BEGIN
     -- Days Gone (AppID: 1259420)
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
-        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage)
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
     VALUES (33,
         N'Days Gone',
         N'Ride and fight into a deadly, post pandemic America. Play as Deacon St. John, a drifter and bounty hunter who rides the broken road, fighting to survive while searching for a reason to live in this open-world action-adventure.',
@@ -459,24 +415,13 @@ BEGIN
         N'Windows 10 64-bits', N'Intel Core i5-2500K or AMD FX-8320', N'8 GB RAM', N'NVIDIA GeForce GTX 780 or AMD Radeon R9 290 (4GB VRAM)', N'70 GB available space', '');
 
     SET IDENTITY_INSERT Games OFF;
-END
 GO
 
 -- ============================================================================
 -- 3. GAME GENRES (mapping game ↔ thể loại)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM GameGenres WHERE Id = 1)
-BEGIN
-    SET IDENTITY_INSERT GameGenres ON;
+SET IDENTITY_INSERT GameGenres ON;
     INSERT INTO GameGenres (Id, GameId, GenreId) VALUES
-    -- Counter-Strike 2
-    (1, 1, 1), (2, 1, 6), (3, 1, 31),
-    -- Dota 2
-    (4, 2, 1), (5, 2, 3), (6, 2, 28), (7, 2, 31),
-    -- PUBG
-    (8, 3, 1), (9, 3, 7), (10, 3, 27), (11, 3, 31),
-    -- Apex Legends
-    (12, 4, 1), (13, 4, 6), (14, 4, 27), (15, 4, 31),
     -- GTA V
     (16, 5, 1), (17, 5, 7), (18, 5, 12), (19, 5, 30), (20, 5, 31),
     -- ELDEN RING
@@ -515,10 +460,6 @@ BEGIN
     (97, 22, 3), (98, 22, 18), (99, 22, 30), (100, 22, 31),
     -- Euro Truck Simulator 2
     (101, 23, 5), (102, 23, 8), (103, 23, 33),
-    -- Rainbow Six Siege
-    (104, 24, 1), (105, 24, 6), (106, 24, 31),
-    -- Team Fortress 2
-    (107, 25, 1), (108, 25, 6), (109, 25, 31), (110, 25, 33),
     -- Fallout 4
     (111, 26, 1), (112, 26, 2), (113, 26, 12), (114, 26, 30),
     -- Skyrim SE
@@ -536,28 +477,13 @@ BEGIN
     -- Days Gone
     (139, 33, 1), (140, 33, 7), (141, 33, 10), (142, 33, 12), (143, 33, 30);
     SET IDENTITY_INSERT GameGenres OFF;
-END
 GO
 
 -- ============================================================================
--- 4. GAME KEYS (2-3 key cho mỗi game, 99 keys tổng cộng)
+-- 4. GAME KEYS (2-3 key cho mỗi game)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM GameKeys WHERE Id = 1)
-BEGIN
-    SET IDENTITY_INSERT GameKeys ON;
+SET IDENTITY_INSERT GameKeys ON;
     INSERT INTO GameKeys (Id, GameId, KeyCode, IsUsed, CreatedAt) VALUES
-    -- Counter-Strike 2 (game 1, free, 2 keys)
-    (1, 1, N'CS2-7A9B8-C4D2E-1F3G5', 0, GETUTCDATE()),
-    (2, 1, N'CS2-9K3L2-M1N4P-7Q5R6', 0, GETUTCDATE()),
-    -- Dota 2 (game 2, free, 2 keys)
-    (3, 2, N'DOTA-X2B7C-9D4E1-F5G8H', 0, GETUTCDATE()),
-    (4, 2, N'DOTA-3K6L9-M2N5P-8Q1R4', 0, GETUTCDATE()),
-    -- PUBG (game 3, free, 2 keys)
-    (5, 3, N'PUBG-4A7B2-C9D5E-1F6G3', 0, GETUTCDATE()),
-    (6, 3, N'PUBG-8H1K4-L7M2N-5P9Q3', 0, GETUTCDATE()),
-    -- Apex Legends (game 4, free, 2 keys)
-    (7, 4, N'APEX-6B9C3-D2E7F-1G4H8', 0, GETUTCDATE()),
-    (8, 4, N'APEX-5K1L8-M4N2P-9Q7R3', 0, GETUTCDATE()),
     -- GTA V (game 5, 3 keys)
     (9, 5, N'GTA5-X3B7C-9D1E4-F6G8H', 0, GETUTCDATE()),
     (10, 5, N'GTA5-K2L5M-8N1P4-Q7R9S', 0, GETUTCDATE()),
@@ -627,12 +553,6 @@ BEGIN
     -- Euro Truck Simulator 2 (game 23, 2 keys)
     (57, 23, N'ETS2-3B7C9-D1E4F-6G2H8', 0, GETUTCDATE()),
     (58, 23, N'ETS2-K5L1M-8N2P6-Q9R4S', 0, GETUTCDATE()),
-    -- Rainbow Six Siege (game 24, free, 2 keys)
-    (59, 24, N'R6S-6B9C2-D1E7F-3G5H8', 0, GETUTCDATE()),
-    (60, 24, N'R6S-K4L8M-1N6P9-Q2R7S', 0, GETUTCDATE()),
-    -- Team Fortress 2 (game 25, free, 2 keys)
-    (61, 25, N'TF2-7B3C9-D2E5F-1G8H4', 0, GETUTCDATE()),
-    (62, 25, N'TF2-K6L2M-9N4P7-Q1R5S', 0, GETUTCDATE()),
     -- Fallout 4 (game 26, 3 keys)
     (63, 26, N'FO4-4B8C2-D1E6F-9G3H7', 0, GETUTCDATE()),
     (64, 26, N'FO4-K5L1M-7N3P8-Q2R6S', 0, GETUTCDATE()),
@@ -666,15 +586,12 @@ BEGIN
     (85, 33, N'DAYS-K5L1M-8N2P6-Q9R4S', 0, GETUTCDATE()),
     (86, 33, N'DAYS-T7V3W-1X5Y9-Z2A6B', 0, GETUTCDATE());
     SET IDENTITY_INSERT GameKeys OFF;
-END
 GO
 
 -- ============================================================================
--- 5. ADDITIONAL GAMES (IDs 49-68: 20 real Steam games)
+-- 5. ADDITIONAL GAMES (IDs 49-68: 19 real Steam games, excluding free Warframe)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM Games WHERE Id = 49)
-BEGIN
-    SET IDENTITY_INSERT Games ON;
+SET IDENTITY_INSERT Games ON;
     INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
         CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
         MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
@@ -807,14 +724,6 @@ BEGIN
         '[]', 3200000, 4.6, 140000, 1, GETUTCDATE(),
         N'Windows 10 64-bit', N'Intel Core i5-8400 or AMD Ryzen 5 2600', N'12 GB RAM', N'NVIDIA GeForce GTX 1060 or AMD Radeon RX 590', N'60 GB available space', ''),
 
-    -- Warframe (AppID: 230410)
-    (65, N'Warframe',
-        N'Warframe is a cooperative free-to-play third-person online action game set in an evolving sci-fi world. Awaken as a Tenno, an ancient warrior race risen from centuries of cryosleep to fight for survival in an interplanetary system at war. Master unique Warframes with incredible powers.',
-        0, N'Digital Extremes', N'Digital Extremes', '2013-03-25',
-        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/230410/header.jpg',
-        '[]', 50000000, 4.5, 550000, 1, GETUTCDATE(),
-        N'Windows 7 64-bit', N'Intel Core i5-2500 or AMD FX-6100', N'4 GB RAM', N'NVIDIA GeForce GTX 460 or AMD Radeon HD 5770', N'35 GB available space', ''),
-
     -- Don''t Starve Together (AppID: 322330)
     (66, N'Don''t Starve Together',
         N'Don''t Starve Together is the standalone multiplayer expansion of the uncompromising wilderness survival game. Enter a strange and unexplored world full of strange creatures, dangers, and surprises. Gather resources to craft items and structures that help you survive as long as possible.',
@@ -839,15 +748,12 @@ BEGIN
         '[]', 5500000, 4.6, 230000, 1, GETUTCDATE(),
         N'Windows 10 64-bit', N'Intel Core i5-8400 or AMD Ryzen 3 3300X', N'12 GB RAM', N'NVIDIA GeForce GTX 1060 or AMD Radeon RX 580', N'20 GB available space', '');
     SET IDENTITY_INSERT Games OFF;
-END
 GO
 
 -- ============================================================================
--- 6. ADDITIONAL GAME GENRES (for games 49-68)
+-- 6. ADDITIONAL GAME GENRES (for games 49-68, excluding Warframe 65)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM GameGenres WHERE Id = 144)
-BEGIN
-    SET IDENTITY_INSERT GameGenres ON;
+SET IDENTITY_INSERT GameGenres ON;
     INSERT INTO GameGenres (Id, GameId, GenreId) VALUES
     -- RimWorld (49)
     (144, 49, 5), (145, 49, 8), (146, 49, 3), (147, 49, 20), (148, 49, 30),
@@ -881,8 +787,6 @@ BEGIN
     (209, 63, 1), (210, 63, 7), (211, 63, 10), (212, 63, 30),
     -- Armored Core VI (64)
     (213, 64, 1), (214, 64, 8), (215, 64, 30), (216, 64, 31),
-    -- Warframe (65)
-    (217, 65, 1), (218, 65, 6), (219, 65, 2), (220, 65, 29), (221, 65, 31),
     -- Don''t Starve Together (66)
     (222, 66, 5), (223, 66, 7), (224, 66, 8), (225, 66, 11), (226, 66, 29),
     -- Hearts of Iron IV (67)
@@ -890,15 +794,12 @@ BEGIN
     -- Sons of the Forest (68)
     (231, 68, 1), (232, 68, 7), (233, 68, 10), (234, 68, 11), (235, 68, 29);
     SET IDENTITY_INSERT GameGenres OFF;
-END
 GO
 
 -- ============================================================================
--- 7. GAME KEYS FOR NEW GAMES (2 keys mỗi game, for games 49-68)
+-- 7. GAME KEYS FOR NEW GAMES (2 keys mỗi game, for paid games 49-68)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM GameKeys WHERE Id = 87)
-BEGIN
-    SET IDENTITY_INSERT GameKeys ON;
+SET IDENTITY_INSERT GameKeys ON;
     INSERT INTO GameKeys (Id, GameId, KeyCode, IsUsed, CreatedAt) VALUES
     -- RimWorld (49)
     (87, 49, N'RIMW-X7B3C-9D1E5-F2G8H4', 0, GETUTCDATE()),
@@ -948,27 +849,22 @@ BEGIN
     -- Armored Core VI (64)
     (117, 64, N'ACVI-8B2C5-D1E9F-3G6H4', 0, GETUTCDATE()),
     (118, 64, N'ACVI-K7L1M-4N8P2-Q5R9S', 0, GETUTCDATE()),
-    -- Warframe (65)
-    (119, 65, N'WFRM-3B7C1-D9E4F-6G2H8', 0, GETUTCDATE()),
-    (120, 65, N'WFRM-K5L9M-2N6P1-Q8R4S', 0, GETUTCDATE()),
     -- Don''t Starve Together (66)
-    (121, 66, N'DST-6B9C3-D1E7F-2G5H8', 0, GETUTCDATE()),
-    (122, 66, N'DST-K4L8M-2N6P1-Q9R3S', 0, GETUTCDATE()),
+    (119, 66, N'DST-6B9C3-D1E7F-2G5H8', 0, GETUTCDATE()),
+    (120, 66, N'DST-K4L8M-2N6P1-Q9R3S', 0, GETUTCDATE()),
     -- Hearts of Iron IV (67)
-    (123, 67, N'HOI4-2B5C9-D1E8F-3G6H4', 0, GETUTCDATE()),
-    (124, 67, N'HOI4-K7L1M-5N9P2-Q4R8S', 0, GETUTCDATE()),
+    (121, 67, N'HOI4-2B5C9-D1E8F-3G6H4', 0, GETUTCDATE()),
+    (122, 67, N'HOI4-K7L1M-5N9P2-Q4R8S', 0, GETUTCDATE()),
     -- Sons of the Forest (68)
-    (125, 68, N'SOTF-4B7C1-D9E2F-5G8H3', 0, GETUTCDATE()),
-    (126, 68, N'SOTF-K6L9M-3N1P7-Q5R2S', 0, GETUTCDATE());
+    (123, 68, N'SOTF-4B7C1-D9E2F-5G8H3', 0, GETUTCDATE()),
+    (124, 68, N'SOTF-K6L9M-3N1P7-Q5R2S', 0, GETUTCDATE());
     SET IDENTITY_INSERT GameKeys OFF;
-END
 GO
 
 -- ============================================================================
 -- 8. DISCOUNT PRICES (cho ~30 game để store sinh động)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM Games WHERE DiscountPrice IS NOT NULL AND Id = 5)
-BEGIN
+-- Discount prices (always apply after cleanup)
     UPDATE Games SET DiscountPrice = 179900 WHERE Id = 5;    -- GTA V: 299900 → -40%
     UPDATE Games SET DiscountPrice = 899900 WHERE Id = 6;    -- ELDEN RING: 1199000 → -25%
     UPDATE Games SET DiscountPrice = 799900 WHERE Id = 7;    -- Cyberpunk 2077: 1199000 → -33%
@@ -1010,59 +906,30 @@ END
 GO
 
 -- ============================================================================
--- 9. EXTRA GAME KEYS (thêm 1 key cho 13 game cũ để mỗi game có 3 keys)
+-- 9. EXTRA GAME KEYS (thêm 1 key cho 9 game cũ để mỗi game có 3 keys)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM GameKeys WHERE Id = 127)
-BEGIN
-    SET IDENTITY_INSERT GameKeys ON;
+SET IDENTITY_INSERT GameKeys ON;
     INSERT INTO GameKeys (Id, GameId, KeyCode, IsUsed, CreatedAt) VALUES
-    -- CS2 (1)
-    (127, 1, N'CS2-4X7Y2-Z9A1B-5C3D8', 0, GETUTCDATE()),
-    -- Dota 2 (2)
-    (128, 2, N'DOTA-7K1L4-M8N2P-3Q6R9', 0, GETUTCDATE()),
-    -- PUBG (3)
-    (129, 3, N'PUBG-2B5C8-D9E3F-1G7H4', 0, GETUTCDATE()),
-    -- Apex Legends (4)
-    (130, 4, N'APEX-9K3L6-M1N7P-4Q8R2', 0, GETUTCDATE()),
     -- Left 4 Dead 2 (14)
-    (131, 14, N'L4D2-5B8C1-D3E9F-7G2H6', 0, GETUTCDATE()),
+    (125, 14, N'L4D2-5B8C1-D3E9F-7G2H6', 0, GETUTCDATE()),
     -- Garry''s Mod (15)
-    (132, 15, N'GMOD-2K7L3-M9N5P-1Q4R8', 0, GETUTCDATE()),
+    (126, 15, N'GMOD-2K7L3-M9N5P-1Q4R8', 0, GETUTCDATE()),
     -- Among Us (16)
-    (133, 16, N'AMNG-8B1C4-D6E2F-9G5H3', 0, GETUTCDATE()),
+    (127, 16, N'AMNG-8B1C4-D6E2F-9G5H3', 0, GETUTCDATE()),
     -- Phasmophobia (17)
-    (134, 17, N'PHAS-3K8L2-M6N1P-9Q4R7', 0, GETUTCDATE()),
+    (128, 17, N'PHAS-3K8L2-M6N1P-9Q4R7', 0, GETUTCDATE()),
     -- Valheim (18)
-    (135, 18, N'VALH-7B2C5-D9E1F-4G8H3', 0, GETUTCDATE()),
+    (129, 18, N'VALH-7B2C5-D9E1F-4G8H3', 0, GETUTCDATE()),
     -- Rust (19)
-    (136, 19, N'RUST-5K9L3-M1N7P-2Q6R8', 0, GETUTCDATE()),
+    (130, 19, N'RUST-5K9L3-M1N7P-2Q6R8', 0, GETUTCDATE()),
     -- Euro Truck Simulator 2 (23)
-    (137, 23, N'ETS2-4B8C1-D6E3F-9G2H7', 0, GETUTCDATE()),
-    -- Rainbow Six Siege (24)
-    (138, 24, N'R6S-7K2L5-M9N3P-1Q8R4', 0, GETUTCDATE()),
-    -- Team Fortress 2 (25)
-    (139, 25, N'TF2-3B6C9-D1E4F-8G5H2', 0, GETUTCDATE());
+    (131, 23, N'ETS2-4B8C1-D6E3F-9G2H7', 0, GETUTCDATE());
     SET IDENTITY_INSERT GameKeys OFF;
-END
 GO
 
 -- ============================================================================
--- 10. SCREENSHOTS URLs (4 screenshots Steam CDN mỗi game)
+-- 10. SCREENSHOTS URLs (4 screenshots Steam CDN mỗi game, only paid games)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM Games WHERE Screenshots IS NOT NULL AND Screenshots != '[]' AND Id = 1)
-BEGIN
-    -- Counter-Strike 2 (730)
-    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/730/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/730/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/730/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/730/ss_4.jpg"]'
-    WHERE Id = 1;
-    -- Dota 2 (570)
-    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/570/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/570/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/570/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/570/ss_4.jpg"]'
-    WHERE Id = 2;
-    -- PUBG: BATTLEGROUNDS (578080)
-    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/578080/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/578080/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/578080/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/578080/ss_4.jpg"]'
-    WHERE Id = 3;
-    -- Apex Legends (1172470)
-    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1172470/ss_4.jpg"]'
-    WHERE Id = 4;
     -- GTA V (271590)
     UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/271590/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/271590/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/271590/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/271590/ss_4.jpg"]'
     WHERE Id = 5;
@@ -1120,12 +987,6 @@ BEGIN
     -- Euro Truck Simulator 2 (227300)
     UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/227300/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/227300/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/227300/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/227300/ss_4.jpg"]'
     WHERE Id = 23;
-    -- Rainbow Six Siege (359550)
-    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/359550/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/359550/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/359550/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/359550/ss_4.jpg"]'
-    WHERE Id = 24;
-    -- Team Fortress 2 (440)
-    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/440/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/440/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/440/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/440/ss_4.jpg"]'
-    WHERE Id = 25;
     -- Fallout 4 (377160)
     UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/377160/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/377160/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/377160/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/377160/ss_4.jpg"]'
     WHERE Id = 26;
@@ -1198,9 +1059,6 @@ BEGIN
     -- Armored Core VI (1888160)
     UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1888160/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1888160/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1888160/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1888160/ss_4.jpg"]'
     WHERE Id = 64;
-    -- Warframe (230410)
-    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/230410/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/230410/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/230410/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/230410/ss_4.jpg"]'
-    WHERE Id = 65;
     -- Don''t Starve Together (322330)
     UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/322330/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/322330/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/322330/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/322330/ss_4.jpg"]'
     WHERE Id = 66;
@@ -1210,7 +1068,6 @@ BEGIN
     -- Sons of the Forest (1326470)
     UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1326470/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1326470/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1326470/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1326470/ss_4.jpg"]'
     WHERE Id = 68;
-END
 GO
 
 -- ============================================================================
@@ -1262,15 +1119,15 @@ BEGIN
     (12, 2, 56, 4, N'Subnautica là trải nghiệm dưới nước độc đáo và đáng sợ. Khám phá đại dương xa lạ với sinh vật biển kỳ lạ thực sự cuốn hút. Hơi buggy ở một số chỗ.', 1, 31, DATEADD(DAY, -20, GETUTCDATE()), DATEADD(DAY, -20, GETUTCDATE())),
 
     -- User 3 (Trần Văn Bình)
-    (13, 3, 1, 4, N'Counter-Strike 2 là bản nâng cấp đồ họa đáng giá của CS:GO. Source 2 engine làm game đẹp hơn nhưng vẫn giữ được core gameplay huyền thoại. Vẫn là vua thể loại FPS competitive.', 1, 89, DATEADD(DAY, -70, GETUTCDATE()), DATEADD(DAY, -70, GETUTCDATE())),
+    (13, 3, 30, 4, N'God of War là bản nâng cấp đồ họa đáng giá của CS:GO. Source 2 engine làm game đẹp hơn nhưng vẫn giữ được Kratos chền thoại. Vẫn là vua thể loại FPS competitive.', 1, 89, DATEADD(DAY, -70, GETUTCDATE()), DATEADD(DAY, -70, GETUTCDATE())),
     (14, 3, 7, 5, N'Cyberpunk 2077 sau bản 2.0 và Phantom Liberty đã trở thành game như mong đợi. Câu chuyện cảm động, thế giới Night City sống động, gameplay cải thiện rất nhiều.', 1, 67, DATEADD(DAY, -65, GETUTCDATE()), DATEADD(DAY, -65, GETUTCDATE())),
-    (15, 3, 3, 2, N'PUBG đã khá lỗi thời. Cheater nhiều, performance không tốt, và gameplay đã bị các game battle royale khác vượt mặt. Chỉ chơi nếu bạn có nhóm bạn.', 0, 12, DATEADD(DAY, -58, GETUTCDATE()), DATEADD(DAY, -58, GETUTCDATE())),
+    (15, 3, 31, 2, N'PUBG đã khá lỗi thời. Cheater nhiều, performance không tốt, và gameplay đã bị các game battle royale khác vượt mặt. Chỉ chơi nếu bạn có nhóm bạn.', 0, 12, DATEADD(DAY, -58, GETUTCDATE()), DATEADD(DAY, -58, GETUTCDATE())),
     (16, 3, 17, 5, N'Phasmophobia là game co-op horror hay nhất hiện tại. Mỗi phiên đi săn ma đều khác nhau, cảm giác hồi hộp thực sự rất cuốn hút. Chơi với bạn bè là best experience.', 1, 44, DATEADD(DAY, -52, GETUTCDATE()), DATEADD(DAY, -52, GETUTCDATE())),
     (17, 3, 55, 5, N'Deep Rock Galactic là game co-op FPS hay nhất. Mỗi nhiệm vụ đều khác nhau, gameplay đa dạng, cộng đồng thân thiện. ROCK AND STONE!', 1, 71, DATEADD(DAY, -28, GETUTCDATE()), DATEADD(DAY, -28, GETUTCDATE())),
     (18, 3, 62, 4, N'Lies of P là soulslike phương Đông xuất sắc. Atmosphere đẹp, combat chặt chẽ, weapon assembly system sáng tạo. Hơi khó nhưng rất đáng chơi.', 1, 36, DATEADD(DAY, -15, GETUTCDATE()), DATEADD(DAY, -15, GETUTCDATE())),
 
     -- User 4 (Phạm Thị Cúc)
-    (19, 4, 2, 5, N'Dota 2 vẫn là MOBA hay nhất dù đã hơn 10 năm. Complexity và depth không game nào sánh bằng. Cộng đồng hơi toxic nhưng bù lại gameplay cực kỳ mãn nguyện.', 1, 95, DATEADD(DAY, -75, GETUTCDATE()), DATEADD(DAY, -75, GETUTCDATE())),
+    (19, 4, 50, 5, N'Dota 2 vẫn là MOBA hay nhất dù đã hơn 10 năm. Complexity và depth không game nào sánh bằng. Cộng đồng hơi toxic nhưng bù lại gameplay cực kỳ mãn nguyện.', 1, 95, DATEADD(DAY, -75, GETUTCDATE()), DATEADD(DAY, -75, GETUTCDATE())),
     (20, 4, 9, 4, N'Red Dead Redemption 2 là một tác phẩm nghệ thuật. Thế giới chi tiết đến kinh ngạc, câu chuyện cảm động. Hơi chậm ở đầu game nhưng kiên nhẫn sẽ được đền đáp.', 1, 48, DATEADD(DAY, -62, GETUTCDATE()), DATEADD(DAY, -62, GETUTCDATE())),
     (21, 4, 14, 4, N'Left 4 Dead 2 dù ra mắt năm 2009 vẫn rất vui khi chơi với bạn bè. Campaign đa dạng, cảm giác cooperative cực tốt. Một classic không thể thiếu trong thư viện.', 1, 33, DATEADD(DAY, -55, GETUTCDATE()), DATEADD(DAY, -55, GETUTCDATE())),
     (22, 4, 49, 5, N'RimWorld là colony simulator xuất sắc nhất. AI storyteller tạo ra những câu chuyện không thể tin được. Mỗi playthrough đều khác nhau. Dễ dàng chìm đắm hàng trăm giờ.', 1, 55, DATEADD(DAY, -32, GETUTCDATE()), DATEADD(DAY, -32, GETUTCDATE())),
@@ -1291,13 +1148,8 @@ GO
 -- ============================================================================
 -- 13. TRAILER URLs (Steam CDN DASH H.264 - highlighted trailer mỗi game)
 -- ============================================================================
-IF NOT EXISTS (SELECT 1 FROM Games WHERE TrailerUrl IS NOT NULL AND TrailerUrl != '' AND Id = 66)
-BEGIN
-    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/730/612468/aa5a28c78f12232e6b6839034550c28b162fad3e/1748810724/dash_h264.mpd?t=1696005467' WHERE Id = 1;
-    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/570/116737/313addee2092d0bd6f538d164610061ea8bbe79c/1749859757/dash_h264.mpd?t=1762820639' WHERE Id = 2;
-    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/578080/959742883/2bd1c3b49603676e9c92a2b0436b86c6fa159454/1778563032/dash_h264.mpd?t=1778634252' WHERE Id = 3;
-    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/1172470/79543479/ea737bc38a2b9cf10b5113768ff36c471ab6394d/1778273767/dash_h264.mpd?t=1778277648' WHERE Id = 4;
-    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/271590/844218/973b531959db4e15682893543d6a27a70e7e1eb3/1751269402/dash_h264.mpd?t=1741098095' WHERE Id = 5;
+-- Trailer URLs (always apply after cleanup)
+                    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/271590/844218/973b531959db4e15682893543d6a27a70e7e1eb3/1751269402/dash_h264.mpd?t=1741098095' WHERE Id = 5;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/1245620/468143/7a6be00f78fb0fd8b419e92cea72cc4a19ec45f8/1750650501/dash_h264.mpd?t=1716311566' WHERE Id = 6;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/1091500/801198/1b8aa4d59e19e69218c59bf1a6d9d23daedb01ab/1750617889/dash_h264.mpd?t=1734434767' WHERE Id = 7;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/1086940/637951/59ca25b847b0e471638d1e2474acf71b068d57f0/1750615003/dash_h264.mpd?t=1702007645' WHERE Id = 8;
@@ -1316,9 +1168,7 @@ BEGIN
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/990080/312591535/edf964f7fb722d801bbe72a28ae205e8931519f7/1778796107/dash_h264.mpd?t=1778797473' WHERE Id = 21;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/289070/76616/f09b19535e8ceef09ce6548300cd27f949b52678/1750500599/dash_h264.mpd?t=1476736935' WHERE Id = 22;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/227300/455253/f717b44f949ed6c824778b30d516147bdaaad95a/1750482436/dash_h264.mpd?t=1683632053' WHERE Id = 23;
-    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/359550/1783869451/70dcfba1288cd47d5ba7398013cbfbc1445e0b75/1780434049/dash_h264.mpd?t=1780434372' WHERE Id = 24;
-    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/440/129304/a9d97ffaf28cac468369400c12abe442a7b688b2/1749861261/dash_h264.mpd?t=1682961253' WHERE Id = 25;
-    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/377160/1672571219/644e16118aab9bd7107055611003b0383f459b6a/1762791676/dash_h264.mpd?t=1762798746' WHERE Id = 26;
+            UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/377160/1672571219/644e16118aab9bd7107055611003b0383f459b6a/1762791676/dash_h264.mpd?t=1762798746' WHERE Id = 26;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/489830/77128/20c56f14e492b05846f7262a246b4e4f0d455f7f/1750536877/dash_h264.mpd?t=1476991615' WHERE Id = 27;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/374320/48797/e6075d14ad252fe2660a62e7c8b7eaf0afa64096/1750520094/dash_h264.mpd?t=1700587333' WHERE Id = 28;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/814380/322401/63cf1fdf9c16536f04b08a5b1939909f7a99a340/1750586450/dash_h264.mpd?t=1603837979' WHERE Id = 29;
@@ -1342,8 +1192,7 @@ BEGIN
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/1627720/614254/a2464aab03521fe2627046afc34a74067cca84fc/1750713680/dash_h264.mpd?t=1696396705' WHERE Id = 62;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/2050650/657549/cb3c3f74c8ef584d34401e5786b1858845df8fbe/1750745214/dash_h264.mpd?t=1707455759' WHERE Id = 63;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/1888160/601222/3676f0a33eab9d520ebd3e4d61ba0c7bf62a8062/1750739939/dash_h264.mpd?t=1693376574' WHERE Id = 64;
-    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/230410/1955828003/fb2f20b2adc7e8d0bd0587dbe065b0ff7e54e84d/1774375579/dash_h264.mpd?t=1774451710' WHERE Id = 65;
-    UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/322330/1654751406/ed2882d005578965c224fdd45423bf7afb38a3b8/1776356255/dash_h264.mpd?t=1776359429' WHERE Id = 66;
+        UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/322330/1654751406/ed2882d005578965c224fdd45423bf7afb38a3b8/1776356255/dash_h264.mpd?t=1776359429' WHERE Id = 66;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/394360/682731/bd7bbea629ccbef568dd3c4d8552ba6e05b3c0ed/1750525316/dash_h264.mpd?t=1712235668' WHERE Id = 67;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/1326470/541725/76f298f949c4ae5b4257fa2056112f8d34285799/1750672622/dash_h264.mpd?t=1677175226' WHERE Id = 68;
 END
@@ -1516,8 +1365,7 @@ BEGIN
     (24, 14, 11, 1, 599900),
     (25, 15, 14, 1, 49900),
     (26, 15, 29, 1, 599900),
-    (27, 15, 25, 1, 0),
-    (28, 16, 58, 1, 99900),
+    (27, 16, 58, 1, 99900),
     (29, 16, 18, 1, 399900),
     (30, 17, 11, 1, 599900),
     (31, 17, 60, 1, 279900),
@@ -1564,8 +1412,7 @@ BEGIN
     (2, 1, 29, NULL, N'2026-03-21 14:36:30.9233333', N'2026-03-21 14:36:30.9233333', 716),
     (3, 1, 16, NULL, N'2026-03-21 14:36:30.9233333', N'2026-03-21 14:36:30.9233333', 1482),
     (4, 2, 6, NULL, N'2026-02-26 14:36:30.9233333', N'2026-02-26 14:36:30.9233333', 4110),
-    (5, 2, 65, NULL, N'2026-02-26 14:36:30.9233333', N'2026-02-26 14:36:30.9233333', 1985),
-    (6, 2, 14, NULL, N'2026-05-16 14:36:30.9233333', N'2026-05-24 14:36:30.9233333', 300),
+    (5, 2, 14, NULL, N'2026-05-16 14:36:30.9233333', N'2026-05-24 14:36:30.9233333', 300),
     (7, 2, 64, NULL, N'2026-05-16 14:36:30.9233333', N'2026-05-16 14:36:30.9233333', 367),
     (8, 2, 20, NULL, N'2026-05-16 14:36:30.9233333', N'2026-05-28 14:36:30.9233333', 1111),
     (9, 2, 67, NULL, N'2026-04-28 14:36:30.9233333', N'2026-06-06 14:36:30.9233333', 3067),
