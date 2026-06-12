@@ -40,33 +40,8 @@ export default function WalletModal({ onClose }) {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: "rgba(0,0,0,0.8)",
-        backdropFilter: "blur(4px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: "#16162a",
-          borderRadius: 16,
-          padding: 32,
-          width: 440,
-          border: "1px solid #2a2a4a",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ width: 440 }} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div
           style={{
@@ -203,17 +178,7 @@ export default function WalletModal({ onClose }) {
         <button
           onClick={handleTopUp}
           disabled={loading}
-          style={{
-            width: "100%",
-            padding: 14,
-            background: "linear-gradient(135deg, #4fc3f7, #2196f3)",
-            color: "#000",
-            border: "none",
-            borderRadius: 10,
-            fontSize: 16,
-            fontWeight: 700,
-            cursor: "pointer",
-          }}
+          className="btn btn-primary btn-block btn-lg"
         >
           {loading
             ? "Đang xử lý..."

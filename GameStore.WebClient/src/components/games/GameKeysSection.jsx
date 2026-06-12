@@ -29,7 +29,8 @@ export default function GameKeysSection({ user, owned, gameKeys, keysLoading, ha
           <p style={{ color: "#888", marginTop: 16, fontSize: 14 }}>{t("gameDetail.buyToGetKeys")}</p>
           <button
             onClick={handleBuyNow}
-            style={{ marginTop: 16, padding: "10px 24px", background: "#fff", color: "#000", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: "nowrap" }}
+            className="btn btn-primary"
+            style={{ marginTop: 16, padding: "10px 24px", fontSize: 12, letterSpacing: 1, whiteSpace: "nowrap" }}
           >
             {t("gameDetail.buyNow")}
           </button>

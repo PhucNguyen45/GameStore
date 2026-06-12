@@ -9,6 +9,7 @@ using GameStore.Entities.Games;
 using GameStore.Repository.EFCore;
 using GameStore.DTOs.Orders;
 using GameStore.Services;
+using GameStore.Repository;
 
 namespace GameStore.Services;
 
@@ -17,10 +18,10 @@ public class OrderService : IOrderService
     private readonly IOrderRepository _orderRepository;
     private readonly IGameRepository _gameRepository;
     private readonly IUserRepository _userRepository;
-    private readonly GameStore.Repository.GameStoreDbContext _context;
+    private readonly GameStoreDbContext _context;
     private readonly INotificationService _notificationService;
 
-    public OrderService(IOrderRepository orderRepository, IGameRepository gameRepository, IUserRepository userRepository, GameStore.Repository.GameStoreDbContext context,
+    public OrderService(IOrderRepository orderRepository, IGameRepository gameRepository, IUserRepository userRepository, GameStoreDbContext context,
     INotificationService notificationService)
     {
         _orderRepository = orderRepository;
@@ -164,7 +165,7 @@ public class OrderService : IOrderService
 
         if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase) && order.Status != "Completed")
         {
-            // Gán key cho từng game
+            // Gán key cho từng game + tạo Library entries
             foreach (var detail in order.OrderDetails)
             {
                 for (int i = 0; i < detail.Quantity; i++)
@@ -178,6 +179,18 @@ public class OrderService : IOrderService
                     key.UsedAt = DateTime.UtcNow;
                     key.OrderDetailId = detail.Id;
                     _context.GameKeys.Update(key);
+                }
+
+                // Tạo Library entry nếu user chưa sở hữu game này
+                var owned = await _context.Libraries.AnyAsync(l => l.UserId == order.UserId && l.GameId == detail.GameId);
+                if (!owned)
+                {
+                    _context.Libraries.Add(new Library
+                    {
+                        UserId = order.UserId,
+                        GameId = detail.GameId,
+                        AcquiredAt = DateTime.UtcNow
+                    });
                 }
             }
             await _notificationService.CreateNotificationAsync(order.UserId, "Đơn hàng đã được duyệt", $"Đơn hàng #{order.Id} đã được phê duyệt. Kiểm tra email để nhận key game.", $"/invoice/{order.Id}");

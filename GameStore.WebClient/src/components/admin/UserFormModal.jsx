@@ -51,28 +51,8 @@ export default function UserFormModal({ user, onClose, onSave }) {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.8)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-      }}
-    >
-      <div
-        style={{
-          background: "#111118",
-          borderRadius: 12,
-          padding: 30,
-          width: 450,
-          maxHeight: "90vh",
-          overflow: "auto",
-          border: "1px solid #1a1a2e",
-        }}
-      >
+    <div className="modal-overlay">
+      <div className="modal-content" style={{ width: 450 }}>
         <div
           style={{
             display: "flex",
@@ -127,16 +107,6 @@ export default function UserFormModal({ user, onClose, onSave }) {
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
               placeholder="Nhập số điện thoại..."
-            />
-          </div>
-
-          <div>
-            <label style={labelStyle}>URL ảnh đại diện</label>
-            <input
-              style={inputStyle}
-              value={form.avatarUrl}
-              onChange={(e) => setForm({ ...form, avatarUrl: e.target.value })}
-              placeholder="Nhập URL ảnh đại diện..."
             />
           </div>
 

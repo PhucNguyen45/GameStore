@@ -27,16 +27,40 @@ export default function App() {
     <>
       <Toaster
         position="top-center"
+        reverseOrder={false}
         toastOptions={{
+          duration: 3500,
           style: {
             background: "#16162a",
             color: "#fff",
             border: "1px solid #2a2a4a",
             borderRadius: 10,
             fontSize: 14,
+            padding: "12px 18px",
+            minWidth: 280,
+            maxWidth: 420,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
           },
-          success: { iconTheme: { primary: "#4caf50", secondary: "#fff" } },
-          error: { iconTheme: { primary: "#e94560", secondary: "#fff" } },
+          success: {
+            iconTheme: { primary: "#4caf50", secondary: "#fff" },
+            style: {
+              border: "1px solid rgba(76,175,80,0.3)",
+              background: "linear-gradient(135deg, #16162a 0%, #1a2e1a 100%)",
+            },
+          },
+          error: {
+            iconTheme: { primary: "#e94560", secondary: "#fff" },
+            style: {
+              border: "1px solid rgba(233,69,96,0.3)",
+              background: "linear-gradient(135deg, #16162a 0%, #2e1a1a 100%)",
+            },
+          },
+          loading: {
+            style: {
+              border: "1px solid rgba(255,255,255,0.1)",
+              background: "linear-gradient(135deg, #16162a 0%, #1a1a2e 100%)",
+            },
+          },
         }}
       />
       <AuthProvider>

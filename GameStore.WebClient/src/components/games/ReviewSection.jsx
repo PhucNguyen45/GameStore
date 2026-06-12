@@ -28,7 +28,8 @@ export default function ReviewSection({
         {owned && !hasReviewed && !showReviewForm && (
           <button
             onClick={() => setShowReviewForm(true)}
-            style={{ padding: "10px 24px", background: "#fff", color: "#000", border: "none", borderRadius: 4, cursor: "pointer", fontSize: 12, fontWeight: 700, letterSpacing: 1, whiteSpace: "nowrap" }}
+            className="btn btn-primary"
+            style={{ padding: "10px 24px", fontSize: 12, letterSpacing: 1, whiteSpace: "nowrap" }}
           >
             {t("gameDetail.writeReview")}
           </button>
@@ -82,10 +83,10 @@ export default function ReviewSection({
             {t("gameDetail.recommend")}
           </label>
           <div style={{ display: "flex", gap: 10 }}>
-            <button type="submit" disabled={submittingReview} className="btn-primary" style={{ padding: "10px 20px" }}>
+            <button type="submit" disabled={submittingReview} className="btn btn-primary">
               {submittingReview ? t("gameDetail.submitting") : t("gameDetail.submitReview")}
             </button>
-            <button type="button" onClick={() => setShowReviewForm(false)} className="btn-outline" style={{ padding: "10px 20px" }}>
+            <button type="button" onClick={() => setShowReviewForm(false)} className="btn btn-outline">
               {t("gameDetail.cancel")}
             </button>
           </div>
@@ -132,7 +133,7 @@ export default function ReviewSection({
               <button
                 disabled={reviewPage === 1}
                 onClick={() => loadReviews(reviewPage - 1)}
-                style={{ padding: "6px 12px", background: "#2a2a2a", border: "none", borderRadius: 4, color: "#fff", cursor: "pointer" }}
+                className="btn-outline btn-sm"
               >
                 ←
               </button>
@@ -142,7 +143,7 @@ export default function ReviewSection({
               <button
                 disabled={reviewPage === totalReviewPages}
                 onClick={() => loadReviews(reviewPage + 1)}
-                style={{ padding: "6px 12px", background: "#2a2a2a", border: "none", borderRadius: 4, color: "#fff", cursor: "pointer" }}
+                className="btn-outline btn-sm"
               >
                 →
               </button>

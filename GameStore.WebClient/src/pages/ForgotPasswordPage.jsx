@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import { authAPI } from "../services/api";
 import toast from "react-hot-toast";
 import { Mail, ArrowLeft, Send, CheckCircle, Copy } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function ForgotPasswordPage() {
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
@@ -15,9 +17,7 @@ export default function ForgotPasswordPage() {
     e.preventDefault();
     if (!email.trim()) return;
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error("Email không hợp lệ", {
-        style: { background: "#16162a", color: "#fff", border: "1px solid #2a2a4a" },
-      });
+      toast.error(t("forgotPassword.emailInvalid"));
       return;
     }
 
@@ -26,14 +26,9 @@ export default function ForgotPasswordPage() {
       const { data } = await authAPI.forgotPassword(email);
       setSent(true);
       setResetToken(data.resetToken || "");
-      toast.success(data.message || "Yêu cầu đặt lại mật khẩu đã được gửi!", {
-        style: { background: "#16162a", color: "#fff", border: "1px solid #2a2a4a" },
-      });
+      toast.success(data.message || t("forgotPassword.success"));
     } catch (err) {
-      const message = err.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại";
-      toast.error(message, {
-        style: { background: "#16162a", color: "#fff", border: "1px solid #2a2a4a" },
-      });
+      toast.error(err.response?.data?.message || t("forgotPassword.error"));
     } finally {
       setLoading(false);
     }
@@ -41,9 +36,7 @@ export default function ForgotPasswordPage() {
 
   const copyToken = () => {
     navigator.clipboard.writeText(resetToken);
-    toast.success("Đã sao chép token!", {
-      style: { background: "#16162a", color: "#fff", border: "1px solid #2a2a4a" },
-    });
+    toast.success(t("forgotPassword.tokenCopied"));
   };
 
   return (
@@ -53,17 +46,12 @@ export default function ForgotPasswordPage() {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "70vh",
+        paddingTop: 40,
       }}
     >
       <div
-        style={{
-          background: "#16162a",
-          borderRadius: 16,
-          padding: 40,
-          width: "100%",
-          maxWidth: 440,
-          border: "1px solid #2a2a4a",
-        }}
+        className="card"
+        style={{ padding: 40, maxWidth: 440 }}
       >
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div
@@ -85,60 +73,26 @@ export default function ForgotPasswordPage() {
             )}
           </div>
           <h1 style={{ fontSize: 22, fontWeight: 700 }}>
-            {sent ? "Đã gửi yêu cầu" : "Quên mật khẩu"}
+            {sent ? t("forgotPassword.titleSent") : t("forgotPassword.title")}
           </h1>
           <p style={{ color: "#6b6b8e", fontSize: 14, marginTop: 8, lineHeight: 1.5 }}>
             {sent
-              ? "Vui lòng kiểm tra email của bạn để đặt lại mật khẩu."
-              : "Nhập email đã đăng ký để nhận link đặt lại mật khẩu."}
+              ? t("forgotPassword.descriptionSent")
+              : t("forgotPassword.description")}
           </p>
         </div>
 
         {!sent ? (
           <form onSubmit={handleSubmit}>
-            <div style={{ marginBottom: 20, position: "relative" }}>
-              <Mail
-                size={18}
-                color="#6b6b8e"
-                style={{ position: "absolute", left: 14, top: 14 }}
-              />
-              <input
-                type="email"
-                placeholder="Email của bạn"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "14px 14px 14px 42px",
-                  background: "#0a0a15",
-                  border: "1px solid #2a2a4a",
-                  borderRadius: 10,
-                  color: "#e0e0e0",
-                  fontSize: 14,
-                  outline: "none",
-                }}
-                required
-              />
+            <div className="input-icon" style={{ marginBottom: 20 }}>
+              <Mail size={18} className="icon" />
+              <input className="input" type="email" placeholder={t("forgotPassword.emailPlaceholder")} value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <button
               type="submit"
               disabled={loading}
-              style={{
-                width: "100%",
-                padding: 14,
-                background: loading ? "#555" : "var(--accent)",
-                color: "#fff",
-                border: "none",
-                borderRadius: 10,
-                fontSize: 15,
-                fontWeight: 700,
-                cursor: loading ? "not-allowed" : "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: 8,
-                transition: "all 0.2s",
-              }}
+              className="btn btn-primary btn-block"
+              style={{ padding: 14, fontSize: 15 }}
             >
               {loading ? (
                 <>
@@ -152,12 +106,12 @@ export default function ForgotPasswordPage() {
                       animation: "spin 0.8s linear infinite",
                     }}
                   />
-                  Đang gửi...
+                  {t("forgotPassword.sending")}
                 </>
               ) : (
                 <>
                   <Send size={18} />
-                  Gửi yêu cầu
+                  {t("forgotPassword.sendRequest")}
                 </>
               )}
             </button>
@@ -176,10 +130,10 @@ export default function ForgotPasswordPage() {
                 }}
               >
                 <p style={{ fontSize: 12, color: "#ffc107", fontWeight: 600, marginBottom: 8 }}>
-                  ⚠️ Môi trường phát triển
+                  {t("forgotPassword.devEnvironment")}
                 </p>
                 <p style={{ fontSize: 12, color: "#888", marginBottom: 8 }}>
-                  Token đặt lại mật khẩu của bạn:
+                  {t("forgotPassword.yourToken")}
                 </p>
                 <div
                   style={{
@@ -212,27 +166,17 @@ export default function ForgotPasswordPage() {
                       padding: 4,
                       flexShrink: 0,
                     }}
-                    title="Sao chép token"
+                    title={t("forgotPassword.copyToken")}
                   >
                     <Copy size={16} />
                   </button>
                 </div>
                 <Link
                   to={`/reset-password?token=${resetToken}`}
-                  style={{
-                    display: "block",
-                    textAlign: "center",
-                    marginTop: 12,
-                    padding: "10px",
-                    background: "var(--accent)",
-                    color: "#fff",
-                    borderRadius: 8,
-                    fontSize: 13,
-                    fontWeight: 600,
-                    textDecoration: "none",
-                  }}
+                  className="btn btn-primary btn-block"
+                  style={{ marginTop: 12, padding: 10, textDecoration: "none" }}
                 >
-                  Đặt lại mật khẩu ngay
+                  {t("forgotPassword.resetNow")}
                 </Link>
               </div>
             )}
@@ -255,7 +199,7 @@ export default function ForgotPasswordPage() {
             onMouseLeave={(e) => (e.currentTarget.style.color = "#6b6b8e")}
           >
             <ArrowLeft size={14} />
-            Quay lại đăng nhập
+            {t("forgotPassword.backToLogin")}
           </Link>
         </div>
       </div>

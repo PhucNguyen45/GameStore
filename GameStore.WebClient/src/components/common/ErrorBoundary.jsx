@@ -61,15 +61,13 @@ class ErrorBoundary extends Component {
           <div style={{ display: "flex", gap: 10 }}>
             <button
               onClick={this.handleReload}
-              className="btn-primary"
-              style={{ padding: "10px 20px" }}
+              className="btn btn-primary"
             >
               {t("error.reload")}
             </button>
             <button
               onClick={this.handleGoHome}
-              className="btn-outline"
-              style={{ padding: "10px 20px" }}
+              className="btn btn-outline"
             >
               {t("error.goHome")}
             </button>

@@ -51,6 +51,7 @@ export const gameAPI = {
   create: (d) => api.post("/admin/games", d), // Admin CRUD
   update: (id, d) => api.put(`/admin/games/${id}`, d),
   delete: (id) => api.delete(`/admin/games/${id}`),
+  checkStock: (gameIds) => api.get("/games/stock", { params: { gameIds: gameIds.join(",") } }),
 };
 export const genreAPI = { getAll: () => api.get("/genres") };
 export const orderAPI = {

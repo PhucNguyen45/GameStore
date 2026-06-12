@@ -115,7 +115,7 @@ export default function LibraryPage() {
                   padding: "8px 12px 8px 32px",
                   background: "#2a2a2a",
                   border: "1px solid #333",
-                  borderRadius: 4,
+                  borderRadius: 10,
                   color: "#fff",
                   fontSize: 12,
                   outline: "none",
@@ -132,7 +132,7 @@ export default function LibraryPage() {
                   onClick={() => setFilter(f.id)}
                   style={{
                     padding: "8px 14px",
-                    borderRadius: 4,
+                    borderRadius: 10,
                     border: "none",
                     cursor: "pointer",
                     fontSize: 11,
@@ -157,7 +157,7 @@ export default function LibraryPage() {
                 padding: "8px 12px",
                 background: "#2a2a2a",
                 border: "1px solid #333",
-                borderRadius: 4,
+                borderRadius: 10,
                 color: "#ccc",
                 fontSize: 11,
                 fontWeight: 600,
@@ -507,19 +507,7 @@ function EmptyState({ gamesCount, search }) {
       </p>
       {gamesCount === 0 && (
         <Link to="/store">
-          <button
-            style={{
-              padding: "12px 32px",
-              background: "#fff",
-              color: "#000",
-              border: "none",
-              borderRadius: 4,
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: 1,
-            }}
-          >
+          <button className="btn btn-primary">
             {t("library.browseStore")}
           </button>
         </Link>
@@ -563,19 +551,7 @@ function LoginPrompt() {
         {t("library.loginDesc")}
       </p>
       <Link to="/login">
-        <button
-          style={{
-            padding: "12px 32px",
-            background: "#fff",
-            color: "#000",
-            border: "none",
-            borderRadius: 4,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 700,
-            letterSpacing: 1,
-          }}
-        >
+        <button className="btn btn-primary" style={{ padding: "12px 32px", fontSize: 13 }}>
           {t("library.signIn")}
         </button>
       </Link>
@@ -585,7 +561,7 @@ function LoginPrompt() {
 
 const viewBtnStyle = {
   padding: 8,
-  borderRadius: 4,
+  borderRadius: 10,
   border: "1px solid #333",
   cursor: "pointer",
   color: "#ccc",

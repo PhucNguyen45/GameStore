@@ -49,55 +49,21 @@ export default function LoginPage() {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "70vh",
+        paddingTop: 40,
       }}
     >
       {/* ERROR MODAL */}
       {error && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: "rgba(0,0,0,0.8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 9999,
-          }}
-        >
-          <div
-            style={{
-              background: "#1a1a2e",
-              borderRadius: 16,
-              padding: 40,
-              width: 400,
-              border: "2px solid #e94560",
-              textAlign: "center",
-            }}
-          >
-            <AlertCircle
-              size={48}
-              color="#e94560"
-              style={{ marginBottom: 16 }}
-            />
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ width: 400, textAlign: "center", border: "2px solid #e94560" }}>
+            <AlertCircle size={48} color="#e94560" style={{ marginBottom: 16 }} />
             <h2 style={{ color: "#fff", marginBottom: 8 }}>{t("auth.loginFailed")}</h2>
             <p style={{ color: "#e94560", marginBottom: 24, fontSize: 16 }}>
               {error}
             </p>
             <button
               onClick={() => setError("")}
-              style={{
-                padding: "12px 40px",
-                background: "#e94560",
-                color: "#fff",
-                border: "none",
-                borderRadius: 8,
-                fontSize: 16,
-                fontWeight: 700,
-                cursor: "pointer",
-              }}
+              className="btn btn-danger btn-lg"
             >
               {t("common.ok")}
             </button>
@@ -107,14 +73,8 @@ export default function LoginPage() {
 
       {/* LOGIN FORM */}
       <div
-        style={{
-          background: "#16162a",
-          borderRadius: 16,
-          padding: 40,
-          width: "100%",
-          maxWidth: 420,
-          border: "1px solid #2a2a4a",
-        }}
+        className="card"
+        style={{ padding: 40, maxWidth: 420 }}
       >
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div
@@ -138,58 +98,18 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div style={{ marginBottom: 16, position: "relative" }}>
-            <User
-              size={18}
-              color="#6b6b8e"
-              style={{ position: "absolute", left: 14, top: 14 }}
-            />
-            <input
-              placeholder={t("auth.username")}
-              value={form.username}
-              onChange={(e) => setForm({ ...form, username: e.target.value })}
-              style={{
-                width: "100%",
-                padding: "14px 14px 14px 42px",
-                background: "#0a0a15",
-                border: "1px solid #2a2a4a",
-                borderRadius: 10,
-                color: "#e0e0e0",
-                fontSize: 14,
-                outline: "none",
-              }}
-              required
-            />
+          <div className="input-icon" style={{ marginBottom: 16 }}>
+            <User size={18} className="icon" />
+            <input className="input" placeholder={t("auth.username")} value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} required />
           </div>
-          <div style={{ marginBottom: 20, position: "relative" }}>
-            <Lock
-              size={18}
-              color="#6b6b8e"
-              style={{ position: "absolute", left: 14, top: 14 }}
-            />
-            <input
-              type="password"
-              placeholder={t("auth.password")}
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              style={{
-                width: "100%",
-                padding: "14px 14px 14px 42px",
-                background: "#0a0a15",
-                border: "1px solid #2a2a4a",
-                borderRadius: 10,
-                color: "#e0e0e0",
-                fontSize: 14,
-                outline: "none",
-              }}
-              required
-            />
+          <div className="input-icon" style={{ marginBottom: 20 }}>
+            <Lock size={18} className="icon" />
+            <input className="input" type="password" placeholder={t("auth.password")} value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
           </div>
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary"
-            style={{ width: "100%", padding: 14, fontSize: 16 }}
+            className="btn btn-primary btn-block btn-lg"
           >
             {loading ? t("auth.loggingIn") : t("auth.login")}
           </button>

@@ -1,19 +1,4 @@
-// GameStore.WebClient/src/components/common/PageSkeleton.jsx
-import { useEffect } from "react";
-
-let injected = false;
-function injectShimmer() {
-  if (injected) return;
-  injected = true;
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-  `;
-  document.head.appendChild(style);
-}
+// GameStore.WebClient/src/common/PageSkeleton.jsx
 
 const shimmer = {
   background: "linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%)",
@@ -24,8 +9,6 @@ const shimmer = {
 
 // ===== ORDER HISTORY SKELETON =====
 export function OrderHistorySkeleton() {
-  useEffect(() => { injectShimmer(); }, []);
-
   return (
     <div className="container" style={{ paddingTop: 30, maxWidth: 1000 }}>
       <div style={{ width: 200, height: 28, marginBottom: 24, ...shimmer }} />
@@ -60,8 +43,6 @@ export function OrderHistorySkeleton() {
 
 // ===== INVOICE SKELETON =====
 export function InvoiceSkeleton() {
-  useEffect(() => { injectShimmer(); }, []);
-
   return (
     <div className="container" style={{ paddingTop: 40, maxWidth: 800 }}>
       <div style={{ width: 120, height: 16, marginBottom: 30, ...shimmer }} />
@@ -109,8 +90,6 @@ export function InvoiceSkeleton() {
 
 // ===== ADMIN SKELETON =====
 export function AdminSkeleton() {
-  useEffect(() => { injectShimmer(); }, []);
-
   return (
     <div style={{ display: "flex", minHeight: "100vh", background: "var(--bg-primary)" }}>
       {/* Sidebar skeleton */}
@@ -144,8 +123,6 @@ export function AdminSkeleton() {
 
 // ===== PROFILE SKELETON =====
 export function ProfileSkeleton() {
-  useEffect(() => { injectShimmer(); }, []);
-
   return (
     <div className="container" style={{ paddingTop: 30, paddingBottom: 60, maxWidth: 720 }}>
       <div style={{ width: 200, height: 28, marginBottom: 6, ...shimmer }} />

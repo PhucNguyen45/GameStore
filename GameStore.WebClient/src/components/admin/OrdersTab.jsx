@@ -17,14 +17,8 @@ function OrderActionModal({ action, order, onClose, onConfirm, loading }) {
   const accent = isApprove ? "#4caf50" : "#e94560";
   const accentBg = isApprove ? "#4caf5018" : "#e9456018";
   return (
-    <div style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)",
-      display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999,
-    }}>
-      <div style={{
-        background: "#111118", borderRadius: 12, padding: "28px 32px",
-        width: 400, border: "1px solid #1a1a2e", boxShadow: "0 8px 40px rgba(0,0,0,0.6)",
-      }}>
+    <div className="modal-overlay">
+      <div className="modal-content" style={{ width: 400, padding: "28px 32px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18 }}>
           <div style={{
             width: 40, height: 40, borderRadius: "50%",
@@ -289,31 +283,15 @@ export default function OrdersTab({
                   {formatVND(o.totalAmount || 0)}
                 </td>
                 <td style={{ padding: "9px 14px" }}>
-                  <span
-                    style={{
-                      padding: "4px 10px",
-                      borderRadius: 20,
-                      fontSize: 11,
-                      fontWeight: 700,
-                      background:
-                        o.status === "Completed"
-                          ? "#10b98122"
-                          : o.status === "Cancelled"
-                            ? "#ef444422"
-                            : o.status === "Refunded"
-                              ? "#f59e0b22"
-                              : "#3b82f622",
-                      color:
-                        o.status === "Completed"
-                          ? "#10b981"
-                          : o.status === "Cancelled"
-                            ? "#ef4444"
-                            : o.status === "Refunded"
-                              ? "#f59e0b"
-                              : "#3b82f6",
-                      border: "1px solid currentColor",
-                    }}
-                  >
+                  <span className={`badge ${
+                    o.status === "Completed"
+                      ? "badge-success"
+                      : o.status === "Cancelled"
+                        ? "badge-danger"
+                        : o.status === "Refunded"
+                          ? "badge-warning"
+                          : "badge-accent"
+                  }`}>
                     {statusVN[o.status] || o.status}
                   </span>
                 </td>

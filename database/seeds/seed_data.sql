@@ -902,7 +902,6 @@ GO
     UPDATE Games SET DiscountPrice = 799900 WHERE Id = 64;   -- AC VI: 1199000 → -33%
     UPDATE Games SET DiscountPrice = 699900 WHERE Id = 67;   -- HoI IV: 999900 → -30%
     UPDATE Games SET DiscountPrice = 399900 WHERE Id = 68;   -- Sons of Forest: 599900 → -33%
-END
 GO
 
 -- ============================================================================
@@ -1119,15 +1118,15 @@ BEGIN
     (12, 2, 56, 4, N'Subnautica là trải nghiệm dưới nước độc đáo và đáng sợ. Khám phá đại dương xa lạ với sinh vật biển kỳ lạ thực sự cuốn hút. Hơi buggy ở một số chỗ.', 1, 31, DATEADD(DAY, -20, GETUTCDATE()), DATEADD(DAY, -20, GETUTCDATE())),
 
     -- User 3 (Trần Văn Bình)
-    (13, 3, 30, 4, N'God of War là bản nâng cấp đồ họa đáng giá của CS:GO. Source 2 engine làm game đẹp hơn nhưng vẫn giữ được Kratos chền thoại. Vẫn là vua thể loại FPS competitive.', 1, 89, DATEADD(DAY, -70, GETUTCDATE()), DATEADD(DAY, -70, GETUTCDATE())),
+    (13, 3, 30, 4, N'God of War trên PC là một kiệt tác! Đồ họa tuyệt đẹp, cốt truyện cảm động về tình cha con, và gameplay đấu võ đỉnh cao. Leviathan Axe là một trong những vũ khí iconic nhất trong lịch sử game.', 1, 89, DATEADD(DAY, -70, GETUTCDATE()), DATEADD(DAY, -70, GETUTCDATE())),
     (14, 3, 7, 5, N'Cyberpunk 2077 sau bản 2.0 và Phantom Liberty đã trở thành game như mong đợi. Câu chuyện cảm động, thế giới Night City sống động, gameplay cải thiện rất nhiều.', 1, 67, DATEADD(DAY, -65, GETUTCDATE()), DATEADD(DAY, -65, GETUTCDATE())),
-    (15, 3, 31, 2, N'PUBG đã khá lỗi thời. Cheater nhiều, performance không tốt, và gameplay đã bị các game battle royale khác vượt mặt. Chỉ chơi nếu bạn có nhóm bạn.', 0, 12, DATEADD(DAY, -58, GETUTCDATE()), DATEADD(DAY, -58, GETUTCDATE())),
+    (15, 3, 31, 2, N'Spider-Man Remastered có đồ họa đẹp và nhân vật hấp dẫn, nhưng gameplay khá lặp đi lặp lại. Nhiệm vụ phụ thiếu sáng tạo và thành phố dù đẹp nhưng thiếu chiều sâu tương tác. Chỉ đáng chơi nếu bạn là fan của Spider-Man.', 0, 12, DATEADD(DAY, -58, GETUTCDATE()), DATEADD(DAY, -58, GETUTCDATE())),
     (16, 3, 17, 5, N'Phasmophobia là game co-op horror hay nhất hiện tại. Mỗi phiên đi săn ma đều khác nhau, cảm giác hồi hộp thực sự rất cuốn hút. Chơi với bạn bè là best experience.', 1, 44, DATEADD(DAY, -52, GETUTCDATE()), DATEADD(DAY, -52, GETUTCDATE())),
     (17, 3, 55, 5, N'Deep Rock Galactic là game co-op FPS hay nhất. Mỗi nhiệm vụ đều khác nhau, gameplay đa dạng, cộng đồng thân thiện. ROCK AND STONE!', 1, 71, DATEADD(DAY, -28, GETUTCDATE()), DATEADD(DAY, -28, GETUTCDATE())),
     (18, 3, 62, 4, N'Lies of P là soulslike phương Đông xuất sắc. Atmosphere đẹp, combat chặt chẽ, weapon assembly system sáng tạo. Hơi khó nhưng rất đáng chơi.', 1, 36, DATEADD(DAY, -15, GETUTCDATE()), DATEADD(DAY, -15, GETUTCDATE())),
 
     -- User 4 (Phạm Thị Cúc)
-    (19, 4, 50, 5, N'Dota 2 vẫn là MOBA hay nhất dù đã hơn 10 năm. Complexity và depth không game nào sánh bằng. Cộng đồng hơi toxic nhưng bù lại gameplay cực kỳ mãn nguyện.', 1, 95, DATEADD(DAY, -75, GETUTCDATE()), DATEADD(DAY, -75, GETUTCDATE())),
+    (19, 4, 50, 5, N'Factorio là đỉnh cao của thể loại automation và factory building. Cảm giác xây dựng dây chuyền sản xuất tự động hóa thực sự gây nghiện. Mỗi vấn đề đều có nhiều cách giải quyết, khuyến khích sáng tạo. The factory must grow!', 1, 95, DATEADD(DAY, -75, GETUTCDATE()), DATEADD(DAY, -75, GETUTCDATE())),
     (20, 4, 9, 4, N'Red Dead Redemption 2 là một tác phẩm nghệ thuật. Thế giới chi tiết đến kinh ngạc, câu chuyện cảm động. Hơi chậm ở đầu game nhưng kiên nhẫn sẽ được đền đáp.', 1, 48, DATEADD(DAY, -62, GETUTCDATE()), DATEADD(DAY, -62, GETUTCDATE())),
     (21, 4, 14, 4, N'Left 4 Dead 2 dù ra mắt năm 2009 vẫn rất vui khi chơi với bạn bè. Campaign đa dạng, cảm giác cooperative cực tốt. Một classic không thể thiếu trong thư viện.', 1, 33, DATEADD(DAY, -55, GETUTCDATE()), DATEADD(DAY, -55, GETUTCDATE())),
     (22, 4, 49, 5, N'RimWorld là colony simulator xuất sắc nhất. AI storyteller tạo ra những câu chuyện không thể tin được. Mỗi playthrough đều khác nhau. Dễ dàng chìm đắm hàng trăm giờ.', 1, 55, DATEADD(DAY, -32, GETUTCDATE()), DATEADD(DAY, -32, GETUTCDATE())),
@@ -1480,3 +1479,367 @@ GO
 --        15 payments, 24 libraries, 17 notifications
 --        17
 
+
+-- ============================================================================
+
+-- ============================================================================
+-- 14. EXTRA GAMES (IDs 69-83: 15 paid Steam games)
+-- ============================================================================
+SET IDENTITY_INSERT Games ON;
+    INSERT INTO Games (Id, Title, Description, Price, Developer, Publisher, ReleaseDate,
+        CoverImageUrl, Screenshots, TotalSales, Rating, RatingCount, IsActive, CreatedAt,
+        MinimumOS, MinimumProcessor, MinimumMemory, MinimumGraphics, MinimumStorage, TrailerUrl)
+    VALUES
+    -- Portal 2 (AppID: 620)
+    (69,
+        N'Portal 2',
+        N'Portal 2 draws from the award-winning formula of innovative gameplay, story, and music that earned the original Portal over 70 industry accolades. The single-player portion introduces a cast of dynamic new characters, a host of fresh puzzle elements, and a much larger set of devious test chambers.',
+        142000, N'Valve', N'Valve', '2011-04-18',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/620/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 7 / Vista / XP', N'3.0 GHz P4, Dual Core 2.0', N'2 GB RAM', N'128 MB or more with Pixel Shader 2.0b support', N'8 GB', '') ,
+
+    -- DOOM (AppID: 379720)
+    (70,
+        N'DOOM',
+        N'Hell has invaded Earth in this critically acclaimed reboot of the iconic first-person shooter series. Rip and tear through demon hordes with powerful weapons, brutal glory kills, and a metal soundtrack.',
+        450000, N'id Software', N'Bethesda Softworks', '2016-05-12',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/379720/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 7/8.1/10 64-bit', N'Intel Core i5-2400 or AMD FX-8320', N'8 GB RAM', N'NVIDIA GeForce GTX 670 or AMD Radeon HD 7870', N'55 GB', '') ,
+
+    -- Disco Elysium - The Final Cut (AppID: 632470)
+    (71,
+        N'Disco Elysium - The Final Cut',
+        N'Disco Elysium is a groundbreaking open world role playing game. You''re a detective who has lost your memory. Solve a murder case while navigating a deeply philosophical world with a unique skill system.',
+        495000, N'ZA/UM', N'ZA/UM', '2019-10-15',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/632470/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 7 or 8 64-bit', N'Intel Core i5-750 or AMD Phenom II X4', N'4 GB RAM', N'NVIDIA GeForce GTX 460 or AMD Radeon HD 5770', N'20 GB', '') ,
+
+    -- It Takes Two (AppID: 1426210)
+    (72,
+        N'It Takes Two',
+        N'Embark on the craziest journey of your life in It Takes Two. Invite a friend to join for free with Friend''s Pass and work together across a huge variety of joyful gameplay challenges. A pure co-op adventure.',
+        790000, N'Hazelight Studios', N'Electronic Arts', '2021-03-25',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1426210/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i3-2100T or AMD FX 6100', N'8 GB RAM', N'NVIDIA GeForce GTX 660 or AMD Radeon HD 7850', N'50 GB', '') ,
+
+    -- Outer Wilds (AppID: 753640)
+    (73,
+        N'Outer Wilds',
+        N'Outer Wilds is an open world mystery about a solar system trapped in an endless time loop. Explore a handmade world and uncover the secrets of a long-dead alien civilization in this award-winning exploration game.',
+        319000, N'Mobius Digital', N'Annapurna Interactive', '2020-06-18',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/753640/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 7 64-bit', N'Intel Core i5-2300 or AMD FX-4350', N'6 GB RAM', N'NVIDIA GeForce GTX 560 or AMD Radeon HD 6870', N'8 GB', '') ,
+
+    -- Forza Horizon 5 (AppID: 1551360)
+    (74,
+        N'Forza Horizon 5',
+        N'Explore the vibrant open world landscapes of Mexico with limitless fun driving action in the world''s greatest cars. Lead breathtaking expeditions across diverse landscapes in the ultimate Horizon experience.',
+        990000, N'Playground Games', N'Xbox Game Studios', '2021-11-08',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1551360/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i5-4460 or AMD Ryzen 3 1200', N'8 GB RAM', N'NVIDIA GeForce GTX 970 or AMD Radeon RX 470', N'110 GB', '') ,
+
+    -- Street Fighter 6 (AppID: 1364780)
+    (75,
+        N'Street Fighter 6',
+        N'The evolution of fighting games is here! Street Fighter 6 expands the legendary franchise with three distinct modes: Fighting Ground, World Tour, and Battle Hub. Experience cutting-edge graphics and a new combat system.',
+        794000, N'CAPCOM Co., Ltd.', N'CAPCOM Co., Ltd.', '2023-06-01',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1364780/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i5-7500 or AMD Ryzen 3 1200', N'8 GB RAM', N'NVIDIA GeForce GTX 1060 or AMD Radeon RX 580', N'25 GB', '') ,
+
+    -- Persona 5 Royal (AppID: 1687950)
+    (76,
+        N'Persona 5 Royal',
+        N'Prepare for the award-winning RPG experience in this definitive edition of Persona 5 Royal. Don the mask of a Phantom Thief and change the world in this critically acclaimed JRPG featuring downloadable content included.',
+        999000, N'ATLUS', N'SEGA', '2022-10-20',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1687950/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i5-2300 or AMD FX-4350', N'8 GB RAM', N'NVIDIA GeForce GTX 660 or AMD Radeon HD 7870', N'40 GB', '') ,
+
+    -- Hades II (AppID: 1145350)
+    (77,
+        N'Hades II',
+        N'Battle beyond the Underworld using dark sorcery to take on the Titan of Time in this bewitching sequel to the award-winning rogue-like dungeon crawler. Unleash powerful new abilities in this immersive action RPG.',
+        385000, N'Supergiant Games', N'Supergiant Games', '2025-09-25',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1145350/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i5-2300 or AMD FX-4350', N'8 GB RAM', N'NVIDIA GeForce GTX 660 or AMD Radeon HD 7870', N'10 GB', '') ,
+
+    -- Kingdom Come: Deliverance II (AppID: 1771300)
+    (78,
+        N'Kingdom Come: Deliverance II',
+        N'Kingdom Come: Deliverance II is a story-driven action RPG set in 15th century Bohemia. Experience an epic medieval adventure through a stunningly beautiful open world as Henry of Skalitz.',
+        999000, N'Warhorse Studios', N'Deep Silver', '2025-02-04',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1771300/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i5-8400 or AMD Ryzen 5 2600', N'16 GB RAM', N'NVIDIA GeForce GTX 1060 or AMD Radeon RX 580', N'100 GB', '') ,
+
+    -- A Plague Tale: Requiem (AppID: 1182900)
+    (79,
+        N'A Plague Tale: Requiem',
+        N'Far across the sea, an island calls. Embark on a heart-wrenching journey into a brutal breathtaking world in this award-winning narrative-driven action-adventure sequel. Survive a medieval plague with new tools and abilities.',
+        700000, N'Asobo Studio', N'Focus Entertainment', '2022-10-17',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1182900/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i5-4690 or AMD Ryzen 3 1200', N'16 GB RAM', N'NVIDIA GeForce GTX 970 or AMD Radeon RX 590', N'55 GB', '') ,
+
+    -- Starfield (AppID: 1716740)
+    (80,
+        N'Starfield',
+        N'Starfield is the first new universe in over 25 years from Bethesda Game Studios. Create your character and explore the vast reaches of space on an epic journey to answer humanity''s greatest mystery.',
+        999000, N'Bethesda Game Studios', N'Bethesda Softworks', '2023-09-05',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1716740/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i5-8400 or AMD Ryzen 5 2600', N'16 GB RAM', N'NVIDIA GeForce GTX 1070 Ti or AMD Radeon RX 5700', N'125 GB', '') ,
+
+    -- FINAL FANTASY VII REMAKE INTERGRADE (AppID: 1462040)
+    (81,
+        N'FINAL FANTASY VII REMAKE INTERGRADE',
+        N'Cloud Strife joins the resistance group Avalanche to fight the megacorporation Shinra. This reimagining of the beloved classic features thrilling real-time combat and stunning visuals.',
+        990000, N'Square Enix', N'Square Enix', '2022-06-17',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/1462040/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i5-3330 or AMD FX-8350', N'8 GB RAM', N'NVIDIA GeForce GTX 1080 or AMD Radeon RX 5700', N'100 GB', '') ,
+
+    -- Ghost of Tsushima DIRECTOR'S CUT (AppID: 2215430)
+    (82,
+        N'Ghost of Tsushima DIRECTOR''S CUT',
+        N'In the year 1274, the Mongol empire invades Tsushima Island. Fight through the open world of feudal Japan as the last remaining samurai, Jin Sakai, in this stunning action-adventure epic.',
+        999000, N'Sucker Punch Productions', N'PlayStation Publishing LLC', '2024-05-16',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2215430/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i5-8600 or AMD Ryzen 5 3600', N'16 GB RAM', N'NVIDIA GeForce GTX 1060 or AMD Radeon RX 580', N'75 GB', '') ,
+
+    -- SILENT HILL 2 (AppID: 2124490)
+    (83,
+        N'SILENT HILL 2',
+        N'A remake of the classic survival horror game. James Sunderland receives a letter from his deceased wife leading him to Silent Hill. Confront twisted creatures and uncover dark secrets in this psychological horror masterpiece.',
+        1199000, N'Bloober Team SA', N'KONAMI', '2024-10-07',
+        'https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/2124490/header.jpg',
+        '[]', 0, 4.5, 0, 1, GETUTCDATE(),
+        N'Windows 10 64-bit', N'Intel Core i5-8400 or AMD Ryzen 5 2600', N'16 GB RAM', N'NVIDIA GeForce GTX 1070 Ti or AMD Radeon RX 5700', N'50 GB', '') ;
+
+    SET IDENTITY_INSERT Games OFF;
+GO
+
+-- ============================================================================
+-- 15. EXTRA GAME GENRES (for games 69-83)
+-- ============================================================================
+SET IDENTITY_INSERT GameGenres ON;
+    INSERT INTO GameGenres (Id, GameId, GenreId) VALUES
+    (236, 69, 1),
+    (237, 69, 9),
+    (238, 69, 29),
+    (239, 69, 30),
+    (240, 70, 1),
+    (241, 70, 6),
+    (242, 70, 30),
+    (243, 71, 2),
+    (244, 71, 5),
+    (245, 71, 7),
+    (246, 71, 35),
+    (247, 72, 1),
+    (248, 72, 7),
+    (249, 72, 29),
+    (250, 72, 33),
+    (251, 73, 5),
+    (252, 73, 7),
+    (253, 73, 9),
+    (254, 73, 12),
+    (255, 74, 4),
+    (256, 74, 12),
+    (257, 74, 14),
+    (258, 74, 31),
+    (259, 75, 1),
+    (260, 75, 15),
+    (261, 75, 31),
+    (262, 76, 2),
+    (263, 76, 7),
+    (264, 76, 18),
+    (265, 76, 35),
+    (266, 77, 1),
+    (267, 77, 2),
+    (268, 77, 5),
+    (269, 77, 25),
+    (270, 78, 1),
+    (271, 78, 2),
+    (272, 78, 7),
+    (273, 78, 12),
+    (274, 79, 1),
+    (275, 79, 7),
+    (276, 79, 10),
+    (277, 79, 35),
+    (278, 80, 1),
+    (279, 80, 2),
+    (280, 80, 12),
+    (281, 80, 30),
+    (282, 81, 1),
+    (283, 81, 2),
+    (284, 81, 7),
+    (285, 81, 35),
+    (286, 82, 1),
+    (287, 82, 7),
+    (288, 82, 12),
+    (289, 82, 13),
+    (290, 83, 1),
+    (291, 83, 7),
+    (292, 83, 10),
+    (293, 83, 30);
+    SET IDENTITY_INSERT GameGenres OFF;
+GO
+
+-- ============================================================================
+-- 16. EXTRA GAME KEYS (2 keys per game, for games 69-83)
+-- ============================================================================
+SET IDENTITY_INSERT GameKeys ON;
+    INSERT INTO GameKeys (Id, GameId, KeyCode, IsUsed, CreatedAt) VALUES
+    (132, 69, N'PRTL-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (133, 69, N'PRTL-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (134, 70, N'DOOM-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (135, 70, N'DOOM-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (136, 71, N'DSCE-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (137, 71, N'DSCE-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (138, 72, N'IT2-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (139, 72, N'IT2-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (140, 73, N'OWLD-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (141, 73, N'OWLD-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (142, 74, N'FH5-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (143, 74, N'FH5-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (144, 75, N'SF6-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (145, 75, N'SF6-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (146, 76, N'P5R-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (147, 76, N'P5R-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (148, 77, N'HAD2-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (149, 77, N'HAD2-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (150, 78, N'KCD2-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (151, 78, N'KCD2-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (152, 79, N'PLAG-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (153, 79, N'PLAG-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (154, 80, N'STRF-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (155, 80, N'STRF-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (156, 81, N'FF7R-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (157, 81, N'FF7R-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (158, 82, N'GOST-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (159, 82, N'GOST-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE()),
+    (160, 83, N'SH2-A1B2C-3D4E5-F6G7H8-I9J0K1', 0, GETUTCDATE()),
+    (161, 83, N'SH2-K2L3M-4N5P6-Q7R8S9-T0U1V2', 0, GETUTCDATE());
+    SET IDENTITY_INSERT GameKeys OFF;
+GO
+
+-- ============================================================================
+-- 17. DISCOUNT PRICES FOR EXTRA GAMES
+-- ============================================================================
+    UPDATE Games SET DiscountPrice = 99000 WHERE Id = 69;   -- Portal 2
+    UPDATE Games SET DiscountPrice = 279900 WHERE Id = 70;   -- DOOM
+    UPDATE Games SET DiscountPrice = 349900 WHERE Id = 71;   -- Disco Elysium - The Final Cut
+    UPDATE Games SET DiscountPrice = 499000 WHERE Id = 72;   -- It Takes Two
+    UPDATE Games SET DiscountPrice = 199000 WHERE Id = 73;   -- Outer Wilds
+    UPDATE Games SET DiscountPrice = 699000 WHERE Id = 74;   -- Forza Horizon 5
+    UPDATE Games SET DiscountPrice = 599000 WHERE Id = 75;   -- Street Fighter 6
+    UPDATE Games SET DiscountPrice = 699000 WHERE Id = 76;   -- Persona 5 Royal
+    UPDATE Games SET DiscountPrice = 249000 WHERE Id = 77;   -- Hades II
+    UPDATE Games SET DiscountPrice = 799000 WHERE Id = 78;   -- Kingdom Come: Deliverance II
+    UPDATE Games SET DiscountPrice = 499000 WHERE Id = 79;   -- A Plague Tale: Requiem
+    UPDATE Games SET DiscountPrice = 799000 WHERE Id = 80;   -- Starfield
+    UPDATE Games SET DiscountPrice = 699000 WHERE Id = 81;   -- FINAL FANTASY VII REMAKE INTERGRADE
+    UPDATE Games SET DiscountPrice = 699000 WHERE Id = 82;   -- Ghost of Tsushima DIRECTOR'S CUT
+    UPDATE Games SET DiscountPrice = 899000 WHERE Id = 83;   -- SILENT HILL 2
+GO
+
+-- ============================================================================
+-- 18. SCREENSHOTS URLs FOR EXTRA GAMES
+-- ============================================================================
+    -- Portal 2
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/620/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/620/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/620/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/620/ss_4.jpg"]'
+    WHERE Id = 69;
+    -- DOOM
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/379720/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/379720/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/379720/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/379720/ss_4.jpg"]'
+    WHERE Id = 70;
+    -- Disco Elysium - The Final Cut
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/632470/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/632470/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/632470/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/632470/ss_4.jpg"]'
+    WHERE Id = 71;
+    -- It Takes Two
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1426210/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1426210/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1426210/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1426210/ss_4.jpg"]'
+    WHERE Id = 72;
+    -- Outer Wilds
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/753640/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/753640/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/753640/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/753640/ss_4.jpg"]'
+    WHERE Id = 73;
+    -- Forza Horizon 5
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1551360/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1551360/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1551360/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1551360/ss_4.jpg"]'
+    WHERE Id = 74;
+    -- Street Fighter 6
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1364780/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1364780/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1364780/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1364780/ss_4.jpg"]'
+    WHERE Id = 75;
+    -- Persona 5 Royal
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1687950/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1687950/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1687950/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1687950/ss_4.jpg"]'
+    WHERE Id = 76;
+    -- Hades II
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1145350/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1145350/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1145350/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1145350/ss_4.jpg"]'
+    WHERE Id = 77;
+    -- Kingdom Come: Deliverance II
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1771300/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1771300/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1771300/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1771300/ss_4.jpg"]'
+    WHERE Id = 78;
+    -- A Plague Tale: Requiem
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1182900/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1182900/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1182900/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1182900/ss_4.jpg"]'
+    WHERE Id = 79;
+    -- Starfield
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1716740/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1716740/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1716740/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1716740/ss_4.jpg"]'
+    WHERE Id = 80;
+    -- FINAL FANTASY VII REMAKE INTERGRADE
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/1462040/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1462040/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1462040/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/1462040/ss_4.jpg"]'
+    WHERE Id = 81;
+    -- Ghost of Tsushima DIRECTOR'S CUT
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/2215430/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/2215430/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/2215430/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/2215430/ss_4.jpg"]'
+    WHERE Id = 82;
+    -- SILENT HILL 2
+    UPDATE Games SET Screenshots = '["https://cdn.cloudflare.steamstatic.com/steam/apps/2124490/ss_1.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/2124490/ss_2.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/2124490/ss_3.jpg","https://cdn.cloudflare.steamstatic.com/steam/apps/2124490/ss_4.jpg"]'
+    WHERE Id = 83;
+GO
+
+-- ============================================================================
+-- 19. REVIEWS FOR EXTRA GAMES (15 reviews, 1 per game for games 69-83)
+-- ============================================================================
+IF NOT EXISTS (SELECT 1 FROM Reviews WHERE Id = 31)
+BEGIN
+    SET IDENTITY_INSERT Reviews ON;
+    INSERT INTO Reviews (Id, UserId, GameId, Rating, Content, IsRecommended, HelpfulCount, CreatedAt, UpdatedAt)
+    VALUES
+    (31, 1, 69, 5, N'Portal 2 is one of the best puzzle games ever made. The co-op mode is brilliant and the writing is hilarious. Valve at their finest!', 1, 15, DATEADD(DAY, -10, GETUTCDATE()), DATEADD(DAY, -10, GETUTCDATE())),
+    -- Portal 2
+    (32, 3, 70, 5, N'DOOM is pure unadulterated action. No cover shooting no regenerating health - just you and demons. The soundtrack is incredible!', 1, 17, DATEADD(DAY, -13, GETUTCDATE()), DATEADD(DAY, -13, GETUTCDATE())),
+    -- DOOM
+    (33, 5, 71, 5, N'Disco Elysium is a masterpiece of storytelling. The writing is phenomenal the world is rich and every choice matters deeply.', 1, 19, DATEADD(DAY, -16, GETUTCDATE()), DATEADD(DAY, -16, GETUTCDATE())),
+    -- Disco Elysium - The Final Cut
+    (34, 2, 72, 5, N'It Takes Two is a co-op masterpiece. Every level introduces new mechanics and the story is genuinely touching. Play with a friend!', 1, 21, DATEADD(DAY, -19, GETUTCDATE()), DATEADD(DAY, -19, GETUTCDATE())),
+    -- It Takes Two
+    (35, 4, 73, 5, N'Outer Wilds is a once-in-a-lifetime experience. Best to go in knowing nothing - just explore and discover. An absolute gem.', 1, 23, DATEADD(DAY, -22, GETUTCDATE()), DATEADD(DAY, -22, GETUTCDATE())),
+    -- Outer Wilds
+    (36, 1, 74, 4, N'Forza Horizon 5 is the ultimate open-world racing game. Mexico is gorgeous the car list is massive and the driving feels perfect.', 1, 25, DATEADD(DAY, -25, GETUTCDATE()), DATEADD(DAY, -25, GETUTCDATE())),
+    -- Forza Horizon 5
+    (37, 3, 75, 5, N'Street Fighter 6 is the best fighting game package ever made. Three modes excellent netcode and deep combat system.', 1, 27, DATEADD(DAY, -28, GETUTCDATE()), DATEADD(DAY, -28, GETUTCDATE())),
+    -- Street Fighter 6
+    (38, 5, 76, 5, N'Persona 5 Royal is a 100+ hour JRPG masterpiece. Stylish deep and emotionally gripping. Every aspect is polished to perfection.', 1, 29, DATEADD(DAY, -31, GETUTCDATE()), DATEADD(DAY, -31, GETUTCDATE())),
+    -- Persona 5 Royal
+    (39, 2, 77, 4, N'Hades II builds on the original in every way. More depth more variety and that addictive loop is back better than ever.', 1, 31, DATEADD(DAY, -34, GETUTCDATE()), DATEADD(DAY, -34, GETUTCDATE())),
+    -- Hades II
+    (40, 4, 78, 5, N'Kingdom Come Deliverance II is an incredible medieval RPG. The world feels alive the story is engaging and the combat is rewarding.', 1, 33, DATEADD(DAY, -37, GETUTCDATE()), DATEADD(DAY, -37, GETUTCDATE())),
+    -- Kingdom Come: Deliverance II
+    (41, 1, 79, 4, N'A Plague Tale Requiem is a beautiful and heartbreaking journey. Stunning visuals and a story that stays with you long after credits roll.', 1, 35, DATEADD(DAY, -40, GETUTCDATE()), DATEADD(DAY, -40, GETUTCDATE())),
+    -- A Plague Tale: Requiem
+    (42, 3, 80, 4, N'Starfield is an ambitious space RPG with hundreds of hours of content. Ship building is fantastic and exploration is rewarding.', 1, 37, DATEADD(DAY, -43, GETUTCDATE()), DATEADD(DAY, -43, GETUTCDATE())),
+    -- Starfield
+    (43, 5, 81, 5, N'FFVII Remake is a stunning reimagining of a classic. The combat system is perfect the characters are beautifully realized and the music is incredible.', 1, 39, DATEADD(DAY, -46, GETUTCDATE()), DATEADD(DAY, -46, GETUTCDATE())),
+    -- FINAL FANTASY VII REMAKE INTERGRADE
+    (44, 2, 82, 5, N'Ghost of Tsushima is a visual masterpiece set in feudal Japan. Satisfying combat beautiful world and a compelling story.', 1, 41, DATEADD(DAY, -49, GETUTCDATE()), DATEADD(DAY, -49, GETUTCDATE())),
+    -- Ghost of Tsushima DIRECTOR'S CUT
+    (45, 4, 83, 5, N'Silent Hill 2 is a masterful remake that honors the original while modernizing everything. The atmosphere is suffocating and terrifying.', 1, 43, DATEADD(DAY, -52, GETUTCDATE()), DATEADD(DAY, -52, GETUTCDATE()));
+    -- SILENT HILL 2
+    SET IDENTITY_INSERT Reviews OFF;
+END
+GO

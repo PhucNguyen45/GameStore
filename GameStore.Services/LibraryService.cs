@@ -41,16 +41,19 @@ public class LibraryService : ILibraryService
 
     public async Task<IEnumerable<object>> GetGameKeysAsync(int userId, int gameId)
     {
-        return await _context.Libraries
-            .Where(l => l.UserId == userId && l.GameId == gameId && l.GameKeyId != null)
-            .Join(_context.GameKeys, l => l.GameKeyId, gk => gk.Id, (l, gk) => new
+        // Query keys from OrderDetail → GameKeys relationship
+        // (Library.GameKeyId is not used; keys are linked via OrderDetail)
+        return await _context.OrderDetails
+            .Where(od => od.Order.UserId == userId && od.GameId == gameId)
+            .SelectMany(od => od.GameKeys)
+            .Select(gk => new
             {
                 gk.Id,
                 gk.KeyCode,
                 gk.IsUsed,
                 gk.UsedAt,
                 gk.ExpiresAt,
-                l.AcquiredAt
+                AcquiredAt = gk.UsedAt ?? gk.CreatedAt
             })
             .ToListAsync();
     }

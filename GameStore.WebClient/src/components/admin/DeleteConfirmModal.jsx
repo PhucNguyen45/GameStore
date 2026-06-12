@@ -19,32 +19,10 @@ export default function DeleteConfirmModal({ game, onClose, onConfirm }) {
     }
   };
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.8)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: "#111118",
-          borderRadius: 12,
-          padding: 30,
-          width: 400,
-          textAlign: "center",
-          border: "1px solid #e94560",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ width: 400, textAlign: "center", borderColor: "#e94560" }} onClick={(e) => e.stopPropagation()}>
         <Trash2 size={40} color="#e94560" style={{ marginBottom: 12 }} />
-        <h3 style={{ color: "#fff", marginBottom: 8 }}>Xóa game?</h3>
-        <p style={{ color: "#888", fontSize: 14, marginBottom: 20 }}>
+        <h3 style={{ color: "#fff", marginBottom: 8 }}>Xóa game?</h3>        <p style={{ color: "#888", fontSize: 14, marginBottom: 20 }}>
           Bạn có chắc muốn xóa{" "}
           <strong style={{ color: "#fff" }}>"{game.title}"</strong>?
         </p>

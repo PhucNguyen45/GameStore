@@ -61,30 +61,8 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.8)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: "#111118",
-          borderRadius: 12,
-          padding: 30,
-          width: 600,
-          maxHeight: "90vh",
-          overflow: "auto",
-          border: "1px solid #1a1a2e",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ width: 600 }} onClick={(e) => e.stopPropagation()}>
         <h3
           style={{
             color: "#fff",

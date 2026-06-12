@@ -7,6 +7,7 @@ import {
   ChevronsRight,
   ArrowRight,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const btnBase = {
   display: "inline-flex",
@@ -32,6 +33,7 @@ export default function Pagination({
   setPageSize,
   variant = "admin",
 }) {
+  const { t } = useTranslation();
   const [showJump, setShowJump] = useState(false);
   const [jumpValue, setJumpValue] = useState("");
   const jumpRef = useRef(null);
@@ -217,7 +219,7 @@ export default function Pagination({
             <span>
               {totalItems > 0 ? (
                 <>
-                  Hiển thị{" "}
+                  {t("pagination.showing")}{" "}
                   <strong style={{ color: "#ccc", fontWeight: 700 }}>
                     {(page - 1) * pageSize + 1}
                   </strong>
@@ -225,13 +227,13 @@ export default function Pagination({
                   <strong style={{ color: "#ccc", fontWeight: 700 }}>
                     {Math.min(page * pageSize, totalItems)}
                   </strong>{" "}
-                  /{" "}
+                  {t("pagination.of")}{" "}
                   <strong style={{ color: "#ccc", fontWeight: 700 }}>
                     {totalItems}
                   </strong>
                 </>
               ) : (
-                <>Không có dữ liệu</>
+                <>{t("pagination.noData")}</>
               )}
             </span>
 
@@ -245,7 +247,7 @@ export default function Pagination({
                 }}
               >
                 <span style={{ color: "#555" }}>|</span>
-                Mỗi trang:
+                {t("pagination.perPage")}
                 <select
                   value={pageSize}
                   onChange={(e) => {
@@ -536,22 +538,7 @@ export default function Pagination({
           )}
         </div>
 
-        {/* ── Store page count info ── */}
-        {isStore && totalItems > 0 && (
-          <div
-            style={{
-              fontSize: 12,
-              color: "#666",
-              textAlign: "center",
-            }}
-          >
-            Page{" "}
-            <strong style={{ color: "#999" }}>{page}</strong> of{" "}
-            <strong style={{ color: "#999" }}>{totalPages}</strong>{" "}
-            ·{" "}
-            <strong style={{ color: "#999" }}>{totalItems}</strong> games
-          </div>
-        )}
+
       </div>
     </nav>
   );

@@ -13,5 +13,6 @@ public class WishlistItemDto
     public string? CoverImageUrl { get; set; }
     public long Price { get; set; }
     public long? DiscountPrice { get; set; }
+    public int AvailableKeys { get; set; }
     public DateTime AddedAt { get; set; }
 }

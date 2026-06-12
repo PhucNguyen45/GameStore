@@ -1,6 +1,7 @@
 // GameStore.Entities/Games/Game.cs
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Entities.Store;
@@ -40,5 +41,7 @@ namespace GameStore.Entities.Games
         public virtual ICollection<Wishlist> Wishlists { get; set; } = new HashSet<Wishlist>();
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new HashSet<OrderDetail>();
 
+        [NotMapped]
+        public int AvailableKeys { get; set; }
     }
 }

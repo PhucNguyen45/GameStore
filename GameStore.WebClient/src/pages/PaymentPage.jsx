@@ -185,16 +185,8 @@ export default function PaymentPage() {
         <button
           onClick={handlePayment}
           disabled={isProcessing}
-          className="btn-primary"
-          style={{
-            width: "100%",
-            padding: 16,
-            fontSize: 18,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 10,
-          }}
+          className="btn btn-primary btn-block"
+          style={{ padding: 16, fontSize: 18 }}
         >
           {isProcessing ? (
             <>

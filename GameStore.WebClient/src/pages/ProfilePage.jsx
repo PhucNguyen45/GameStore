@@ -15,8 +15,10 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { ProfileSkeleton } from "../components/common/PageSkeleton";
+import { useTranslation } from "react-i18next";
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const { user, updateUser } = useAuth();
   const navigate = useNavigate();
 
@@ -80,12 +82,12 @@ export default function ProfilePage() {
 
   const validateProfile = () => {
     const errs = {};
-    if (!profile.displayName.trim()) errs.displayName = "Tên hiển thị không được để trống";
-    if (!profile.email.trim()) errs.email = "Email không được để trống";
+    if (!profile.displayName.trim()) errs.displayName = t("profile.displayNameRequired");
+    if (!profile.email.trim()) errs.email = t("profile.emailRequired");
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email))
-      errs.email = "Email không hợp lệ";
+      errs.email = t("profile.emailInvalid");
     if (profile.phone.trim() && !/^0[35789][0-9]{8}$/.test(profile.phone))
-      errs.phone = "Số điện thoại không hợp lệ (VD: 0912345678)";
+      errs.phone = t("profile.phoneInvalid");
     return errs;
   };
 
@@ -93,11 +95,11 @@ export default function ProfilePage() {
     const errs = {};
     if (passwordForm.newPassword || passwordForm.confirmPassword) {
       if (!passwordForm.currentPassword)
-        errs.currentPassword = "Vui lòng nhập mật khẩu hiện tại";
+        errs.currentPassword = t("profile.currentPasswordRequired");
       if (passwordForm.newPassword.length < 6)
-        errs.newPassword = "Mật khẩu mới phải có ít nhất 6 ký tự";
+        errs.newPassword = t("profile.newPasswordMin");
       if (passwordForm.newPassword !== passwordForm.confirmPassword)
-        errs.confirmPassword = "Mật khẩu xác nhận không khớp";
+        errs.confirmPassword = t("profile.confirmPasswordNoMatch");
     }
     return errs;
   };
@@ -139,9 +141,7 @@ export default function ProfilePage() {
         avatarUrl: profile.avatarUrl,
       });
 
-      toast.success("Cập nhật thông tin thành công!", {
-        style: { background: "#16162a", color: "#fff", border: "1px solid #2a2a4a" },
-      });
+      toast.success(t("profile.updateSuccess"));
 
       // Reset password form
       setPasswordForm({
@@ -152,10 +152,8 @@ export default function ProfilePage() {
       setErrors({});
     } catch (err) {
       const message =
-        err.response?.data?.message || "Có lỗi xảy ra, vui lòng thử lại";
-      toast.error(message, {
-        style: { background: "#16162a", color: "#fff", border: "1px solid #2a2a4a" },
-      });
+        err.response?.data?.message || t("profile.error");
+      toast.error(message);
     } finally {
       setSaving(false);
     }
@@ -168,8 +166,8 @@ export default function ProfilePage() {
     <div className="container" style={{ paddingTop: 30, paddingBottom: 60, maxWidth: 720 }}>
       {/* Header */}
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>Thông tin tài khoản</h1>
-        <p style={{ color: "#888", fontSize: 14 }}>Quản lý thông tin cá nhân và bảo mật tài khoản</p>
+        <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 6 }}>{t("profile.title")}</h1>
+        <p style={{ color: "#888", fontSize: 14 }}>{t("profile.subtitle")}</p>
       </div>
 
       <form onSubmit={handleProfileSubmit}>
@@ -194,7 +192,7 @@ export default function ProfilePage() {
             }}
           >
             <User size={20} color="var(--accent)" />
-            Thông tin cá nhân
+            {t("profile.personalInfo")}
           </h2>
 
           {/* Avatar */}
@@ -273,25 +271,7 @@ export default function ProfilePage() {
               <p style={{ fontSize: 12, color: "#6b6b8e", marginTop: 2 }}>
                 @{user.username}
               </p>
-              <div style={{ marginTop: 10 }}>
-                <input
-                  value={profile.avatarUrl}
-                  onChange={(e) =>
-                    setProfile({ ...profile, avatarUrl: e.target.value })
-                  }
-                  placeholder="URL ảnh đại diện..."
-                  style={{
-                    width: "100%",
-                    padding: "8px 12px",
-                    background: "#0a0a15",
-                    border: "1px solid #2a2a4a",
-                    borderRadius: 8,
-                    color: "#e0e0e0",
-                    fontSize: 12,
-                    outline: "none",
-                  }}
-                />
-              </div>
+
             </div>
           </div>
 
@@ -300,7 +280,7 @@ export default function ProfilePage() {
             {/* Username (read-only) */}
             <div>
               <label style={{ display: "block", fontSize: 13, color: "#888", marginBottom: 6, fontWeight: 500 }}>
-                Tên đăng nhập
+                {t("profile.username")}
               </label>
               <div
                 style={{
@@ -323,7 +303,7 @@ export default function ProfilePage() {
             {/* Display Name */}
             <div>
               <label style={{ display: "block", fontSize: 13, color: "#888", marginBottom: 6, fontWeight: 500 }}>
-                Tên hiển thị <span style={{ color: "#e94560" }}>*</span>
+                {t("profile.displayName")} <span style={{ color: "#e94560" }}>*</span>
               </label>
               <div style={{ position: "relative" }}>
                 <User
@@ -336,7 +316,7 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     setProfile({ ...profile, displayName: e.target.value })
                   }
-                  placeholder="Nhập tên hiển thị"
+                  placeholder={t("profile.displayNamePlaceholder")}
                   style={{
                     width: "100%",
                     padding: "12px 14px 12px 42px",
@@ -360,7 +340,7 @@ export default function ProfilePage() {
             {/* Email */}
             <div>
               <label style={{ display: "block", fontSize: 13, color: "#888", marginBottom: 6, fontWeight: 500 }}>
-                Email <span style={{ color: "#e94560" }}>*</span>
+                {t("profile.email")} <span style={{ color: "#e94560" }}>*</span>
               </label>
               <div style={{ position: "relative" }}>
                 <Mail
@@ -374,7 +354,7 @@ export default function ProfilePage() {
                   onChange={(e) =>
                     setProfile({ ...profile, email: e.target.value })
                   }
-                  placeholder="Nhập email"
+                  placeholder={t("profile.emailPlaceholder")}
                   style={{
                     width: "100%",
                     padding: "12px 14px 12px 42px",
@@ -398,7 +378,7 @@ export default function ProfilePage() {
             {/* Phone */}
             <div>
               <label style={{ display: "block", fontSize: 13, color: "#888", marginBottom: 6, fontWeight: 500 }}>
-                Số điện thoại
+                {t("profile.phone")}
               </label>
               <div style={{ position: "relative" }}>
                 <Phone
@@ -414,7 +394,7 @@ export default function ProfilePage() {
                       setErrors((prev) => ({ ...prev, phone: "" }));
                     }
                   }}
-                  placeholder="0912345678"
+                  placeholder={t("profile.phonePlaceholder")}
                   style={{
                     width: "100%",
                     padding: "12px 14px 12px 42px",
@@ -458,18 +438,18 @@ export default function ProfilePage() {
             }}
           >
             <Lock size={20} color="var(--accent)" />
-            Đổi mật khẩu
+            {t("profile.changePassword")}
           </h2>
 
           <p style={{ fontSize: 13, color: "#6b6b8e", marginBottom: 20 }}>
-            Để trống nếu không muốn thay đổi mật khẩu
+            {t("profile.passwordSubtitle")}
           </p>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             {/* Current Password */}
             <div>
               <label style={{ display: "block", fontSize: 13, color: "#888", marginBottom: 6, fontWeight: 500 }}>
-                Mật khẩu hiện tại
+                {t("profile.currentPassword")}
               </label>
               <div style={{ position: "relative" }}>
                 <Lock
@@ -486,7 +466,7 @@ export default function ProfilePage() {
                       currentPassword: e.target.value,
                     })
                   }
-                  placeholder="Nhập mật khẩu hiện tại"
+                  placeholder={t("profile.currentPasswordPlaceholder")}
                   style={{
                     width: "100%",
                     padding: "12px 42px 12px 42px",
@@ -531,7 +511,7 @@ export default function ProfilePage() {
             {/* New Password */}
             <div>
               <label style={{ display: "block", fontSize: 13, color: "#888", marginBottom: 6, fontWeight: 500 }}>
-                Mật khẩu mới
+                {t("profile.newPassword")}
               </label>
               <div style={{ position: "relative" }}>
                 <Lock
@@ -548,7 +528,7 @@ export default function ProfilePage() {
                       newPassword: e.target.value,
                     })
                   }
-                  placeholder="Nhập mật khẩu mới (ít nhất 6 ký tự)"
+                  placeholder={t("profile.newPasswordPlaceholder")}
                   style={{
                     width: "100%",
                     padding: "12px 42px 12px 42px",
@@ -593,7 +573,7 @@ export default function ProfilePage() {
             {/* Confirm Password */}
             <div>
               <label style={{ display: "block", fontSize: 13, color: "#888", marginBottom: 6, fontWeight: 500 }}>
-                Xác nhận mật khẩu mới
+                {t("profile.confirmPassword")}
               </label>
               <div style={{ position: "relative" }}>
                 <CheckCircle
@@ -610,7 +590,7 @@ export default function ProfilePage() {
                       confirmPassword: e.target.value,
                     })
                   }
-                  placeholder="Nhập lại mật khẩu mới"
+                  placeholder={t("profile.confirmPasswordPlaceholder")}
                   style={{
                     width: "100%",
                     padding: "12px 42px 12px 42px",
@@ -666,39 +646,18 @@ export default function ProfilePage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="btn-outline"
-            style={{ padding: "12px 24px", fontSize: 14 }}
+            className="btn btn-outline"
           >
-            Hủy
+            {t("profile.cancel")}
           </button>
           <button
             type="submit"
             disabled={saving}
+            className="btn btn-primary"
             style={{
-              padding: "12px 32px",
-              background: "var(--accent)",
-              color: "#fff",
-              border: "none",
-              borderRadius: 10,
-              fontSize: 14,
-              fontWeight: 700,
-              cursor: saving ? "not-allowed" : "pointer",
-              opacity: saving ? 0.7 : 1,
               display: "flex",
               alignItems: "center",
               gap: 8,
-              transition: "all 0.2s",
-              boxShadow: saving ? "none" : "0 0 20px rgba(0,120,242,0.3)",
-            }}
-            onMouseEnter={(e) => {
-              if (!saving) {
-                e.currentTarget.style.boxShadow = "0 0 30px rgba(0,120,242,0.5)";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!saving) {
-                e.currentTarget.style.boxShadow = "0 0 20px rgba(0,120,242,0.3)";
-              }
             }}
           >
             {saving ? (
@@ -713,12 +672,12 @@ export default function ProfilePage() {
                     animation: "spin 0.8s linear infinite",
                   }}
                 />
-                Đang lưu...
+                {t("profile.saving")}
               </>
             ) : (
               <>
                 <Save size={18} />
-                Lưu thay đổi
+                {t("profile.save")}
               </>
             )}
           </button>

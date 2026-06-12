@@ -100,17 +100,12 @@ export default function RegisterPage() {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "70vh",
+        paddingTop: 40,
       }}
     >
       <div
-        style={{
-          background: "#16162a",
-          borderRadius: 16,
-          padding: 40,
-          width: "100%",
-          maxWidth: 420,
-          border: "1px solid #2a2a4a",
-        }}
+        className="card"
+        style={{ padding: 40, maxWidth: 460 }}
       >
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div
@@ -153,87 +148,41 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit}>
           {[
-            {
-              icon: User,
-              placeholder: t("auth.usernamePlaceholder"),
-              key: "username",
-              required: true,
-            },
-            {
-              icon: Lock,
-              placeholder: t("auth.passwordPlaceholder"),
-              key: "password",
-              type: "password",
-              required: true,
-            },
-            {
-              icon: User,
-              placeholder: t("auth.displayName"),
-              key: "displayName",
-            },
-            {
-              icon: Mail,
-              placeholder: t("auth.email"),
-              key: "email",
-              type: "email",
-            },
-            {
-              icon: Phone,
-              placeholder: t("auth.phone"),
-              key: "phone",
-            },
+            { icon: User, placeholder: t("auth.usernamePlaceholder"), key: "username", required: true },
+            { icon: Lock, placeholder: t("auth.passwordPlaceholder"), key: "password", type: "password", required: true },
+            { icon: User, placeholder: t("auth.displayName"), key: "displayName" },
+            { icon: Mail, placeholder: t("auth.email"), key: "email", type: "email" },
+            { icon: Phone, placeholder: t("auth.phone"), key: "phone" },
           ].map(({ icon: Icon, key, placeholder, type, required }) => (
-            <div key={key} style={{ marginBottom: 12, position: "relative" }}>
-              <Icon
-                size={18}
-                color="#6b6b8e"
-                style={{ position: "absolute", left: 14, top: 14, zIndex: 1 }}
-              />
-              <input
-                type={type || "text"}
-                placeholder={placeholder}
-                value={form[key]}
-                onChange={(e) => handleChange(key, e.target.value)}
-                onBlur={() => handleBlur(key)}
-                style={{
-                  width: "100%",
-                  padding: "14px 40px 14px 42px",
-                  background: "#0a0a15",
-                  border: `1px solid ${borderColor(key)}`,
-                  borderRadius: 10,
-                  color: "#e0e0e0",
-                  fontSize: 14,
-                  outline: "none",
-                  transition: "border-color 0.2s",
-                }}
-                required={required}
-              />
-              {isValid(key) && (
-                <CheckCircle2
-                  size={16}
-                  color="#4caf50"
-                  style={{ position: "absolute", right: 12, top: 15, zIndex: 1 }}
+            <div key={key} style={{ marginBottom: 12 }}>
+              <div className="input-icon">
+                <Icon size={18} className="icon" />
+                <input
+                  className={`input ${hasError(key) ? 'input-error' : isValid(key) ? 'input-success' : ''}`}
+                  type={type || "text"}
+                  placeholder={placeholder}
+                  value={form[key]}
+                  onChange={(e) => handleChange(key, e.target.value)}
+                  onBlur={() => handleBlur(key)}
+                  required={required}
                 />
-              )}
-              {hasError(key) && (
-                <AlertCircle
-                  size={16}
-                  color="#e94560"
-                  style={{ position: "absolute", right: 12, top: 15, zIndex: 1 }}
-                />
-              )}
-              {hasError(key) && (
-                <p style={{ color: "#e94560", fontSize: 12, marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
-                  <AlertCircle size={11} /> {errors[key]}
-                </p>
-              )}
+                {isValid(key) && <CheckCircle2 size={16} color="#4caf50" className="icon-right" />}
+                {hasError(key) && <AlertCircle size={16} color="#e94560" className="icon-right" />}
+              </div>
+              <div style={{ minHeight: 20, marginTop: 4 }}>
+                {hasError(key) && (
+                  <p style={{ color: "#e94560", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}>
+                    <AlertCircle size={11} /> {errors[key]}
+                  </p>
+                )}
+              </div>
             </div>
           ))}
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary"
-            style={{ width: "100%", padding: 14, fontSize: 16, marginTop: 8 }}
+            className="btn btn-primary btn-block"
+            style={{ marginTop: 8, padding: 14, fontSize: 15 }}
           >
             {loading ? t("auth.creatingAccount") : t("auth.register")}
           </button>

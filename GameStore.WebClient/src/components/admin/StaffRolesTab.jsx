@@ -89,30 +89,8 @@ function RoleModal({ role, onClose, onSave }) {
 
   const iStyle = { ...filterInputStyle, width: "100%" };
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.8)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: "#111118",
-          borderRadius: 12,
-          padding: 30,
-          width: 550,
-          maxHeight: "90vh",
-          overflow: "auto",
-          border: "1px solid #1a1a2e",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ width: 550 }} onClick={(e) => e.stopPropagation()}>
         <h3
           style={{
             color: "#fff",
@@ -240,29 +218,14 @@ function RoleModal({ role, onClose, onSave }) {
             <button
               type="button"
               onClick={onClose}
-              style={{
-                padding: "8px 20px",
-                background: "#2a2a2a",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
+              className="btn btn-ghost btn-sm"
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={saving}
-              style={{
-                padding: "8px 20px",
-                background: "var(--accent)",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-                fontWeight: 600,
-              }}
+              className="btn btn-primary btn-sm"
             >
               {saving ? t("admin.saving") : role ? t("admin.update") : t("admin.createNew")}
             </button>
@@ -300,28 +263,8 @@ function AssignRoleModal({ onClose, onSave, roles, presetUser }) {
 
   const iStyle = { ...filterInputStyle, width: "100%" };
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.8)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: "#111118",
-          borderRadius: 12,
-          padding: 30,
-          width: 400,
-          border: "1px solid #1a1a2e",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ width: 400 }} onClick={(e) => e.stopPropagation()}>
         <h3 style={{ color: "#fff", marginBottom: 16, fontSize: 16, fontWeight: 700 }}>
           👤 {t("admin.assignRole")}
         </h3>
@@ -373,29 +316,14 @@ function AssignRoleModal({ onClose, onSave, roles, presetUser }) {
             <button
               type="button"
               onClick={onClose}
-              style={{
-                padding: "8px 20px",
-                background: "#2a2a2a",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
+              className="btn btn-ghost btn-sm"
             >
               {t("common.cancel")}
             </button>
             <button
               type="submit"
               disabled={saving}
-              style={{
-                padding: "8px 20px",
-                background: "var(--accent)",
-                color: "#fff",
-                border: "none",
-                borderRadius: 6,
-                cursor: "pointer",
-                fontWeight: 600,
-              }}
+              className="btn btn-primary btn-sm"
             >
               {saving ? t("admin.saving") : t("admin.assignRole")}
             </button>
@@ -720,29 +648,8 @@ export default function StaffRolesTab() {
                       </div>
                     </td>
                     <td style={{ padding: "9px 14px" }}>
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 5,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: 7,
-                            height: 7,
-                            borderRadius: "50%",
-                            background: r.isActive ? "#4caf50" : "#e94560",
-                          }}
-                        />
-                        <span
-                          style={{
-                            color: r.isActive ? "#4caf50" : "#e94560",
-                            fontSize: 11,
-                          }}
-                        >
-                          {r.isActive ? t("admin.active") : t("admin.inactive")}
-                        </span>
+                      <span className={`status-dot ${r.isActive ? 'active' : 'inactive'}`}>
+                        {r.isActive ? t("admin.active") : t("admin.inactive")}
                       </span>
                     </td>
                     <td
@@ -967,21 +874,8 @@ export default function StaffRolesTab() {
                         {(u.roles || []).map((r) => (
                           <span
                             key={r.roleId}
-                            style={{
-                              display: "inline-flex",
-                              alignItems: "center",
-                              gap: 4,
-                              background:
-                                r.roleName === "Admin"
-                                  ? "#e9456020"
-                                  : "#0078f220",
-                              color:
-                                r.roleName === "Admin" ? "#e94560" : "#0078f2",
-                              padding: "2px 8px",
-                              borderRadius: 8,
-                              fontSize: 10,
-                              fontWeight: 600,
-                            }}
+                            className={`badge ${r.roleName === 'Admin' ? 'badge-danger' : 'badge-accent'}`}
+                            style={{ padding: "2px 8px", fontSize: 10 }}
                           >
                             {r.roleName}
                             <button
@@ -1008,29 +902,8 @@ export default function StaffRolesTab() {
                       </div>
                     </td>
                     <td style={{ padding: "9px 14px" }}>
-                      <span
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 5,
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: 7,
-                            height: 7,
-                            borderRadius: "50%",
-                            background: u.isActive ? "#4caf50" : "#e94560",
-                          }}
-                        />
-                        <span
-                          style={{
-                            color: u.isActive ? "#4caf50" : "#e94560",
-                            fontSize: 11,
-                          }}
-                        >
-                          {u.isActive ? t("admin.active") : t("admin.locked")}
-                        </span>
+                      <span className={`status-dot ${u.isActive ? 'active' : 'locked'}`}>
+                        {u.isActive ? t("admin.active") : t("admin.locked")}
                       </span>
                     </td>
                     <td style={{ padding: "9px 14px" }}>
@@ -1105,31 +978,31 @@ export default function StaffRolesTab() {
         />
       )}
       {deleteRoleTarget && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
-          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 360, textAlign: "center", border: "1px solid #e94560" }} onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ width: 360, textAlign: "center", borderColor: "#e94560" }} onClick={(e) => e.stopPropagation()}>
             <Trash2 size={36} color="#e94560" style={{ marginBottom: 10 }} />
             <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>{t("admin.deleteRole")}</h3>
             <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
               {t("admin.confirmDeleteRole", { name: deleteRoleTarget.name })}
             </p>
             <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-              <button onClick={() => setDeleteRoleTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>{t("common.cancel")}</button>
-              <button onClick={handleDeleteRole} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>{t("admin.confirmDelete")}</button>
+              <button onClick={() => setDeleteRoleTarget(null)} className="btn btn-ghost btn-sm">{t("common.cancel")}</button>
+              <button onClick={handleDeleteRole} className="btn btn-danger btn-sm">{t("admin.confirmDelete")}</button>
             </div>
           </div>
         </div>
       )}
       {revokeTarget && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
-          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 360, textAlign: "center", border: "1px solid #ff9800" }} onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ width: 360, textAlign: "center", borderColor: "#ff9800" }} onClick={(e) => e.stopPropagation()}>
             <UserMinus size={36} color="#ff9800" style={{ marginBottom: 10 }} />
             <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>{t("admin.revokeRole")}</h3>
             <p style={{ color: "#888", fontSize: 13, marginBottom: 20 }}>
               {t("admin.confirmRevokeRole", { role: revokeTarget.roleName, user: revokeTarget.username, userId: revokeTarget.userId })}
             </p>
             <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-              <button onClick={() => setRevokeTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>{t("common.cancel")}</button>
-              <button onClick={handleRevokeRole} style={{ padding: "8px 20px", background: "#ff9800", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>{t("admin.confirmRevoke")}</button>
+              <button onClick={() => setRevokeTarget(null)} className="btn btn-ghost btn-sm">{t("common.cancel")}</button>
+              <button onClick={handleRevokeRole} className="btn btn-danger btn-sm">{t("admin.confirmRevoke")}</button>
             </div>
           </div>
         </div>

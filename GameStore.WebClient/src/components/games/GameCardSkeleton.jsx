@@ -1,5 +1,4 @@
 // GameStore.WebClient/src/components/games/GameCardSkeleton.jsx
-import { useEffect, useState } from "react";
 
 const shimmerStyle = {
   background: "linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%)",
@@ -8,23 +7,7 @@ const shimmerStyle = {
   borderRadius: 4,
 };
 
-// Inject keyframes once
-let injected = false;
-function injectKeyframes() {
-  if (injected) return;
-  injected = true;
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-  `;
-  document.head.appendChild(style);
-}
-
 export default function GameCardSkeleton({ compact = false }) {
-  useEffect(() => { injectKeyframes(); }, []);
 
   const cardWidth = compact ? "100%" : "100%";
 

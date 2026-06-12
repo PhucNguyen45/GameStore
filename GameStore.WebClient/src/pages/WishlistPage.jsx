@@ -28,8 +28,9 @@ export default function WishlistPage() {
   };
 
   useEffect(() => {
+    if (!user) return;
     load();
-  }, []);
+  }, [user]);
 
   const remove = async (gameId) => {
     await wishlistAPI.remove(gameId);
@@ -39,8 +40,41 @@ export default function WishlistPage() {
 
   if (!user)
     return (
-      <div style={{ textAlign: "center", padding: 80, color: "#888" }}>
-        {t("wishlist.loginRequired")}
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "80vh",
+          background: "#121212",
+        }}
+      >
+        <div
+          style={{
+            width: 80,
+            height: 80,
+            borderRadius: "50%",
+            background: "#1a1a1a",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            marginBottom: 20,
+          }}
+        >
+          <Heart size={32} color="#e94560" />
+        </div>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 8, letterSpacing: -0.5 }}>
+          {t("wishlist.loginRequired")}
+        </h2>
+        <p style={{ color: "#888", fontSize: 14, marginBottom: 24 }}>
+          {t("wishlist.loginDesc")}
+        </p>
+        <Link to="/login">
+          <button className="btn btn-primary" style={{ padding: "12px 32px", fontSize: 13 }}>
+            {t("library.signIn")}
+          </button>
+        </Link>
       </div>
     );
   if (loading)
@@ -83,7 +117,7 @@ export default function WishlistPage() {
           <p style={{ marginTop: 16 }}>{t("wishlist.empty")}</p>
           <Link
             to="/store"
-            className="btn-primary"
+            className="btn btn-primary"
             style={{ marginTop: 16, display: "inline-block" }}
           >
             {t("wishlist.browseGames")}
@@ -147,40 +181,61 @@ export default function WishlistPage() {
                 </span>
               </Link>
               <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                <button
-                  onClick={() => {
-                    addItem({
-                      id: item.gameId,
-                      title: item.title,
-                      price: item.price,
-                      discountPrice: item.discountPrice,
-                      coverImageUrl: item.coverImageUrl,
-                    });
-                    toast.success(t("wishlist.addedToCart"));
-                  }}
-                  style={{
-                    flex: 1,
-                    padding: "6px 10px",
-                    background: "var(--accent)",
-                    border: "none",
-                    borderRadius: 4,
-                    color: "#fff",
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: 4,
-                  }}
-                >
-                  <ShoppingCart size={14} /> {t("wishlist.addToCart")}
-                </button>
+                {(item.price > 0 && item.availableKeys !== undefined && item.availableKeys <= 0) ? (
+                  <button
+                    disabled
+                    className="btn"
+                    style={{
+                      flex: 1,
+                      padding: "6px 10px",
+                      fontSize: 11,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 4,
+                      borderRadius: 10,
+                      background: "#e9456020",
+                      border: "1px solid #e94560",
+                      color: "#e94560",
+                      cursor: "not-allowed",
+                    }}
+                  >
+                    {t("gameDetail.outOfStock")}
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => {
+                      addItem({
+                        id: item.gameId,
+                        title: item.title,
+                        price: item.price,
+                        discountPrice: item.discountPrice,
+                        coverImageUrl: item.coverImageUrl,
+                      });
+                      toast.success(t("wishlist.addedToCart"));
+                    }}
+                    className="btn btn-primary"
+                    style={{
+                      flex: 1,
+                      padding: "6px 10px",
+                      fontSize: 11,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 4,
+                      borderRadius: 10,
+                    }}
+                  >
+                    <ShoppingCart size={14} /> {t("wishlist.addToCart")}
+                  </button>
+                )}
                 <button
                   onClick={() => remove(item.gameId)}
                   style={{
                     padding: "6px 10px",
                     background: "#2a2a2a",
                     border: "none",
-                    borderRadius: 4,
+                    borderRadius: 10,
                     color: "#e94560",
                     cursor: "pointer",
                   }}

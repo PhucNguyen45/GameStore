@@ -58,8 +58,7 @@ export default function InvoicePage() {
         className="container"
         style={{ textAlign: "center", paddingTop: 100 }}
       >
-        <h2>{t("invoice.notFound")}</h2>
-        <Link to="/store" className="btn-primary" style={{ marginTop: 20 }}>
+        <h2>{t("invoice.notFound")}</h2>            <Link to="/store" className="btn btn-primary" style={{ marginTop: 20 }}>
           {t("invoice.goToStore")}
         </Link>
       </div>
@@ -365,14 +364,12 @@ export default function InvoicePage() {
 
           <div style={{ marginTop: 50, display: "flex", gap: 15, flexWrap: "wrap" }}>
             <button
-              className="btn-outline"
-              style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px" }}
+              className="btn btn-outline"
             >
               <Printer size={18} /> {t("invoice.printInvoice")}
             </button>
             <button
-              className="btn-outline"
-              style={{ display: "flex", alignItems: "center", gap: 8, padding: "12px 20px" }}
+              className="btn btn-outline"
             >
               <Download size={18} /> {t("invoice.downloadPdf")}
             </button>

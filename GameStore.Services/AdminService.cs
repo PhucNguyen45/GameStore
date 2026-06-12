@@ -19,14 +19,12 @@ public class AdminService : IAdminService
     private readonly GameStoreDbContext _context;
     private readonly IGameService _gameService;
     private readonly IOrderService _orderService;
-    private readonly INotificationService _notificationService;
 
-    public AdminService(GameStoreDbContext context, IGameService gameService, IOrderService orderService, INotificationService notificationService)
+    public AdminService(GameStoreDbContext context, IGameService gameService, IOrderService orderService)
     {
         _context = context;
         _gameService = gameService;
         _orderService = orderService;
-        _notificationService = notificationService;
     }
 
     // ================= DASHBOARD =================
@@ -123,16 +121,16 @@ public class AdminService : IAdminService
             await _context.SaveChangesAsync();
         }
 
-        // Tự động sinh 10-20 game keys, hết hạn sau 1 ngày
+        // Tự động sinh 50 game keys (không hết hạn)
         var random = new Random();
-        int keyCount = random.Next(10, 21);
+        int keyCount = 50;
         for (int i = 0; i < keyCount; i++)
         {
             _context.GameKeys.Add(new GameKey
             {
                 GameId = created.Id,
                 KeyCode = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper(),
-                ExpiresAt = DateTime.UtcNow.AddDays(1),
+                ExpiresAt = null,
                 CreatedAt = DateTime.UtcNow,
                 IsUsed = false
             });
@@ -271,23 +269,7 @@ public class AdminService : IAdminService
     public async Task UpdateOrderStatusAsync(int orderId, string status)
     {
         await _orderService.UpdateStatus(orderId, status);
-
-        if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
-        {
-            var order = await _context.Orders
-                .Include(o => o.User)
-                .FirstOrDefaultAsync(o => o.Id == orderId);
-
-            if (order != null)
-            {
-                await _notificationService.CreateNotificationAsync(
-                    order.UserId,
-                    "Order Approved ✅",
-                    $"Your order #{orderId} has been approved. Check your email for game keys!",
-                    $"/invoice/{orderId}"
-                );
-            }
-        }
+        // Notification is already handled inside OrderService.UpdateStatus
     }
 
     // ================= CATEGORIES (Genres) =================

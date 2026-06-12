@@ -244,14 +244,8 @@ export default function GamesTab({
                 <td style={{ padding: "9px 14px" }}>
                   {game.discountPrice ? (
                     <span
-                      style={{
-                        background: "#0078f220",
-                        color: "#0078f2",
-                        padding: "2px 7px",
-                        borderRadius: 8,
-                        fontSize: 10,
-                        fontWeight: 600,
-                      }}
+                      className="badge badge-accent"
+                      style={{ padding: "2px 7px", fontSize: 10, borderRadius: 8 }}
                     >
                       -{Math.round((1 - game.discountPrice / game.price) * 100)}
                       %

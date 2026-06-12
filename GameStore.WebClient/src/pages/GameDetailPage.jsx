@@ -32,7 +32,6 @@ import {
   Image,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { epicPrimaryBtn, epicSecondaryBtn, epicWishlistBtn } from "../components/games/gameDetailStyles";
 
 export default function GameDetailPage() {
   const { t } = useTranslation();
@@ -120,7 +119,8 @@ export default function GameDetailPage() {
 
   const toggleWishlist = async () => {
     if (!user) {
-      toast.error(t("gameDetail.wishlistError"));
+      toast.error(t("wishlist.loginRequired"));
+      navigate("/login");
       return;
     }
     try {
@@ -254,7 +254,7 @@ export default function GameDetailPage() {
             <span
               style={{
                 padding: "4px 12px",
-                borderRadius: 4,
+                borderRadius: 6,
                 fontSize: 11,
                 fontWeight: 600,
                 letterSpacing: 1,
@@ -324,32 +324,22 @@ export default function GameDetailPage() {
               <Monitor size={16} /> {t("gameDetail.windowsPc")}
             </div>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 24 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 24, flexWrap: "wrap" }}>
             {owned ? (
               <>
-                <button style={{ ...epicPrimaryBtn, background: "#4caf50", cursor: "default" }}>
+                <button className="btn btn-primary" style={{ background: "#4caf50", cursor: "default", border: "none" }}>
                   <Check size={16} style={{ marginRight: 6 }} /> {t("gameDetail.ownedLib")}
                 </button>
               </>
-            ) : game.price === 0 ? (
-              <button
-                style={{ ...epicPrimaryBtn, width: isMobile ? "100%" : "auto" }}
-                onClick={async () => {
-                  if (!user) { navigate("/login"); return; }
-                  try {
-                    await orderAPI.create({ items: [{ gameId: game.id, quantity: 1 }] });
-                    setOwned(true);
-                    toast.success(t("gameDetail.freeClaimSuccess"));
-                  } catch (e) {
-                    toast.error(e.response?.data?.message || t("gameDetail.freeClaimError"));
-                  }
-                }}
-              >
-                {t("gameDetail.free")}
-              </button>
+            ) : game.price > 0 && game.availableKeys !== undefined && game.availableKeys <= 0 ? (
+              <>
+                <button disabled className="btn btn-primary" style={{ opacity: 0.5 }}>
+                  {t("gameDetail.outOfStock")}
+                </button>
+              </>
             ) : (
               <>
-                <button style={{ ...epicPrimaryBtn, width: isMobile ? "100%" : "auto", justifyContent: "center" }} onClick={handleBuyNow}>
+                <button className="btn btn-primary" style={{ width: isMobile ? "100%" : "auto" }} onClick={handleBuyNow}>
                   {t("gameDetail.buyNow")}
                   <span style={{ marginLeft: 10, fontSize: 14, fontWeight: 400, opacity: 0.9 }}>
                     {discount > 0 && (
@@ -361,7 +351,8 @@ export default function GameDetailPage() {
                   </span>
                 </button>
                 <button
-                  style={{ ...epicSecondaryBtn, width: isMobile ? "100%" : "auto", justifyContent: "center" }}
+                  className="btn btn-outline"
+                  style={{ width: isMobile ? "100%" : "auto" }}
                   onClick={() => { addItem(game); toast.success(t("gameDetail.addedToCart")); }}
                 >
                   <ShoppingCart size={16} /> {t("gameDetail.addToCart")}
@@ -370,10 +361,14 @@ export default function GameDetailPage() {
             )}
             <button
               onClick={toggleWishlist}
+              className="btn btn-ghost"
               style={{
-                ...epicWishlistBtn,
+                padding: 12,
                 background: wishlisted ? "#e94560" : "transparent",
-                borderColor: wishlisted ? "#e94560" : "#fff",
+                border: `1px solid ${wishlisted ? "#e94560" : "rgba(255,255,255,0.6)"}`,
+                borderRadius: 10,
+                minWidth: 44,
+                justifyContent: "center",
               }}
             >
               <Heart

@@ -1,5 +1,6 @@
 // GameStore.WebClient/src/pages/StorePage.jsx
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useResponsive } from "../hooks/useResponsive";
 import { gameAPI, genreAPI } from "../services/api";
 import GameCard from "../components/games/GameCard";
@@ -16,10 +17,11 @@ import { useTranslation } from "react-i18next";
 
 export default function StorePage() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [games, setGames] = useState([]);
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(searchParams.get("keyword") || "");
   const [selectedGenres, setSelectedGenres] = useState([]);
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -147,7 +149,7 @@ export default function StorePage() {
         alignItems: sidebar ? "stretch" : "center",
       }}>
         {/* Price Range */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0a0a15", borderRadius: 8, padding: "6px 12px", border: "1px solid #2a2a4a" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0a0a15", borderRadius: 10, padding: "6px 12px", border: "1px solid #2a2a4a" }}>
           <input
             type="number"
             placeholder={t("store.minPrice")}
@@ -175,7 +177,7 @@ export default function StorePage() {
             else setDesc(true);
             handleFilterChange();
           }}
-          style={{ padding: "8px 12px", background: "#0a0a15", border: "1px solid #2a2a4a", borderRadius: 8, color: "#e0e0e0", fontSize: 13, cursor: "pointer", outline: "none" }}
+          style={{ padding: "8px 12px", background: "#0a0a15", border: "1px solid #2a2a4a", borderRadius: 10, color: "#e0e0e0", fontSize: 13, cursor: "pointer", outline: "none" }}
         >
           <option value="totalSales">{t("store.bestSelling")}</option>
           <option value="rating">{t("store.highestRated")}</option>
@@ -187,7 +189,7 @@ export default function StorePage() {
         <button
           type="button"
           onClick={() => { setDesc(!desc); handleFilterChange(); }}
-          style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 12px", background: "#0a0a15", border: "1px solid #2a2a4a", borderRadius: 8, color: "#ccc", cursor: "pointer", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}
+          style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 12px", background: "#0a0a15", border: "1px solid #2a2a4a", borderRadius: 10, color: "#ccc", cursor: "pointer", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}
         >
           <ArrowUpDown size={14} />
           {desc ? t("store.desc") : t("store.asc")}
@@ -198,7 +200,7 @@ export default function StorePage() {
           <button
             type="button"
             onClick={clearFilters}
-            style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 14px", background: "transparent", border: "1px solid rgba(233,69,96,0.3)", borderRadius: 8, color: "#e94560", cursor: "pointer", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}
+            style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 14px", background: "transparent", border: "1px solid rgba(233,69,96,0.3)", borderRadius: 10, color: "#e94560", cursor: "pointer", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}
           >
             <X size={14} /> {t("store.clearAll")}
           </button>
@@ -263,8 +265,8 @@ export default function StorePage() {
       </div>
       <button
         type="submit"
-        className="btn-primary"
-        style={{ padding: "14px 28px", fontSize: 14, whiteSpace: "nowrap" }}
+        className="btn btn-primary"
+        style={{ padding: "14px 28px" }}
       >
         {t("store.search")}
       </button>
@@ -316,7 +318,7 @@ export default function StorePage() {
     <div className="container" style={{ paddingTop: 24 }}>
       {isDesktop ? (
         <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-          <aside style={{ width: 260, flexShrink: 0, position: "sticky", top: 80 }}>
+          <aside style={{ width: 260, flexShrink: 0 }}>
             {renderFilterContent(true)}
           </aside>
           <div style={{ flex: 1, minWidth: 0 }}>

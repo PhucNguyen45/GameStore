@@ -63,30 +63,8 @@ function AddKeyModal({ onClose, onSave, games }) {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.8)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: "#111118",
-          borderRadius: 12,
-          padding: 30,
-          width: 500,
-          border: "1px solid #1a1a2e",
-          maxHeight: "90vh",
-          overflow: "auto",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ width: 500 }} onClick={(e) => e.stopPropagation()}>
         <h3
           style={{
             color: "#fff",
@@ -157,29 +135,14 @@ function AddKeyModal({ onClose, onSave, games }) {
               <button
                 type="button"
                 onClick={onClose}
-                style={{
-                  padding: "8px 20px",
-                  background: "#2a2a2a",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                }}
+                className="btn btn-ghost btn-sm"
               >
                 Hủy
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                style={{
-                  padding: "8px 20px",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
+                className="btn btn-primary btn-sm"
               >
                 {saving ? t("admin.saving") : t("admin.addKey")}
               </button>
@@ -238,29 +201,14 @@ function AddKeyModal({ onClose, onSave, games }) {
               <button
                 type="button"
                 onClick={onClose}
-                style={{
-                  padding: "8px 20px",
-                  background: "#2a2a2a",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                }}
+                className="btn btn-ghost btn-sm"
               >
                 Hủy
               </button>
               <button
                 type="submit"
                 disabled={saving}
-                style={{
-                  padding: "8px 20px",
-                  background: "var(--accent)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 6,
-                  cursor: "pointer",
-                  fontWeight: 600,
-                }}
+                className="btn btn-primary btn-sm"
               >
                 <Upload size={12} style={{ marginRight: 4 }} />{" "}
                 {saving ? t("admin.saving") : t("admin.batchKeys")}
@@ -304,14 +252,8 @@ function EditKeyModal({ keyData, onClose, onSave }) {
   };
 
   return (
-    <div
-      style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}
-      onClick={onClose}
-    >
-      <div
-        style={{ background: "#111118", borderRadius: 12, padding: 30, width: 460, border: "1px solid #1a1a2e" }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ width: 460 }} onClick={(e) => e.stopPropagation()}>
         <h3 style={{ color: "#fff", marginBottom: 16, fontSize: 16, fontWeight: 700 }}>
           ✏️ {t("admin.editKey")}
         </h3>
@@ -621,31 +563,13 @@ export default function GameKeysTab() {
                     </code>
                   </td>
                   <td style={{ padding: "9px 14px" }}>
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: 5,
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: 7,
-                          height: 7,
-                          borderRadius: "50%",
-                          background: st.color,
-                        }}
-                      />
-                      <span
-                        style={{
-                          color: st.color,
-                          fontSize: 11,
-                          fontWeight: 600,
-                        }}
-                      >
-                        {st.text}
-                      </span>
-                    </span>
+                    <span className={`status-dot ${
+                    st.color === '#4caf50' ? 'active' :
+                    st.color === '#e94560' ? 'locked' :
+                    'pending'
+                  }`}>
+                    {st.text}
+                  </span>
                   </td>
                   <td style={{ padding: "9px 14px", color: "#888" }}>
                     {new Date(k.createdAt).toLocaleDateString()}
@@ -729,8 +653,8 @@ export default function GameKeysTab() {
         />
       )}
       {deleteTarget && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 9999 }}>
-          <div style={{ background: "#111118", borderRadius: 12, padding: 28, width: 380, textAlign: "center", border: "1px solid #e94560" }} onClick={(e) => e.stopPropagation()}>
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ width: 380, textAlign: "center", borderColor: "#e94560" }} onClick={(e) => e.stopPropagation()}>
             <Trash2 size={36} color="#e94560" style={{ marginBottom: 10 }} />
             <h3 style={{ color: "#fff", marginBottom: 8, fontSize: 15 }}>{t("admin.deleteKey")}</h3>
             <p style={{ color: "#888", fontSize: 13, marginBottom: 8 }}>
@@ -740,8 +664,8 @@ export default function GameKeysTab() {
               {deleteTarget.keyCode}
             </code>
             <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
-              <button onClick={() => setDeleteTarget(null)} style={{ padding: "8px 20px", background: "#2a2a2a", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer" }}>{t("common.cancel")}</button>
-              <button onClick={handleDelete} style={{ padding: "8px 20px", background: "#e94560", color: "#fff", border: "none", borderRadius: 6, cursor: "pointer", fontWeight: 600 }}>{t("admin.confirmDelete")}</button>
+              <button onClick={() => setDeleteTarget(null)} className="btn btn-ghost btn-sm">{t("common.cancel")}</button>
+              <button onClick={handleDelete} className="btn btn-danger btn-sm">{t("admin.confirmDelete")}</button>
             </div>
           </div>
         </div>

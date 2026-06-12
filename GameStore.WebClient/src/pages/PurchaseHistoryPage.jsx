@@ -59,7 +59,7 @@ export default function PurchaseHistoryPage() {
           <p style={{ marginTop: 16 }}>{t("orders.empty")}</p>
           <Link
             to="/store"
-            className="btn-primary"
+            className="btn btn-primary"
             style={{ marginTop: 16, display: "inline-block" }}
           >
             {t("orders.browseGames")}
@@ -112,12 +112,11 @@ export default function PurchaseHistoryPage() {
                     </span>
                     <Link
                       to={`/invoice/${order.id}`}
+                      className="btn btn-ghost"
                       style={{
                         marginLeft: 12,
-                        background: "#1a1a3e",
                         padding: "4px 10px",
                         borderRadius: 4,
-                        color: "#4fc3f7",
                         display: "flex",
                         alignItems: "center",
                         gap: 4,

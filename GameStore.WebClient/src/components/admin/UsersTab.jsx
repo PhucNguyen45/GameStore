@@ -140,23 +140,8 @@ export default function UsersTab({
                 {formatVND(u.wallet || 0)}
               </td>
               <td style={{ padding: "9px 14px" }}>
-                <span style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                  <div
-                    style={{
-                      width: 7,
-                      height: 7,
-                      borderRadius: "50%",
-                      background: u.isActive ? "#4caf50" : "#e94560",
-                    }}
-                  />
-                  <span
-                    style={{
-                      color: u.isActive ? "#4caf50" : "#e94560",
-                      fontSize: 11,
-                    }}
-                  >
-                    {u.isActive ? t("admin.active") : t("admin.locked")}
-                  </span>
+                <span className={`status-dot ${u.isActive ? 'active' : 'locked'}`}>
+                  {u.isActive ? t("admin.active") : t("admin.locked")}
                 </span>
               </td>
               <td style={{ padding: "9px 14px", color: "#888" }}>

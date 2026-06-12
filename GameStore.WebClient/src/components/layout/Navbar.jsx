@@ -207,7 +207,7 @@ export default function Navbar() {
           padding: "8px 36px 8px 12px",
           background: "#1a1a1a",
           border: "1px solid #444",
-          borderRadius: 4,
+          borderRadius: 10,
           color: "#fff",
           fontSize: 13,
           outline: "none",
@@ -341,7 +341,7 @@ export default function Navbar() {
                 <User size={18} />
               </button>
             ) : (
-              <Link to="/login" className="nav-hover-glow" style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", background: "var(--accent)", padding: "6px 10px", borderRadius: 4, fontSize: 12, fontWeight: 600, minWidth: 82 }}>
+              <Link to="/login" className="nav-hover-glow" style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", background: "var(--accent)", padding: "6px 10px", borderRadius: 10, fontSize: 12, fontWeight: 600, minWidth: 82 }}>
                 {tn("login")}
               </Link>
             )}
@@ -735,7 +735,7 @@ export default function Navbar() {
                   )}
                 </div>
               ) : (
-                <Link to="/login" className="nav-hover-glow" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, color: "#fff", fontSize: 12, fontWeight: 600, background: "var(--accent)", padding: "6px 12px", borderRadius: 4 }}>
+                <Link to="/login" className="nav-hover-glow" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, color: "#fff", fontSize: 12, fontWeight: 600, background: "var(--accent)", padding: "6px 12px", borderRadius: 10 }}>
                   <User size={14} /> {tn("login")}
                 </Link>
               )}
@@ -876,7 +876,7 @@ export default function Navbar() {
                 </div>
               </>
             ) : (
-              <Link to="/login" className="nav-hover-glow" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, color: "#fff", fontSize: compact ? 12 : 13, fontWeight: 600, background: "var(--accent)", padding: "6px 12px", borderRadius: 4, whiteSpace: "nowrap" }}>
+              <Link to="/login" className="nav-hover-glow" style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, color: "#fff", fontSize: compact ? 12 : 13, fontWeight: 600, background: "var(--accent)", padding: "6px 12px", borderRadius: 10, whiteSpace: "nowrap" }}>
                 <User size={compact ? 13 : 14} /> {tn("login")}
               </Link>
             )}
