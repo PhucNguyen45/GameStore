@@ -31,7 +31,16 @@ public class AuthController : ControllerBase
         if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
             return BadRequest(new { message = "Username and password are required" });
 
-        var user = await _userService.Authenticate(request.Username, request.Password);
+        User? user;
+        try
+        {
+            user = await _userService.Authenticate(request.Username, request.Password);
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return StatusCode(403, new { message = ex.Message });
+        }
+
         if (user == null) return Unauthorized(new { message = "Invalid username or password" });
 
         var userRoles = await _context.UserRoles
@@ -78,6 +87,24 @@ public class AuthController : ControllerBase
             Phone = request.Phone ?? ""
         };
         var createdUser = await _userService.Register(user, request.Password);
+
+        // Tự động gán role "User" mặc định cho tài khoản mới
+        var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Name == "User" && !r.IsDeleted);
+        if (defaultRole != null)
+        {
+            _context.UserRoles.Add(new UserRole
+            {
+                UserId = createdUser.Id,
+                RoleId = defaultRole.Id,
+                Guid = Guid.NewGuid(),
+                CreatedBy = "system",
+                Created = DateTime.UtcNow,
+                ModifiedBy = "system",
+                Modified = DateTime.UtcNow
+            });
+            await _context.SaveChangesAsync();
+        }
+
         return Ok(new { message = "Registration successful", userId = createdUser.Id });
     }
 

@@ -8,6 +8,7 @@ import {
   Tag,
   Key,
   Shield,
+  TrendingUp,
 } from "lucide-react";
 
 const tabKeys = [
@@ -17,6 +18,7 @@ const tabKeys = [
   { id: "gamekeys", icon: Key, key: "gameKeys" },
   { id: "users", icon: Users, key: "users" },
   { id: "orders", icon: Package, key: "orders" },
+  { id: "revenue", icon: TrendingUp, key: "revenue" },
   { id: "staffroles", icon: Shield, key: "staffRoles" },
 ];
 

@@ -25,6 +25,11 @@ public class AdminController : ControllerBase
     [HttpGet("dashboard")]
     public async Task<IActionResult> GetDashboard() => Ok(await _adminService.GetDashboardAsync());
 
+    // Revenue
+    [HttpGet("revenue")]
+    public async Task<IActionResult> GetRevenue([FromQuery] int? year, [FromQuery] string groupBy = "month")
+        => Ok(await _adminService.GetRevenueAsync(year, groupBy));
+
     // Games Admin
     [HttpGet("games")]
     public async Task<IActionResult> GetGames([FromQuery] string? keyword, [FromQuery] int[]? genreIds,
@@ -64,7 +69,7 @@ public class AdminController : ControllerBase
         [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var (users, totalCount) = await _adminService.GetUsersAsync(keyword, isActive, fromDate, toDate, sortBy, desc, page, pageSize);
-        return Ok(PagedResponse<User>.Create(users, totalCount, page, pageSize));
+        return Ok(PagedResponse<object>.Create(users, totalCount, page, pageSize));
     }
 
     [HttpPut("users/{id}")]

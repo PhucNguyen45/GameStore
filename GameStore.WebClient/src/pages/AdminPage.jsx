@@ -15,6 +15,7 @@ import OrdersTab from "../components/admin/OrdersTab";
 import CategoriesTab from "../components/admin/CategoriesTab";
 import GameKeysTab from "../components/admin/GameKeysTab";
 import StaffRolesTab from "../components/admin/StaffRolesTab";
+import RevenueTab from "../components/admin/RevenueTab";
 import GameFormModal from "../components/admin/GameFormModal";
 import DeleteConfirmModal from "../components/admin/DeleteConfirmModal";
 import UserFormModal from "../components/admin/UserFormModal";
@@ -367,6 +368,7 @@ export default function AdminPage() {
 
         {activeTab === "categories" && <CategoriesTab />}
         {activeTab === "gamekeys" && <GameKeysTab />}
+        {activeTab === "revenue" && <RevenueTab />}
         {activeTab === "staffroles" && <StaffRolesTab />}
       </div>
 

@@ -24,7 +24,7 @@ public interface IAdminService
     Task DeleteGameAsync(int id);
 
     // Users
-    Task<(IEnumerable<User> Users, int TotalCount)> GetUsersAsync(
+    Task<(IEnumerable<object> Users, int TotalCount)> GetUsersAsync(
         string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
         string? sortBy, bool desc, int page, int pageSize);
     Task UpdateUserAsync(int id, AdminUserUpdateDto dto);
@@ -65,6 +65,9 @@ public interface IAdminService
     Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive, string? sortBy, bool desc, int page, int pageSize);
     Task AssignRoleAsync(AssignRoleDto dto);
     Task RevokeRoleAsync(AssignRoleDto dto);
+
+    // Revenue
+    Task<object> GetRevenueAsync(int? year, string groupBy);
 
     // Permissions
     IEnumerable<string> GetPermissions();

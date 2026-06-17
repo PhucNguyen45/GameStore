@@ -336,11 +336,14 @@
     "unread": "Chưa đọc"
   },
   "admin": {
+    "dashboard": "Tổng quan",
     "games": "Trò chơi",
     "users": "Người dùng",
     "orders": "Đơn hàng",
     "categories": "Danh mục",
     "gameKeys": "Mã game",
+    "revenue": "Báo cáo doanh thu",
+    "staffRoles": "Nhân viên & Roles",
     "noOrders": "Không tìm thấy đơn hàng",
     "addGame": "Thêm game",
     "addCategory": "Thêm danh mục",

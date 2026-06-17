@@ -51,7 +51,8 @@ export const gameAPI = {
   create: (d) => api.post("/admin/games", d), // Admin CRUD
   update: (id, d) => api.put(`/admin/games/${id}`, d),
   delete: (id) => api.delete(`/admin/games/${id}`),
-  checkStock: (gameIds) => api.get("/games/stock", { params: { gameIds: gameIds.join(",") } }),
+  checkStock: (gameIds) =>
+    api.get("/games/stock", { params: { gameIds: gameIds.join(",") } }),
 };
 export const genreAPI = { getAll: () => api.get("/genres") };
 export const orderAPI = {
@@ -110,6 +111,9 @@ export const adminAPI = {
   createBatchGameKeys: (d) => api.post("/admin/gamekeys/batch", d),
   updateGameKey: (id, d) => api.put(`/admin/gamekeys/${id}`, d),
   deleteGameKey: (id) => api.delete(`/admin/gamekeys/${id}`),
+  // Orders
+  getOrders: (p) => api.get("/admin/orders", { params: p }),
+  updateOrderStatus: (id, d) => api.put(`/admin/orders/${id}/status`, d),
   // Payments
   getPayments: (p) => api.get("/admin/payments", { params: p }),
   getOrderPayments: (id) => api.get(`/admin/payments/order/${id}`),
@@ -123,6 +127,8 @@ export const adminAPI = {
   getStaff: (p) => api.get("/admin/staff", { params: p }),
   assignRole: (d) => api.post("/admin/staff/assign", d),
   revokeRole: (d) => api.post("/admin/staff/revoke", d),
+  // Revenue
+  getRevenue: (p) => api.get("/admin/revenue", { params: p }),
   // Permissions
   getPermissions: () => api.get("/admin/permissions"),
 };

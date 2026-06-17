@@ -34,7 +34,11 @@ export default function LoginPage() {
         navigate("/");
       }
     } catch (err) {
-      if (!error) {
+      const serverMsg = err?.response?.data?.message;
+      const status = err?.response?.status;
+      if (status === 403 && serverMsg) {
+        setError(serverMsg);
+      } else {
         setError(t("auth.invalidCredentials"));
       }
     } finally {

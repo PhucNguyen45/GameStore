@@ -4,12 +4,14 @@ import toast from "react-hot-toast";
 import { gameAPI } from "../../services/api";
 import { inputStyle } from "./adminStyles";
 
+// Modal tạo mới hoặc chỉnh sửa game
+// Nếu prop `game` được truyền vào → chế độ chỉnh sửa; không truyền → tạo mới
 export default function GameFormModal({ game, genres, onClose, onSave }) {
   const [form, setForm] = useState({
     title: game?.title || "",
     description: game?.description || "",
     price: game?.price || 0,
-    discountPrice: game?.discountPrice || "",
+    discountPrice: game?.discountPrice != null ? game.discountPrice : "",
     developer: game?.developer || "",
     publisher: game?.publisher || "",
     releaseDate: game?.releaseDate
@@ -26,6 +28,7 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
   });
   const [saving, setSaving] = useState(false);
 
+  // Bật/tắt một thể loại trong danh sách đã chọn (checkbox multi-select)
   const toggleGenre = (id) => {
     setForm((prev) => ({
       ...prev,
@@ -35,15 +38,29 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
     }));
   };
 
+  // Định dạng số thành chuỗi tiền tệ có dấu phẩy (VD: 150000 → "150,000")
+  const formatCurrency = (value) => {
+    if (value === "" || value === null || value === undefined) return "";
+    const number = value.toString().replace(/\D/g, "");
+    return number.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  // Chuyển chuỗi tiền tệ có dấu phẩy về số nguyên (VD: "150,000" → 150000)
+  const parseCurrency = (value) => {
+    if (!value) return 0;
+    return Number(value.toString().replace(/,/g, ""));
+  };
+
+  // Xử lý submit form: parse giá tiền, gọi API tạo mới hoặc cập nhật game
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSaving(true);
     try {
       const data = {
         ...form,
-        price: parseFloat(form.price),
+        price: parseCurrency(form.price),
         discountPrice: form.discountPrice
-          ? parseFloat(form.discountPrice)
+          ? parseCurrency(form.discountPrice)
           : null,
         releaseDate: form.releaseDate
           ? new Date(form.releaseDate).toISOString()
@@ -51,7 +68,9 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
       };
       if (game) await gameAPI.update(game.id, data);
       else await gameAPI.create(data);
-      toast.success(game ? "Cập nhật game thành công!" : "Tạo game thành công!");
+      toast.success(
+        game ? "Cập nhật game thành công!" : "Tạo game thành công!",
+      );
       onSave();
     } catch (err) {
       toast.error(err.response?.data?.message || err.message);
@@ -62,7 +81,11 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" style={{ width: 600 }} onClick={(e) => e.stopPropagation()}>
+      <div
+        className="modal-content"
+        style={{ width: 600 }}
+        onClick={(e) => e.stopPropagation()}
+      >
         <h3
           style={{
             color: "#fff",
@@ -85,21 +108,24 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               required
             />
             <input
-              type="number"
-              step="0.01"
-              placeholder="Giá *"
-              value={form.price}
-              onChange={(e) => setForm({ ...form, price: e.target.value })}
+              type="text"
+              placeholder="Giá gốc VNĐ"
+              value={formatCurrency(form.price)}
+              onChange={(e) =>
+                setForm({ ...form, price: e.target.value.replace(/\D/g, "") })
+              }
               style={inputStyle}
               required
             />
             <input
-              type="number"
-              step="0.01"
-              placeholder="Giá giảm"
-              value={form.discountPrice}
+              type="text"
+              placeholder="Giá giảm VNĐ"
+              value={formatCurrency(form.discountPrice)}
               onChange={(e) =>
-                setForm({ ...form, discountPrice: e.target.value })
+                setForm({
+                  ...form,
+                  discountPrice: e.target.value.replace(/\D/g, ""),
+                })
               }
               style={inputStyle}
             />
@@ -149,6 +175,24 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               style={inputStyle}
             />
           </div>
+          {form.coverImageUrl && (
+            <div
+              style={{
+                marginTop: 4,
+                border: "1px solid #333",
+                borderRadius: 8,
+                overflow: "hidden",
+                background: "#111",
+              }}
+            >
+              <img
+                src={form.coverImageUrl}
+                alt="Preview"
+                style={{ width: "100%", maxHeight: 220, objectFit: "cover", display: "block" }}
+                onError={(e) => { e.target.src = "https://via.placeholder.com/600x300?text=Image+Not+Found"; }}
+              />
+            </div>
+          )}
           <fieldset
             style={{
               border: "1px solid #1a1a2e",
@@ -251,7 +295,11 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               marginTop: 8,
             }}
           >
-            <button type="button" onClick={onClose} className="btn btn-ghost btn-sm">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn btn-ghost btn-sm"
+            >
               Hủy
             </button>
             <button

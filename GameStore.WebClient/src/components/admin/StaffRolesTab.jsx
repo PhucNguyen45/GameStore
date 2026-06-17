@@ -18,59 +18,12 @@ import { adminAPI } from "../../services/api";
 
 function RoleModal({ role, onClose, onSave }) {
   const { t } = useTranslation();
-  const ALL_PERMISSIONS = [
-    {
-      group: t("admin.games"),
-      perms: ["games.view", "games.create", "games.edit", "games.delete"],
-    },
-    { group: t("admin.users"), perms: ["users.view", "users.edit", "users.ban"] },
-    { group: t("admin.orders"), perms: ["orders.view", "orders.edit"] },
-    {
-      group: t("admin.categories"),
-      perms: [
-        "categories.view",
-        "categories.create",
-        "categories.edit",
-        "categories.delete",
-      ],
-    },
-    {
-      group: t("admin.gameKeys"),
-      perms: ["gamekeys.view", "gamekeys.create", "gamekeys.delete"],
-    },
-    { group: t("admin.payments"), perms: ["payments.view", "payments.refund"] },
-    {
-      group: t("admin.roles"),
-      perms: ["roles.view", "roles.create", "roles.edit", "roles.delete"],
-    },
-    { group: t("admin.staff"), perms: ["staff.view", "staff.assign"] },
-  ];
   const [form, setForm] = useState({
     name: role?.name || "",
     description: role?.description || "",
     isActive: role?.isActive ?? true,
-    permissions: role?.permissions || [],
   });
   const [saving, setSaving] = useState(false);
-
-  const togglePerm = (p) => {
-    setForm((prev) => ({
-      ...prev,
-      permissions: prev.permissions.includes(p)
-        ? prev.permissions.filter((x) => x !== p)
-        : [...prev.permissions, p],
-    }));
-  };
-
-  const toggleGroup = (perms) => {
-    const allSelected = perms.every((p) => form.permissions.includes(p));
-    setForm((prev) => ({
-      ...prev,
-      permissions: allSelected
-        ? prev.permissions.filter((p) => !perms.includes(p))
-        : [...new Set([...prev.permissions, ...perms])],
-    }));
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -90,15 +43,8 @@ function RoleModal({ role, onClose, onSave }) {
   const iStyle = { ...filterInputStyle, width: "100%" };
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" style={{ width: 550 }} onClick={(e) => e.stopPropagation()}>
-        <h3
-          style={{
-            color: "#fff",
-            marginBottom: 16,
-            fontSize: 16,
-            fontWeight: 700,
-          }}
-        >
+      <div className="modal-content" style={{ width: 420 }} onClick={(e) => e.stopPropagation()}>
+        <h3 style={{ color: "#fff", marginBottom: 16, fontSize: 16, fontWeight: 700 }}>
           {role ? `✏️ ${t("admin.editRole")}` : `➕ ${t("admin.createRole")}`}
         </h3>
         <form onSubmit={handleSubmit} style={{ display: "grid", gap: 12 }}>
@@ -113,17 +59,9 @@ function RoleModal({ role, onClose, onSave }) {
             placeholder={t("admin.description")}
             value={form.description}
             onChange={(e) => setForm({ ...form, description: e.target.value })}
-            style={{ ...iStyle, minHeight: 50, resize: "vertical" }}
+            style={{ ...iStyle, minHeight: 60, resize: "vertical" }}
           />
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              color: "#ccc",
-              fontSize: 13,
-            }}
-          >
+          <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc", fontSize: 13 }}>
             <input
               type="checkbox"
               checked={form.isActive}
@@ -131,102 +69,11 @@ function RoleModal({ role, onClose, onSave }) {
             />{" "}
             {t("admin.isActive")}
           </label>
-          <div>
-            <p
-              style={{
-                color: "#888",
-                fontSize: 11,
-                textTransform: "uppercase",
-                letterSpacing: 1,
-                marginBottom: 8,
-              }}
-            >
-              {t("admin.permissions")}
-            </p>
-            <div style={{ display: "grid", gap: 10 }}>
-              {ALL_PERMISSIONS.map(({ group, perms }) => (
-                <div
-                  key={group}
-                  style={{
-                    background: "#0a0a10",
-                    borderRadius: 6,
-                    padding: 10,
-                  }}
-                >
-                  <label
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 6,
-                      color: "#fff",
-                      fontSize: 12,
-                      fontWeight: 600,
-                      marginBottom: 6,
-                      cursor: "pointer",
-                    }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={perms.every((p) => form.permissions.includes(p))}
-                      onChange={() => toggleGroup(perms)}
-                    />
-                    {group}
-                  </label>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      gap: 6,
-                      paddingLeft: 20,
-                    }}
-                  >
-                    {perms.map((p) => (
-                      <label
-                        key={p}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 4,
-                          color: form.permissions.includes(p)
-                            ? "#4caf50"
-                            : "#666",
-                          fontSize: 11,
-                          cursor: "pointer",
-                        }}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={form.permissions.includes(p)}
-                          onChange={() => togglePerm(p)}
-                        />
-                        {p.split(".")[1]}
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              gap: 10,
-              justifyContent: "flex-end",
-              marginTop: 8,
-            }}
-          >
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn btn-ghost btn-sm"
-            >
+          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
+            <button type="button" onClick={onClose} className="btn btn-ghost btn-sm">
               {t("common.cancel")}
             </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="btn btn-primary btn-sm"
-            >
+            <button type="submit" disabled={saving} className="btn btn-primary btn-sm">
               {saving ? t("admin.saving") : role ? t("admin.update") : t("admin.createNew")}
             </button>
           </div>
@@ -623,29 +470,16 @@ export default function StaffRolesTab() {
                       {r.userCount}
                     </td>
                     <td style={{ padding: "9px 14px" }}>
-                      <div
-                        style={{ display: "flex", flexWrap: "wrap", gap: 3 }}
-                      >
-                        {(r.permissions || []).slice(0, 4).map((p) => (
-                          <span
-                            key={p}
-                            style={{
-                              background: "#0a0a10",
-                              color: "#4fc3f7",
-                              padding: "2px 6px",
-                              borderRadius: 4,
-                              fontSize: 9,
-                            }}
-                          >
-                            {p}
-                          </span>
-                        ))}
-                        {(r.permissions || []).length > 4 && (
-                          <span style={{ color: "#666", fontSize: 9 }}>
-                            +{r.permissions.length - 4}
-                          </span>
-                        )}
-                      </div>
+                      {r.permissionCount > 0 ? (
+                        <span style={{
+                          background: "#0a1a2e", color: "#4fc3f7",
+                          padding: "3px 8px", borderRadius: 4, fontSize: 11, fontWeight: 600,
+                        }}>
+                          {r.permissionCount} quyền
+                        </span>
+                      ) : (
+                        <span style={{ color: "#444", fontSize: 11 }}>—</span>
+                      )}
                     </td>
                     <td style={{ padding: "9px 14px" }}>
                       <span className={`status-dot ${r.isActive ? 'active' : 'inactive'}`}>
@@ -871,33 +705,38 @@ export default function StaffRolesTab() {
                       <div
                         style={{ display: "flex", flexWrap: "wrap", gap: 4 }}
                       >
-                        {(u.roles || []).map((r) => (
+                        {(u.roles || []).length === 0 ? (
+                          // User chưa có UserRole trong DB → hiển thị badge "User" mặc định (không thể thu hồi)
                           <span
-                            key={r.roleId}
-                            className={`badge ${r.roleName === 'Admin' ? 'badge-danger' : 'badge-accent'}`}
-                            style={{ padding: "2px 8px", fontSize: 10 }}
+                            className="badge badge-accent"
+                            style={{ padding: "2px 8px", fontSize: 10, opacity: 0.6 }}
                           >
-                            {r.roleName}
-                            <button
-                              onClick={() =>
-                                setRevokeTarget({ userId: u.id, username: u.username, roleId: r.roleId, roleName: r.roleName })
-                              }
+                            User
+                          </span>
+                        ) : (
+                          (u.roles || []).map((r) => (
+                            <span
+                              key={r.roleId}
+                              className={`badge ${r.roleName === "Admin" ? "badge-danger" : r.roleName === "User" ? "badge-accent" : "badge-accent"}`}
                               style={{
-                                background: "none",
-                                border: "none",
-                                cursor: "pointer",
-                                padding: 0,
-                                display: "flex",
+                                padding: "2px 8px", fontSize: 10,
+                                display: "inline-flex", alignItems: "center", gap: 3,
                               }}
                             >
-                              <X size={10} color="#e94560" />
-                            </button>
-                          </span>
-                        ))}
-                        {(u.roles || []).length === 0 && (
-                          <span style={{ color: "#555", fontSize: 10 }}>
-                            {t("admin.noRole")}
-                          </span>
+                              {r.roleName}
+                              {/* Chỉ cho phép thu hồi role không phải "User" */}
+                              {r.roleName !== "User" && (
+                                <button
+                                  onClick={() =>
+                                    setRevokeTarget({ userId: u.id, username: u.username, roleId: r.roleId, roleName: r.roleName })
+                                  }
+                                  style={{ background: "none", border: "none", cursor: "pointer", padding: 0, display: "flex" }}
+                                >
+                                  <X size={10} color="#e94560" />
+                                </button>
+                              )}
+                            </span>
+                          ))
                         )}
                       </div>
                     </td>

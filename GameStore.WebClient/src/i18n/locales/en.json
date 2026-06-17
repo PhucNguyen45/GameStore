@@ -331,11 +331,14 @@
     "unread": "Unread"
   },
   "admin": {
+    "dashboard": "Overview",
     "games": "Games",
     "users": "Users",
     "orders": "Orders",
     "categories": "Categories",
     "gameKeys": "Game Keys",
+    "revenue": "Revenue Report",
+    "staffRoles": "Staff & Roles",
     "noOrders": "No orders found",
     "addGame": "Add Game",
     "addCategory": "Add Category",

@@ -165,7 +165,9 @@ export default function GamesTab({
               >
                 {t("admin.developer")}
               </SortableHeader>
-              <th style={{ ...thStyle, cursor: "default" }}>{t("admin.category")}</th>
+              <th style={{ ...thStyle, cursor: "default" }}>
+                {t("admin.category")}
+              </th>
               <SortableHeader
                 field="price"
                 sort={gameSort}
@@ -174,13 +176,7 @@ export default function GamesTab({
                 {t("admin.price")}
               </SortableHeader>
               <th style={thStyle}>{t("admin.discount")}</th>
-              <SortableHeader
-                field="rating"
-                sort={gameSort}
-                setSort={setGameSort}
-              >
-                {t("admin.rating")}
-              </SortableHeader>
+
               <SortableHeader
                 field="totalSales"
                 sort={gameSort}
@@ -245,7 +241,11 @@ export default function GamesTab({
                   {game.discountPrice ? (
                     <span
                       className="badge badge-accent"
-                      style={{ padding: "2px 7px", fontSize: 10, borderRadius: 8 }}
+                      style={{
+                        padding: "2px 7px",
+                        fontSize: 10,
+                        borderRadius: 8,
+                      }}
                     >
                       -{Math.round((1 - game.discountPrice / game.price) * 100)}
                       %
@@ -254,11 +254,9 @@ export default function GamesTab({
                     <span style={{ color: "#555" }}>-</span>
                   )}
                 </td>
-                <td style={{ padding: "9px 14px" }}>
-                  ⭐ {game.rating?.toFixed(1)}
+                <td style={{ padding: "9px 14px", color: "#888" }}>
+                  {game.totalSales?.toLocaleString()}
                 </td>
-                {/* <td style={{ padding: "9px 14px", color: "#888" }}>{game.totalSales?.toLocaleString()}</td> */}
-
                 <td style={{ padding: "9px 14px", display: "flex", gap: 5 }}>
                   <button
                     onClick={() => onEdit(game)}

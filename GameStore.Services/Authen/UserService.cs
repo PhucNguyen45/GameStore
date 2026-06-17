@@ -26,9 +26,13 @@ public class UserService : IUserService
         var user = await _userRepository.GetByUsernameForAuthAsync(username);
         if (user == null || user.Salt == null || user.Salt.Length == 0) return null;
 
-        return TokenHelper.IsValidPassword(password, user.Salt, user.Password)
-        ? user
-        : null;
+        if (!TokenHelper.IsValidPassword(password, user.Salt, user.Password))
+            return null;
+
+        if (!user.IsActive)
+            throw new UnauthorizedAccessException("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
+
+        return user;
     }
 
     public async Task<User?> GetById(int id) => await _userRepository.GetByIdAsync(id);

@@ -1,7 +1,7 @@
 // GameStore.WebClient/src/components/admin/UsersTab.jsx
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Edit2, Trash2, X } from "lucide-react";
+import { Edit2, Trash2, X, Shield } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "../common/Pagination";
 import { thStyle, actionBtnStyle, filterInputStyle } from "./adminStyles";
@@ -105,6 +105,7 @@ export default function UsersTab({
               setSort={setUserSort}
             >                {t("admin.wallet")}
               </SortableHeader>
+            <th style={{ ...thStyle, cursor: "default" }}>Role</th>
             <th style={{ ...thStyle, cursor: "default" }}>{t("admin.status")}</th>
             <SortableHeader
               field="createdAt"
@@ -138,6 +139,24 @@ export default function UsersTab({
                 }}
               >
                 {formatVND(u.wallet || 0)}
+              </td>
+              <td style={{ padding: "9px 14px" }}>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                  {(u.roles || ["User"]).map((roleName) => (
+                    <span
+                      key={roleName}
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 3,
+                        background: roleName === "Admin" ? "#3a1020" : "#0a1a2e",
+                        color: roleName === "Admin" ? "#e94560" : "#4fc3f7",
+                        padding: "2px 7px", borderRadius: 4, fontSize: 10, fontWeight: 600,
+                      }}
+                    >
+                      <Shield size={8} />
+                      {roleName}
+                    </span>
+                  ))}
+                </div>
               </td>
               <td style={{ padding: "9px 14px" }}>
                 <span className={`status-dot ${u.isActive ? 'active' : 'locked'}`}>
@@ -174,7 +193,7 @@ export default function UsersTab({
           {users.length === 0 && (
             <tr>
               <td
-                colSpan="8"
+                colSpan="9"
                 style={{ padding: 20, textAlign: "center", color: "#666" }}
               >                  {t("admin.noUsers")}
               </td>

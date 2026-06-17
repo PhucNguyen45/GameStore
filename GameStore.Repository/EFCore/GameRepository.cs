@@ -35,6 +35,7 @@ public class GameRepository : Repository<Game>, IGameRepository
 
         query = sortBy?.ToLower() switch
         {
+            "id" => descending ? query.OrderByDescending(g => g.Id) : query.OrderBy(g => g.Id),
             "price" => descending ? query.OrderByDescending(g => g.DiscountPrice ?? g.Price)
                                   : query.OrderBy(g => g.DiscountPrice ?? g.Price),
             "rating" => descending ? query.OrderByDescending(g => g.Rating)
@@ -45,6 +46,8 @@ public class GameRepository : Repository<Game>, IGameRepository
                                                      : query.OrderBy(g => g.ReleaseDate),
             "title" => descending ? query.OrderByDescending(g => g.Title)
                                   : query.OrderBy(g => g.Title),
+            "developer" => descending ? query.OrderByDescending(g => g.Developer)
+                                      : query.OrderBy(g => g.Developer),
             "createdat" or "created" => descending ? query.OrderByDescending(g => g.CreatedAt)
                                                     : query.OrderBy(g => g.CreatedAt),
             _ => query.OrderByDescending(g => g.TotalSales)
