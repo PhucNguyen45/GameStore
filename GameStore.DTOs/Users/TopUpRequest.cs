@@ -8,5 +8,5 @@ namespace GameStore.DTOs.Users;
 
 public class TopUpRequest
 {
-    public decimal Amount { get; set; }
+    public long Amount { get; set; }
 }

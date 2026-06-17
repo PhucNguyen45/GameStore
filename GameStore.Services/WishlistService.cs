@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GameStore.DTOs.Wishlist;
 using GameStore.Entities.Store;
+using GameStore.Entities.Games;
 using GameStore.Repository;
 
 namespace GameStore.Services;
@@ -18,7 +19,7 @@ public class WishlistService : IWishlistService
 
     public async Task<IEnumerable<WishlistItemDto>> GetUserWishlistAsync(int userId)
     {
-        return await _context.Wishlists
+        var items = await _context.Wishlists
             .Where(w => w.UserId == userId)
             .Include(w => w.Game)
             .OrderByDescending(w => w.AddedAt)
@@ -32,6 +33,24 @@ public class WishlistService : IWishlistService
                 AddedAt = w.AddedAt
             })
             .ToListAsync();
+
+        // Fill AvailableKeys for each wishlist item
+        var gameIds = items.Select(i => i.GameId).ToList();
+        if (gameIds.Any())
+        {
+            var keyCounts = await _context.GameKeys
+                .Where(k => gameIds.Contains(k.GameId) && !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow))
+                .GroupBy(k => k.GameId)
+                .Select(g => new { GameId = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(g => g.GameId, g => g.Count);
+
+            foreach (var item in items)
+            {
+                item.AvailableKeys = keyCounts.GetValueOrDefault(item.GameId, 0);
+            }
+        }
+
+        return items;
     }
 
     public async Task AddToWishlistAsync(int userId, int gameId)

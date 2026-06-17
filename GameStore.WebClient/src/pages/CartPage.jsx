@@ -1,35 +1,103 @@
 // GameStore.WebClient/src/pages/CartPage.jsx
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import useCartStore from "../stores/cartStore";
 import { useAuth } from "../contexts/AuthContext";
+import { gameAPI } from "../services/api";
 import toast from "react-hot-toast";
+import { formatVND } from "../utils/format";
 import {
   ShoppingCart,
   Trash2,
-  Plus,
-  Minus,
   ShoppingBag,
   ArrowLeft,
+  AlertCircle,
+  CheckCircle2,
+  Minus,
+  Plus,
+  ShieldCheck,
+  Tag,
+  Package,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PHONE_REGEX = /^0[35789][0-9]{8}$/;
+
+function validateEmail(email, t) {
+  if (!email.trim()) return t("cart.emailRequired");
+  if (!EMAIL_REGEX.test(email)) return t("cart.emailInvalid");
+  return "";
+}
+
+function validatePhone(phone, t) {
+  if (!phone.trim()) return t("cart.phoneRequired");
+  if (!PHONE_REGEX.test(phone)) return t("cart.phoneInvalid");
+  return "";
+}
 
 export default function CartPage() {
+  const { t } = useTranslation();
   const { items, removeItem, updateQuantity, clearCart, total, count } =
     useCartStore();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState(user?.phoneNumber || "");
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
 
-  const handleCheckout = () => {
+  const validateField = useCallback((field, value) => {
+    if (field === "email") return validateEmail(value, t);
+    if (field === "phone") return validatePhone(value, t);
+    return "";
+  }, [t]);
+
+  const handleBlur = (field) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    const value = field === "email" ? email : phone;
+    setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
+  };
+
+  const handleChange = (field, value) => {
+    if (field === "email") setEmail(value);
+    else setPhone(value);
+    if (touched[field]) {
+      setErrors((prev) => ({ ...prev, [field]: validateField(field, value) }));
+    }
+  };
+
+  const handleCheckout = async () => {
     if (!user) {
-      toast.error("Vui lòng đăng nhập để tiếp tục thanh toán");
+      toast.error(t("cart.checkoutLoginMsg"));
       navigate("/login");
       return;
     }
 
-    if (!email || !phone) {
-      toast.error("Vui lòng nhập email và số điện thoại");
+    const emailErr = validateEmail(email);
+    const phoneErr = validatePhone(phone);
+    const newErrors = { email: emailErr, phone: phoneErr };
+    setErrors(newErrors);
+    setTouched({ email: true, phone: true });
+
+    if (emailErr || phoneErr) {
+      toast.error(emailErr || phoneErr || t("cart.infoRequired"));
+      return;
+    }
+
+    try {
+      const gameIds = items.map((i) => i.id);
+      const stockRes = await gameAPI.checkStock(gameIds);
+      const stockData = stockRes.data;
+
+      const outOfStockItems = items.filter((i) => (stockData[i.id] || 0) < i.quantity);
+      if (outOfStockItems.length > 0) {
+        const names = outOfStockItems.map((i) => i.title).join(", ");
+        toast.error(t("cart.outOfStock", { games: names }));
+        return;
+      }
+    } catch (err) {
+      toast.error(t("cart.checkStockFailed"));
       return;
     }
 
@@ -48,217 +116,496 @@ export default function CartPage() {
     });
   };
 
-  if (count() === 0)
+  const itemCount = count();
+  const totalQuantity = items.reduce((s, i) => s + i.quantity, 0);
+
+  // ─── Empty State ──────────────────────────────────────────
+  if (itemCount === 0)
     return (
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "60vh",
-          textAlign: "center",
-        }}
-      >
-        <ShoppingCart size={64} color="#6b6b8e" />
-        <h2 style={{ marginTop: 20 }}>Giỏ hàng đang trống</h2>
-        <p style={{ color: "#6b6b8e", margin: "8px 0 20px" }}>
-          Bắt đầu mua game thôi!
-        </p>
-        <Link to="/store">
-          <button className="btn-primary">Xem cửa hàng</button>
-        </Link>
+      <div className="container">
+        <div className="empty-state">
+          <div className="icon">
+            <ShoppingCart size={32} color="#6b6b8e" />
+          </div>
+          <h2>{t("cart.empty")}</h2>
+          <p>{t("cart.emptyDesc")}</p>
+          <Link to="/store">
+            <button className="btn btn-primary">{t("cart.viewStore")}</button>
+          </Link>
+        </div>
       </div>
     );
 
   return (
-    <div className="container" style={{ paddingTop: 30, maxWidth: 900 }}>
-      <Link
-        to="/store"
+    <div className="container" style={{ paddingTop: 32, paddingBottom: 60 }}>
+      {/* ── Top Bar ── */}
+      <div
         style={{
           display: "flex",
           alignItems: "center",
-          gap: 6,
-          color: "#6b6b8e",
-          marginBottom: 24,
+          justifyContent: "space-between",
+          marginBottom: 28,
+          flexWrap: "wrap",
+          gap: 12,
         }}
       >
-        <ArrowLeft size={16} /> Tiếp tục mua sắm
-      </Link>
-      <h1
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 10,
-          fontSize: 26,
-          fontWeight: 700,
-          marginBottom: 24,
-        }}
-      >
-        <ShoppingBag size={28} color="#e94560" /> Giỏ hàng ({count()} items)
-      </h1>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        {items.map((item) => (
-          <div
-            key={item.id}
-            style={{
-              display: "flex",
-              gap: 16,
-              padding: 20,
-              background: "#16162a",
-              borderRadius: 12,
-              border: "1px solid #2a2a4a",
-              alignItems: "center",
-            }}
-          >
-            <div
+        <Link
+          to="/store"
+          className="btn btn-ghost"
+          style={{ gap: 6, padding: "8px 16px", fontSize: 13 }}
+        >
+          <ArrowLeft size={16} /> {t("cart.continueShopping")}
+        </Link>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <ShoppingBag size={26} color="#e94560" />
+          <div>
+            <h1
               style={{
-                width: 100,
-                height: 80,
-                background: "#1a1a3e",
-                borderRadius: 8,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-                overflow: "hidden",
+                fontSize: "clamp(20px, 3vw, 26px)",
+                fontWeight: 800,
+                lineHeight: 1.2,
               }}
             >
-              {item.coverImageUrl ? (
-                <img
-                  src={item.coverImageUrl}
-                  alt=""
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    borderRadius: 8,
-                  }}
-                />
-              ) : (
-                "🎮"
-              )}
-            </div>
-            <div style={{ flex: 1 }}>
-              <h3 style={{ fontSize: 16, fontWeight: 600 }}>{item.title}</h3>
-              <span style={{ color: "#e94560", fontWeight: 700, fontSize: 15 }}>
-                ${(item.discountPrice || item.price)?.toFixed(2)}
-              </span>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <button
-                onClick={() => removeItem(item.id)}
-                style={{
-                  padding: 8,
-                  background: "transparent",
-                  color: "#e94560",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                <Trash2 size={18} />
-              </button>
-            </div>
+              {t("cart.title")}
+            </h1>
+            <span style={{ fontSize: 13, color: "#6b6b8e" }}>
+              {totalQuantity} {t("cart.items", { count: itemCount })}
+            </span>
           </div>
-        ))}
+        </div>
       </div>
 
       <div
         style={{
-          marginTop: 24,
-          padding: 24,
-          background: "#16162a",
-          borderRadius: 12,
-          border: "1px solid #2a2a4a",
+          display: "grid",
+          gridTemplateColumns: "1fr 360px",
+          gap: 28,
+          alignItems: "start",
         }}
+        className="cart-grid"
       >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <span style={{ fontSize: 18, color: "#6b6b8e" }}>Total:</span>
-          <span style={{ fontSize: 28, fontWeight: 800, color: "#e94560" }}>
-            ${total().toFixed(2)}
-          </span>
+        {/* ── Left Column: Cart Items ── */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          {items.map((item) => {
+            const unitPrice = item.discountPrice || item.price || 0;
+            const subtotal = unitPrice * item.quantity;
+
+            return (
+              <div
+                key={item.id}
+                className="card"
+                style={{
+                  display: "flex",
+                  gap: "clamp(12px, 2vw, 18px)",
+                  padding: "clamp(14px, 2vw, 20px)",
+                  alignItems: "center",
+                  border: "1px solid var(--border-card)",
+                  animation: "fadeIn 0.3s ease",
+                  position: "relative",
+                }}
+              >
+                {/* Cover Image */}
+                <div
+                  style={{
+                    width: 100,
+                    height: 70,
+                    borderRadius: 8,
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    background: "#1a1a3e",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {item.coverImageUrl ? (
+                    <img
+                      src={item.coverImageUrl}
+                      alt=""
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <span style={{ fontSize: 24, opacity: 0.3 }}>🎮</span>
+                  )}
+                </div>
+
+                {/* Info */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <Link
+                    to={`/game/${item.id}`}
+                    style={{
+                      fontSize: "clamp(14px, 1.5vw, 16px)",
+                      fontWeight: 600,
+                      color: "#e0e0e0",
+                      display: "block",
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      marginBottom: 4,
+                    }}
+                  >
+                    {item.title}
+                  </Link>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      fontSize: 12,
+                      color: "#6b6b8e",
+                    }}
+                  >
+                    <Tag size={12} />
+                    <span>
+                      {formatVND(unitPrice)} / {t("cart.perUnit") || "bản"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quantity Stepper */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0,
+                    background: "#0a0a15",
+                    borderRadius: 10,
+                    border: "1px solid #2a2a4a",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                  }}
+                >
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    disabled={item.quantity <= 1}
+                    style={{
+                      width: 34,
+                      height: 34,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: "transparent",
+                      border: "none",
+                      color: item.quantity <= 1 ? "#444" : "#e0e0e0",
+                      cursor: item.quantity <= 1 ? "not-allowed" : "pointer",
+                      transition: "all 0.15s",
+                      fontSize: 14,
+                    }}
+                    onMouseEnter={(e) => {
+                      if (item.quantity > 1) e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                    }}
+                  >
+                    <Minus size={14} />
+                  </button>
+                  <span
+                    style={{
+                      width: 36,
+                      textAlign: "center",
+                      fontSize: 14,
+                      fontWeight: 700,
+                      color: "#fff",
+                      userSelect: "none",
+                    }}
+                  >
+                    {item.quantity}
+                  </span>
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    style={{
+                      width: 34,
+                      height: 34,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: "transparent",
+                      border: "none",
+                      color: "#e0e0e0",
+                      cursor: "pointer",
+                      transition: "all 0.15s",
+                      fontSize: 14,
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = "transparent";
+                    }}
+                  >
+                    <Plus size={14} />
+                  </button>
+                </div>
+
+                {/* Subtotal & Remove */}
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    flexShrink: 0,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "clamp(14px, 1.5vw, 17px)",
+                      fontWeight: 800,
+                      color: "#e94560",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {formatVND(subtotal)}
+                  </span>
+                  <button
+                    onClick={() => {
+                      removeItem(item.id);
+                      toast.success(t("cart.itemRemoved"));
+                    }}
+                    style={{
+                      padding: "4px 8px",
+                      background: "transparent",
+                      color: "#6b6b8e",
+                      border: "none",
+                      cursor: "pointer",
+                      fontSize: 12,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 4,
+                      borderRadius: 6,
+                      transition: "all 0.15s",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = "#e94560";
+                      e.currentTarget.style.background = "rgba(233,69,96,0.1)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = "#6b6b8e";
+                      e.currentTarget.style.background = "transparent";
+                    }}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
+        {/* ── Right Column: Summary + Checkout ── */}
         <div
           style={{
-            marginTop: 24,
-            display: "flex",
-            flexDirection: "column",
-            gap: 16,
+            background: "var(--surface-card)",
+            borderRadius: "var(--radius-xl)",
+            border: "1px solid var(--border-card)",
+            padding: "clamp(20px, 3vw, 28px)",
+            position: "sticky",
+            top: 90,
           }}
         >
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ color: "#6b6b8e", fontSize: 14 }}>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="example@gmail.com"
-              style={inputStyle}
-            />
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <label style={{ color: "#6b6b8e", fontSize: 14 }}>
-              Số điện thoại
-            </label>
-            <input
-              type="tel"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="0123456789"
-              style={inputStyle}
-            />
-          </div>
-        </div>
-
-        <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
-          <button
-            onClick={clearCart}
-            className="btn-outline"
-            style={{ flex: 1 }}
-          >
-            Xóa giỏ hàng
-          </button>
-          <button
-            onClick={handleCheckout}
-            className="btn-primary"
-            style={{ flex: 1, padding: 14, fontSize: 16 }}
-          >
-            Tiến hành thanh toán
-          </button>
-        </div>
-        {!user && (
-          <p
+          {/* Order Summary */}
+          <h3
             style={{
-              textAlign: "center",
-              color: "#ffd700",
-              marginTop: 12,
-              fontSize: 13,
+              fontSize: 16,
+              fontWeight: 700,
+              marginBottom: 20,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              color: "#e0e0e0",
             }}
           >
-            ⚠ Bạn cần đăng nhập để thanh toán
-          </p>
-        )}
+            <Package size={18} color="#e94560" />
+            {t("payment.orderSummary") || "Tóm tắt đơn hàng"}
+          </h3>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {items.map((item) => {
+              const unitPrice = item.discountPrice || item.price || 0;
+              return (
+                <div
+                  key={item.id}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    fontSize: 13,
+                    color: "#a0a0b0",
+                  }}
+                >
+                  <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginRight: 8 }}>
+                    {item.title}
+                    <span style={{ color: "#6b6b8e" }}> x{item.quantity}</span>
+                  </span>
+                  <span style={{ fontWeight: 600, color: "#e0e0e0", whiteSpace: "nowrap" }}>
+                    {formatVND(unitPrice * item.quantity)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Divider */}
+          <div
+            style={{
+              height: 1,
+              background: "var(--border-card)",
+              margin: "16px 0",
+            }}
+          />
+
+          {/* Totals */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontSize: 14,
+              color: "#a0a0b0",
+              marginBottom: 8,
+            }}
+          >
+            <span>{t("cart.items", { count: itemCount })}</span>
+            <span>{totalQuantity} {t("orders.qty") || "bản"}</span>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              fontSize: 22,
+              fontWeight: 800,
+              marginBottom: 24,
+            }}
+          >
+            <span style={{ color: "#a0a0b0", fontSize: 16, fontWeight: 600 }}>
+              {t("cart.total")}
+            </span>
+            <span style={{ color: "#e94560" }}>{formatVND(total())}</span>
+          </div>
+
+          {/* Contact Info */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div>
+              <label className="form-label">
+                {t("cart.email")} <span style={{ color: "#e94560" }}>*</span>
+              </label>
+              <div className="input-with-icon">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                  onBlur={() => handleBlur("email")}
+                  placeholder="example@gmail.com"
+                  className={`input ${touched.email ? (errors.email ? "input-error" : "input-success") : ""}`}
+                />
+                {touched.email && !errors.email && (
+                  <CheckCircle2
+                    size={16}
+                    color="#4caf50"
+                    className="icon-right"
+                  />
+                )}
+                {touched.email && errors.email && (
+                  <AlertCircle
+                    size={16}
+                    color="#e94560"
+                    className="icon-right"
+                  />
+                )}
+              </div>
+              {touched.email && errors.email && (
+                <p style={{ color: "#e94560", fontSize: 12, marginTop: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                  <AlertCircle size={12} /> {errors.email}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="form-label">
+                {t("cart.phoneLabel")} <span style={{ color: "#e94560" }}>*</span>
+              </label>
+              <div className="input-with-icon">
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                  onBlur={() => handleBlur("phone")}
+                  placeholder="0912345678"
+                  className={`input ${touched.phone ? (errors.phone ? "input-error" : "input-success") : ""}`}
+                />
+                {touched.phone && !errors.phone && (
+                  <CheckCircle2
+                    size={16}
+                    color="#4caf50"
+                    className="icon-right"
+                  />
+                )}
+                {touched.phone && errors.phone && (
+                  <AlertCircle
+                    size={16}
+                    color="#e94560"
+                    className="icon-right"
+                  />
+                )}
+              </div>
+              {touched.phone && errors.phone && (
+                <p style={{ color: "#e94560", fontSize: 12, marginTop: 6, display: "flex", alignItems: "center", gap: 4 }}>
+                  <AlertCircle size={12} /> {errors.phone}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 24 }}>
+            <button
+              onClick={handleCheckout}
+              className="btn btn-primary btn-block"
+              style={{ padding: 14, fontSize: 15 }}
+            >
+              <ShieldCheck size={18} />
+              {t("cart.checkout")}
+            </button>
+            <button
+              onClick={() => {
+                clearCart();
+                toast.success(t("cart.cartCleared"));
+              }}
+              className="btn btn-outline btn-block"
+              style={{ padding: "10px 14px", fontSize: 13 }}
+            >
+              {t("cart.clearCart")}
+            </button>
+          </div>
+
+          {!user && (
+            <p
+              style={{
+                textAlign: "center",
+                color: "#ffd700",
+                marginTop: 12,
+                fontSize: 13,
+                lineHeight: 1.5,
+              }}
+            >
+              ⚠ {t("cart.loginRequired")}
+            </p>
+          )}
+        </div>
       </div>
+
+      {/* Responsive Override */}
+      <style>{`
+        @media (max-width: 768px) {
+          .cart-grid {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
-
-const inputStyle = {
-  background: "#1a1a3e",
-  border: "1px solid #2a2a4a",
-  borderRadius: 8,
-  padding: "12px 16px",
-  color: "#fff",
-  fontSize: 14,
-  outline: "none",
-  width: "100%",
-  transition: "border-color 0.2s",
-};

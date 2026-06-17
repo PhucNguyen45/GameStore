@@ -1,13 +1,14 @@
 // GameStore.WebClient/src/components/wallet/WalletModal.jsx
 import { useState } from "react";
-import { X, Wallet, DollarSign, CreditCard, Smartphone } from "lucide-react";
+import { X, Wallet, CreditCard } from "lucide-react";
 import { userAPI } from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
+import { formatVND, formatVNDRaw } from "../../utils/format";
 
-const AMOUNTS = [10, 20, 50, 100, 200, 500];
+const AMOUNTS = [10000, 20000, 50000, 100000, 200000, 500000];
 
 export default function WalletModal({ onClose }) {
-  const [amount, setAmount] = useState(50);
+  const [amount, setAmount] = useState(50000);
   const [customAmount, setCustomAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -29,7 +30,7 @@ export default function WalletModal({ onClose }) {
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
 
-      setMessage(`✅ Đã nạp $${finalAmount.toFixed(2)} VND!`);
+      setMessage(`✅ Đã nạp ${formatVND(finalAmount)}!`);
       setTimeout(() => onClose(), 1000);
     } catch (err) {
       setMessage("❌ Nạp tiền thất bại");
@@ -39,33 +40,8 @@ export default function WalletModal({ onClose }) {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: "rgba(0,0,0,0.8)",
-        backdropFilter: "blur(4px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-      }}
-      onClick={onClose}
-    >
-      <div
-        style={{
-          background: "#16162a",
-          borderRadius: 16,
-          padding: 32,
-          width: 440,
-          border: "1px solid #2a2a4a",
-          boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
-        }}
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" style={{ width: 440 }} onClick={(e) => e.stopPropagation()}>
         {/* Header */}
         <div
           style={{
@@ -114,7 +90,7 @@ export default function WalletModal({ onClose }) {
             Số dư hiện tại
           </p>
           <p style={{ fontSize: 28, fontWeight: 800, color: "#4fc3f7" }}>
-            VND{user?.wallet?.toFixed(2) || "0.00"}
+            {formatVND(user?.wallet)}
           </p>
         </div>
 
@@ -125,7 +101,7 @@ export default function WalletModal({ onClose }) {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
+            gridTemplateColumns: "repeat(auto-fit, minmax(100px, 1fr))",
             gap: 8,
             marginBottom: 16,
           }}
@@ -152,19 +128,14 @@ export default function WalletModal({ onClose }) {
                 cursor: "pointer",
               }}
             >
-              <DollarSign size={14} style={{ verticalAlign: "middle" }} />
-              {a}
+              {formatVND(a)}
             </button>
           ))}
         </div>
 
         {/* Custom Amount */}
         <div style={{ marginBottom: 20, position: "relative" }}>
-          <DollarSign
-            size={18}
-            color="#888"
-            style={{ position: "absolute", left: 14, top: 14 }}
-          />
+          <span style={{ position: "absolute", left: 14, top: 14, color: "#888", fontSize: 16, fontWeight: 600 }}>₫</span>
           <input
             type="number"
             placeholder="Nhập số tiền"
@@ -207,21 +178,11 @@ export default function WalletModal({ onClose }) {
         <button
           onClick={handleTopUp}
           disabled={loading}
-          style={{
-            width: "100%",
-            padding: 14,
-            background: "linear-gradient(135deg, #4fc3f7, #2196f3)",
-            color: "#000",
-            border: "none",
-            borderRadius: 10,
-            fontSize: 16,
-            fontWeight: 700,
-            cursor: "pointer",
-          }}
+          className="btn btn-primary btn-block btn-lg"
         >
           {loading
             ? "Đang xử lý..."
-            : `Nạp ${(customAmount || amount || 0).toFixed(2)} VND`}
+            : `Nạp ${formatVND(customAmount || amount)}`}
         </button>
 
         {/* Payment Methods */}
@@ -242,7 +203,7 @@ export default function WalletModal({ onClose }) {
               fontSize: 12,
             }}
           >
-            <CreditCard size={14} /> Card
+            <CreditCard size={14} /> Thẻ
           </span>
         </div>
       </div>

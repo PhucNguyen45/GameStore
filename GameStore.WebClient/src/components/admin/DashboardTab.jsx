@@ -1,5 +1,6 @@
 // GameStore.WebClient/src/components/admin/DashboardTab.jsx
 import { useMemo, useState } from "react";
+import { formatVND } from "../../utils/format";
 import {
   Gamepad2,
   Users,
@@ -30,10 +31,10 @@ export default function DashboardTab({
   const Y_TICKS = 4;
   const formatYLabel = (v) =>
     v >= 10000
-      ? `$${(v / 1000).toFixed(0)}k`
+      ? `${(v / 1000).toFixed(0)}k₫`
       : v >= 1000
-        ? `$${(v / 1000).toFixed(1)}k`
-        : `$${v}`;
+        ? `${(v / 1000).toFixed(1)}k₫`
+        : `${Math.round(v).toLocaleString("vi-VN")}₫`;
 
   const statCards = [
     {
@@ -57,7 +58,7 @@ export default function DashboardTab({
     {
       icon: DollarSign,
       label: "Doanh thu",
-      value: `${Number(stats.revenue).toLocaleString()} VND`,
+      value: formatVND(stats.revenue),
       color: "#e94560",
     },
   ];
@@ -165,7 +166,7 @@ export default function DashboardTab({
               <p style={{ fontSize: 10, color: "#666" }}>
                 Tổng năm:
                 <span style={{ color: "#4caf50", fontWeight: 700 }}>
-                  {Number(stats.revenue).toLocaleString("vi-VN")} VND
+                  {formatVND(stats.revenue)}
                 </span>
               </p>
             </div>
@@ -290,7 +291,7 @@ export default function DashboardTab({
                               fontSize: 11,
                             }}
                           >
-                            ${item.value.toLocaleString()}
+                            {formatVND(item.value)}
                           </div>
                           <div style={{ color: "#888" }}>{item.count} đơn</div>
                         </div>
@@ -409,21 +410,12 @@ export default function DashboardTab({
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div
-                    style={{
-                      width: 6,
-                      height: 6,
-                      borderRadius: "50%",
-                      background:
-                        o.status === "Completed"
-                          ? "#4caf50"
-                          : o.status === "Cancelled"
-                            ? "#e94560"
-                            : o.status === "Refunded"
-                              ? "#ff9800"
-                              : "#ffc107",
-                    }}
-                  />
+                  <div className={`status-dot ${
+                    o.status === 'Completed' ? 'active' :
+                    o.status === 'Cancelled' ? 'locked' :
+                    o.status === 'Refunded' ? 'pending' :
+                    'pending'
+                  }`} style={{ gap: 0 }} />
                   <span style={{ color: "#fff", fontWeight: 500 }}>
                     #{o.id}
                   </span>
@@ -439,7 +431,7 @@ export default function DashboardTab({
                       : "-"}
                   </span>
                   <span style={{ color: "#4caf50", fontWeight: 600 }}>
-                    {o.totalAmount?.toFixed(2)} VND
+                    {formatVND(o.totalAmount || 0)}
                   </span>
                 </div>
               </div>

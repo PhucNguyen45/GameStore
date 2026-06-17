@@ -34,4 +34,11 @@ public class LibraryController : ControllerBase
         var owned = await _libraryService.CheckOwnedAsync(userId, gameId);
         return Ok(new { owned });
     }
+
+    [HttpGet("{gameId}/keys")]
+    public async Task<IActionResult> GetGameKeys(int gameId)
+    {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        return Ok(await _libraryService.GetGameKeysAsync(userId, gameId));
+    }
 }

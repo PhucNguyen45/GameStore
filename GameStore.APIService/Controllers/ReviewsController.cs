@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.DTOs.Reviews;
+using GameStore.DTOs.Common;
 using GameStore.Services;
 using System.Security.Claims;
 
@@ -21,7 +22,8 @@ public class ReviewsController : ControllerBase
     [HttpGet("game/{gameId}")]
     public async Task<IActionResult> GetForGame(int gameId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        return Ok(await _reviewService.GetGameReviewsAsync(gameId, page, pageSize));
+        var (reviews, totalCount) = await _reviewService.GetGameReviewsAsync(gameId, page, pageSize);
+        return Ok(PagedResponse<ReviewDto>.Create(reviews, totalCount, page, pageSize));
     }
 
     [HttpPost]

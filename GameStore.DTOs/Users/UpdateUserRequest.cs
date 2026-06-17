@@ -13,4 +13,5 @@ public class UpdateUserRequest
     public string? Phone { get; set; }
     public string? AvatarUrl { get; set; }
     public string? Password { get; set; }
+    public string? CurrentPassword { get; set; }
 }

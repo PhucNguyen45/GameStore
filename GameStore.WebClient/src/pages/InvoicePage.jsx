@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
 import { orderAPI } from "../services/api";
+import { formatVND } from "../utils/format";
 import {
   CheckCircle2,
   Clock,
@@ -9,14 +10,16 @@ import {
   ArrowLeft,
   Download,
   Printer,
-  Loader2,
   CreditCard,
   PackageCheck,
   Send,
 } from "lucide-react";
+import { InvoiceSkeleton } from "../components/common/PageSkeleton";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 export default function InvoicePage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const location = useLocation();
   const [order, setOrder] = useState(location.state?.order || null);
@@ -28,7 +31,7 @@ export default function InvoicePage() {
         const res = await orderAPI.getById(id);
         setOrder(res.data);
       } catch (err) {
-        toast.error("Failed to load invoice details");
+        toast.error(t("invoice.loadError"));
       } finally {
         setLoading(false);
       }
@@ -38,7 +41,6 @@ export default function InvoicePage() {
       fetchOrder();
     }
 
-    // Poll for status updates every 5 seconds if pending
     const interval = setInterval(() => {
       if (order?.status === "Pending" || !order) {
         fetchOrder();
@@ -48,17 +50,7 @@ export default function InvoicePage() {
     return () => clearInterval(interval);
   }, [id, order?.status]);
 
-  if (loading) {
-    return (
-      <div
-        className="container"
-        style={{ textAlign: "center", paddingTop: 100 }}
-      >
-        <Loader2 className="animate-spin" size={48} color="#e94560" />
-        <p style={{ marginTop: 20 }}>Loading invoice...</p>
-      </div>
-    );
-  }
+  if (loading) return <InvoiceSkeleton />;
 
   if (!order) {
     return (
@@ -66,30 +58,40 @@ export default function InvoicePage() {
         className="container"
         style={{ textAlign: "center", paddingTop: 100 }}
       >
-        <h2>Order not found</h2>
-        <Link to="/store" className="btn-primary" style={{ marginTop: 20 }}>
-          Go to Store
+        <h2>{t("invoice.notFound")}</h2>            <Link to="/store" className="btn btn-primary" style={{ marginTop: 20 }}>
+          {t("invoice.goToStore")}
         </Link>
       </div>
     );
   }
 
   const steps = [
-    { label: "Order Placed", icon: PackageCheck, completed: true },
-    { label: "Payment Received", icon: CreditCard, completed: true },
+    { label: t("invoice.stepPlaced"), icon: PackageCheck, completed: true },
+    { label: t("invoice.stepPayment"), icon: CreditCard, completed: true },
     {
-      label: "Admin Review",
+      label: t("invoice.stepReview"),
       icon: Clock,
       completed: order.status !== "Pending" && order.status !== "Cancelled",
       active: order.status === "Pending",
     },
     {
-      label: "Delivery (Email)",
+      label: t("invoice.stepDelivery"),
       icon: Send,
       completed: order.status === "Completed" || order.status === "Approved",
       active: false,
     },
   ];
+
+  const getStatusBadge = () => {
+    if (order.status === "Completed" || order.status === "Approved") {
+      return { text: t("invoice.approved"), color: "#10b981", icon: CheckCircle2 };
+    } else if (order.status === "Cancelled" || order.status === "Rejected") {
+      return { text: t("invoice.rejected"), color: "#ef4444", icon: XCircle };
+    }
+    return { text: t("invoice.waiting"), color: "#f59e0b", icon: Clock };
+  };
+
+  const statusBadge = getStatusBadge();
 
   return (
     <div className="container" style={{ paddingTop: 40, maxWidth: 800 }}>
@@ -103,12 +105,11 @@ export default function InvoicePage() {
           marginBottom: 30,
         }}
       >
-        <ArrowLeft size={18} /> Back to Store
+        <ArrowLeft size={18} /> {t("invoice.backToStore")}
       </Link>
 
-      {/* Stepper Section */}
-      <div
-        style={{
+      <div          className="invoice-stepper"
+          style={{
           background: "#16162a",
           padding: "30px 40px",
           borderRadius: 20,
@@ -119,9 +120,9 @@ export default function InvoicePage() {
           alignItems: "center",
         }}
       >
-        {steps.map((step, idx) => (
-          <div
+        {steps.map((step, idx) => (            <div
             key={idx}
+            className="step"
             style={{
               flex: 1,
               display: "flex",
@@ -165,6 +166,7 @@ export default function InvoicePage() {
             </span>
             {idx < steps.length - 1 && (
               <div
+                className="step-connector"
                 style={{
                   position: "absolute",
                   top: 25,
@@ -189,28 +191,24 @@ export default function InvoicePage() {
           boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
         }}
       >
-        {/* Status Header */}
         <div
           style={{
-            background:
-              order.status === "Completed" || order.status === "Approved"
-                ? "#10b98122"
-                : order.status === "Cancelled" || order.status === "Rejected"
-                  ? "#ef444422"
-                  : "#f59e0b22",
+            background: `${statusBadge.color}22`,
             padding: "30px 40px",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
             borderBottom: "1px solid #2a2a4a",
+            flexWrap: "wrap",
+            gap: 16,
           }}
         >
           <div>
             <h2 style={{ fontSize: 24, fontWeight: 800, marginBottom: 4 }}>
-              Invoice #{id}
+              {t("invoice.invoiceTitle", { id })}
             </h2>
             <p style={{ color: "#6b6b8e", fontSize: 14 }}>
-              Order placed on {new Date(order.orderDate).toLocaleDateString()}
+              {t("invoice.orderDate", { date: new Date(order.orderDate).toLocaleDateString() })}
             </p>
           </div>
           <div
@@ -220,36 +218,21 @@ export default function InvoicePage() {
               gap: 10,
               padding: "10px 20px",
               borderRadius: 50,
-              background:
-                order.status === "Completed" || order.status === "Approved"
-                  ? "#10b981"
-                  : order.status === "Cancelled" || order.status === "Rejected"
-                    ? "#ef4444"
-                    : "#f59e0b",
+              background: statusBadge.color,
               color: "#fff",
               fontWeight: 700,
             }}
           >
-            {order.status === "Completed" || order.status === "Approved" ? (
-              <CheckCircle2 size={20} />
-            ) : order.status === "Cancelled" || order.status === "Rejected" ? (
-              <XCircle size={20} />
-            ) : (
-              <Clock size={20} />
-            )}
-            {order.status === "Completed" || order.status === "Approved"
-              ? "Approved"
-              : order.status === "Cancelled" || order.status === "Rejected"
-                ? "Rejected"
-                : "Waiting for Admin..."}
+            <statusBadge.icon size={20} />
+            {statusBadge.text}
           </div>
         </div>
 
-        <div style={{ padding: 40 }}>
+        <div style={{ padding: "clamp(20px, 4vw, 40px)" }}>
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "1fr 1fr",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
               gap: 40,
               marginBottom: 40,
             }}
@@ -264,12 +247,12 @@ export default function InvoicePage() {
                   marginBottom: 15,
                 }}
               >
-                Customer Info
+                {t("invoice.customerInfo")}
               </h4>
               <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 5 }}>
                 Email: {order.email || "N/A"}
               </p>
-              <p style={{ color: "#e0e0e0" }}>Phone: {order.phone || "N/A"}</p>
+              <p style={{ color: "#e0e0e0" }}>{t("payment.phoneLabel")}: {order.phone || "N/A"}</p>
             </div>
             <div style={{ textAlign: "right" }}>
               <h4
@@ -281,25 +264,24 @@ export default function InvoicePage() {
                   marginBottom: 15,
                 }}
               >
-                Payment Details
+                {t("invoice.paymentDetails")}
               </h4>
               <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 5 }}>
-                Status:{" "}
+                {t("invoice.status")}{" "}
                 <span
                   style={{
-                    color:
-                      order.status === "Completed" ||
-                      order.status === "Approved"
-                        ? "#10b981"
-                        : "#f59e0b",
+                    color: order.status === "Completed" || order.status === "Approved"
+                      ? "#10b981" : "#f59e0b",
                   }}
                 >
                   {order.status === "Completed" || order.status === "Approved"
-                    ? "Paid"
-                    : "Verifying..."}
+                    ? t("invoice.paid")
+                    : t("invoice.verifying")}
                 </span>
               </p>
-              <p style={{ color: "#e0e0e0" }}>Method: {order.paymentMethod}</p>
+              <p style={{ color: "#e0e0e0" }}>
+                {t("invoice.method", { method: order.paymentMethod })}
+              </p>
             </div>
           </div>
 
@@ -312,45 +294,17 @@ export default function InvoicePage() {
           >
             <thead>
               <tr style={{ borderBottom: "1px solid #2a2a4a" }}>
-                <th
-                  style={{
-                    textAlign: "left",
-                    padding: "15px 0",
-                    color: "#6b6b8e",
-                    fontWeight: 500,
-                  }}
-                >
-                  Description
+                <th style={{ textAlign: "left", padding: "15px 0", color: "#6b6b8e", fontWeight: 500 }}>
+                  {t("invoice.description")}
                 </th>
-                <th
-                  style={{
-                    textAlign: "center",
-                    padding: "15px 0",
-                    color: "#6b6b8e",
-                    fontWeight: 500,
-                  }}
-                >
-                  Qty
+                <th style={{ textAlign: "center", padding: "15px 0", color: "#6b6b8e", fontWeight: 500 }}>
+                  {t("invoice.qty")}
                 </th>
-                <th
-                  style={{
-                    textAlign: "right",
-                    padding: "15px 0",
-                    color: "#6b6b8e",
-                    fontWeight: 500,
-                  }}
-                >
-                  Price
+                <th style={{ textAlign: "right", padding: "15px 0", color: "#6b6b8e", fontWeight: 500 }}>
+                  {t("invoice.price")}
                 </th>
-                <th
-                  style={{
-                    textAlign: "right",
-                    padding: "15px 0",
-                    color: "#6b6b8e",
-                    fontWeight: 500,
-                  }}
-                >
-                  Amount
+                <th style={{ textAlign: "right", padding: "15px 0", color: "#6b6b8e", fontWeight: 500 }}>
+                  {t("invoice.amount")}
                 </th>
               </tr>
             </thead>
@@ -379,13 +333,10 @@ export default function InvoicePage() {
                     {item.quantity}
                   </td>
                   <td style={{ padding: "20px 0", textAlign: "right" }}>
-                    ${(item.unitPrice || item.price).toFixed(2)}
+                    {formatVND(item.unitPrice || item.price || 0)}
                   </td>
                   <td style={{ padding: "20px 0", textAlign: "right" }}>
-                    $
-                    {((item.unitPrice || item.price) * item.quantity).toFixed(
-                      2,
-                    )}
+                    {formatVND((item.unitPrice || item.price || 0) * item.quantity)}
                   </td>
                 </tr>
               ))}
@@ -394,67 +345,33 @@ export default function InvoicePage() {
 
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <div style={{ width: 250 }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: 10,
-                }}
-              >
-                <span style={{ color: "#6b6b8e" }}>Subtotal</span>
-                <span>${(order.totalAmount || order.total).toFixed(2)}</span>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                <span style={{ color: "#6b6b8e" }}>{t("invoice.subtotal")}</span>
+                <span>{formatVND(order.totalAmount || order.total || 0)}</span>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: 10,
-                }}
-              >
-                <span style={{ color: "#6b6b8e" }}>Tax (0%)</span>
-                <span>$0.00</span>
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                <span style={{ color: "#6b6b8e" }}>{t("invoice.tax")}</span>
+                <span>0₫</span>
               </div>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginTop: 15,
-                  paddingTop: 15,
-                  borderTop: "2px solid #2a2a4a",
-                }}
-              >
-                <span style={{ fontSize: 18, fontWeight: 700 }}>Total</span>
-                <span
-                  style={{ fontSize: 24, fontWeight: 800, color: "#e94560" }}
-                >
-                  ${(order.totalAmount || order.total).toFixed(2)}
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 15, paddingTop: 15, borderTop: "2px solid #2a2a4a" }}>
+                <span style={{ fontSize: 18, fontWeight: 700 }}>{t("invoice.total")}</span>
+                <span style={{ fontSize: 24, fontWeight: 800, color: "#e94560" }}>
+                  {formatVND(order.totalAmount || order.total || 0)}
                 </span>
               </div>
             </div>
           </div>
 
-          <div style={{ marginTop: 50, display: "flex", gap: 15 }}>
+          <div style={{ marginTop: 50, display: "flex", gap: 15, flexWrap: "wrap" }}>
             <button
-              className="btn-outline"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "12px 20px",
-              }}
+              className="btn btn-outline"
             >
-              <Printer size={18} /> Print Invoice
+              <Printer size={18} /> {t("invoice.printInvoice")}
             </button>
             <button
-              className="btn-outline"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                padding: "12px 20px",
-              }}
+              className="btn btn-outline"
             >
-              <Download size={18} /> Download PDF
+              <Download size={18} /> {t("invoice.downloadPdf")}
             </button>
           </div>
 
@@ -471,21 +388,13 @@ export default function InvoicePage() {
                 gap: 15,
               }}
             >
-              <Clock
-                size={24}
-                color="#f59e0b"
-                style={{ flexShrink: 0, marginTop: 3 }}
-              />
+              <Clock size={24} color="#f59e0b" style={{ flexShrink: 0, marginTop: 3 }} />
               <div>
-                <p
-                  style={{ fontWeight: 600, color: "#f59e0b", marginBottom: 5 }}
-                >
-                  Notice:
+                <p style={{ fontWeight: 600, color: "#f59e0b", marginBottom: 5 }}>
+                  {t("invoice.notice")}
                 </p>
                 <p style={{ fontSize: 14, color: "#6b6b8e", lineHeight: 1.5 }}>
-                  Your order is currently being reviewed by our administrators.
-                  This usually takes 1-2 hours. If your order is rejected, a
-                  full refund will be issued to your wallet.
+                  {t("invoice.noticeText")}
                 </p>
               </div>
             </div>

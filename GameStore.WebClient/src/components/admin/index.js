@@ -9,5 +9,5 @@ export { default as GameKeysTab } from "./GameKeysTab";
 export { default as StaffRolesTab } from "./StaffRolesTab";
 export { default as GameFormModal } from "./GameFormModal";
 export { default as DeleteConfirmModal } from "./DeleteConfirmModal";
-export { default as Pagination } from "./Pagination";
+export { default as Pagination } from "../common/Pagination";
 export { default as SortableHeader } from "./SortableHeader";

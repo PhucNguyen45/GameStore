@@ -38,4 +38,23 @@ public class LibraryService : ILibraryService
     {
         return await _context.Libraries.AnyAsync(l => l.UserId == userId && l.GameId == gameId);
     }
+
+    public async Task<IEnumerable<object>> GetGameKeysAsync(int userId, int gameId)
+    {
+        // Query keys from OrderDetail → GameKeys relationship
+        // (Library.GameKeyId is not used; keys are linked via OrderDetail)
+        return await _context.OrderDetails
+            .Where(od => od.Order.UserId == userId && od.GameId == gameId)
+            .SelectMany(od => od.GameKeys)
+            .Select(gk => new
+            {
+                gk.Id,
+                gk.KeyCode,
+                gk.IsUsed,
+                gk.UsedAt,
+                gk.ExpiresAt,
+                AcquiredAt = gk.UsedAt ?? gk.CreatedAt
+            })
+            .ToListAsync();
+    }
 }

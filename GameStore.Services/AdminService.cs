@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GameStore.DTOs.Admin;
+using GameStore.DTOs.Common;
 using GameStore.Entities.Auth;
 using GameStore.Entities.Games;
 using GameStore.Entities.Store;
@@ -18,17 +19,18 @@ public class AdminService : IAdminService
     private readonly GameStoreDbContext _context;
     private readonly IGameService _gameService;
     private readonly IOrderService _orderService;
-    private readonly INotificationService _notificationService;
 
-    public AdminService(GameStoreDbContext context, IGameService gameService, IOrderService orderService, INotificationService notificationService)
+    public AdminService(GameStoreDbContext context, IGameService gameService, IOrderService orderService)
     {
         _context = context;
         _gameService = gameService;
         _orderService = orderService;
-        _notificationService = notificationService;
     }
 
     // ================= DASHBOARD =================
+
+    // Trả về tổng quan hệ thống: số lượng game/user/đơn hàng, tổng doanh thu,
+    // doanh thu theo từng tháng trong năm hiện tại, và 20 đơn hàng gần nhất
     public async Task<object> GetDashboardAsync()
     {
         var totalGames = await _context.Games.CountAsync();
@@ -79,18 +81,22 @@ public class AdminService : IAdminService
     }
 
     // ================= GAMES =================
+
+    // Tìm kiếm game theo từ khóa, thể loại, khoảng giá; hỗ trợ sắp xếp và phân trang
     public async Task<(IEnumerable<Game> Games, int TotalCount)> GetGamesAsync(
-        string? keyword, int? genreId, decimal? minPrice, decimal? maxPrice,
+        string? keyword, int[]? genreIds, long? minPrice, long? maxPrice,
         string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var (games, totalCount) = await _gameService.Search(
-            keyword, genreId, minPrice, maxPrice,
+            keyword, genreIds, minPrice, maxPrice,
             sortBy ?? "CreatedAt", desc,
             page, pageSize
         );
         return (games, totalCount);
     }
 
+    // Tạo game mới, gán thể loại, rồi tự động sinh 20 game key ngẫu nhiên
     public async Task<Game> CreateGameAsync(AdminGameCreateDto dto)
     {
         var game = new Game
@@ -121,16 +127,16 @@ public class AdminService : IAdminService
             await _context.SaveChangesAsync();
         }
 
-        // Tự động sinh 10-20 game keys, hết hạn sau 1 ngày
+        // Tự động sinh 20 game keys (không hết hạn)
         var random = new Random();
-        int keyCount = random.Next(10, 21);
+        int keyCount = 20;
         for (int i = 0; i < keyCount; i++)
         {
             _context.GameKeys.Add(new GameKey
             {
                 GameId = created.Id,
                 KeyCode = Guid.NewGuid().ToString("N").Substring(0, 12).ToUpper(),
-                ExpiresAt = DateTime.UtcNow.AddDays(1),
+                ExpiresAt = null,
                 CreatedAt = DateTime.UtcNow,
                 IsUsed = false
             });
@@ -140,6 +146,7 @@ public class AdminService : IAdminService
         return created;
     }
 
+    // Cập nhật thông tin game; nếu GenreIds được truyền → xóa hết thể loại cũ rồi gán lại
     public async Task UpdateGameAsync(int id, AdminGameUpdateDto dto)
     {
         var existing = await _gameService.GetById(id) ?? throw new Exception("Game not found");
@@ -175,6 +182,7 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    // Xóa game theo ID (cascade delete các quan hệ liên quan được xử lý bởi GameService)
     public async Task DeleteGameAsync(int id)
     {
         var existing = await _gameService.GetById(id) ?? throw new Exception("Game not found");
@@ -182,10 +190,13 @@ public class AdminService : IAdminService
     }
 
     // ================= USERS =================
-    public async Task<(IEnumerable<User> Users, int TotalCount)> GetUsersAsync(
+
+    // Tìm kiếm user theo từ khóa, trạng thái, khoảng ngày đăng ký; kèm danh sách roles của từng user
+    public async Task<(IEnumerable<object> Users, int TotalCount)> GetUsersAsync(
         string? keyword, bool? isActive, DateTime? fromDate, DateTime? toDate,
         string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Users.AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
@@ -210,10 +221,29 @@ public class AdminService : IAdminService
             _ => query.OrderByDescending(u => u.CreatedAt)
         };
 
-        var users = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        var users = await query.Skip((page - 1) * pageSize).Take(pageSize)
+            .Select(u => (object)new
+            {
+                u.Id,
+                u.Username,
+                u.DisplayName,
+                u.Email,
+                u.Phone,
+                u.AvatarUrl,
+                u.Wallet,
+                u.IsActive,
+                u.CreatedAt,
+                roles = u.UserRoles
+                    .Where(ur => !ur.IsDeleted)
+                    .Select(ur => ur.Role.Name)
+                    .ToList()
+            }).ToListAsync();
+
         return (users, totalCount);
     }
 
+    // Cập nhật thông tin user (tên, email, SĐT, ảnh đại diện, số dư ví, trạng thái)
+    // Chỉ cập nhật trường nào được truyền vào (null-safe update)
     public async Task UpdateUserAsync(int id, AdminUserUpdateDto dto)
     {
         var user = await _context.Users.FindAsync(id) ?? throw new Exception("User not found");
@@ -226,6 +256,7 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    // Xóa hoàn toàn user khỏi database theo ID
     public async Task DeleteUserAsync(int id)
     {
         var user = await _context.Users.FindAsync(id) ?? throw new Exception("User not found");
@@ -234,10 +265,13 @@ public class AdminService : IAdminService
     }
 
     // ================= ORDERS =================
+
+    // Tìm kiếm đơn hàng theo từ khóa (username hoặc ID), khoảng ngày, trạng thái; phân trang
     public async Task<(IEnumerable<Order> Orders, int TotalCount)> GetOrdersAsync(
         string? keyword, DateTime? fromDate, DateTime? toDate, string? status,
         string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Orders.Include(o => o.User).AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
@@ -254,8 +288,10 @@ public class AdminService : IAdminService
         query = sortBy?.ToLower() switch
         {
             "id" => desc ? query.OrderByDescending(o => o.Id) : query.OrderBy(o => o.Id),
+            "userid" => desc ? query.OrderByDescending(o => o.UserId) : query.OrderBy(o => o.UserId),
             "totalamount" => desc ? query.OrderByDescending(o => o.TotalAmount) : query.OrderBy(o => o.TotalAmount),
             "status" => desc ? query.OrderByDescending(o => o.Status) : query.OrderBy(o => o.Status),
+            "paymentmethod" => desc ? query.OrderByDescending(o => o.PaymentMethod) : query.OrderBy(o => o.PaymentMethod),
             "orderdate" => desc ? query.OrderByDescending(o => o.OrderDate) : query.OrderBy(o => o.OrderDate),
             _ => query.OrderByDescending(o => o.OrderDate)
         };
@@ -264,31 +300,21 @@ public class AdminService : IAdminService
         return (orders, totalCount);
     }
 
+    // Cập nhật trạng thái đơn hàng (Pending/Completed/Cancelled/Refunded)
+    // Việc gửi thông báo cho user được xử lý bên trong OrderService.UpdateStatus
     public async Task UpdateOrderStatusAsync(int orderId, string status)
     {
         await _orderService.UpdateStatus(orderId, status);
-
-        if (status.Equals("Completed", StringComparison.OrdinalIgnoreCase))
-        {
-            var order = await _context.Orders
-                .Include(o => o.User)
-                .FirstOrDefaultAsync(o => o.Id == orderId);
-
-            if (order != null)
-            {
-                await _notificationService.CreateNotificationAsync(
-                    order.UserId,
-                    "Order Approved ✅",
-                    $"Your order #{orderId} has been approved. Check your email for game keys!",
-                    $"/invoice/{orderId}"
-                );
-            }
-        }
     }
 
     // ================= CATEGORIES (Genres) =================
-    public async Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames, int page, int pageSize)
+
+    // Lấy danh sách thể loại với filter (từ khóa, trạng thái, có game không),
+    // kèm số lượng game thuộc mỗi thể loại (gameCount)
+    public async Task<object> GetCategoriesAsync(string? keyword, string? status, bool? hasGames,
+        string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Genres.AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
@@ -301,7 +327,20 @@ public class AdminService : IAdminService
             query = query.Where(g => !_context.GameGenres.Any(gg => gg.GenreId == g.Id));
 
         var totalCount = await query.CountAsync();
-        var data = await query.OrderBy(g => g.Name).Skip((page - 1) * pageSize).Take(pageSize)
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(g => g.Id) : query.OrderBy(g => g.Id),
+            "name" => desc ? query.OrderByDescending(g => g.Name) : query.OrderBy(g => g.Name),
+            "description" => desc ? query.OrderByDescending(g => g.Description) : query.OrderBy(g => g.Description),
+            "isactive" => desc ? query.OrderByDescending(g => g.IsActive) : query.OrderBy(g => g.IsActive),
+            "gamecount" => desc
+                ? query.OrderByDescending(g => _context.GameGenres.Count(gg => gg.GenreId == g.Id))
+                : query.OrderBy(g => _context.GameGenres.Count(gg => gg.GenreId == g.Id)),
+            _ => query.OrderBy(g => g.Name)
+        };
+
+        var data = await query.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(g => new
             {
                 g.Id,
@@ -315,6 +354,7 @@ public class AdminService : IAdminService
         return new { data, totalCount };
     }
 
+    // Tạo thể loại mới; kiểm tra trùng tên trước khi lưu
     public async Task CreateCategoryAsync(CategoryDto dto)
     {
         if (await _context.Genres.AnyAsync(g => g.Name == dto.Name))
@@ -324,6 +364,7 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    // Cập nhật thể loại; kiểm tra tên mới không trùng với thể loại khác
     public async Task UpdateCategoryAsync(int id, CategoryDto dto)
     {
         var genre = await _context.Genres.FindAsync(id) ?? throw new Exception("Category not found");
@@ -336,6 +377,7 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    // Xóa thể loại; từ chối nếu vẫn còn game đang gắn với thể loại này
     public async Task DeleteCategoryAsync(int id)
     {
         var genre = await _context.Genres.FindAsync(id) ?? throw new Exception("Category not found");
@@ -347,8 +389,13 @@ public class AdminService : IAdminService
     }
 
     // ================= GAME KEYS =================
-    public async Task<object> GetGameKeysAsync(string? keyword, int? gameId, string? status, int page, int pageSize)
+
+    // Lấy danh sách game key với filter (từ khóa, game, trạng thái);
+    // trả thêm thống kê tổng số key / đã dùng / còn dùng / hết hạn
+    public async Task<object> GetGameKeysAsync(string? keyword, int? gameId, string? status,
+        string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.GameKeys.Include(k => k.Game).AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
@@ -359,7 +406,19 @@ public class AdminService : IAdminService
         else if (status == "expired") query = query.Where(k => k.ExpiresAt != null && k.ExpiresAt <= DateTime.UtcNow && !k.IsUsed);
 
         var totalCount = await query.CountAsync();
-        var data = await query.OrderByDescending(k => k.CreatedAt).Skip((page - 1) * pageSize).Take(pageSize)
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(k => k.Id) : query.OrderBy(k => k.Id),
+            "gameid" => desc ? query.OrderByDescending(k => k.GameId) : query.OrderBy(k => k.GameId),
+            "gametitle" => desc ? query.OrderByDescending(k => k.Game.Title) : query.OrderBy(k => k.Game.Title),
+            "keycode" => desc ? query.OrderByDescending(k => k.KeyCode) : query.OrderBy(k => k.KeyCode),
+            "createdat" => desc ? query.OrderByDescending(k => k.CreatedAt) : query.OrderBy(k => k.CreatedAt),
+            "expiresat" => desc ? query.OrderByDescending(k => k.ExpiresAt) : query.OrderBy(k => k.ExpiresAt),
+            _ => query.OrderByDescending(k => k.CreatedAt)
+        };
+
+        var data = await query.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(k => new
             {
                 k.Id,
@@ -368,6 +427,7 @@ public class AdminService : IAdminService
                 k.KeyCode,
                 k.IsUsed,
                 k.OrderDetailId,
+                buyerUserId = k.OrderDetail != null ? (int?)k.OrderDetail.Order.UserId : null,
                 k.UsedAt,
                 k.CreatedAt,
                 k.ExpiresAt
@@ -381,6 +441,7 @@ public class AdminService : IAdminService
         return new { data, totalCount, stats = new { totalKeys, usedKeys, availableKeys, expiredKeys } };
     }
 
+    // Tạo 1 game key; kiểm tra key code chưa tồn tại trong hệ thống
     public async Task CreateGameKeyAsync(GameKeyDto dto)
     {
         var game = await _context.Games.FindAsync(dto.GameId) ?? throw new Exception("Game not found");
@@ -390,6 +451,7 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    // Tạo nhiều game key cùng lúc; bỏ qua các code trống hoặc đã tồn tại (không báo lỗi từng cái)
     public async Task CreateBatchGameKeysAsync(BatchGameKeyDto dto)
     {
         var game = await _context.Games.FindAsync(dto.GameId) ?? throw new Exception("Game not found");
@@ -406,6 +468,7 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    // Cập nhật key code hoặc ngày hết hạn; từ chối nếu key đã được bán (isUsed = true)
     public async Task UpdateGameKeyAsync(int id, UpdateGameKeyDto dto)
     {
         var key = await _context.GameKeys.FindAsync(id) ?? throw new Exception("Key not found");
@@ -420,6 +483,7 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    // Xóa game key; từ chối nếu key đã được bán (tránh mất dữ liệu lịch sử)
     public async Task DeleteGameKeyAsync(int id)
     {
         var key = await _context.GameKeys.FindAsync(id) ?? throw new Exception("Key not found");
@@ -429,9 +493,12 @@ public class AdminService : IAdminService
     }
 
     // ================= PAYMENTS =================
+
+    // Lấy danh sách thanh toán, có thể lọc theo từ khóa, trạng thái, phương thức, khoảng ngày
     public async Task<object> GetPaymentsAsync(string? keyword, string? status, string? method,
-        DateTime? fromDate, DateTime? toDate, int page, int pageSize)
+        DateTime? fromDate, DateTime? toDate, string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Payments.Include(p => p.Order).ThenInclude(o => o.User).AsQueryable();
 
         if (!string.IsNullOrEmpty(keyword))
@@ -447,7 +514,20 @@ public class AdminService : IAdminService
         if (toDate.HasValue) query = query.Where(p => p.PaidAt <= toDate.Value);
 
         var totalCount = await query.CountAsync();
-        var data = await query.OrderByDescending(p => p.PaidAt).Skip((page - 1) * pageSize).Take(pageSize)
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(p => p.Id) : query.OrderBy(p => p.Id),
+            "orderid" => desc ? query.OrderByDescending(p => p.OrderId) : query.OrderBy(p => p.OrderId),
+            "username" => desc ? query.OrderByDescending(p => p.Order.User.Username) : query.OrderBy(p => p.Order.User.Username),
+            "amount" => desc ? query.OrderByDescending(p => p.Amount) : query.OrderBy(p => p.Amount),
+            "paymentmethod" => desc ? query.OrderByDescending(p => p.PaymentMethod) : query.OrderBy(p => p.PaymentMethod),
+            "status" => desc ? query.OrderByDescending(p => p.Status) : query.OrderBy(p => p.Status),
+            "paidat" => desc ? query.OrderByDescending(p => p.PaidAt) : query.OrderBy(p => p.PaidAt),
+            _ => query.OrderByDescending(p => p.PaidAt)
+        };
+
+        var data = await query.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(p => new
             {
                 p.Id,
@@ -466,6 +546,7 @@ public class AdminService : IAdminService
         return new { data, totalCount };
     }
 
+    // Lấy chi tiết một đơn hàng cụ thể kèm toàn bộ lịch sử thanh toán liên quan
     public async Task<object> GetOrderPaymentsAsync(int orderId)
     {
         var order = await _context.Orders.Include(o => o.User).Include(o => o.OrderDetails).ThenInclude(od => od.Game)
@@ -490,6 +571,7 @@ public class AdminService : IAdminService
         };
     }
 
+    // Hoàn tiền: cộng lại số tiền vào ví user, đổi trạng thái payment và order sang "Refunded"
     public async Task RefundPaymentAsync(int paymentId, RefundDto? dto)
     {
         var payment = await _context.Payments.Include(p => p.Order).ThenInclude(o => o.User)
@@ -505,8 +587,12 @@ public class AdminService : IAdminService
     }
 
     // ================= ROLES =================
-    public async Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers, int page, int pageSize)
+
+    // Lấy danh sách role (không lấy role đã xóa mềm), kèm số user và danh sách permissions của mỗi role
+    public async Task<object> GetRolesAsync(string? keyword, bool? isActive, bool? hasUsers,
+        string? sortBy, bool desc, int page, int pageSize)
     {
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
         var query = _context.Roles.Where(r => !r.IsDeleted).AsQueryable();
         if (!string.IsNullOrEmpty(keyword)) query = query.Where(r => r.Name.Contains(keyword) || r.Description.Contains(keyword));
         if (isActive.HasValue)
@@ -517,7 +603,21 @@ public class AdminService : IAdminService
             query = query.Where(r => !_context.UserRoles.Any(ur => ur.RoleId == r.Id && !ur.IsDeleted));
 
         var totalCount = await query.CountAsync();
-        var data = await query.OrderBy(r => r.Name).Skip((page - 1) * pageSize).Take(pageSize)
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(r => r.Id) : query.OrderBy(r => r.Id),
+            "name" => desc ? query.OrderByDescending(r => r.Name) : query.OrderBy(r => r.Name),
+            "description" => desc ? query.OrderByDescending(r => r.Description) : query.OrderBy(r => r.Description),
+            "usercount" => desc
+                ? query.OrderByDescending(r => _context.UserRoles.Count(ur => ur.RoleId == r.Id && !ur.IsDeleted))
+                : query.OrderBy(r => _context.UserRoles.Count(ur => ur.RoleId == r.Id && !ur.IsDeleted)),
+            _ => query.OrderBy(r => r.Name)
+        };
+
+        var totalUsers = await _context.Users.CountAsync();
+
+        var rawData = await query.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(r => new
             {
                 r.Id,
@@ -526,15 +626,25 @@ public class AdminService : IAdminService
                 r.IsActive,
                 r.Created,
                 userCount = _context.UserRoles.Count(ur => ur.RoleId == r.Id && !ur.IsDeleted),
-                permissions = _context.RolePermissions
-                    .Where(rp => rp.RoleId == r.Id)
-                    .Select(rp => rp.Permission)
-                    .ToList()
+                permissionCount = _context.RolePermissions.Count(rp => rp.RoleId == r.Id)
             }).ToListAsync();
+
+        // Role "User" là mặc định của mọi user → userCount = tổng số user thực tế
+        var data = rawData.Select(r => new
+        {
+            r.Id,
+            r.Name,
+            r.Description,
+            r.IsActive,
+            r.Created,
+            userCount = r.Name == "User" ? totalUsers : r.userCount,
+            r.permissionCount
+        }).ToList();
 
         return new { data, totalCount };
     }
 
+    // Tạo role mới với tên duy nhất; gán danh sách permissions nếu có
     public async Task CreateRoleAsync(RoleDto dto)
     {
         if (await _context.Roles.AnyAsync(r => r.Name == dto.Name && !r.IsDeleted))
@@ -564,6 +674,7 @@ public class AdminService : IAdminService
         }
     }
 
+    // Cập nhật role; chỉ thay đổi permissions nếu dto.Permissions được gửi lên (không null)
     public async Task UpdateRoleAsync(int id, RoleDto dto)
     {
         var role = await _context.Roles.FindAsync(id) ?? throw new Exception("Role not found");
@@ -576,10 +687,10 @@ public class AdminService : IAdminService
         role.ModifiedBy = "admin";
         role.Modified = DateTime.UtcNow;
 
-        var oldPerms = await _context.RolePermissions.Where(rp => rp.RoleId == id).ToListAsync();
-        _context.RolePermissions.RemoveRange(oldPerms);
         if (dto.Permissions != null)
         {
+            var oldPerms = await _context.RolePermissions.Where(rp => rp.RoleId == id).ToListAsync();
+            _context.RolePermissions.RemoveRange(oldPerms);
             foreach (var perm in dto.Permissions)
             {
                 _context.RolePermissions.Add(new RolePermission { RoleId = id, Permission = perm });
@@ -588,6 +699,7 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    // Xóa mềm role (IsDeleted = true); bảo vệ role "Admin" và "User" tích hợp sẵn
     public async Task DeleteRoleAsync(int id)
     {
         var role = await _context.Roles.FindAsync(id) ?? throw new Exception("Role not found");
@@ -604,18 +716,30 @@ public class AdminService : IAdminService
     }
 
     // ================= STAFF =================
-    public async Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive, int page, int pageSize)
+
+    // Lấy tất cả user kèm danh sách role; dùng để quản lý phân quyền
+    public async Task<object> GetStaffAsync(string? keyword, int? roleId, bool? isActive,
+        string? sortBy, bool desc, int page, int pageSize)
     {
-        var query = _context.Users
-            .Where(u => u.UserRoles.Any(ur => !ur.IsDeleted && ur.Role.Name != "User"))
-            .AsQueryable();
+        (page, pageSize) = PaginationHelper.Validate(page, pageSize);
+        var query = _context.Users.AsQueryable();
         if (roleId.HasValue) query = query.Where(u => u.UserRoles.Any(ur => ur.RoleId == roleId.Value && !ur.IsDeleted));
         if (!string.IsNullOrEmpty(keyword)) query = query.Where(u => u.Username.Contains(keyword) || u.DisplayName.Contains(keyword) || u.Email.Contains(keyword));
         if (isActive.HasValue)
             query = query.Where(u => u.IsActive == isActive.Value);
 
         var totalCount = await query.CountAsync();
-        var data = await query.OrderBy(u => u.Username).Skip((page - 1) * pageSize).Take(pageSize)
+
+        query = sortBy?.ToLower() switch
+        {
+            "id" => desc ? query.OrderByDescending(u => u.Id) : query.OrderBy(u => u.Id),
+            "username" => desc ? query.OrderByDescending(u => u.Username) : query.OrderBy(u => u.Username),
+            "displayname" => desc ? query.OrderByDescending(u => u.DisplayName) : query.OrderBy(u => u.DisplayName),
+            "email" => desc ? query.OrderByDescending(u => u.Email) : query.OrderBy(u => u.Email),
+            _ => query.OrderBy(u => u.Username)
+        };
+
+        var data = await query.Skip((page - 1) * pageSize).Take(pageSize)
             .Select(u => new
             {
                 u.Id,
@@ -630,6 +754,8 @@ public class AdminService : IAdminService
         return new { data, totalCount };
     }
 
+    // Gán role cho user; nếu UserRole đã tồn tại nhưng bị xóa mềm → khôi phục lại
+    // Không cho phép gán role "User" qua chức năng này (chỉ dùng cho nhân viên/admin)
     public async Task AssignRoleAsync(AssignRoleDto dto)
     {
         var user = await _context.Users.FindAsync(dto.UserId) ?? throw new Exception("User not found");
@@ -660,6 +786,7 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    // Thu hồi role của user bằng cách xóa mềm bản ghi UserRole (IsDeleted = true)
     public async Task RevokeRoleAsync(AssignRoleDto dto)
     {
         var userRole = await _context.UserRoles.FirstOrDefaultAsync(ur => ur.UserId == dto.UserId && ur.RoleId == dto.RoleId && !ur.IsDeleted)
@@ -669,6 +796,80 @@ public class AdminService : IAdminService
         await _context.SaveChangesAsync();
     }
 
+    // ================= REVENUE =================
+
+    // Doanh thu theo tháng (groupBy="month", year=năm cụ thể) hoặc theo năm (groupBy="year")
+    // Chỉ tính đơn hàng có Status = "Completed"
+    public async Task<object> GetRevenueAsync(int? year, string groupBy)
+    {
+        var completedOrders = await _context.Orders
+            .Where(o => o.Status == "Completed")
+            .Select(o => new { o.TotalAmount, o.OrderDate })
+            .ToListAsync();
+
+        if (groupBy == "year")
+        {
+            var rows = completedOrders
+                .GroupBy(o => o.OrderDate.Year)
+                .OrderBy(g => g.Key)
+                .Select(g => new
+                {
+                    label = g.Key.ToString(),
+                    period = g.Key.ToString(),
+                    revenue = g.Sum(o => o.TotalAmount),
+                    orders = g.Count(),
+                    avgOrder = g.Count() > 0 ? g.Sum(o => o.TotalAmount) / g.Count() : 0
+                }).ToList();
+
+            var totalRevenue = rows.Sum(r => r.revenue);
+            var totalOrders = rows.Sum(r => r.orders);
+            return new
+            {
+                groupBy = "year",
+                rows,
+                totalRevenue,
+                totalOrders,
+                avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0
+            };
+        }
+        else
+        {
+            var targetYear = year ?? DateTime.UtcNow.Year;
+            var monthNames = new[] { "T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12" };
+
+            var ordersThisYear = completedOrders.Where(o => o.OrderDate.Year == targetYear).ToList();
+
+            var rows = Enumerable.Range(1, 12).Select(m => new
+            {
+                label = monthNames[m - 1],
+                period = $"{targetYear}-{m:D2}",
+                revenue = ordersThisYear.Where(o => o.OrderDate.Month == m).Sum(o => o.TotalAmount),
+                orders = ordersThisYear.Count(o => o.OrderDate.Month == m),
+                avgOrder = ordersThisYear.Count(o => o.OrderDate.Month == m) > 0
+                    ? ordersThisYear.Where(o => o.OrderDate.Month == m).Sum(o => o.TotalAmount) /
+                      ordersThisYear.Count(o => o.OrderDate.Month == m)
+                    : 0
+            }).ToList();
+
+            var totalRevenue = rows.Sum(r => r.revenue);
+            var totalOrders = rows.Sum(r => r.orders);
+            var availableYears = completedOrders.Select(o => o.OrderDate.Year).Distinct().OrderByDescending(y => y).ToList();
+            if (!availableYears.Contains(targetYear)) availableYears.Insert(0, targetYear);
+
+            return new
+            {
+                groupBy = "month",
+                year = targetYear,
+                rows,
+                totalRevenue,
+                totalOrders,
+                avgOrder = totalOrders > 0 ? totalRevenue / totalOrders : 0,
+                availableYears
+            };
+        }
+    }
+
+    // Trả về danh sách tất cả permission hợp lệ trong hệ thống (dùng để gán cho role)
     public IEnumerable<string> GetPermissions()
     {
         return new[]

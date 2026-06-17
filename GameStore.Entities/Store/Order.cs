@@ -12,7 +12,7 @@ public class Order
     public int Id { get; set; }
     public int UserId { get; set; }
     public DateTime OrderDate { get; set; } = DateTime.UtcNow;
-    public decimal TotalAmount { get; set; }
+    public long TotalAmount { get; set; }
     public string Status { get; set; } = "Pending"; // Pending, Completed, Cancelled, Refunded
     public string? Email { get; set; }          // thêm
     public string? Phone { get; set; }          // thêm

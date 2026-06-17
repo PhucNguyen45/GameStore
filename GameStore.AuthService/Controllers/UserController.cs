@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.Services.Authen;
 using GameStore.DTOs.Users;
+using GameStore.DTOs.Common;
 
 namespace GameStore.AuthService.Controllers;
 
@@ -25,14 +26,8 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetAll([FromQuery] string? keyword, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
         var (users, totalCount) = await _userService.Search(keyword, page, pageSize);
-        return Ok(new
-        {
-            data = users.Select(u => new { u.Id, u.Username, u.DisplayName, u.Email, u.Wallet, u.IsActive, u.CreatedAt }),
-            totalCount,
-            page,
-            pageSize,
-            totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
-        });
+        var mappedUsers = users.Select(u => new { u.Id, u.Username, u.DisplayName, u.Email, u.Wallet, u.IsActive, u.CreatedAt }).ToList();
+        return Ok(PagedResponse<object>.Create(mappedUsers, totalCount, page, pageSize));
     }
 
     [HttpGet("{id}")]
@@ -51,9 +46,16 @@ public class UserController : ControllerBase
         user.DisplayName = request.DisplayName ?? user.DisplayName;
         user.Email = request.Email ?? user.Email;
         user.Phone = request.Phone ?? user.Phone;
-        user.AvatarUrl = request.AvatarUrl ?? user.AvatarUrl;
-        await _userService.Update(user, request.Password);
-        return Ok(new { message = "User updated" });
+        user.AvatarUrl = !string.IsNullOrEmpty(request.AvatarUrl) ? request.AvatarUrl : user.AvatarUrl;
+        try
+        {
+            await _userService.Update(user, request.Password, request.CurrentPassword);
+            return Ok(new { message = "User updated" });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     [HttpDelete("{id}")]
@@ -101,8 +103,16 @@ public class UserController : ControllerBase
         user.DisplayName = request.DisplayName ?? user.DisplayName;
         user.Email = request.Email ?? user.Email;
         user.Phone = request.Phone ?? user.Phone;
-        user.AvatarUrl = request.AvatarUrl ?? user.AvatarUrl;
-        await _userService.Update(user, request.Password);
-        return Ok(new { message = "Profile updated" });
+        user.AvatarUrl = !string.IsNullOrEmpty(request.AvatarUrl) ? request.AvatarUrl : user.AvatarUrl;
+
+        try
+        {
+            await _userService.Update(user, request.Password, request.CurrentPassword);
+            return Ok(new { message = "Profile updated" });
+        }
+        catch (UnauthorizedAccessException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }
