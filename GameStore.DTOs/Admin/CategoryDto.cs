@@ -1,15 +1,9 @@
 // GameStore.DTOs/Admin/CategoryDto.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using GameStore.DTOs.Genres;
 
 namespace GameStore.DTOs.Admin;
 
-public class CategoryDto
+public class CategoryDto : GenreDto
 {
-    public string Name { get; set; } = "";
-    public string? Description { get; set; }
-    public string? IconUrl { get; set; }
     public bool IsActive { get; set; } = true;
 }

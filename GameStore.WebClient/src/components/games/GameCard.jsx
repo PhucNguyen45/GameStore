@@ -1,12 +1,17 @@
 // GameStore.WebClient/src/components/games/GameCard.jsx
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Star, ShoppingCart, Check, Heart } from "lucide-react";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import useCartStore from "../../stores/cartStore";
 import { useAuth } from "../../contexts/AuthContext";
 import { libraryAPI, wishlistAPI } from "../../services/api";
+import { formatVND } from "../../utils/format";
 
 export default function GameCard({ game }) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
   const addItem = useCartStore((s) => s.addItem);
   const { user } = useAuth();
   const [owned, setOwned] = useState(false);
@@ -31,16 +36,25 @@ export default function GameCard({ game }) {
 
   const toggleWishlist = async (e) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user) {
+      toast.error(t("wishlist.loginRequired"));
+      navigate("/login");
+      return;
+    }
     try {
       if (wishlisted) {
         await wishlistAPI.remove(game.id);
         setWishlisted(false);
+        toast.success(t("gameDetail.removedFromWishlist"));
       } else {
         await wishlistAPI.add(game.id);
         setWishlisted(true);
+        toast.success(t("gameDetail.addedToWishlist"));
       }
-    } catch {}
+    } catch (err) {
+      console.error("Wishlist error:", err.response?.data || err.message);
+      toast.error(err.response?.data?.message || t("gameDetail.wishlistError"));
+    }
   };
 
   return (
@@ -54,13 +68,31 @@ export default function GameCard({ game }) {
             background: "var(--accent)",
             color: "#fff",
             padding: "2px 8px",
-            borderRadius: 2,
+            borderRadius: 6,
             fontSize: 11,
             fontWeight: 700,
             zIndex: 2,
           }}
         >
           -{discount}%
+        </div>
+      )}
+      {game.price > 0 && game.availableKeys !== undefined && game.availableKeys <= 0 && !owned && (
+        <div
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            background: "#e94560",
+            color: "#fff",
+            padding: "2px 8px",
+            borderRadius: 6,
+            fontSize: 11,
+            fontWeight: 700,
+            zIndex: 2,
+          }}
+        >
+          {t("gameDetail.outOfStock")}
         </div>
       )}
       {owned && (
@@ -72,7 +104,7 @@ export default function GameCard({ game }) {
             background: "#4caf50",
             color: "#fff",
             padding: "2px 8px",
-            borderRadius: 2,
+            borderRadius: 6,
             fontSize: 11,
             fontWeight: 700,
             zIndex: 2,
@@ -81,29 +113,41 @@ export default function GameCard({ game }) {
             gap: 3,
           }}
         >
-          <Check size={12} /> OWNED
+          <Check size={12} /> {t("gameDetail.owned")}
         </div>
       )}
       {/* Wishlist heart */}
       <button
         onClick={toggleWishlist}
+        title={wishlisted ? t("wishlist.remove") : t("wishlist.add")}
+        className="wishlist-heart-btn"
         style={{
           position: "absolute",
           top: 8,
-          right: owned ? 80 : 8,
-          zIndex: 2,
-          background: wishlisted ? "#e94560" : "rgba(0,0,0,0.5)",
-          border: "none",
+          right: owned ? 90 : 8,
+          zIndex: 10,
+          background: wishlisted ? "#e94560" : "rgba(0,0,0,0.55)",
+          border: wishlisted ? "2px solid #e94560" : "2px solid rgba(255,255,255,0.3)",
           borderRadius: "50%",
-          width: 28,
-          height: 28,
+          width: 36,
+          height: 36,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           cursor: "pointer",
+          transition: "all 0.2s ease",
+          boxShadow: "0 2px 8px rgba(0,0,0,0.4)",
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = "scale(1.15)";
+          if (!wishlisted) e.currentTarget.style.background = "rgba(233,69,96,0.4)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = "scale(1)";
+          if (!wishlisted) e.currentTarget.style.background = "rgba(0,0,0,0.55)";
         }}
       >
-        <Heart size={14} fill={wishlisted ? "#fff" : "none"} color="#fff" />
+        <Heart size={16} fill={wishlisted ? "#fff" : "none"} color="#fff" />
       </button>
 
       <Link to={`/game/${game.id}`}>
@@ -179,11 +223,11 @@ export default function GameCard({ game }) {
                   marginRight: 4,
                 }}
               >
-                ${game.price?.toFixed(2)}
+                {formatVND(game.price)}
               </span>
             )}
             <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>
-              ${(game.discountPrice || game.price)?.toFixed(2)}
+              {formatVND(game.discountPrice || game.price)}
             </span>
           </div>
           {owned ? (
@@ -192,7 +236,7 @@ export default function GameCard({ game }) {
               style={{
                 background: "#4caf5020",
                 border: "1px solid #4caf50",
-                borderRadius: 4,
+                borderRadius: 10,
                 padding: "4px 10px",
                 cursor: "not-allowed",
                 display: "flex",
@@ -202,16 +246,37 @@ export default function GameCard({ game }) {
             >
               <Check size={14} color="#4caf50" />
               <span style={{ color: "#4caf50", fontSize: 11, fontWeight: 600 }}>
-                ĐÃ MUA
+                {t("gameDetail.purchased")}
+              </span>
+            </button>
+          ) : game.price > 0 && game.availableKeys !== undefined && game.availableKeys <= 0 ? (
+            <button
+              disabled
+              style={{
+                background: "#e9456020",
+                border: "1px solid #e94560",
+                borderRadius: 10,
+                padding: "4px 10px",
+                cursor: "not-allowed",
+                display: "flex",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <span style={{ color: "#e94560", fontSize: 11, fontWeight: 600 }}>
+                {t("gameDetail.outOfStock")}
               </span>
             </button>
           ) : (
             <button
-              onClick={() => addItem(game)}
+              onClick={() => {
+                addItem(game);
+                toast.success(t("cart.itemAdded"));
+              }}
               style={{
                 background: "var(--accent)",
                 border: "none",
-                borderRadius: 4,
+                borderRadius: 10,
                 padding: "4px 10px",
                 cursor: "pointer",
               }}

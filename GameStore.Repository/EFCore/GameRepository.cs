@@ -12,7 +12,7 @@ public class GameRepository : Repository<Game>, IGameRepository
 {
     public GameRepository(GameStoreDbContext context) : base(context) { }
 
-    public async Task<(List<Game> Games, int TotalCount)> SearchAsync(string? keyword, int? genreId, decimal? minPrice, decimal? maxPrice, string? sortBy, bool descending, int page, int pageSize)
+    public async Task<(List<Game> Games, int TotalCount)> SearchAsync(string? keyword, int[]? genreIds, long? minPrice, long? maxPrice, string? sortBy, bool descending, int page, int pageSize)
     {
         var query = _dbSet
             .AsNoTracking()
@@ -24,8 +24,8 @@ public class GameRepository : Repository<Game>, IGameRepository
             query = query.Where(g => g.Title.ToLower().Contains(keyword)
                 || g.Description.ToLower().Contains(keyword));
         }
-        if (genreId.HasValue)
-            query = query.Where(g => g.GameGenres.Any(gg => gg.GenreId == genreId));
+        if (genreIds != null && genreIds.Length > 0)
+            query = query.Where(g => g.GameGenres.Any(gg => genreIds.Contains(gg.GenreId)));
         if (minPrice.HasValue)
             query = query.Where(g => (g.DiscountPrice ?? g.Price) >= minPrice);
         if (maxPrice.HasValue)
@@ -35,201 +35,83 @@ public class GameRepository : Repository<Game>, IGameRepository
 
         query = sortBy?.ToLower() switch
         {
+            "id" => descending ? query.OrderByDescending(g => g.Id) : query.OrderBy(g => g.Id),
             "price" => descending ? query.OrderByDescending(g => g.DiscountPrice ?? g.Price)
                                   : query.OrderBy(g => g.DiscountPrice ?? g.Price),
             "rating" => descending ? query.OrderByDescending(g => g.Rating)
                                    : query.OrderBy(g => g.Rating),
-            "sales" => descending ? query.OrderByDescending(g => g.TotalSales)
-                                  : query.OrderBy(g => g.TotalSales),
-            "release" => descending ? query.OrderByDescending(g => g.ReleaseDate)
-                                    : query.OrderBy(g => g.ReleaseDate),
+            "sales" or "totalsales" => descending ? query.OrderByDescending(g => g.TotalSales)
+                                                  : query.OrderBy(g => g.TotalSales),
+            "release" or "releasedate" => descending ? query.OrderByDescending(g => g.ReleaseDate)
+                                                     : query.OrderBy(g => g.ReleaseDate),
+            "title" => descending ? query.OrderByDescending(g => g.Title)
+                                  : query.OrderBy(g => g.Title),
+            "developer" => descending ? query.OrderByDescending(g => g.Developer)
+                                      : query.OrderBy(g => g.Developer),
+            "createdat" or "created" => descending ? query.OrderByDescending(g => g.CreatedAt)
+                                                    : query.OrderBy(g => g.CreatedAt),
             _ => query.OrderByDescending(g => g.TotalSales)
         };
 
-        var games = await query
+        var gameIds = await query
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(g => new Game
-            {
-                Id = g.Id,
-                Title = g.Title,
-                Description = g.Description,
-                Price = g.Price,
-                DiscountPrice = g.DiscountPrice,
-                Developer = g.Developer,
-                Publisher = g.Publisher,
-                ReleaseDate = g.ReleaseDate,
-                CoverImageUrl = g.CoverImageUrl,
-                TrailerUrl = g.TrailerUrl,
-                Screenshots = g.Screenshots,
-                TotalSales = g.TotalSales,
-                Rating = g.Rating,
-                RatingCount = g.RatingCount,
-                IsActive = g.IsActive,
-                CreatedAt = g.CreatedAt,
-                MinimumOS = g.MinimumOS,
-                MinimumProcessor = g.MinimumProcessor,
-                MinimumMemory = g.MinimumMemory,
-                MinimumGraphics = g.MinimumGraphics,
-                MinimumStorage = g.MinimumStorage,
-                GameGenres = g.GameGenres.Select(gg => new GameGenre
-                {
-                    Id = gg.Id,
-                    GameId = gg.GameId,
-                    GenreId = gg.GenreId,
-                    Genre = new Genre
-                    {
-                        Id = gg.Genre.Id,
-                        Name = gg.Genre.Name,
-                        Description = gg.Genre.Description,
-                        IconUrl = gg.Genre.IconUrl,
-                        IsActive = gg.Genre.IsActive
-                    }
-                }).ToList()
-            })
+            .Select(g => g.Id)
             .ToListAsync();
+
+        var games = await query
+            .Where(g => gameIds.Contains(g.Id))
+            .SelectGameWithGenres()
+            .ToListAsync();
+
+        await games.FillAvailableKeysAsync(_context);
 
         return (games, totalCount);
     }
 
     public async Task<List<Game>> GetFeaturedAsync(int count = 10)
     {
-        return await _dbSet
+        var games = await _dbSet
             .AsNoTracking()
             .Where(g => g.IsActive)
             .OrderByDescending(g => g.TotalSales)
             .Take(count)
-            .Select(g => new Game
-            {
-                Id = g.Id,
-                Title = g.Title,
-                Description = g.Description,
-                Price = g.Price,
-                DiscountPrice = g.DiscountPrice,
-                Developer = g.Developer,
-                Publisher = g.Publisher,
-                ReleaseDate = g.ReleaseDate,
-                CoverImageUrl = g.CoverImageUrl,
-                TrailerUrl = g.TrailerUrl,
-                Screenshots = g.Screenshots,
-                TotalSales = g.TotalSales,
-                Rating = g.Rating,
-                RatingCount = g.RatingCount,
-                IsActive = g.IsActive,
-                CreatedAt = g.CreatedAt,
-                MinimumOS = g.MinimumOS,
-                MinimumProcessor = g.MinimumProcessor,
-                MinimumMemory = g.MinimumMemory,
-                MinimumGraphics = g.MinimumGraphics,
-                MinimumStorage = g.MinimumStorage,
-                GameGenres = g.GameGenres.Select(gg => new GameGenre
-                {
-                    Id = gg.Id,
-                    GameId = gg.GameId,
-                    GenreId = gg.GenreId,
-                    Genre = new Genre
-                    {
-                        Id = gg.Genre.Id,
-                        Name = gg.Genre.Name,
-                        Description = gg.Genre.Description,
-                        IconUrl = gg.Genre.IconUrl,
-                        IsActive = gg.Genre.IsActive
-                    }
-                }).ToList()
-            })
+            .SelectGameWithGenres()
             .ToListAsync();
+
+        await games.FillAvailableKeysAsync(_context);
+
+        return games;
     }
 
     public async Task<List<Game>> GetByGenreAsync(int genreId)
     {
-        return await _dbSet
+        var games = await _dbSet
             .AsNoTracking()
             .Where(g => g.IsActive && g.GameGenres.Any(gg => gg.GenreId == genreId))
             .OrderByDescending(g => g.TotalSales)
-            .Select(g => new Game
-            {
-                Id = g.Id,
-                Title = g.Title,
-                Description = g.Description,
-                Price = g.Price,
-                DiscountPrice = g.DiscountPrice,
-                Developer = g.Developer,
-                Publisher = g.Publisher,
-                ReleaseDate = g.ReleaseDate,
-                CoverImageUrl = g.CoverImageUrl,
-                TrailerUrl = g.TrailerUrl,
-                Screenshots = g.Screenshots,
-                TotalSales = g.TotalSales,
-                Rating = g.Rating,
-                RatingCount = g.RatingCount,
-                IsActive = g.IsActive,
-                CreatedAt = g.CreatedAt,
-                MinimumOS = g.MinimumOS,
-                MinimumProcessor = g.MinimumProcessor,
-                MinimumMemory = g.MinimumMemory,
-                MinimumGraphics = g.MinimumGraphics,
-                MinimumStorage = g.MinimumStorage,
-                GameGenres = g.GameGenres.Select(gg => new GameGenre
-                {
-                    Id = gg.Id,
-                    GameId = gg.GameId,
-                    GenreId = gg.GenreId,
-                    Genre = new Genre
-                    {
-                        Id = gg.Genre.Id,
-                        Name = gg.Genre.Name,
-                        Description = gg.Genre.Description,
-                        IconUrl = gg.Genre.IconUrl,
-                        IsActive = gg.Genre.IsActive
-                    }
-                }).ToList()
-            })
+            .SelectGameWithGenres()
             .ToListAsync();
+
+        await games.FillAvailableKeysAsync(_context);
+
+        return games;
     }
 
     public async Task<Game?> GetWithDetailsAsync(int id)
     {
-        return await _dbSet
+        var game = await _dbSet
             .AsNoTracking()
             .Where(g => g.Id == id)
-            .Select(g => new Game
-            {
-                Id = g.Id,
-                Title = g.Title,
-                Description = g.Description,
-                Price = g.Price,
-                DiscountPrice = g.DiscountPrice,
-                Developer = g.Developer,
-                Publisher = g.Publisher,
-                ReleaseDate = g.ReleaseDate,
-                CoverImageUrl = g.CoverImageUrl,
-                TrailerUrl = g.TrailerUrl,
-                Screenshots = g.Screenshots,
-                TotalSales = g.TotalSales,
-                Rating = g.Rating,
-                RatingCount = g.RatingCount,
-                IsActive = g.IsActive,
-                CreatedAt = g.CreatedAt,
-                MinimumOS = g.MinimumOS,
-                MinimumProcessor = g.MinimumProcessor,
-                MinimumMemory = g.MinimumMemory,
-                MinimumGraphics = g.MinimumGraphics,
-                MinimumStorage = g.MinimumStorage,
-                GameGenres = g.GameGenres.Select(gg => new GameGenre
-                {
-                    Id = gg.Id,
-                    GameId = gg.GameId,
-                    GenreId = gg.GenreId,
-                    Genre = new Genre
-                    {
-                        Id = gg.Genre.Id,
-                        Name = gg.Genre.Name,
-                        Description = gg.Genre.Description,
-                        IconUrl = gg.Genre.IconUrl,
-                        IsActive = gg.Genre.IsActive
-                    }
-                }).ToList()
-            })
+            .SelectGameWithGenres()
             .FirstOrDefaultAsync();
+
+        if (game != null)
+        {
+            game.AvailableKeys = await _context.GameKeys
+                .CountAsync(k => k.GameId == id && !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
+        }
+
+        return game;
     }
 }

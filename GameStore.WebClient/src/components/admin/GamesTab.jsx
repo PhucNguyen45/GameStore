@@ -1,9 +1,11 @@
 // GameStore.WebClient/src/components/admin/GamesTab.jsx
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, Edit, Trash2, X } from "lucide-react";
 import SortableHeader from "./SortableHeader";
-import Pagination from "./Pagination";
-import { thStyle, sortFn, filterInputStyle } from "./adminStyles";
+import Pagination from "../common/Pagination";
+import { thStyle, filterInputStyle } from "./adminStyles";
+import { formatVND } from "../../utils/format";
 
 export default function GamesTab({
   games,
@@ -22,13 +24,14 @@ export default function GamesTab({
   onEdit,
   onDelete,
 }) {
+  const { t } = useTranslation();
   return (
     <div>
       <div
         style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
       >
         <input
-          placeholder="Tìm theo tên hoặc nhà phát triển..."
+          placeholder={t("admin.searchGames")}
           value={gameSearch.keyword}
           onChange={(e) =>
             setGameSearch({ ...gameSearch, keyword: e.target.value })
@@ -42,7 +45,7 @@ export default function GamesTab({
           }
           style={filterInputStyle}
         >
-          <option value="">Tất cả thể loại</option>
+          <option value="">{t("admin.allGenres")}</option>
           {genres.map((g) => (
             <option key={g.id} value={g.id}>
               {g.name}
@@ -58,7 +61,7 @@ export default function GamesTab({
             fontSize: 12,
           }}
         >
-          Giá: $
+          {t("admin.priceRange")}
           <input
             type="number"
             min="0"
@@ -68,9 +71,9 @@ export default function GamesTab({
               setGameSearch({ ...gameSearch, minPrice: e.target.value })
             }
             style={{ ...filterInputStyle, width: 60 }}
-            placeholder="Từ"
+            placeholder={t("admin.priceFrom")}
           />
-          - $
+          -
           <input
             type="number"
             min="0"
@@ -80,7 +83,7 @@ export default function GamesTab({
               setGameSearch({ ...gameSearch, maxPrice: e.target.value })
             }
             style={{ ...filterInputStyle, width: 60 }}
-            placeholder="Đến"
+            placeholder={t("admin.priceTo")}
           />
         </div>
         {(gameSearch.keyword ||
@@ -109,7 +112,7 @@ export default function GamesTab({
               gap: 4,
             }}
           >
-            <X size={12} /> Xóa lọc
+            <X size={12} /> {t("admin.clearFilter")}
           </button>
         )}
         <button
@@ -129,7 +132,7 @@ export default function GamesTab({
             marginLeft: "auto",
           }}
         >
-          <Plus size={14} /> Thêm game
+          <Plus size={14} /> {t("admin.addGame")}
         </button>
       </div>
       <div
@@ -153,37 +156,33 @@ export default function GamesTab({
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Tên game
+                {t("admin.gameName")}
               </SortableHeader>
               <SortableHeader
                 field="developer"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Nhà phát triển
+                {t("admin.developer")}
               </SortableHeader>
-              <th style={{ ...thStyle, cursor: "default" }}>Danh mục</th>
+              <th style={{ ...thStyle, cursor: "default" }}>
+                {t("admin.category")}
+              </th>
               <SortableHeader
                 field="price"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Giá
+                {t("admin.price")}
               </SortableHeader>
-              <th style={thStyle}>Giảm giá</th>
-              <SortableHeader
-                field="rating"
-                sort={gameSort}
-                setSort={setGameSort}
-              >
-                Đánh giá
-              </SortableHeader>
+              <th style={thStyle}>{t("admin.discount")}</th>
+
               <SortableHeader
                 field="totalSales"
                 sort={gameSort}
                 setSort={setGameSort}
               >
-                Đã bán
+                {t("admin.sales")}
               </SortableHeader>
               <th style={{ ...thStyle, cursor: "default" }}></th>
             </tr>
@@ -236,18 +235,16 @@ export default function GamesTab({
                     fontWeight: 600,
                   }}
                 >
-                  ${game.price?.toFixed(2)}
+                  {formatVND(game.price || 0)}
                 </td>
                 <td style={{ padding: "9px 14px" }}>
                   {game.discountPrice ? (
                     <span
+                      className="badge badge-accent"
                       style={{
-                        background: "#0078f220",
-                        color: "#0078f2",
                         padding: "2px 7px",
-                        borderRadius: 8,
                         fontSize: 10,
-                        fontWeight: 600,
+                        borderRadius: 8,
                       }}
                     >
                       -{Math.round((1 - game.discountPrice / game.price) * 100)}
@@ -257,11 +254,9 @@ export default function GamesTab({
                     <span style={{ color: "#555" }}>-</span>
                   )}
                 </td>
-                <td style={{ padding: "9px 14px" }}>
-                  ⭐ {game.rating?.toFixed(1)}
+                <td style={{ padding: "9px 14px", color: "#888" }}>
+                  {game.totalSales?.toLocaleString()}
                 </td>
-                {/* <td style={{ padding: "9px 14px", color: "#888" }}>{game.totalSales?.toLocaleString()}</td> */}
-
                 <td style={{ padding: "9px 14px", display: "flex", gap: 5 }}>
                   <button
                     onClick={() => onEdit(game)}
@@ -296,7 +291,7 @@ export default function GamesTab({
                   colSpan="9"
                   style={{ padding: 20, textAlign: "center", color: "#666" }}
                 >
-                  Không tìm thấy game
+                  {t("admin.noGames")}
                 </td>
               </tr>
             )}

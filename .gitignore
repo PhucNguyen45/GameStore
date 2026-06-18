@@ -33,5 +33,17 @@ Thumbs.db
 appsettings.Development.json
 appsettings.*.local.json
 
-#project dump files
+# project dump files
 project_dump.txt
+
+# Codebuff / AI tooling
+.codegraph/
+
+# Shell scripts output
+*.pid
+
+# Environment files (keep template if any)
+*.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local

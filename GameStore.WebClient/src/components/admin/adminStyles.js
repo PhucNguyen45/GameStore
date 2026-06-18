@@ -36,16 +36,6 @@ export const filterInputStyle = {
   outline: "none",
 };
 
-export const sortFn = (data, field, dir) =>
-  [...data].sort((a, b) => {
-    let va = a[field],
-      vb = b[field];
-    if (typeof va === "string") va = va.toLowerCase();
-    if (typeof vb === "string") vb = vb.toLowerCase();
-    if (va == null) return 1;
-    if (vb == null) return -1;
-    return dir === "asc" ? (va > vb ? 1 : -1) : va < vb ? 1 : -1;
-  });
 
 export const toggleSort = (field, current, setter) =>
   setter({

@@ -5,6 +5,19 @@ import axios from "axios";
 const api = axios.create({
   baseURL: "/api",
   headers: { "Content-Type": "application/json" },
+  paramsSerializer: {
+    serialize: (params) => {
+      const searchParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((v) => searchParams.append(key, v));
+        } else {
+          searchParams.append(key, value);
+        }
+      });
+      return searchParams.toString();
+    },
+  },
 });
 
 api.interceptors.request.use((c) => {
@@ -27,6 +40,9 @@ api.interceptors.response.use(
 export const authAPI = {
   login: (d) => api.post("/auth/login", d),
   register: (d) => api.post("/auth/register", d),
+  forgotPassword: (email) => api.post("/auth/forgot-password", { email }),
+  resetPassword: (token, newPassword) =>
+    api.post("/auth/reset-password", { token, newPassword }),
 };
 export const gameAPI = {
   getFeatured: (n = 12) => api.get("/games/featured", { params: { count: n } }),
@@ -35,6 +51,8 @@ export const gameAPI = {
   create: (d) => api.post("/admin/games", d), // Admin CRUD
   update: (id, d) => api.put(`/admin/games/${id}`, d),
   delete: (id) => api.delete(`/admin/games/${id}`),
+  checkStock: (gameIds) =>
+    api.get("/games/stock", { params: { gameIds: gameIds.join(",") } }),
 };
 export const genreAPI = { getAll: () => api.get("/genres") };
 export const orderAPI = {
@@ -47,10 +65,13 @@ export const orderAPI = {
 export const userAPI = {
   getWallet: () => api.get("/users/wallet"),
   topUp: (amount) => api.post("/users/wallet/topup", { amount }),
+  getProfile: () => api.get("/users/profile"),
+  updateProfile: (data) => api.put("/users/profile", data),
 };
 export const libraryAPI = {
-  getMyLibrary: () => api.get("/library"),
+  getMyLibrary: (params) => api.get("/library", { params }),
   checkOwned: (gameId) => api.get(`/library/check/${gameId}`),
+  getGameKeys: (gameId) => api.get(`/library/${gameId}/keys`),
 };
 export const wishlistAPI = {
   get: () => api.get("/wishlist"),
@@ -90,6 +111,9 @@ export const adminAPI = {
   createBatchGameKeys: (d) => api.post("/admin/gamekeys/batch", d),
   updateGameKey: (id, d) => api.put(`/admin/gamekeys/${id}`, d),
   deleteGameKey: (id) => api.delete(`/admin/gamekeys/${id}`),
+  // Orders
+  getOrders: (p) => api.get("/admin/orders", { params: p }),
+  updateOrderStatus: (id, d) => api.put(`/admin/orders/${id}/status`, d),
   // Payments
   getPayments: (p) => api.get("/admin/payments", { params: p }),
   getOrderPayments: (id) => api.get(`/admin/payments/order/${id}`),
@@ -103,6 +127,8 @@ export const adminAPI = {
   getStaff: (p) => api.get("/admin/staff", { params: p }),
   assignRole: (d) => api.post("/admin/staff/assign", d),
   revokeRole: (d) => api.post("/admin/staff/revoke", d),
+  // Revenue
+  getRevenue: (p) => api.get("/admin/revenue", { params: p }),
   // Permissions
   getPermissions: () => api.get("/admin/permissions"),
 };

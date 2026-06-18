@@ -1,59 +1,108 @@
 // GameStore.WebClient/src/pages/LibraryPage.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { libraryAPI } from "../services/api";
+import { libraryAPI, genreAPI } from "../services/api";
+import Pagination from "../components/common/Pagination";
 import {
   Library,
   Gamepad2,
-  Clock,
+  Star,
   Search,
   Grid3X3,
   List,
-  Star,
-  ChevronRight,
-  Download,
-  Play,
-  Infinity,
-  Filter,
-  ArrowUp,
-  ArrowDown,
+  KeyRound,
+  X,
 } from "lucide-react";
+import { GameCardSkeletonGrid } from "../components/games/GameCardSkeleton";
+import { useTranslation } from "react-i18next";
 
 export default function LibraryPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [viewMode, setViewMode] = useState("grid");
-  const [filter, setFilter] = useState("all"); // all, installed, recent
+  const [filter, setFilter] = useState("all");
+  const [totalResults, setTotalResults] = useState(0);
+  const [searching, setSearching] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageSize] = useState(12);
+  const [genres, setGenres] = useState([]);
+  const [selectedGenreId, setSelectedGenreId] = useState(0);
+  const [resultKey, setResultKey] = useState(0);
+  const searchTimer = useRef(null);
+  const inputRef = useRef(null);
 
+  // Fetch library — with pagination + genre filter
+  const fetchLibrary = useCallback(async (keyword, sort, genreId, p = 1) => {
+    if (!user) return;
+    setSearching(true);
+    try {
+      const params = { sortBy: sort, page: p, pageSize };
+      if (keyword && keyword.trim()) params.keyword = keyword.trim();
+      if (genreId && genreId > 0) params.genreId = genreId;
+      const res = await libraryAPI.getMyLibrary(params);
+      const data = res.data.data || [];
+      const count = res.data.totalCount ?? data.length;
+      const pages = res.data.totalPages ?? (Math.ceil(count / pageSize) || 1);
+      setGames(data);
+      setTotalResults(count);
+      setTotalPages(pages);
+      setPage(p);
+      setResultKey((k) => k + 1);
+    } catch {
+      // Fallback: no-op
+    } finally {
+      setLoading(false);
+      setSearching(false);
+    }
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Initial load + fetch genres
   useEffect(() => {
     if (user) {
-      libraryAPI
-        .getMyLibrary()
-        .then((res) => setGames(res.data || []))
-        .finally(() => setLoading(false));
+      fetchLibrary("", sortBy, selectedGenreId);
+      genreAPI.getAll().then((r) => setGenres(r.data || [])).catch(() => {});
     }
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const filteredGames = games
-    .filter((g) => {
-      if (filter === "recent") {
-        const d = new Date(g.acquiredAt);
-        return d > new Date(Date.now() - 30 * 86400000);
-      }
-      return true; // "all" hoặc bất kỳ filter nào khác đều hiển thị tất cả
-    })
-    .filter((g) => g.title?.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => {
-      if (sortBy === "name") return a.title?.localeCompare(b.title);
-      if (sortBy === "playtime") return (b.playTime || 0) - (a.playTime || 0);
-      return new Date(b.acquiredAt) - new Date(a.acquiredAt);
-    });
+  // Debounced search when keyword or sort changes — resets to page 1
+  useEffect(() => {
+    if (!user) return;
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    // Don't debounce on initial load
+    if (loading) return;
+    searchTimer.current = setTimeout(() => {
+      fetchLibrary(search, sortBy, selectedGenreId, 1);
+    }, 300);
+    return () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    };
+  }, [search, sortBy, selectedGenreId, user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const clearSearch = () => {
+    setSearch("");
+    setSearching(true);
+    fetchLibrary("", sortBy, selectedGenreId, 1);
+    inputRef.current?.focus();
+  };
+
+  // Apply local "recent" filter on top of server results
+  const displayGames = games.filter((g) => {
+    if (filter === "recent") {
+      const d = new Date(g.acquiredAt);
+      return d > new Date(Date.now() - 30 * 86400000);
+    }
+    return true;
+  });
 
   if (!user) return <LoginPrompt />;
+
+  const hasActiveSearch = search.trim().length > 0;
 
   return (
     <div
@@ -63,11 +112,8 @@ export default function LibraryPage() {
         fontFamily: "'Inter', sans-serif",
       }}
     >
-      {/* ===== HEADER ===== */}
-      <div
-        style={{ padding: "40px 40px 30px", borderBottom: "1px solid #222" }}
-      >
-        <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+      <div style={{ borderBottom: "1px solid #222" }}>
+        <div className="container" style={{ paddingTop: 40, paddingBottom: 30 }}>
           <h1
             style={{
               fontSize: 32,
@@ -77,15 +123,16 @@ export default function LibraryPage() {
               marginBottom: 4,
             }}
           >
-            MY LIBRARY
+            {t("library.title")}
           </h1>
-          <p style={{ color: "#888", fontSize: 14 }}>
-            {games.length} game{games.length !== 1 ? "s" : ""} in collection
+          <p style={{ color: "#888", fontSize: 14, margin: 0 }}>
+            {hasActiveSearch
+              ? `Tìm thấy ${totalResults} kết quả cho "${search}"`
+              : t("library.gameCount", { count: games.length })}
           </p>
         </div>
       </div>
 
-      {/* ===== TOOLBAR ===== */}
       <div
         style={{
           background: "#1a1a1a",
@@ -96,52 +143,103 @@ export default function LibraryPage() {
         }}
       >
         <div
+          className="container"
           style={{
-            maxWidth: 1400,
-            margin: "0 auto",
-            padding: "12px 40px",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            gap: 16,
+            gap: 12,
             flexWrap: "wrap",
+            paddingTop: 12,
+            paddingBottom: 12,
           }}
         >
-          {/* Search + Filter */}
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {/* Search input */}
             <div style={{ position: "relative" }}>
               <Search
                 size={14}
                 color="#666"
-                style={{ position: "absolute", left: 10, top: 10 }}
+                style={{ position: "absolute", left: 10, top: 10, pointerEvents: "none" }}
               />
               <input
-                placeholder="Search library..."
+                ref={inputRef}
+                placeholder={t("library.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 style={{
-                  width: 220,
-                  padding: "8px 12px 8px 32px",
+                  width: 260,
+                  padding: `8px ${search ? 32 : 12}px 8px 32px`,
                   background: "#2a2a2a",
                   border: "1px solid #333",
-                  borderRadius: 4,
+                  borderRadius: 10,
                   color: "#fff",
                   fontSize: 12,
                   outline: "none",
+                  transition: "border-color 0.2s, box-shadow 0.2s",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#666";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#333";
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") clearSearch();
                 }}
               />
+              {search && (
+                <button
+                  onClick={clearSearch}
+                  style={{
+                    position: "absolute",
+                    right: 6,
+                    top: 6,
+                    background: "none",
+                    border: "none",
+                    color: "#888",
+                    cursor: "pointer",
+                    padding: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 4,
+                    transition: "all 0.15s",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "#444"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "#888"; e.currentTarget.style.background = "none"; }}
+                  title="Xoá tìm kiếm (Esc)"
+                >
+                  <X size={14} />
+                </button>
+              )}
+              {searching && search && (
+                <div
+                  style={{
+                    position: "absolute",
+                    right: search ? 32 : 8,
+                    top: 8,
+                    width: 14,
+                    height: 14,
+                    border: "2px solid #444",
+                    borderTopColor: "#fff",
+                    borderRadius: "50%",
+                    animation: "spin 0.6s linear infinite",
+                  }}
+                />
+              )}
             </div>
             <div style={{ display: "flex", gap: 4 }}>
               {[
-                { id: "all", label: "All" },
-                { id: "recent", label: "Recent" },
+                { id: "all", label: t("library.all") },
+                { id: "recent", label: t("library.recent") },
               ].map((f) => (
                 <button
                   key={f.id}
                   onClick={() => setFilter(f.id)}
                   style={{
                     padding: "8px 14px",
-                    borderRadius: 4,
+                    borderRadius: 10,
                     border: "none",
                     cursor: "pointer",
                     fontSize: 11,
@@ -158,8 +256,37 @@ export default function LibraryPage() {
             </div>
           </div>
 
-          {/* Sort + View */}
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {/* Genre filter */}
+            <select
+              value={selectedGenreId}
+              onChange={(e) => {
+                setSelectedGenreId(Number(e.target.value));
+                setSearching(true);
+                fetchLibrary(search, sortBy, Number(e.target.value), 1);
+              }}
+              style={{
+                padding: "8px 12px",
+                background: "#2a2a2a",
+                border: "1px solid #333",
+                borderRadius: 10,
+                color: "#ccc",
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: "pointer",
+                outline: "none",
+                letterSpacing: 0.5,
+                maxWidth: 150,
+              }}
+            >
+              <option value={0}>Tất cả thể loại</option>
+              {genres.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
+              ))}
+            </select>
+
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -167,7 +294,7 @@ export default function LibraryPage() {
                 padding: "8px 12px",
                 background: "#2a2a2a",
                 border: "1px solid #333",
-                borderRadius: 4,
+                borderRadius: 10,
                 color: "#ccc",
                 fontSize: 11,
                 fontWeight: 600,
@@ -176,9 +303,9 @@ export default function LibraryPage() {
                 letterSpacing: 0.5,
               }}
             >
-              <option value="recent">Sort: Recent</option>
-              <option value="name">Sort: A-Z</option>
-              <option value="playtime">Sort: Play Time</option>
+              <option value="recent">{t("library.sortRecent")}</option>
+              <option value="name">{t("library.sortAZ")}</option>
+              <option value="playtime">{t("library.sortPlaytime")}</option>
             </select>
             <button
               onClick={() => setViewMode("grid")}
@@ -202,38 +329,37 @@ export default function LibraryPage() {
         </div>
       </div>
 
-      {/* ===== CONTENT ===== */}
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "24px 40px" }}>
+      <div className="container" style={{ paddingTop: 24, paddingBottom: 24 }}>
         {loading ? (
-          <div
-            style={{ display: "flex", justifyContent: "center", padding: 80 }}
-          >
-            <div
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: "50%",
-                border: "3px solid #333",
-                borderTopColor: "#fff",
-                animation: "spin 0.8s linear infinite",
-              }}
-            />
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-          </div>
-        ) : filteredGames.length === 0 ? (
+          <GameCardSkeletonGrid count={pageSize} compact />
+        ) : displayGames.length === 0 ? (
           <EmptyState gamesCount={games.length} search={search} />
         ) : viewMode === "grid" ? (
-          <GridView games={filteredGames} />
+          <GridView key={resultKey} games={displayGames} />
         ) : (
-          <ListView games={filteredGames} />
+          <ListView key={resultKey} games={displayGames} />
+        )}
+
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div style={{ marginTop: 32 }}>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={totalResults}
+              pageSize={pageSize}
+              setPage={(p) => fetchLibrary(search, sortBy, selectedGenreId, p)}
+            />
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-// ===== GRID VIEW =====
 function GridView({ games }) {
+  const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -242,7 +368,7 @@ function GridView({ games }) {
         gap: 16,
       }}
     >
-      {games.map((game) => (
+      {games.map((game, i) => (
         <Link
           to={`/game/${game.id}`}
           key={game.id}
@@ -256,6 +382,8 @@ function GridView({ games }) {
               border: "1px solid #2a2a2a",
               transition: "all 0.2s ease",
               cursor: "pointer",
+              animation: `cardFadeInUp 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) both`,
+              animationDelay: `${i * 40}ms`,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = "#fff";
@@ -266,7 +394,6 @@ function GridView({ games }) {
               e.currentTarget.style.transform = "translateY(0)";
             }}
           >
-            {/* Cover */}
             <div
               style={{
                 aspectRatio: "16/9",
@@ -295,7 +422,6 @@ function GridView({ games }) {
                   <Gamepad2 size={32} color="#444" />
                 </div>
               )}
-              {/* Hover Overlay */}
               <div
                 style={{
                   position: "absolute",
@@ -309,11 +435,10 @@ function GridView({ games }) {
                 }}
                 className="hover-overlay"
               >
-                <Play size={32} fill="#fff" color="#fff" />
+                <KeyRound size={32} color="#10b981" />
               </div>
             </div>
 
-            {/* Info */}
             <div style={{ padding: 12 }}>
               <h4
                 style={{
@@ -366,26 +491,18 @@ function GridView({ games }) {
                     : ""}
                 </span>
               </div>
-              {/* Action Buttons */}
-              <div style={{ display: "flex", gap: 6, marginTop: 10 }}>
-                <button
-                  style={smallBtnStyle}
-                  onClick={(e) => {
-                    e.preventDefault();
-                  }}
-                >
-                  <Play size={12} /> Play
-                </button>
-                <button
-                  style={{
-                    ...smallBtnStyle,
-                    background: "#2a2a2a",
-                    color: "#888",
-                  }}
-                  onClick={(e) => e.preventDefault()}
-                >
-                  <Download size={12} />
-                </button>
+              <div
+                style={{
+                  marginTop: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 4,
+                  fontSize: 11,
+                  color: "#10b981",
+                }}
+              >
+                <KeyRound size={11} />
+                {t("library.keyAvailable")}
               </div>
             </div>
           </div>
@@ -395,11 +512,11 @@ function GridView({ games }) {
   );
 }
 
-// ===== LIST VIEW =====
 function ListView({ games }) {
+  const { t } = useTranslation();
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      {/* Header */}
       <div
         style={{
           display: "flex",
@@ -412,10 +529,10 @@ function ListView({ games }) {
           fontWeight: 700,
         }}
       >
-        <span style={{ flex: 1 }}>Game</span>
-        <span style={{ width: 100, textAlign: "center" }}>Rating</span>
-        <span style={{ width: 100, textAlign: "center" }}>Play Time</span>
-        <span style={{ width: 100, textAlign: "right" }}>Acquired</span>
+        <span style={{ flex: 1 }}>{t("library.game")}</span>
+        <span style={{ width: 100, textAlign: "center" }}>{t("library.rating")}</span>
+        <span style={{ width: 100, textAlign: "center" }}>{t("library.playTime")}</span>
+        <span style={{ width: 100, textAlign: "right" }}>{t("library.acquired")}</span>
       </div>
       {games.map((game, i) => (
         <Link
@@ -431,6 +548,8 @@ function ListView({ games }) {
               background: i % 2 === 0 ? "#1a1a1a" : "#151515",
               transition: "background 0.15s",
               cursor: "pointer",
+              animation: `cardFadeInUp 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) both`,
+              animationDelay: `${i * 30}ms`,
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = "#222")}
             onMouseLeave={(e) =>
@@ -438,14 +557,7 @@ function ListView({ games }) {
                 i % 2 === 0 ? "#1a1a1a" : "#151515")
             }
           >
-            <div
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
+            <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 12 }}>
               <div
                 style={{
                   width: 100,
@@ -460,11 +572,7 @@ function ListView({ games }) {
                   <img
                     src={game.coverImageUrl}
                     alt=""
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                    }}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
                   />
                 ) : (
                   <div
@@ -484,9 +592,7 @@ function ListView({ games }) {
                 <h4 style={{ color: "#ddd", fontSize: 13, fontWeight: 500 }}>
                   {game.title}
                 </h4>
-                <span style={{ fontSize: 11, color: "#666" }}>
-                  {game.developer}
-                </span>
+                <span style={{ fontSize: 11, color: "#666" }}>{game.developer}</span>
               </div>
             </div>
 
@@ -506,25 +612,11 @@ function ListView({ games }) {
               {game.rating?.toFixed(1) || "-"}
             </span>
 
-            <span
-              style={{
-                width: 100,
-                textAlign: "center",
-                fontSize: 12,
-                color: "#888",
-              }}
-            >
+            <span style={{ width: 100, textAlign: "center", fontSize: 12, color: "#888" }}>
               {game.playTime || 0}h
             </span>
 
-            <span
-              style={{
-                width: 100,
-                textAlign: "right",
-                fontSize: 11,
-                color: "#666",
-              }}
-            >
+            <span style={{ width: 100, textAlign: "right", fontSize: 11, color: "#666" }}>
               {game.acquiredAt
                 ? new Date(game.acquiredAt).toLocaleDateString("en-US", {
                     month: "short",
@@ -540,8 +632,9 @@ function ListView({ games }) {
   );
 }
 
-// ===== EMPTY STATE =====
 function EmptyState({ gamesCount, search }) {
+  const { t } = useTranslation();
+
   return (
     <div style={{ textAlign: "center", padding: 80 }}>
       <div
@@ -558,38 +651,18 @@ function EmptyState({ gamesCount, search }) {
       >
         <Library size={32} color="#444" />
       </div>
-      <h2
-        style={{
-          fontSize: 20,
-          fontWeight: 700,
-          color: "#fff",
-          marginBottom: 8,
-          letterSpacing: -0.5,
-        }}
-      >
-        {gamesCount === 0 ? "Your library is empty" : "No games found"}
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 8, letterSpacing: -0.5 }}>
+        {gamesCount === 0 ? t("library.empty") : t("library.noResults")}
       </h2>
       <p style={{ color: "#888", fontSize: 14, marginBottom: 24 }}>
         {gamesCount === 0
-          ? "Games you purchase or claim will appear here"
-          : `No results for "${search}"`}
+          ? t("library.emptyDesc")
+          : t("library.noResultsDesc", { search })}
       </p>
       {gamesCount === 0 && (
         <Link to="/store">
-          <button
-            style={{
-              padding: "12px 32px",
-              background: "#fff",
-              color: "#000",
-              border: "none",
-              borderRadius: 4,
-              cursor: "pointer",
-              fontSize: 13,
-              fontWeight: 700,
-              letterSpacing: 1,
-            }}
-          >
-            BROWSE STORE
+          <button className="btn btn-primary">
+            {t("library.browseStore")}
           </button>
         </Link>
       )}
@@ -597,8 +670,9 @@ function EmptyState({ gamesCount, search }) {
   );
 }
 
-// ===== PROMPT =====
 function LoginPrompt() {
+  const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -624,65 +698,28 @@ function LoginPrompt() {
       >
         <Library size={32} color="#444" />
       </div>
-      <h2
-        style={{
-          fontSize: 20,
-          fontWeight: 700,
-          color: "#fff",
-          marginBottom: 8,
-          letterSpacing: -0.5,
-        }}
-      >
-        Sign In Required
+      <h2 style={{ fontSize: 20, fontWeight: 700, color: "#fff", marginBottom: 8, letterSpacing: -0.5 }}>
+        {t("library.loginRequired")}
       </h2>
       <p style={{ color: "#888", fontSize: 14, marginBottom: 24 }}>
-        Sign in to access your game library
+        {t("library.loginDesc")}
       </p>
       <Link to="/login">
-        <button
-          style={{
-            padding: "12px 32px",
-            background: "#fff",
-            color: "#000",
-            border: "none",
-            borderRadius: 4,
-            cursor: "pointer",
-            fontSize: 13,
-            fontWeight: 700,
-            letterSpacing: 1,
-          }}
-        >
-          SIGN IN
+        <button className="btn btn-primary" style={{ padding: "12px 32px", fontSize: 13 }}>
+          {t("library.signIn")}
         </button>
       </Link>
     </div>
   );
 }
 
-// ===== STYLES =====
 const viewBtnStyle = {
   padding: 8,
-  borderRadius: 4,
+  borderRadius: 10,
   border: "1px solid #333",
   cursor: "pointer",
   color: "#ccc",
   display: "flex",
   alignItems: "center",
   transition: "all 0.2s",
-};
-
-const smallBtnStyle = {
-  padding: "6px 10px",
-  borderRadius: 4,
-  border: "none",
-  fontSize: 11,
-  fontWeight: 600,
-  cursor: "pointer",
-  background: "#fff",
-  color: "#000",
-  display: "flex",
-  alignItems: "center",
-  gap: 4,
-  flex: 1,
-  justifyContent: "center",
 };

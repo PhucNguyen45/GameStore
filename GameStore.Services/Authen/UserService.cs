@@ -26,9 +26,13 @@ public class UserService : IUserService
         var user = await _userRepository.GetByUsernameForAuthAsync(username);
         if (user == null || user.Salt == null || user.Salt.Length == 0) return null;
 
-        return TokenHelper.IsValidPassword(password, user.Salt, user.Password)
-        ? user
-        : null;
+        if (!TokenHelper.IsValidPassword(password, user.Salt, user.Password))
+            return null;
+
+        if (!user.IsActive)
+            throw new UnauthorizedAccessException("Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên.");
+
+        return user;
     }
 
     public async Task<User?> GetById(int id) => await _userRepository.GetByIdAsync(id);
@@ -45,16 +49,28 @@ public class UserService : IUserService
         return user;
     }
 
-    public async Task Update(User user, string? password = null)
+    public async Task Update(User user, string? password = null, string? currentPassword = null)
     {
         if (!string.IsNullOrEmpty(password))
         {
+            // Verify current password when changing password
+            var existing = await _userRepository.GetByUsernameForAuthAsync(user.Username);
+            if (existing == null || existing.Salt == null || existing.Salt.Length == 0)
+                throw new UnauthorizedAccessException("User not found");
+
+            if (!string.IsNullOrEmpty(currentPassword))
+            {
+                if (!TokenHelper.IsValidPassword(currentPassword, existing.Salt, existing.Password))
+                    throw new UnauthorizedAccessException("Current password is incorrect");
+            }
+
             byte[] salt;
             user.Password = TokenHelper.HashPassword(password, out salt);
             user.Salt = salt;
         }
         await _userRepository.UpdateAsync(user);
     }
+
 
     public async Task Delete(int id)
     {
@@ -75,13 +91,13 @@ public class UserService : IUserService
     public async Task<bool> IsEmailExists(string email) =>
         await _userRepository.IsEmailExists(email);
 
-    public async Task<decimal> GetWalletBalance(int userId)
+    public async Task<long> GetWalletBalance(int userId)
     {
         var user = await _userRepository.GetByIdAsync(userId);
         return user?.Wallet ?? 0;
     }
 
-    public async Task AddToWallet(int userId, decimal amount)
+    public async Task AddToWallet(int userId, long amount)
     {
         var user = await _userRepository.GetByIdAsync(userId);
         if (user != null)

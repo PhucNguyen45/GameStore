@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 
+// Modal chỉnh sửa thông tin người dùng (admin không tạo user mới, chỉ sửa)
+// Props: user = object user cần sửa, onSave(form) được gọi khi submit
 export default function UserFormModal({ user, onClose, onSave }) {
   const [form, setForm] = useState({
     displayName: "",
@@ -12,6 +14,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
     isActive: true,
   });
 
+  // Điền dữ liệu của user vào form mỗi khi prop user thay đổi
   useEffect(() => {
     if (user) {
       setForm({
@@ -25,6 +28,7 @@ export default function UserFormModal({ user, onClose, onSave }) {
     }
   }, [user]);
 
+  // Chuyển dữ liệu form lên component cha xử lý (không tự gọi API)
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave(form);
@@ -51,28 +55,8 @@ export default function UserFormModal({ user, onClose, onSave }) {
   };
 
   return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        background: "rgba(0,0,0,0.8)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 9999,
-      }}
-    >
-      <div
-        style={{
-          background: "#111118",
-          borderRadius: 12,
-          padding: 30,
-          width: 450,
-          maxHeight: "90vh",
-          overflow: "auto",
-          border: "1px solid #1a1a2e",
-        }}
-      >
+    <div className="modal-overlay">
+      <div className="modal-content" style={{ width: 450 }}>
         <div
           style={{
             display: "flex",
@@ -131,27 +115,57 @@ export default function UserFormModal({ user, onClose, onSave }) {
           </div>
 
           <div>
-            <label style={labelStyle}>URL ảnh đại diện</label>
+            <label style={labelStyle}>Số dư ví (VNĐ)</label>
             <input
+              type="number"
+              step="1"
+              min="0"
               style={inputStyle}
-              value={form.avatarUrl}
-              onChange={(e) => setForm({ ...form, avatarUrl: e.target.value })}
-              placeholder="Nhập URL ảnh đại diện..."
+              value={form.wallet}
+              onChange={(e) =>
+                setForm({ ...form, wallet: parseInt(e.target.value) || 0 })
+              }
             />
           </div>
 
           <div>
-            <label style={labelStyle}>Số dư ví ($)</label>
+            <label style={labelStyle}>URL ảnh đại diện</label>
             <input
-              type="number"
-              step="0.01"
+              placeholder="https://..."
+              value={form.avatarUrl}
+              onChange={(e) => setForm({ ...form, avatarUrl: e.target.value })}
               style={inputStyle}
-              value={form.wallet}
-              onChange={(e) =>
-                setForm({ ...form, wallet: parseFloat(e.target.value) || 0 })
-              }
             />
           </div>
+          {form.avatarUrl && (
+            <div
+              style={{
+                marginTop: -8,
+                marginBottom: 16,
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              <img
+                src={form.avatarUrl}
+                alt="Preview"
+                style={{
+                  width: 72,
+                  height: 72,
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  border: "2px solid #2a2a35",
+                  background: "#111",
+                }}
+                onError={(e) => {
+                  e.target.src =
+                    "https://via.placeholder.com/72x72?text=?";
+                }}
+              />
+              <span style={{ color: "#666", fontSize: 11 }}>Preview ảnh đại diện</span>
+            </div>
+          )}
 
           <div
             style={{
@@ -180,22 +194,11 @@ export default function UserFormModal({ user, onClose, onSave }) {
             <button
               type="button"
               onClick={onClose}
-              style={{
-                padding: "10px 20px",
-                background: "transparent",
-                border: "1px solid #333",
-                color: "#ccc",
-                borderRadius: 6,
-                cursor: "pointer",
-              }}
+              className="btn btn-ghost btn-sm"
             >
               Hủy
             </button>
-            <button
-              type="submit"
-              className="btn-primary"
-              style={{ padding: "10px 20px", borderRadius: 6 }}
-            >
+            <button type="submit" className="btn btn-primary btn-sm">
               Lưu thay đổi
             </button>
           </div>

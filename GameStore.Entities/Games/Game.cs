@@ -1,6 +1,7 @@
 // GameStore.Entities/Games/Game.cs
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using GameStore.Entities.Store;
@@ -12,8 +13,8 @@ namespace GameStore.Entities.Games
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        public decimal Price { get; set; }
-        public decimal? DiscountPrice { get; set; }
+        public long Price { get; set; }
+        public long? DiscountPrice { get; set; }
         public string Developer { get; set; } = string.Empty;
         public string Publisher { get; set; } = string.Empty;
         public DateTime ReleaseDate { get; set; }
@@ -40,5 +41,7 @@ namespace GameStore.Entities.Games
         public virtual ICollection<Wishlist> Wishlists { get; set; } = new HashSet<Wishlist>();
         public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new HashSet<OrderDetail>();
 
+        [NotMapped]
+        public int AvailableKeys { get; set; }
     }
 }

@@ -13,7 +13,7 @@ public class OrderDetail
     public int OrderId { get; set; }
     public int GameId { get; set; }
     public int Quantity { get; set; } = 1;
-    public decimal UnitPrice { get; set; }
+    public long UnitPrice { get; set; }
 
     public virtual Order Order { get; set; } = null!;
     public virtual Game Game { get; set; } = null!;

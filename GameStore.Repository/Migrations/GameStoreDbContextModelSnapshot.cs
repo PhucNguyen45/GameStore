@@ -67,6 +67,42 @@ namespace GameStore.Repository.Migrations
                     b.ToTable("AccessTokens");
                 });
 
+            modelBuilder.Entity("GameStore.Entities.Auth.PasswordResetToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUsed")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "IsUsed");
+
+                    b.ToTable("PasswordResetTokens");
+                });
+
             modelBuilder.Entity("GameStore.Entities.Auth.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -128,7 +164,7 @@ namespace GameStore.Repository.Migrations
                             Id = 1,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 5, 10, 13, 27, 54, 871, DateTimeKind.Utc).AddTicks(9810),
+                            CreatedDateTime = new DateTime(2026, 6, 4, 17, 3, 50, 390, DateTimeKind.Utc).AddTicks(1263),
                             CreatedUser = "",
                             Description = "Administrator",
                             Guid = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -143,7 +179,7 @@ namespace GameStore.Repository.Migrations
                             Id = 2,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 5, 10, 13, 27, 54, 872, DateTimeKind.Utc).AddTicks(2387),
+                            CreatedDateTime = new DateTime(2026, 6, 4, 17, 3, 50, 390, DateTimeKind.Utc).AddTicks(4231),
                             CreatedUser = "",
                             Description = "Regular User",
                             Guid = new Guid("20000000-0000-0000-0000-000000000002"),
@@ -158,7 +194,7 @@ namespace GameStore.Repository.Migrations
                             Id = 3,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "",
-                            CreatedDateTime = new DateTime(2026, 5, 10, 13, 27, 54, 872, DateTimeKind.Utc).AddTicks(2398),
+                            CreatedDateTime = new DateTime(2026, 6, 4, 17, 3, 50, 390, DateTimeKind.Utc).AddTicks(4245),
                             CreatedUser = "",
                             Description = "Game Publisher",
                             Guid = new Guid("30000000-0000-0000-0000-000000000003"),
@@ -193,8 +229,8 @@ namespace GameStore.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal?>("DiscountPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<long?>("DiscountPrice")
+                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsActive")
                         .ValueGeneratedOnAdd()
@@ -221,10 +257,10 @@ namespace GameStore.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Price")
+                    b.Property<long>("Price")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(0L);
 
                     b.Property<string>("Publisher")
                         .IsRequired()
@@ -280,22 +316,22 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 1,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 954, DateTimeKind.Utc).AddTicks(6054),
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 444, DateTimeKind.Utc).AddTicks(4073),
                             Description = "Gray Zone Warfare is an immersive tactical FPS with a maximum focus on realism. Join a Private Military Company and explore a vast MMO open world where every decision matters. Engage in high-stakes PvEvP and PvE combat, uncover the mysteries of Lamang Island, and fight for survival against both human enemies and AI-controlled factions in an unforgiving environment.",
                             Developer = "MADFINGER Games",
-                            DiscountPrice = 27.99m,
+                            DiscountPrice = 27990L,
                             IsActive = true,
                             MinimumGraphics = "NVIDIA GeForce GTX 1080 / AMD Radeon RX 5700",
                             MinimumMemory = "16 GB RAM",
                             MinimumOS = "Windows 10 64-bit",
                             MinimumProcessor = "Intel Core i5-8600 / AMD Ryzen 5 2600",
                             MinimumStorage = "40 GB available space",
-                            Price = 34.99m,
+                            Price = 34990L,
                             Publisher = "MADFINGER Games",
                             Rating = 4.2000000000000002,
                             RatingCount = 28500,
                             ReleaseDate = new DateTime(2024, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/2479810/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "Gray Zone Warfare",
                             TotalSales = 150000,
                             TrailerUrl = "https://www.youtube.com/watch?v=UlNkVsB56Gw"
@@ -304,262 +340,1109 @@ namespace GameStore.Repository.Migrations
                         {
                             Id = 2,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5799),
-                            Description = "World of Tanks is a team-based, massively multiplayer online action game dedicated to armored warfare in the mid-20th century. Throw yourself into epic tank battles with over 600 vehicles from 11 nations. Cooperate with your teammates, plan your strategy, and dominate the battlefield with realistic tank physics and strategic gameplay.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(432),
+                            Description = "World of Tanks is a team-based, massively multiplayer online action game dedicated to armored warfare in the mid-20th century.",
                             Developer = "Wargaming",
-                            DiscountPrice = 9.99m,
+                            DiscountPrice = 9990L,
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GT 610 / AMD Radeon HD 6450",
+                            MinimumGraphics = "NVIDIA GeForce GT 610",
                             MinimumMemory = "4 GB RAM",
                             MinimumOS = "Windows 7 64-bit",
-                            MinimumProcessor = "Intel Core i3-2100 / AMD Phenom II X4 955",
+                            MinimumProcessor = "Intel Core i3-2100",
                             MinimumStorage = "70 GB available space",
-                            Price = 19.99m,
+                            Price = 19990L,
                             Publisher = "Wargaming",
                             Rating = 4.5,
                             RatingCount = 350000,
                             ReleaseDate = new DateTime(2010, 8, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1407200/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "World of Tanks",
                             TotalSales = 5000000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=6LreDfD7Zds"
+                            TrailerUrl = ""
                         },
                         new
                         {
                             Id = 3,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/236390/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5816),
-                            Description = "War Thunder is the most comprehensive free-to-play, cross-platform MMO military game dedicated to aviation, armored vehicles, and naval craft from the early 20th century to the most advanced modern combat units. Join now and take part in major battles on land, in the air, and at sea, fighting with millions of players from all over the world in an ever-evolving environment.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(447),
+                            Description = "War Thunder is the most comprehensive free-to-play, cross-platform MMO military game dedicated to aviation, armored vehicles, and naval craft.",
                             Developer = "Gaijin Entertainment",
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GTX 660 / AMD Radeon HD 7850",
+                            MinimumGraphics = "NVIDIA GeForce GTX 660",
                             MinimumMemory = "8 GB RAM",
                             MinimumOS = "Windows 10 64-bit",
-                            MinimumProcessor = "Intel Core i5-2500 / AMD FX-8350",
+                            MinimumProcessor = "Intel Core i5-2500",
                             MinimumStorage = "50 GB available space",
-                            Price = 14.99m,
+                            Price = 14990L,
                             Publisher = "Gaijin Entertainment",
                             Rating = 4.2999999999999998,
                             RatingCount = 520000,
                             ReleaseDate = new DateTime(2013, 8, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/236390/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "War Thunder",
                             TotalSales = 8000000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=TtFk6Gnx9M4"
+                            TrailerUrl = ""
                         },
                         new
                         {
                             Id = 4,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5821),
-                            Description = "Escape from Tarkov is a hardcore and realistic online first-person action RPG/Simulator with MMO features and a story-driven walkthrough. With each passing day the situation in the Norvinsk region grows more complicated. Incessant warfare has exhausted the local population, leaving them divided and vulnerable to exploitation by private military companies.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(451),
+                            Description = "Escape from Tarkov is a hardcore and realistic online first-person action RPG/Simulator with MMO features.",
                             Developer = "Battlestate Games",
-                            DiscountPrice = 44.99m,
+                            DiscountPrice = 44990L,
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GTX 1050 / AMD Radeon RX 560",
+                            MinimumGraphics = "NVIDIA GeForce GTX 1050",
                             MinimumMemory = "12 GB RAM",
                             MinimumOS = "Windows 10 64-bit",
-                            MinimumProcessor = "Intel Core i5-2500K / AMD Ryzen 3 1200",
+                            MinimumProcessor = "Intel Core i5-2500K",
                             MinimumStorage = "35 GB available space",
-                            Price = 49.99m,
+                            Price = 49990L,
                             Publisher = "Battlestate Games",
                             Rating = 4.0999999999999996,
                             RatingCount = 180000,
                             ReleaseDate = new DateTime(2017, 7, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1771980/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "Escape from Tarkov",
                             TotalSales = 3000000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=5HEk2sh9Q_o"
+                            TrailerUrl = ""
                         },
                         new
                         {
                             Id = 5,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/107410/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5825),
-                            Description = "Experience true combat gameplay in a massive military sandbox. Deploying a wide variety of single- and multiplayer content, over 20 vehicles and 40 weapons, and limitless opportunities for content creation, ARMA 3 is the PC's premier military game. Authentic, diverse, open - ARMA 3 sends you to war.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(455),
+                            Description = "Experience true combat gameplay in a massive military sandbox with a wide variety of single- and multiplayer content.",
                             Developer = "Bohemia Interactive",
-                            DiscountPrice = 9.99m,
+                            DiscountPrice = 9990L,
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GTX 560 / AMD Radeon HD 7750",
+                            MinimumGraphics = "NVIDIA GeForce GTX 560",
                             MinimumMemory = "8 GB RAM",
                             MinimumOS = "Windows 7 64-bit",
-                            MinimumProcessor = "Intel Core i5-2300 / AMD Phenom II X4 940",
+                            MinimumProcessor = "Intel Core i5-2300",
                             MinimumStorage = "45 GB available space",
-                            Price = 29.99m,
+                            Price = 29990L,
                             Publisher = "Bohemia Interactive",
                             Rating = 4.7000000000000002,
                             RatingCount = 450000,
                             ReleaseDate = new DateTime(2013, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/107410/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "ARMA 3",
                             TotalSales = 10000000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=OU9LWflcI_Y"
+                            TrailerUrl = ""
                         },
                         new
                         {
                             Id = 6,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/686810/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5830),
-                            Description = "Join the ever-expanding Hell Let Loose experience - a hardcore World War Two first person shooter with epic battles of 100 players with infantry, tanks, artillery, a dynamically shifting front line and a unique resource-based RTS-inspired meta-game. Fight in the most iconic battles of the Western Front, including Omaha Beach, Carentan, and Foy.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(458),
+                            Description = "Join the ever-expanding Hell Let Loose experience - a hardcore World War Two first person shooter with epic battles of 100 players.",
                             Developer = "Black Matter",
-                            DiscountPrice = 29.99m,
+                            DiscountPrice = 29990L,
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GTX 960 / AMD Radeon R9 380",
+                            MinimumGraphics = "NVIDIA GeForce GTX 960",
                             MinimumMemory = "12 GB RAM",
                             MinimumOS = "Windows 10 64-bit",
-                            MinimumProcessor = "Intel Core i5-6600 / AMD Ryzen 5 1400",
+                            MinimumProcessor = "Intel Core i5-6600",
                             MinimumStorage = "30 GB available space",
-                            Price = 39.99m,
+                            Price = 39990L,
                             Publisher = "Team17",
                             Rating = 4.5999999999999996,
                             RatingCount = 85000,
                             ReleaseDate = new DateTime(2021, 7, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/686810/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "Hell Let Loose",
                             TotalSales = 2500000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=mV-ksD1vY5o"
+                            TrailerUrl = ""
                         },
                         new
                         {
                             Id = 7,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/393380/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5835),
-                            Description = "Squad is a tactical FPS that provides authentic combat experiences through teamwork, communication, and realistic combat. It bridges the gap between arcade shooter and military simulation with large-scale combined arms warfare, base building, and integrated voice communication.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(462),
+                            Description = "Squad is a tactical FPS that provides authentic combat experiences through teamwork, communication, and realistic combat.",
                             Developer = "Offworld",
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GTX 770 / AMD Radeon R9 290",
+                            MinimumGraphics = "NVIDIA GeForce GTX 770",
                             MinimumMemory = "8 GB RAM",
                             MinimumOS = "Windows 10 64-bit",
-                            MinimumProcessor = "Intel Core i5-2500K / AMD FX-6300",
+                            MinimumProcessor = "Intel Core i5-2500K",
                             MinimumStorage = "55 GB available space",
-                            Price = 49.99m,
+                            Price = 49990L,
                             Publisher = "Offworld",
                             Rating = 4.5,
                             RatingCount = 150000,
                             ReleaseDate = new DateTime(2020, 9, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/393380/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "Squad",
                             TotalSales = 4000000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=YviNkuXLMg4"
+                            TrailerUrl = ""
                         },
                         new
                         {
                             Id = 8,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5841),
-                            Description = "Ready or Not is an intense, tactical, first-person shooter that depicts a modern-day world in which SWAT police units are called to defuse hostile and confronting situations. Inspired by the SWAT series, Ready or Not brings a level of realism, tactical planning, and team-based coordination rarely seen in modern shooters.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(466),
+                            Description = "Ready or Not is an intense, tactical, first-person shooter that depicts a modern-day world in which SWAT police units are called to defuse hostile situations.",
                             Developer = "VOID Interactive",
-                            DiscountPrice = 34.99m,
+                            DiscountPrice = 34990L,
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GTX 960 / AMD Radeon R7 370",
+                            MinimumGraphics = "NVIDIA GeForce GTX 960",
                             MinimumMemory = "8 GB RAM",
                             MinimumOS = "Windows 10 64-bit",
-                            MinimumProcessor = "Intel Core i5-4430 / AMD FX-6300",
+                            MinimumProcessor = "Intel Core i5-4430",
                             MinimumStorage = "90 GB available space",
-                            Price = 39.99m,
+                            Price = 39990L,
                             Publisher = "VOID Interactive",
                             Rating = 4.7999999999999998,
                             RatingCount = 95000,
                             ReleaseDate = new DateTime(2023, 12, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/1144200/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "Ready or Not",
                             TotalSales = 1800000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=saKvD9xBRts"
+                            TrailerUrl = ""
                         },
                         new
                         {
                             Id = 9,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/581320/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5845),
-                            Description = "Insurgency: Sandstorm is a team-based, tactical FPS based on lethal close quarters combat and objective-oriented multiplayer gameplay. Experience the intensity of modern combat where skill is rewarded, and teamwork wins the fight. Sequenced in a fictional contemporary Middle Eastern conflict, featuring both PvP and co-op modes.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(471),
+                            Description = "Insurgency: Sandstorm is a team-based, tactical FPS based on lethal close quarters combat and objective-oriented multiplayer gameplay.",
                             Developer = "New World Interactive",
-                            DiscountPrice = 14.99m,
+                            DiscountPrice = 14990L,
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GTX 760 / AMD Radeon HD 7970",
+                            MinimumGraphics = "NVIDIA GeForce GTX 760",
                             MinimumMemory = "8 GB RAM",
                             MinimumOS = "Windows 7 64-bit",
-                            MinimumProcessor = "Intel Core i5-4440 / AMD FX-6300",
+                            MinimumProcessor = "Intel Core i5-4440",
                             MinimumStorage = "40 GB available space",
-                            Price = 29.99m,
+                            Price = 29990L,
                             Publisher = "Focus Entertainment",
                             Rating = 4.4000000000000004,
                             RatingCount = 170000,
                             ReleaseDate = new DateTime(2018, 12, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/581320/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "Insurgency: Sandstorm",
                             TotalSales = 3500000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=GwCWgM1JxBs"
+                            TrailerUrl = ""
                         },
                         new
                         {
                             Id = 10,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/16900/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5850),
-                            Description = "Ground Branch is a realistic tactical first-person shooter from one of the developers behind the original Rainbow Six and Ghost Recon games. Think, plan, and move carefully through highly detailed environments while engaging enemies in realistic firefights where bullets are deadly and every decision counts.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(505),
+                            Description = "Ground Branch is a realistic tactical first-person shooter from one of the developers behind the original Rainbow Six and Ghost Recon games.",
                             Developer = "BlackFoot Studios",
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GTX 760 / AMD Radeon HD 7950",
+                            MinimumGraphics = "NVIDIA GeForce GTX 760",
                             MinimumMemory = "8 GB RAM",
                             MinimumOS = "Windows 10 64-bit",
-                            MinimumProcessor = "Intel Core i5-2500K / AMD FX-8350",
+                            MinimumProcessor = "Intel Core i5-2500K",
                             MinimumStorage = "25 GB available space",
-                            Price = 29.99m,
+                            Price = 29990L,
                             Publisher = "BlackFoot Studios",
                             Rating = 4.4000000000000004,
                             RatingCount = 12000,
                             ReleaseDate = new DateTime(2022, 9, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/16900/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "Ground Branch",
                             TotalSales = 450000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=QZBmXK-G3-g"
+                            TrailerUrl = ""
                         },
                         new
                         {
                             Id = 11,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/221100/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5854),
-                            Description = "DayZ is a hardcore open-world survival game with an extreme emphasis on player interaction. You are one of the few who have survived a mysterious zombie outbreak in the post-Soviet Republic of Chernarus. Scavenge for supplies, craft items, build bases, and fight against zombies and other desperate survivors in a sprawling 230km² landscape.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(509),
+                            Description = "DayZ is a hardcore open-world survival game with an extreme emphasis on player interaction in a post-Soviet Republic.",
                             Developer = "Bohemia Interactive",
-                            DiscountPrice = 29.99m,
+                            DiscountPrice = 29990L,
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GTX 760 / AMD Radeon R9 270",
+                            MinimumGraphics = "NVIDIA GeForce GTX 760",
                             MinimumMemory = "8 GB RAM",
                             MinimumOS = "Windows 10 64-bit",
-                            MinimumProcessor = "Intel Core i5-4430 / AMD FX-6300",
+                            MinimumProcessor = "Intel Core i5-4430",
                             MinimumStorage = "25 GB available space",
-                            Price = 49.99m,
+                            Price = 49990L,
                             Publisher = "Bohemia Interactive",
                             Rating = 3.8999999999999999,
                             RatingCount = 290000,
                             ReleaseDate = new DateTime(2018, 12, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/221100/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "DayZ",
                             TotalSales = 6000000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=H9PHj4R2l5Y"
+                            TrailerUrl = ""
                         },
                         new
                         {
                             Id = 12,
                             CoverImageUrl = "https://cdn.cloudflare.steamstatic.com/steam/apps/736220/header.jpg",
-                            CreatedAt = new DateTime(2026, 5, 10, 13, 27, 54, 955, DateTimeKind.Utc).AddTicks(5858),
-                            Description = "Post Scriptum is a WW2 simulation game, focusing on historical accuracy, large scale battles, the difficulty of coalition warfare and an intense battlefield, with an emphasis on logistics and combined arms. Fight across the Arnhem bridge, the dunes of Normandy, and through the streets of the Netherlands.",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(513),
+                            Description = "Post Scriptum is a WW2 simulation game focusing on historical accuracy, large scale battles, and the difficulty of coalition warfare.",
                             Developer = "Periscope Games",
-                            DiscountPrice = 19.99m,
+                            DiscountPrice = 19990L,
                             IsActive = true,
-                            MinimumGraphics = "NVIDIA GeForce GTX 970 / AMD Radeon R9 290",
+                            MinimumGraphics = "NVIDIA GeForce GTX 970",
                             MinimumMemory = "8 GB RAM",
                             MinimumOS = "Windows 7 64-bit",
-                            MinimumProcessor = "Intel Core i5-2500K / AMD Ryzen 3 1200",
+                            MinimumProcessor = "Intel Core i5-2500K",
                             MinimumStorage = "35 GB available space",
-                            Price = 29.99m,
+                            Price = 29990L,
                             Publisher = "Offworld",
                             Rating = 4.2000000000000002,
                             RatingCount = 28000,
                             ReleaseDate = new DateTime(2018, 7, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Screenshots = "[\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_1.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_2.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_3.jpg\",\"https://cdn.cloudflare.steamstatic.com/steam/apps/736220/ss_4.jpg\"]",
+                            Screenshots = "[]",
                             Title = "Post Scriptum",
                             TotalSales = 1200000,
-                            TrailerUrl = "https://www.youtube.com/watch?v=gKlJ4VCGmTE"
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 13,
+                            CoverImageUrl = "https://picsum.photos/seed/game13/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(516),
+                            Description = "A neon-drenched action-adventure set in a sprawling futuristic metropolis.",
+                            Developer = "Neon Dynamics",
+                            DiscountPrice = 20990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "40 GB available space",
+                            Price = 29990L,
+                            Publisher = "Neon Dynamics",
+                            Rating = 4.2999999999999998,
+                            RatingCount = 45000,
+                            ReleaseDate = new DateTime(2024, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Cyber Runner 2077",
+                            TotalSales = 850000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 14,
+                            CoverImageUrl = "https://picsum.photos/seed/game14/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(519),
+                            Description = "An expansive MMORPG set in a fantasy world of magic and dragons.",
+                            Developer = "Fantasy Forge",
+                            DiscountPrice = 39990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "16 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "80 GB available space",
+                            Price = 49990L,
+                            Publisher = "Fantasy Forge",
+                            Rating = 4.5999999999999996,
+                            RatingCount = 78000,
+                            ReleaseDate = new DateTime(2023, 7, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Realm of Eternity",
+                            TotalSales = 1200000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 15,
+                            CoverImageUrl = "https://picsum.photos/seed/game15/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(522),
+                            Description = "A deep strategy game where you command military forces in realistic warfare scenarios.",
+                            Developer = "War Room Studios",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "30 GB available space",
+                            Price = 39990L,
+                            Publisher = "War Room Studios",
+                            Rating = 4.4000000000000004,
+                            RatingCount = 32000,
+                            ReleaseDate = new DateTime(2024, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Tactical Command",
+                            TotalSales = 650000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 16,
+                            CoverImageUrl = "https://picsum.photos/seed/game16/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(525),
+                            Description = "High-speed racing across iconic tracks worldwide with customizable vehicles.",
+                            Developer = "Velocity Games",
+                            DiscountPrice = 4990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "25 GB available space",
+                            Price = 9990L,
+                            Publisher = "Velocity Games",
+                            Rating = 4.0999999999999996,
+                            RatingCount = 95000,
+                            ReleaseDate = new DateTime(2023, 5, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Speed Champions",
+                            TotalSales = 2200000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 17,
+                            CoverImageUrl = "https://picsum.photos/seed/game17/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(529),
+                            Description = "A charming indie platformer with retro pixel art and clever puzzles.",
+                            Developer = "Retro Revival",
+                            DiscountPrice = 14990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "2 GB available space",
+                            Price = 19990L,
+                            Publisher = "Retro Revival",
+                            Rating = 4.7999999999999998,
+                            RatingCount = 22000,
+                            ReleaseDate = new DateTime(2024, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Pixel Quest",
+                            TotalSales = 350000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CoverImageUrl = "https://picsum.photos/seed/game18/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(532),
+                            Description = "An intense squad-based tactical shooter where teamwork is essential.",
+                            Developer = "Battlefront Devs",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "50 GB available space",
+                            Price = 24990L,
+                            Publisher = "Battlefront Devs",
+                            Rating = 4.2000000000000002,
+                            RatingCount = 41000,
+                            ReleaseDate = new DateTime(2024, 9, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Frontline Elite",
+                            TotalSales = 780000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CoverImageUrl = "https://picsum.photos/seed/game19/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(535),
+                            Description = "A terrifying first-person horror game set in an abandoned asylum.",
+                            Developer = "Shadow Workshop",
+                            DiscountPrice = 24990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "20 GB available space",
+                            Price = 34990L,
+                            Publisher = "Shadow Workshop",
+                            Rating = 4.5,
+                            RatingCount = 28000,
+                            ReleaseDate = new DateTime(2024, 10, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Dark Corridors",
+                            TotalSales = 420000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CoverImageUrl = "https://picsum.photos/seed/game20/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(538),
+                            Description = "Design and manage a thriving metropolis from the ground up.",
+                            Developer = "Urban Nexus",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "15 GB available space",
+                            Price = 44990L,
+                            Publisher = "Urban Nexus",
+                            Rating = 4.2999999999999998,
+                            RatingCount = 38000,
+                            ReleaseDate = new DateTime(2023, 11, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "City Builder Pro",
+                            TotalSales = 910000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 21,
+                            CoverImageUrl = "https://picsum.photos/seed/game21/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(541),
+                            Description = "An epic open-world RPG where you inherit the power of ancient dragons.",
+                            Developer = "Mythic Studios",
+                            DiscountPrice = 49990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "16 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "100 GB available space",
+                            Price = 59990L,
+                            Publisher = "Mythic Studios",
+                            Rating = 4.7000000000000002,
+                            RatingCount = 89000,
+                            ReleaseDate = new DateTime(2024, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Dragon's Legacy",
+                            TotalSales = 1500000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 22,
+                            CoverImageUrl = "https://picsum.photos/seed/game22/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(544),
+                            Description = "Fast-paced fighting game with a diverse roster of unique characters.",
+                            Developer = "Fight Club Games",
+                            DiscountPrice = 9990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "10 GB available space",
+                            Price = 14990L,
+                            Publisher = "Fight Club Games",
+                            Rating = 3.8999999999999999,
+                            RatingCount = 31000,
+                            ReleaseDate = new DateTime(2024, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Arena Brawl",
+                            TotalSales = 560000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 23,
+                            CoverImageUrl = "https://picsum.photos/seed/game23/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(547),
+                            Description = "Collect, build, and duel in this strategic card game.",
+                            Developer = "Deck Builders Inc",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "5 GB available space",
+                            Price = 4990L,
+                            Publisher = "Deck Builders Inc",
+                            Rating = 4.0,
+                            RatingCount = 15000,
+                            ReleaseDate = new DateTime(2024, 8, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Card Masters",
+                            TotalSales = 280000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 24,
+                            CoverImageUrl = "https://picsum.photos/seed/game24/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(550),
+                            Description = "A delightful platformer through whimsical kingdoms with coins and traps.",
+                            Developer = "Platform Heroes",
+                            DiscountPrice = 11990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "8 GB available space",
+                            Price = 16990L,
+                            Publisher = "Platform Heroes",
+                            Rating = 4.4000000000000004,
+                            RatingCount = 19000,
+                            ReleaseDate = new DateTime(2024, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Jump Kingdom",
+                            TotalSales = 410000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CoverImageUrl = "https://picsum.photos/seed/game25/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(554),
+                            Description = "A roguelike dungeon crawler with procedurally generated depths.",
+                            Developer = "Rogue Devs",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "3 GB available space",
+                            Price = 22990L,
+                            Publisher = "Rogue Devs",
+                            Rating = 4.5999999999999996,
+                            RatingCount = 17000,
+                            ReleaseDate = new DateTime(2024, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Dungeon Crawler X",
+                            TotalSales = 310000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CoverImageUrl = "https://picsum.photos/seed/game26/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(557),
+                            Description = "Battle royale with squad-based gameplay and unique class abilities.",
+                            Developer = "Battle Royale Co",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "30 GB available space",
+                            Price = 0L,
+                            Publisher = "Battle Royale Co",
+                            Rating = 3.7999999999999998,
+                            RatingCount = 125000,
+                            ReleaseDate = new DateTime(2023, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Last Squad Standing",
+                            TotalSales = 3500000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CoverImageUrl = "https://picsum.photos/seed/game27/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(560),
+                            Description = "A competitive MOBA with diverse heroes and 5v5 battles.",
+                            Developer = "MOBA Creations",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "20 GB available space",
+                            Price = 0L,
+                            Publisher = "MOBA Creations",
+                            Rating = 4.2000000000000002,
+                            RatingCount = 200000,
+                            ReleaseDate = new DateTime(2023, 9, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Nexus Arena",
+                            TotalSales = 4200000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CoverImageUrl = "https://picsum.photos/seed/game28/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(569),
+                            Description = "A story-rich narrative adventure where your choices truly matter.",
+                            Developer = "StoryCraft Games",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "12 GB available space",
+                            Price = 25990L,
+                            Publisher = "StoryCraft Games",
+                            Rating = 4.9000000000000004,
+                            RatingCount = 12000,
+                            ReleaseDate = new DateTime(2024, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "The Forgotten Tale",
+                            TotalSales = 190000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CoverImageUrl = "https://picsum.photos/seed/game29/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(572),
+                            Description = "Realistic flight simulation with detailed aircraft and global scenery.",
+                            Developer = "Aero Dynamics",
+                            DiscountPrice = 44990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "16 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "150 GB available space",
+                            Price = 54990L,
+                            Publisher = "Aero Dynamics",
+                            Rating = 4.5,
+                            RatingCount = 44000,
+                            ReleaseDate = new DateTime(2024, 6, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Flight Sim Pro",
+                            TotalSales = 720000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CoverImageUrl = "https://picsum.photos/seed/game30/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(575),
+                            Description = "A relaxing puzzle game where you cultivate beautiful gardens.",
+                            Developer = "Calm Dev Studios",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "1 GB available space",
+                            Price = 7990L,
+                            Publisher = "Calm Dev Studios",
+                            Rating = 4.7000000000000002,
+                            RatingCount = 8500,
+                            ReleaseDate = new DateTime(2024, 7, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Zen Garden",
+                            TotalSales = 140000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 31,
+                            CoverImageUrl = "https://picsum.photos/seed/game31/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(578),
+                            Description = "Classic tower defense with modern twists and upgradeable towers.",
+                            Developer = "Castle Coders",
+                            DiscountPrice = 9990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "4 GB available space",
+                            Price = 12990L,
+                            Publisher = "Castle Coders",
+                            Rating = 4.0999999999999996,
+                            RatingCount = 11000,
+                            ReleaseDate = new DateTime(2024, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Fortress Defense",
+                            TotalSales = 230000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 32,
+                            CoverImageUrl = "https://picsum.photos/seed/game32/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(581),
+                            Description = "Master turn-based tactical combat in a rich fantasy world.",
+                            Developer = "Strategy Hub",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "15 GB available space",
+                            Price = 32990L,
+                            Publisher = "Strategy Hub",
+                            Rating = 4.2999999999999998,
+                            RatingCount = 20000,
+                            ReleaseDate = new DateTime(2023, 10, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Turn Based Legends",
+                            TotalSales = 380000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 33,
+                            CoverImageUrl = "https://picsum.photos/seed/game33/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(584),
+                            Description = "An electrifying rhythm game featuring an original soundtrack.",
+                            Developer = "Rhythm Factory",
+                            DiscountPrice = 14990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "6 GB available space",
+                            Price = 18990L,
+                            Publisher = "Rhythm Factory",
+                            Rating = 4.4000000000000004,
+                            RatingCount = 9500,
+                            ReleaseDate = new DateTime(2024, 1, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Beat Revolution",
+                            TotalSales = 170000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 34,
+                            CoverImageUrl = "https://picsum.photos/seed/game34/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(588),
+                            Description = "A beautifully illustrated visual novel with multiple endings.",
+                            Developer = "Narrative Labs",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "8 GB available space",
+                            Price = 21990L,
+                            Publisher = "Narrative Labs",
+                            Rating = 4.5999999999999996,
+                            RatingCount = 7000,
+                            ReleaseDate = new DateTime(2024, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Visual Story",
+                            TotalSales = 95000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 35,
+                            CoverImageUrl = "https://picsum.photos/seed/game35/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(591),
+                            Description = "Explore a vast interconnected world in this metroidvania adventure.",
+                            Developer = "Exploration Games",
+                            DiscountPrice = 22990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "10 GB available space",
+                            Price = 27990L,
+                            Publisher = "Exploration Games",
+                            Rating = 4.5,
+                            RatingCount = 14000,
+                            ReleaseDate = new DateTime(2024, 5, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Metroid Realm",
+                            TotalSales = 260000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 36,
+                            CoverImageUrl = "https://picsum.photos/seed/game36/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(598),
+                            Description = "Educational games for all ages covering math, science, and language.",
+                            Developer = "EduSoft Games",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "2 GB available space",
+                            Price = 5990L,
+                            Publisher = "EduSoft Games",
+                            Rating = 4.0,
+                            RatingCount = 5000,
+                            ReleaseDate = new DateTime(2024, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Learn & Play",
+                            TotalSales = 80000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 37,
+                            CoverImageUrl = "https://picsum.photos/seed/game37/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(601),
+                            Description = "The ultimate party game with dozens of mini-games for friends.",
+                            Developer = "Social Fun Studios",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "3 GB available space",
+                            Price = 11990L,
+                            Publisher = "Social Fun Studios",
+                            Rating = 3.7000000000000002,
+                            RatingCount = 16000,
+                            ReleaseDate = new DateTime(2024, 12, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Party Mania",
+                            TotalSales = 200000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 38,
+                            CoverImageUrl = "https://picsum.photos/seed/game38/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(604),
+                            Description = "An open-world western adventure where you forge your own path.",
+                            Developer = "Open World Devs",
+                            DiscountPrice = 34990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "12 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "60 GB available space",
+                            Price = 42990L,
+                            Publisher = "Open World Devs",
+                            Rating = 4.4000000000000004,
+                            RatingCount = 25000,
+                            ReleaseDate = new DateTime(2024, 9, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Wild Frontier",
+                            TotalSales = 580000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CoverImageUrl = "https://picsum.photos/seed/game39/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(607),
+                            Description = "Stranded on a deserted island, scavenge, craft, and survive.",
+                            Developer = "Survival Tech",
+                            DiscountPrice = 11990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "15 GB available space",
+                            Price = 15990L,
+                            Publisher = "Survival Tech",
+                            Rating = 4.2000000000000002,
+                            RatingCount = 18000,
+                            ReleaseDate = new DateTime(2024, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Island Survivor",
+                            TotalSales = 340000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CoverImageUrl = "https://picsum.photos/seed/game40/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(610),
+                            Description = "Tactical co-op shooter requiring precise teamwork and planning.",
+                            Developer = "Teamwork Games",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "35 GB available space",
+                            Price = 31990L,
+                            Publisher = "Teamwork Games",
+                            Rating = 4.2999999999999998,
+                            RatingCount = 21000,
+                            ReleaseDate = new DateTime(2024, 7, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Co-op Commandos",
+                            TotalSales = 290000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 41,
+                            CoverImageUrl = "https://picsum.photos/seed/game41/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(612),
+                            Description = "A nostalgic RPG with charming pixel graphics and turn-based combat.",
+                            Developer = "Old School Devs",
+                            DiscountPrice = 6990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "5 GB available space",
+                            Price = 8990L,
+                            Publisher = "Old School Devs",
+                            Rating = 4.5,
+                            RatingCount = 11000,
+                            ReleaseDate = new DateTime(2024, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Pixel RPG",
+                            TotalSales = 160000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 42,
+                            CoverImageUrl = "https://picsum.photos/seed/game42/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(615),
+                            Description = "Strategy game where you destroy enemy towers and fortify defenses.",
+                            Developer = "Strategy Labs",
+                            IsActive = false,
+                            MinimumGraphics = "",
+                            MinimumMemory = "4 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "8 GB available space",
+                            Price = 19990L,
+                            Publisher = "Strategy Labs",
+                            Rating = 3.6000000000000001,
+                            RatingCount = 8000,
+                            ReleaseDate = new DateTime(2024, 11, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Tower Crash",
+                            TotalSales = 110000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 43,
+                            CoverImageUrl = "https://picsum.photos/seed/game43/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(619),
+                            Description = "A stealth action game where you infiltrate high-security facilities.",
+                            Developer = "Stealth Inc",
+                            DiscountPrice = 29990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "40 GB available space",
+                            Price = 36990L,
+                            Publisher = "Stealth Inc",
+                            Rating = 4.0999999999999996,
+                            RatingCount = 23000,
+                            ReleaseDate = new DateTime(2024, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Shadow Agent",
+                            TotalSales = 440000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 44,
+                            CoverImageUrl = "https://picsum.photos/seed/game44/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(624),
+                            Description = "Race through treacherous off-road tracks in a demanding rally championship.",
+                            Developer = "Racing Pixels",
+                            DiscountPrice = 22990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "25 GB available space",
+                            Price = 28990L,
+                            Publisher = "Racing Pixels",
+                            Rating = 4.0,
+                            RatingCount = 27000,
+                            ReleaseDate = new DateTime(2024, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Grand Prix Rally",
+                            TotalSales = 510000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 45,
+                            CoverImageUrl = "https://picsum.photos/seed/game45/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(627),
+                            Description = "Post-apocalyptic survival shooter set in a radioactive wasteland.",
+                            Developer = "Post-Apocalypse GS",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "30 GB available space",
+                            Price = 23990L,
+                            Publisher = "Post-Apocalypse GS",
+                            Rating = 4.2000000000000002,
+                            RatingCount = 16000,
+                            ReleaseDate = new DateTime(2024, 8, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Wasteland Warriors",
+                            TotalSales = 320000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 46,
+                            CoverImageUrl = "https://picsum.photos/seed/game46/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(639),
+                            Description = "A massive multiplayer online RPG in a persistent fantasy world.",
+                            Developer = "MMO Worlds",
+                            DiscountPrice = 35990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "16 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "70 GB available space",
+                            Price = 45990L,
+                            Publisher = "MMO Worlds",
+                            Rating = 4.4000000000000004,
+                            RatingCount = 52000,
+                            ReleaseDate = new DateTime(2023, 6, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Fantasy Online",
+                            TotalSales = 980000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 47,
+                            CoverImageUrl = "https://picsum.photos/seed/game47/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(642),
+                            Description = "Build and manage a self-sustaining colony on a distant planet.",
+                            Developer = "Orbital Games",
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "20 GB available space",
+                            Price = 38990L,
+                            Publisher = "Orbital Games",
+                            Rating = 4.2999999999999998,
+                            RatingCount = 19000,
+                            ReleaseDate = new DateTime(2024, 5, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Space Colony",
+                            TotalSales = 370000,
+                            TrailerUrl = ""
+                        },
+                        new
+                        {
+                            Id = 48,
+                            CoverImageUrl = "https://picsum.photos/seed/game48/460/215",
+                            CreatedAt = new DateTime(2026, 6, 4, 17, 3, 50, 445, DateTimeKind.Utc).AddTicks(645),
+                            Description = "Fast-paced multiplayer action game with dynamic arena combat.",
+                            Developer = "Battle Systems",
+                            DiscountPrice = 13990L,
+                            IsActive = true,
+                            MinimumGraphics = "",
+                            MinimumMemory = "8 GB RAM",
+                            MinimumOS = "",
+                            MinimumProcessor = "",
+                            MinimumStorage = "12 GB available space",
+                            Price = 17990L,
+                            Publisher = "Battle Systems",
+                            Rating = 3.7999999999999998,
+                            RatingCount = 14000,
+                            ReleaseDate = new DateTime(2024, 4, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Screenshots = "[]",
+                            Title = "Combat Arena",
+                            TotalSales = 250000,
+                            TrailerUrl = ""
                         });
                 });
 
@@ -940,6 +1823,654 @@ namespace GameStore.Repository.Migrations
                             Id = 59,
                             GameId = 12,
                             GenreId = 29
+                        },
+                        new
+                        {
+                            Id = 60,
+                            GameId = 13,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 61,
+                            GameId = 13,
+                            GenreId = 7
+                        },
+                        new
+                        {
+                            Id = 62,
+                            GameId = 13,
+                            GenreId = 30
+                        },
+                        new
+                        {
+                            Id = 63,
+                            GameId = 14,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            Id = 64,
+                            GameId = 14,
+                            GenreId = 16
+                        },
+                        new
+                        {
+                            Id = 65,
+                            GameId = 14,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 66,
+                            GameId = 15,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 67,
+                            GameId = 15,
+                            GenreId = 20
+                        },
+                        new
+                        {
+                            Id = 68,
+                            GameId = 15,
+                            GenreId = 30
+                        },
+                        new
+                        {
+                            Id = 69,
+                            GameId = 16,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            Id = 70,
+                            GameId = 16,
+                            GenreId = 14
+                        },
+                        new
+                        {
+                            Id = 71,
+                            GameId = 16,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 72,
+                            GameId = 17,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            Id = 73,
+                            GameId = 17,
+                            GenreId = 9
+                        },
+                        new
+                        {
+                            Id = 74,
+                            GameId = 17,
+                            GenreId = 33
+                        },
+                        new
+                        {
+                            Id = 75,
+                            GameId = 18,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 76,
+                            GameId = 18,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 77,
+                            GameId = 18,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 78,
+                            GameId = 19,
+                            GenreId = 10
+                        },
+                        new
+                        {
+                            Id = 79,
+                            GameId = 19,
+                            GenreId = 11
+                        },
+                        new
+                        {
+                            Id = 80,
+                            GameId = 19,
+                            GenreId = 7
+                        },
+                        new
+                        {
+                            Id = 81,
+                            GameId = 20,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            Id = 82,
+                            GameId = 20,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 83,
+                            GameId = 20,
+                            GenreId = 20
+                        },
+                        new
+                        {
+                            Id = 84,
+                            GameId = 21,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            Id = 85,
+                            GameId = 21,
+                            GenreId = 12
+                        },
+                        new
+                        {
+                            Id = 86,
+                            GameId = 21,
+                            GenreId = 7
+                        },
+                        new
+                        {
+                            Id = 87,
+                            GameId = 22,
+                            GenreId = 15
+                        },
+                        new
+                        {
+                            Id = 88,
+                            GameId = 22,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 89,
+                            GameId = 22,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 90,
+                            GameId = 23,
+                            GenreId = 17
+                        },
+                        new
+                        {
+                            Id = 91,
+                            GameId = 23,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 92,
+                            GameId = 23,
+                            GenreId = 33
+                        },
+                        new
+                        {
+                            Id = 93,
+                            GameId = 24,
+                            GenreId = 23
+                        },
+                        new
+                        {
+                            Id = 94,
+                            GameId = 24,
+                            GenreId = 9
+                        },
+                        new
+                        {
+                            Id = 95,
+                            GameId = 24,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            Id = 96,
+                            GameId = 25,
+                            GenreId = 25
+                        },
+                        new
+                        {
+                            Id = 97,
+                            GameId = 25,
+                            GenreId = 26
+                        },
+                        new
+                        {
+                            Id = 98,
+                            GameId = 25,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            Id = 99,
+                            GameId = 26,
+                            GenreId = 27
+                        },
+                        new
+                        {
+                            Id = 100,
+                            GameId = 26,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 101,
+                            GameId = 26,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 102,
+                            GameId = 27,
+                            GenreId = 28
+                        },
+                        new
+                        {
+                            Id = 103,
+                            GameId = 27,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 104,
+                            GameId = 27,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 105,
+                            GameId = 28,
+                            GenreId = 7
+                        },
+                        new
+                        {
+                            Id = 106,
+                            GameId = 28,
+                            GenreId = 35
+                        },
+                        new
+                        {
+                            Id = 107,
+                            GameId = 28,
+                            GenreId = 30
+                        },
+                        new
+                        {
+                            Id = 108,
+                            GameId = 29,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            Id = 109,
+                            GameId = 29,
+                            GenreId = 14
+                        },
+                        new
+                        {
+                            Id = 110,
+                            GameId = 29,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 111,
+                            GameId = 30,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            Id = 112,
+                            GameId = 30,
+                            GenreId = 9
+                        },
+                        new
+                        {
+                            Id = 113,
+                            GameId = 30,
+                            GenreId = 33
+                        },
+                        new
+                        {
+                            Id = 114,
+                            GameId = 31,
+                            GenreId = 19
+                        },
+                        new
+                        {
+                            Id = 115,
+                            GameId = 31,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 116,
+                            GameId = 31,
+                            GenreId = 33
+                        },
+                        new
+                        {
+                            Id = 117,
+                            GameId = 32,
+                            GenreId = 18
+                        },
+                        new
+                        {
+                            Id = 118,
+                            GameId = 32,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            Id = 119,
+                            GameId = 32,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 120,
+                            GameId = 33,
+                            GenreId = 22
+                        },
+                        new
+                        {
+                            Id = 121,
+                            GameId = 33,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            Id = 122,
+                            GameId = 33,
+                            GenreId = 33
+                        },
+                        new
+                        {
+                            Id = 123,
+                            GameId = 34,
+                            GenreId = 21
+                        },
+                        new
+                        {
+                            Id = 124,
+                            GameId = 34,
+                            GenreId = 35
+                        },
+                        new
+                        {
+                            Id = 125,
+                            GameId = 34,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            Id = 126,
+                            GameId = 35,
+                            GenreId = 24
+                        },
+                        new
+                        {
+                            Id = 127,
+                            GameId = 35,
+                            GenreId = 7
+                        },
+                        new
+                        {
+                            Id = 128,
+                            GameId = 35,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            Id = 129,
+                            GameId = 36,
+                            GenreId = 32
+                        },
+                        new
+                        {
+                            Id = 130,
+                            GameId = 36,
+                            GenreId = 33
+                        },
+                        new
+                        {
+                            Id = 131,
+                            GameId = 36,
+                            GenreId = 30
+                        },
+                        new
+                        {
+                            Id = 132,
+                            GameId = 37,
+                            GenreId = 34
+                        },
+                        new
+                        {
+                            Id = 133,
+                            GameId = 37,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 134,
+                            GameId = 37,
+                            GenreId = 33
+                        },
+                        new
+                        {
+                            Id = 135,
+                            GameId = 38,
+                            GenreId = 12
+                        },
+                        new
+                        {
+                            Id = 136,
+                            GameId = 38,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 137,
+                            GameId = 38,
+                            GenreId = 7
+                        },
+                        new
+                        {
+                            Id = 138,
+                            GameId = 39,
+                            GenreId = 11
+                        },
+                        new
+                        {
+                            Id = 139,
+                            GameId = 39,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            Id = 140,
+                            GameId = 39,
+                            GenreId = 30
+                        },
+                        new
+                        {
+                            Id = 141,
+                            GameId = 40,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 142,
+                            GameId = 40,
+                            GenreId = 29
+                        },
+                        new
+                        {
+                            Id = 143,
+                            GameId = 40,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 144,
+                            GameId = 41,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            Id = 145,
+                            GameId = 41,
+                            GenreId = 25
+                        },
+                        new
+                        {
+                            Id = 146,
+                            GameId = 41,
+                            GenreId = 5
+                        },
+                        new
+                        {
+                            Id = 147,
+                            GameId = 42,
+                            GenreId = 3
+                        },
+                        new
+                        {
+                            Id = 148,
+                            GameId = 42,
+                            GenreId = 19
+                        },
+                        new
+                        {
+                            Id = 149,
+                            GameId = 42,
+                            GenreId = 33
+                        },
+                        new
+                        {
+                            Id = 150,
+                            GameId = 43,
+                            GenreId = 13
+                        },
+                        new
+                        {
+                            Id = 151,
+                            GameId = 43,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 152,
+                            GameId = 43,
+                            GenreId = 7
+                        },
+                        new
+                        {
+                            Id = 153,
+                            GameId = 44,
+                            GenreId = 4
+                        },
+                        new
+                        {
+                            Id = 154,
+                            GameId = 44,
+                            GenreId = 14
+                        },
+                        new
+                        {
+                            Id = 155,
+                            GameId = 44,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 156,
+                            GameId = 45,
+                            GenreId = 6
+                        },
+                        new
+                        {
+                            Id = 157,
+                            GameId = 45,
+                            GenreId = 11
+                        },
+                        new
+                        {
+                            Id = 158,
+                            GameId = 45,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 159,
+                            GameId = 46,
+                            GenreId = 2
+                        },
+                        new
+                        {
+                            Id = 160,
+                            GameId = 46,
+                            GenreId = 12
+                        },
+                        new
+                        {
+                            Id = 161,
+                            GameId = 46,
+                            GenreId = 16
+                        },
+                        new
+                        {
+                            Id = 162,
+                            GameId = 47,
+                            GenreId = 8
+                        },
+                        new
+                        {
+                            Id = 163,
+                            GameId = 47,
+                            GenreId = 20
+                        },
+                        new
+                        {
+                            Id = 164,
+                            GameId = 47,
+                            GenreId = 30
+                        },
+                        new
+                        {
+                            Id = 165,
+                            GameId = 48,
+                            GenreId = 1
+                        },
+                        new
+                        {
+                            Id = 166,
+                            GameId = 48,
+                            GenreId = 31
+                        },
+                        new
+                        {
+                            Id = 167,
+                            GameId = 48,
+                            GenreId = 3
                         });
                 });
 
@@ -1332,9 +2863,6 @@ namespace GameStore.Repository.Migrations
                     b.Property<int>("GameId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("GameId1")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsUsed")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -1351,8 +2879,6 @@ namespace GameStore.Repository.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("GameId1");
 
                     b.HasIndex("KeyCode")
                         .IsUnique();
@@ -1472,8 +2998,8 @@ namespace GameStore.Repository.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasDefaultValue("Pending");
 
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<long>("TotalAmount")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -1509,8 +3035,8 @@ namespace GameStore.Repository.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<long>("UnitPrice")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -1534,8 +3060,8 @@ namespace GameStore.Repository.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -1726,10 +3252,10 @@ namespace GameStore.Repository.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<decimal>("Wallet")
+                    b.Property<long>("Wallet")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(18,2)")
-                        .HasDefaultValue(0m);
+                        .HasColumnType("bigint")
+                        .HasDefaultValue(0L);
 
                     b.HasKey("Id");
 
@@ -1753,11 +3279,11 @@ namespace GameStore.Repository.Migrations
                             DisplayName = "Administrator",
                             Email = "admin@gamestore.com",
                             IsActive = true,
-                            Password = "fcwIuW5Lwv7Bjf6MJYM4ezTIE078ueJr++1RfTyF3IQ=",
+                            Password = "HdU1kNsl8MIkPs61DHI2mzLngf1jW7lE42s/5SUNnAE=",
                             Phone = "",
-                            Salt = new byte[] { 188, 220, 162, 68, 4, 15, 3, 34, 226, 185, 189, 70, 81, 84, 71, 0 },
+                            Salt = new byte[] { 200, 236, 23, 184, 96, 166, 129, 49, 82, 189, 167, 16, 48, 56, 102, 105 },
                             Username = "admin",
-                            Wallet = 9999m
+                            Wallet = 9999000L
                         });
                 });
 
@@ -1817,7 +3343,7 @@ namespace GameStore.Repository.Migrations
                             Id = 1,
                             Created = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             CreatedBy = "system",
-                            CreatedDateTime = new DateTime(2026, 5, 10, 13, 27, 54, 953, DateTimeKind.Utc).AddTicks(6743),
+                            CreatedDateTime = new DateTime(2026, 6, 4, 17, 3, 50, 443, DateTimeKind.Utc).AddTicks(7799),
                             CreatedUser = "",
                             Guid = new Guid("00000000-0000-0000-0000-000000000001"),
                             IsDeleted = false,
@@ -1832,6 +3358,17 @@ namespace GameStore.Repository.Migrations
                 {
                     b.HasOne("GameStore.Entities.Users.User", "User")
                         .WithMany("AccessTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("GameStore.Entities.Auth.PasswordResetToken", b =>
+                {
+                    b.HasOne("GameStore.Entities.Users.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1865,10 +3402,6 @@ namespace GameStore.Repository.Migrations
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("GameStore.Entities.Games.Game", null)
-                        .WithMany("GameKeys")
-                        .HasForeignKey("GameId1");
 
                     b.HasOne("GameStore.Entities.Store.OrderDetail", "OrderDetail")
                         .WithMany("GameKeys")
@@ -2029,8 +3562,6 @@ namespace GameStore.Repository.Migrations
             modelBuilder.Entity("GameStore.Entities.Games.Game", b =>
                 {
                     b.Navigation("GameGenres");
-
-                    b.Navigation("GameKeys");
 
                     b.Navigation("OrderDetails");
 

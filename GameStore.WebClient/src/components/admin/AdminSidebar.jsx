@@ -1,4 +1,5 @@
 // GameStore.WebClient/src/components/admin/AdminSidebar.jsx
+import { useTranslation } from "react-i18next";
 import {
   Gamepad2,
   Users,
@@ -7,21 +8,25 @@ import {
   Tag,
   Key,
   Shield,
+  TrendingUp,
 } from "lucide-react";
 
-const tabs = [
-  { id: "dashboard", icon: LayoutDashboard, label: "Tổng quan" },
-  { id: "games", icon: Gamepad2, label: "Trò chơi" },
-  { id: "categories", icon: Tag, label: "Danh mục" },
-  { id: "gamekeys", icon: Key, label: "Mã game" },
-  { id: "users", icon: Users, label: "Người dùng" },
-  { id: "orders", icon: Package, label: "Đơn hàng" },
-  { id: "staffroles", icon: Shield, label: "Nhân viên & Phân quyền" },
+const tabKeys = [
+  { id: "dashboard", icon: LayoutDashboard, key: "dashboard" },
+  { id: "games", icon: Gamepad2, key: "games" },
+  { id: "categories", icon: Tag, key: "categories" },
+  { id: "gamekeys", icon: Key, key: "gameKeys" },
+  { id: "users", icon: Users, key: "users" },
+  { id: "orders", icon: Package, key: "orders" },
+  { id: "revenue", icon: TrendingUp, key: "revenue" },
+  { id: "staffroles", icon: Shield, key: "staffRoles" },
 ];
 
-export { tabs };
+export { tabKeys as tabs };
 
 export default function AdminSidebar({ user, activeTab, setActiveTab }) {
+  const { t } = useTranslation();
+
   return (
     <div
       style={{
@@ -63,7 +68,7 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
         </div>
       </div>
       <nav style={{ display: "flex", flexDirection: "column", gap: 1 }}>
-        {tabs.map(({ id, icon: Icon, label }) => (
+        {tabKeys.map(({ id, icon: Icon, key }) => (
           <button
             key={id}
             onClick={() => setActiveTab(id)}
@@ -83,7 +88,7 @@ export default function AdminSidebar({ user, activeTab, setActiveTab }) {
               width: "100%",
             }}
           >
-            <Icon size={14} /> {label}
+            <Icon size={14} /> {t(`admin.${key}`)}
           </button>
         ))}
       </nav>
