@@ -135,13 +135,16 @@ export default function HeroBanner({ games }) {
                   <ShoppingCart size={16} />
                   Thêm vào giỏ
                 </button>
-                <Link
-                  to={`/game/${g.id}`}
+                <button
+                  type="button"
                   className="hero-btn-secondary"
-                  onClick={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/game/${g.id}`);
+                  }}
                 >
                   Xem chi tiết
-                </Link>
+                </button>
               </div>
             </div>
           </Link>
