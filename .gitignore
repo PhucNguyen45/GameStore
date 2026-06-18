@@ -49,4 +49,4 @@ project_dump.txt
 *.env.production.local
 
 # Database schema
-./database
+database/

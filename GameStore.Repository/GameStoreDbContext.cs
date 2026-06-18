@@ -343,9 +343,6 @@ public class GameStoreDbContext : DbContext
       Modified = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
       IsDeleted = false
     });
-
-        // Seed data cho Genre, Game, GameGenre duoc chuyen sang file SQL rieng: database/seeds/seed_data.sql
-
   }
 }
 
