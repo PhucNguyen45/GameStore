@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { LogIn, User, Lock, AlertCircle } from "lucide-react";
-import BackButton from "../../components/common/BackButton";
+import { BackButton } from "../../components/common";
 import { useTranslation } from "react-i18next";
 
 export default function LoginPage() {
@@ -79,9 +79,8 @@ export default function LoginPage() {
       {/* LOGIN FORM */}
       <div
         className="card"
-        style={{ padding: 40, maxWidth: 420 }}
+        style={{ padding: 40, maxWidth: 420, width: "100%" }}
       >
-
         <BackButton fallback="/store" label="Cửa hàng" />
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div

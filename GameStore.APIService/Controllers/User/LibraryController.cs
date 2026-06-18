@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameStore.Repository;
-using GameStore.Services;
+using GameStore.Services.Interfaces.Users;
 using System.Security.Claims;
 
 namespace GameStore.APIService.Controllers;

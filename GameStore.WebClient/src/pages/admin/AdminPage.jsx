@@ -7,20 +7,13 @@ import api from "../../services/api";
 import { adminAPI } from "../../services/api";
 
 
-import AdminSidebar, { tabs } from "../../components/admin/AdminSidebar";
-import DashboardTab from "../../components/admin/DashboardTab";
-import GamesTab from "../../components/admin/GamesTab";
-import UsersTab from "../../components/admin/UsersTab";
-import OrdersTab from "../../components/admin/OrdersTab";
-import CategoriesTab from "../../components/admin/CategoriesTab";
-import GameKeysTab from "../../components/admin/GameKeysTab";
-import StaffRolesTab from "../../components/admin/StaffRolesTab";
-import RevenueTab from "../../components/admin/RevenueTab";
-import GameFormModal from "../../components/admin/GameFormModal";
-import DeleteConfirmModal from "../../components/admin/DeleteConfirmModal";
-import UserFormModal from "../../components/admin/UserFormModal";
-import DeleteUserModal from "../../components/admin/DeleteUserModal";
-import { AdminSkeleton } from "../../components/common/PageSkeleton";
+import {
+  AdminSidebar, tabs, DashboardTab, GamesTab, UsersTab,
+  OrdersTab, CategoriesTab, GameKeysTab, StaffRolesTab,
+  RevenueTab, GameFormModal, DeleteConfirmModal,
+  UserFormModal, DeleteUserModal,
+} from "../../components/admin";
+import { AdminSkeleton } from "../../components/common";
 
 export default function AdminPage() {
   const { user, isAdmin, loading } = useAuth();

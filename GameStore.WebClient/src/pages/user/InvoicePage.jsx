@@ -14,8 +14,7 @@ import {
   Send,
   RefreshCw,
 } from "lucide-react";
-import { InvoiceSkeleton } from "../../components/common/PageSkeleton";
-import BackButton from "../../components/common/BackButton";
+import { InvoiceSkeleton, BackButton } from "../../components/common";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 

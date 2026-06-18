@@ -9,7 +9,7 @@ using GameStore.Entities.Auth;
 
 namespace GameStore.Entities.Users
 {
-    public class UserRole : Entity, IAuditable
+    public class UserRole : EntityBase, IAuditable
     {
         public Guid Guid { get; set; } = Guid.NewGuid();
         public int UserId { get; set; }

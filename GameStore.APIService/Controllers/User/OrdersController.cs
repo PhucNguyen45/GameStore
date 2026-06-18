@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.Entities.Store;
-using GameStore.Services;
+using GameStore.Services.Interfaces.Users;
 using System.Security.Claims;
 using GameStore.DTOs.Orders;
 using GameStore.DTOs.Common;

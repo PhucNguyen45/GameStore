@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using GameStore.Common;
 using GameStore.Entities.Audit;
 using GameStore.Entities.Users;
-using GameStore.Entities.Store;  // <-- thêm dòng này
+using GameStore.Entities.Store;
 
 namespace GameStore.Entities.Auth
 {
-    public class Role : Entity, IAuditable
+    public class Role : EntityBase, IAuditable
     {
         public Guid Guid { get; set; } = Guid.NewGuid();
         public string Name { get; set; } = string.Empty;

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameStore.Common.Auth;
-using GameStore.Services.Authen;
+using GameStore.Services.Interfaces.Authen;
 using GameStore.Entities.Auth;
 using GameStore.Entities.Users;
 using GameStore.Repository;

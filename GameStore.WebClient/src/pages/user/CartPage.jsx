@@ -18,7 +18,7 @@ import {
   Tag,
   Package,
 } from "lucide-react";
-import BackButton from "../../components/common/BackButton";
+import { BackButton } from "../../components/common";
 import { useTranslation } from "react-i18next";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

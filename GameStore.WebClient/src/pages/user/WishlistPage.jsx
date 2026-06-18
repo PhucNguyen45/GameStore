@@ -5,7 +5,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import { wishlistAPI } from "../../services/api";
 import { Heart, Trash2, ShoppingCart, Star } from "lucide-react";
 import useCartStore from "../../stores/cartStore";
-import { GameCardSkeletonGrid } from "../../components/games/GameCardSkeleton";
+import { GameCardSkeletonGrid } from "../../components/games";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { formatVND } from "../../utils/format";

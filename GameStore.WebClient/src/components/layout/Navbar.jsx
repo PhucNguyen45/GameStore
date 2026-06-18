@@ -95,6 +95,16 @@ export default function Navbar() {
   const [unreadCount, setUnreadCount] = useState(0);
   const notiRef = useRef(null);
 
+  // SCROLL TRACKING — acrylic effect khi scroll
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    setScrolled(window.scrollY > 50);
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   const isActive = (path) =>
     location.pathname === path
       ? { color: "#fff", borderBottom: "2px solid var(--accent)" }
@@ -159,12 +169,28 @@ export default function Navbar() {
   const compact = breakpoint === "md";
   const layoutTransition = { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] };
 
+  // ACRYLIC EFFECT
+  const navBaseStyle = {
+    position: "sticky",
+    top: 0,
+    zIndex: 1000,
+    transition: "background 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease",
+    ...(scrolled
+      ? {
+          background: "rgba(18, 18, 18, 0.92)",
+          backdropFilter: "blur(16px) saturate(1.4)",
+          WebkitBackdropFilter: "blur(16px) saturate(1.4)",
+          boxShadow: "0 2px 24px rgba(0, 0, 0, 0.4)",
+        }
+      : {}),
+  };
+
   // ===== MOBILE VERSION =====
   return (
     <AnimatePresence mode="wait">
       {isMobile && (
         <motion.div key="mobile" animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} transition={layoutTransition}>
-        <nav className="glass" style={{ position: "sticky", top: 0, zIndex: 1000 }}>
+        <nav className="glass" style={{ ...navBaseStyle }}>
           <div className="container" style={{ display: "flex", alignItems: "center", height: 56, gap: 8, padding: "0 16px" }}>
             {/* Hamburger */}
             <button
@@ -417,7 +443,7 @@ export default function Navbar() {
       )}
       {!isMobile && breakpoint === "sm" && (
         <motion.div key="tablet" animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} transition={layoutTransition}>
-        <nav className="glass" style={{ position: "sticky", top: 0, zIndex: 1000 }}>
+        <nav className="glass" style={{ ...navBaseStyle }}>
           <div className="container" style={{ display: "flex", alignItems: "center", height: 56, gap: 16 }}>
             {/* Logo */}
             <Link to="/" className="nav-hover" style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
@@ -598,7 +624,7 @@ export default function Navbar() {
       )}
       {!isMobile && breakpoint !== "sm" && (
         <motion.div key="desktop" animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 5 }} transition={layoutTransition}>
-      <nav className="glass" style={{ position: "sticky", top: 0, zIndex: 1000 }}>
+      <nav className="glass" style={{ ...navBaseStyle }}>
         <div className="container" style={{ display: "flex", alignItems: "center", height: 56, gap: compact ? 16 : 32 }}>
           {/* Logo */}
           <Link to="/" className="nav-hover" style={{ display: "flex", alignItems: "center", gap: compact ? 6 : 8, flexShrink: 0, whiteSpace: "nowrap" }}>

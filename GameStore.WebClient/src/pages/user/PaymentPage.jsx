@@ -6,7 +6,7 @@ import { orderAPI } from "../../services/api";
 import useCartStore from "../../stores/cartStore";
 import toast from "react-hot-toast";
 import { Wallet, ShieldCheck, Loader2 } from "lucide-react";
-import BackButton from "../../components/common/BackButton";
+import { BackButton } from "../../components/common";
 import { useTranslation } from "react-i18next";
 import { formatVND } from "../../utils/format";
 import { Link } from "react-router-dom";

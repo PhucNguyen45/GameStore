@@ -84,9 +84,10 @@
     "maxPrice": "Max Price",
     "bestSelling": "Best Selling",
     "highestRated": "Highest Rated",
-    "priceLowToHigh": "Price: Low to High",
+    "price": "Price",
+    "discount": "Discount",
     "newest": "Newest",
-    "nameAZ": "Name: A-Z",
+    "name": "Name",
     "desc": "↑ Descending",
     "asc": "↓ Ascending",
     "clearAll": "Clear All",
@@ -335,7 +336,7 @@
     "personalInfo": "Personal Information"
   },
   "wallet": {
-    "title": "Top Up",
+    "title": "Wallet",
     "balance": "Current Balance",
     "selectAmount": "Select Amount",
     "customAmount": "Enter Amount",
@@ -343,7 +344,19 @@
     "processing": "Processing...",
     "success": "✅ Top up {{amount}}₫ successful!",
     "failed": "❌ Top up failed",
-    "card": "Card"
+    "card": "Card",
+    "history": "History",
+    "recentTransactions": "Recent Transactions",
+    "noTransactions": "No transactions yet",
+    "loadMore": "Load More",
+    "balanceAfter": "Balance",
+    "typeTopUp": "Top Up",
+    "typePurchase": "Purchase",
+    "typeRefund": "Refund",
+    "typeOther": "Other",
+    "filterAll": "All",
+    "noFiltered": "No transactions match this filter",
+    "openWallet": "Open Wallet"
   },
   "forgotPassword": {
     "title": "Forgot Password",

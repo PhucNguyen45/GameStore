@@ -9,6 +9,7 @@ public class OrderHistoryDto
 {
     public int Id { get; set; }
     public DateTime OrderDate { get; set; }
+    /// <summary>Tổng tiền đơn hàng (VND)</summary>
     public long TotalAmount { get; set; }
     public string Status { get; set; } = string.Empty;
     public string PaymentMethod { get; set; } = string.Empty;
@@ -20,5 +21,6 @@ public class OrderHistoryItemDto
     public int GameId { get; set; }
     public string GameTitle { get; set; } = string.Empty;
     public int Quantity { get; set; }
+    /// <summary>Đơn giá (VND)</summary>
     public long UnitPrice { get; set; }
 }

@@ -8,5 +8,6 @@ namespace GameStore.DTOs.Users;
 
 public class TopUpRequest
 {
+    /// <summary>Số tiền nạp (VND)</summary>
     public long Amount { get; set; }
 }

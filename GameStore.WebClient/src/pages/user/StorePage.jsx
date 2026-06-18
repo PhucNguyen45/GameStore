@@ -3,9 +3,8 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useResponsive } from "../../hooks/useResponsive";
 import { gameAPI, genreAPI } from "../../services/api";
-import GameCard from "../../components/games/GameCard";
-import { GameCardSkeletonGrid } from "../../components/games/GameCardSkeleton";
-import Pagination from "../../components/common/Pagination";
+import { GameCard, GameCardSkeletonGrid } from "../../components/games";
+import { Pagination } from "../../components/common";
 import { Search, Check, X, ArrowUpDown, Filter } from "lucide-react";
 import HeroBanner from "../../components/store/HeroBanner";
 import { useTranslation } from "react-i18next";
@@ -239,9 +238,10 @@ export default function StorePage() {
         >
           <option value="totalSales">{t("store.bestSelling")}</option>
           <option value="rating">{t("store.highestRated")}</option>
-          <option value="price">{t("store.priceLowToHigh")}</option>
+          <option value="price">{t("store.price")}</option>
+          <option value="discount">{t("store.discount")}</option>
           <option value="releaseDate">{t("store.newest")}</option>
-          <option value="title">{t("store.nameAZ")}</option>
+          <option value="title">{t("store.name")}</option>
         </select>
 
         {/* Asc/Desc */}

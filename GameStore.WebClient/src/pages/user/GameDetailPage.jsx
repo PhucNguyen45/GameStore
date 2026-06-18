@@ -13,13 +13,11 @@ import {
 import useCartStore from "../../stores/cartStore";
 import { useAuth } from "../../contexts/AuthContext";
 import toast from "react-hot-toast";
-import TrailerPlayer from "../../components/games/TrailerPlayer";
-import GameDetailSkeleton from "../../components/games/GameDetailSkeleton";
-import GameNotFound from "../../components/games/GameNotFound";
-import RequirementsSection from "../../components/games/RequirementsSection";
-import GameKeysSection from "../../components/games/GameKeysSection";
-import ReviewSection from "../../components/games/ReviewSection";
-import OverviewSection from "../../components/games/OverviewSection";
+import {
+  TrailerPlayer, GameDetailSkeleton, GameNotFound,
+  RequirementsSection, GameKeysSection, ReviewSection,
+  OverviewSection,
+} from "../../components/games";
 import {
   Star,
   ShoppingCart,
@@ -29,7 +27,7 @@ import {
   Check,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import BackButton from "../../components/common/BackButton";
+import { BackButton } from "../../components/common";
 
 export default function GameDetailPage() {
   const { t } = useTranslation();
@@ -198,6 +196,23 @@ export default function GameDetailPage() {
               "linear-gradient(0deg, #121212 10%, transparent 50%, rgba(0,0,0,0.4) 100%)",
           }}
         />
+        <div style={{
+            position: "absolute",
+            top: 66,
+            left: "calc(max(0px, (100vw - 1400px) / 2) + var(--container-padding, 40px))",
+            zIndex: 10,
+          }}>
+          <div style={{
+            background: "rgba(0,0,0,0.5)",
+            backdropFilter: "blur(10px)",
+            WebkitBackdropFilter: "blur(10px)",
+            borderRadius: 10,
+            border: "1px solid rgba(255,255,255,0.08)",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+          }}>
+            <BackButton fallback="/store" label={t("gameDetail.backToStore")} />
+          </div>
+        </div>
         <div
           className="container"
           style={{
@@ -207,8 +222,6 @@ export default function GameDetailPage() {
             zIndex: 1,
           }}
         >
-
-          <BackButton fallback="/store" label={t("gameDetail.backToStore")} />
           <div style={{ marginBottom: 16 }}>
             <span
               style={{

@@ -175,7 +175,13 @@ export default function GamesTab({
               >
                 {t("admin.price")}
               </SortableHeader>
-              <th style={thStyle}>{t("admin.discount")}</th>
+              <SortableHeader
+                field="discount"
+                sort={gameSort}
+                setSort={setGameSort}
+              >
+                {t("admin.discount")}
+              </SortableHeader>
 
               <SortableHeader
                 field="totalSales"

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameStore.Entities.Games;
-using GameStore.Services;
+using GameStore.Services.Interfaces.Users;
 using GameStore.DTOs.Common;
 using GameStore.Repository;
 

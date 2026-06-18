@@ -5,7 +5,7 @@ import { authAPI } from "../../services/api";
 import toast from "react-hot-toast";
 import { Mail, Send, CheckCircle, Copy } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import BackButton from "../../components/common/BackButton";
+import { BackButton } from "../../components/common";
 
 export default function ForgotPasswordPage() {
   const { t } = useTranslation();
@@ -52,7 +52,7 @@ export default function ForgotPasswordPage() {
     >
       <div
         className="card"
-        style={{ padding: 40, maxWidth: 440 }}
+        style={{ padding: 40, maxWidth: 440, width: "100%" }}
       >
         <BackButton fallback="/login" label={t("forgotPassword.backToLogin")} />
         <div style={{ textAlign: "center", marginBottom: 30 }}>
@@ -184,7 +184,6 @@ export default function ForgotPasswordPage() {
             )}
           </div>
         )}
-
 
       </div>
     </div>

@@ -4,8 +4,7 @@ import { Link } from "react-router-dom";
 import { orderAPI } from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
 import { Eye, Clock, CheckCircle, XCircle, RefreshCw } from "lucide-react";
-import { OrderHistorySkeleton } from "../../components/common/PageSkeleton";
-import BackButton from "../../components/common/BackButton";
+import { OrderHistorySkeleton, BackButton } from "../../components/common";
 import { useTranslation } from "react-i18next";
 import { formatVND } from "../../utils/format";
 
@@ -51,7 +50,9 @@ export default function PurchaseHistoryPage() {
 
   return (
     <div className="container" style={{ paddingTop: 30, maxWidth: 1000 }}>
-      <BackButton fallback="/store" label="Cửa hàng" />
+      <div style={{ marginBottom: 16 }}>
+        <BackButton fallback="/store" label="Cửa hàng" />
+      </div>
       <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 24 }}>
         {t("orders.title")}
       </h1>

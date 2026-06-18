@@ -84,9 +84,10 @@
     "maxPrice": "Giá cao nhất",
     "bestSelling": "Bán chạy",
     "highestRated": "Đánh giá cao",
-    "priceLowToHigh": "Giá: Thấp đến Cao",
+    "price": "Giá",
+    "discount": "Giảm giá",
     "newest": "Mới nhất",
-    "nameAZ": "Tên: A-Z",
+    "name": "Tên",
     "desc": "↑ Giảm dần",
     "asc": "↓ Tăng dần",
     "clearAll": "Xóa tất cả",
@@ -336,7 +337,7 @@
     "personalInfo": "Thông tin cá nhân"
   },
   "wallet": {
-    "title": "Nạp tiền",
+    "title": "Ví",
     "balance": "Số dư hiện tại",
     "selectAmount": "Chọn số tiền",
     "customAmount": "Nhập số tiền",
@@ -344,7 +345,19 @@
     "processing": "Đang xử lý...",
     "success": "✅ Đã nạp {{amount}}₫!",
     "failed": "❌ Nạp tiền thất bại",
-    "card": "Thẻ"
+    "card": "Thẻ",
+    "history": "Lịch sử",
+    "recentTransactions": "Giao dịch gần đây",
+    "noTransactions": "Chưa có giao dịch nào",
+    "loadMore": "Xem thêm",
+    "balanceAfter": "Số dư",
+    "typeTopUp": "Nạp tiền",
+    "typePurchase": "Mua game",
+    "typeRefund": "Hoàn tiền",
+    "typeOther": "Khác",
+    "filterAll": "Tất cả",
+    "noFiltered": "Không có giao dịch phù hợp",
+    "openWallet": "Mở Ví"
   },
   "forgotPassword": {
     "title": "Quên mật khẩu",

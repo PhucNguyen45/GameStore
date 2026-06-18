@@ -4,7 +4,7 @@ import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import { authAPI } from "../../services/api";
 import toast from "react-hot-toast";
 import { Lock, Eye, EyeOff, CheckCircle, KeyRound } from "lucide-react";
-import BackButton from "../../components/common/BackButton";
+import { BackButton } from "../../components/common";
 import { useTranslation } from "react-i18next";
 
 export default function ResetPasswordPage() {
@@ -96,7 +96,7 @@ export default function ResetPasswordPage() {
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minHeight: "70vh", paddingTop: 40 }}>
       <div
         className="card"
-        style={{ padding: 40, maxWidth: 440 }}
+        style={{ padding: 40, maxWidth: 440, width: "100%" }}
       >
         <BackButton fallback="/login" label={t("resetPassword.backToLogin")} />
         <div style={{ textAlign: "center", marginBottom: 30 }}>
@@ -217,7 +217,6 @@ export default function ResetPasswordPage() {
             )}
           </button>
         </form>
-
 
       </div>
     </div>

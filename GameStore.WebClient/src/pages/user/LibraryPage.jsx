@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { libraryAPI, genreAPI } from "../../services/api";
-import Pagination from "../../components/common/Pagination";
+import { Pagination } from "../../components/common";
 import {
   Library,
   Gamepad2,
@@ -14,7 +14,7 @@ import {
   KeyRound,
   X,
 } from "lucide-react";
-import { GameCardSkeletonGrid } from "../../components/games/GameCardSkeleton";
+import { GameCardSkeletonGrid } from "../../components/games";
 import { useTranslation } from "react-i18next";
 
 export default function LibraryPage() {

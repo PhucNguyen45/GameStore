@@ -3,7 +3,7 @@ import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
 import { UserPlus, User, Lock, Mail, Phone, AlertCircle, CheckCircle2 } from "lucide-react";
-import BackButton from "../../components/common/BackButton";
+import { BackButton } from "../../components/common";
 import { useTranslation } from "react-i18next";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -108,10 +108,8 @@ export default function RegisterPage() {
           padding: 40,
           maxWidth: 460,
           width: "100%",
-          position: "relative",
         }}
       >
-
         <BackButton fallback="/login" label={t("auth.loginLink")} />
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div

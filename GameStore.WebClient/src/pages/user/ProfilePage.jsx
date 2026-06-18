@@ -13,9 +13,16 @@ import {
   Eye,
   EyeOff,
   CheckCircle,
+  Wallet,
+  Clock,
+  ArrowUp,
+  ShoppingBag,
+  RotateCcw,
 } from "lucide-react";
-import { ProfileSkeleton } from "../../components/common/PageSkeleton";
+import { ProfileSkeleton } from "../../components/common";
+import { formatVND } from "../../utils/format";
 import { useTranslation } from "react-i18next";
+import WalletModal from "../../components/wallet/WalletModal";
 
 export default function ProfilePage() {
   const { t } = useTranslation();
@@ -48,6 +55,11 @@ export default function ProfilePage() {
   const [avatarError, setAvatarError] = useState(false);
   const fileInputRef = useRef(null);
 
+  // Wallet state
+  const [walletTxns, setWalletTxns] = useState([]);
+  const [walletLoading, setWalletLoading] = useState(false);
+  const [showWallet, setShowWallet] = useState(false);
+
   // Load profile data
   useEffect(() => {
     if (!user) {
@@ -78,6 +90,18 @@ export default function ProfilePage() {
     };
 
     loadProfile();
+
+    // Load wallet transactions
+    const loadTxns = async () => {
+      setWalletLoading(true);
+      try {
+        const { data } = await userAPI.getTransactions(1, 10);
+        const items = Array.isArray(data) ? data : data?.items || data?.data || [];
+        setWalletTxns(items);
+      } catch { /* ignore */ }
+      finally { setWalletLoading(false); }
+    };
+    loadTxns();
   }, [user, navigate]);
 
   const validateProfile = () => {
@@ -634,7 +658,157 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* Submit Button */}          <div
+        {/* Wallet & Transaction History */}
+        <div
+          style={{
+            background: "#16162a",
+            borderRadius: 16,
+            border: "1px solid #2a2a4a",
+            padding: "clamp(20px, 3vw, 32px)",
+            marginBottom: 24,
+          }}
+        >
+          <h2
+            style={{
+              fontSize: 18,
+              fontWeight: 600,
+              marginBottom: 20,
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+            }}
+          >
+            <Wallet size={20} color="var(--accent)" />
+            {t("wallet.title")}
+          </h2>
+
+          {/* Balance — clickable to open Wallet modal */}
+          <div
+            onClick={() => setShowWallet(true)}
+            style={{
+              background: "linear-gradient(135deg, #0d1b2a, #1b2838)",
+              borderRadius: 12,
+              padding: "16px 20px",
+              marginBottom: 16,
+              border: "1px solid rgba(79,195,247,0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = "rgba(79,195,247,0.4)";
+              e.currentTarget.style.background = "linear-gradient(135deg, #0f1e30, #1d2c40)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = "rgba(79,195,247,0.15)";
+              e.currentTarget.style.background = "linear-gradient(135deg, #0d1b2a, #1b2838)";
+            }}
+          >
+            <div>
+              <p style={{ color: "#8ab", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>
+                {t("wallet.balance")}
+              </p>
+              <p style={{ fontSize: 24, fontWeight: 800, color: "#4fc3f7" }}>
+                {formatVND(user?.wallet)}
+              </p>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 11, color: "#4fc3f7", opacity: 0.6 }}>{t("wallet.openWallet")}</span>
+              <Wallet size={36} color="#4fc3f7" style={{ opacity: 0.3 }} />
+            </div>
+          </div>
+
+          {/* Recent Transactions */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+            <Clock size={14} color="#888" />
+            <span style={{ fontSize: 13, fontWeight: 600, color: "#888" }}>
+              {t("wallet.recentTransactions")}
+            </span>
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 4, maxHeight: 260, overflowY: "auto", paddingRight: 4 }}>
+            {walletLoading && (
+              <div style={{ textAlign: "center", padding: 20, color: "#888", fontSize: 13 }}>
+                {t("common.loading")}
+              </div>
+            )}
+
+            {!walletLoading && walletTxns.length === 0 && (
+              <div style={{ textAlign: "center", padding: "20px 0", color: "#666", fontSize: 13 }}>
+                <Clock size={28} style={{ marginBottom: 8, opacity: 0.4 }} />
+                <p>{t("wallet.noTransactions")}</p>
+              </div>
+            )}
+
+            {!walletLoading && walletTxns.map((tx) => {
+              const isPositive = tx.type !== "Purchase";
+              let icon, color;
+              if (tx.type === "TopUp") { icon = ArrowUp; color = "#4caf50"; }
+              else if (tx.type === "Purchase") { icon = ShoppingBag; color = "#e94560"; }
+              else { icon = RotateCcw; color = "#ff9800"; }
+              const Icon = icon;
+              return (
+                <div key={tx.id} style={{
+                  display: "flex", alignItems: "center", gap: 10,
+                  padding: "10px 12px", borderRadius: 8,
+                  background: "#0d1117", border: "1px solid #1a1a2e",
+                }}>
+                  <div style={{
+                    width: 32, height: 32, borderRadius: "50%",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    background: `${color}18`,
+                  }}>
+                    <Icon size={14} color={color} />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: 12, fontWeight: 600, color: "#e0e0e0" }}>
+                      {tx.type === "TopUp" ? t("wallet.typeTopUp") :
+                       tx.type === "Purchase" ? t("wallet.typePurchase") :
+                       t("wallet.typeRefund")}
+                    </p>
+                    <p style={{ fontSize: 10, color: "#888", marginTop: 1 }}>
+                      {new Date(tx.createdAt).toLocaleDateString("vi-VN", {
+                        day: "2-digit", month: "2-digit", year: "numeric",
+                        hour: "2-digit", minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
+                  <p style={{
+                    fontSize: 13, fontWeight: 700,
+                    color: isPositive ? "#4caf50" : "#e94560",
+                  }}>
+                    {isPositive ? "+" : ""}{formatVND(tx.amount)}
+                  </p>
+                </div>
+              );
+            })}
+
+            {/* View Full History */}
+            <button onClick={() => setShowWallet(true)}
+              style={{
+                width: "100%", padding: "10px", borderRadius: 10, marginTop: 8,
+                background: "none", border: "1px solid #2a2a4a", color: "#888",
+                cursor: "pointer", fontSize: 12, fontWeight: 600,
+                transition: "all 0.2s",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = "#4fc3f7";
+                e.currentTarget.style.color = "#4fc3f7";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = "#2a2a4a";
+                e.currentTarget.style.color = "#888";
+              }}
+            >
+              {t("wallet.openWallet")} →
+            </button>
+          </div>
+        </div>
+
+        {/* Submit Button */}
+        <div
             style={{
               display: "flex",
               justifyContent: "flex-end",
@@ -676,6 +850,9 @@ export default function ProfilePage() {
           </button>
         </div>
       </form>
+
+      {/* Wallet Modal */}
+      {showWallet && <WalletModal onClose={() => setShowWallet(false)} initialTab="history" />}
     </div>
   );
 }
