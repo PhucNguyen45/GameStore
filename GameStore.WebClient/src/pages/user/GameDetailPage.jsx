@@ -136,7 +136,10 @@ export default function GameDetailPage() {
       navigate("/login");
       return;
     }
-    addItem(game);
+    if (!addItem(game, 5)) {
+      toast.error(t("cart.maxReached"));
+      return;
+    }
     navigate("/cart");
   };
 
@@ -297,13 +300,7 @@ export default function GameDetailPage() {
             </div>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 16, marginTop: 24, flexWrap: "wrap" }}>
-            {owned ? (
-              <>
-                <button className="btn btn-primary" style={{ background: "#4caf50", cursor: "default", border: "none" }}>
-                  <Check size={16} style={{ marginRight: 6 }} /> {t("gameDetail.ownedLib")}
-                </button>
-              </>
-            ) : game.price > 0 && game.availableKeys !== undefined && game.availableKeys <= 0 ? (
+            {game.price > 0 && game.availableKeys !== undefined && game.availableKeys <= 0 ? (
               <>
                 <button disabled className="btn btn-primary" style={{ opacity: 0.5 }}>
                   {t("gameDetail.outOfStock")}
@@ -311,6 +308,25 @@ export default function GameDetailPage() {
               </>
             ) : (
               <>
+                {owned && (
+                  <span
+                    style={{
+                      fontSize: 12,
+                      color: "#4caf50",
+                      fontWeight: 600,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 4,
+                      padding: "4px 10px",
+                      borderRadius: 6,
+                      background: "#4caf5020",
+                      border: "1px solid #4caf5040",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    <Check size={14} /> {t("gameDetail.ownedLib")}
+                  </span>
+                )}
                 <button className="btn btn-primary" style={{ width: isMobile ? "100%" : "auto" }} onClick={handleBuyNow}>
                   {t("gameDetail.buyNow")}
                   <span style={{ marginLeft: 10, fontSize: 14, fontWeight: 400, opacity: 0.9 }}>
@@ -325,7 +341,13 @@ export default function GameDetailPage() {
                 <button
                   className="btn btn-outline"
                   style={{ width: isMobile ? "100%" : "auto" }}
-                  onClick={() => { addItem(game); toast.success(t("gameDetail.addedToCart")); }}
+                  onClick={() => {
+                    if (!addItem(game, 5)) {
+                      toast.error(t("cart.maxReached"));
+                      return;
+                    }
+                    toast.success(t("gameDetail.addedToCart"));
+                  }}
                 >
                   <ShoppingCart size={16} /> {t("gameDetail.addToCart")}
                 </button>

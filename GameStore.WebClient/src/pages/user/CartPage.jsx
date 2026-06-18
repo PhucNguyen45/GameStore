@@ -21,6 +21,7 @@ import {
 import { BackButton } from "../../components/common";
 import { useTranslation } from "react-i18next";
 
+const MAX_PER_GAME = 5;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE_REGEX = /^0[35789][0-9]{8}$/;
 
@@ -312,6 +313,7 @@ export default function CartPage() {
                   </span>
                   <button
                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    disabled={item.quantity >= MAX_PER_GAME}
                     style={{
                       width: 34,
                       height: 34,
@@ -320,13 +322,13 @@ export default function CartPage() {
                       justifyContent: "center",
                       background: "transparent",
                       border: "none",
-                      color: "#e0e0e0",
-                      cursor: "pointer",
+                      color: item.quantity >= MAX_PER_GAME ? "#444" : "#e0e0e0",
+                      cursor: item.quantity >= MAX_PER_GAME ? "not-allowed" : "pointer",
                       transition: "all 0.15s",
                       fontSize: 14,
                     }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.background = "rgba(255,255,255,0.06)";
+                      if (item.quantity < MAX_PER_GAME) e.currentTarget.style.background = "rgba(255,255,255,0.06)";
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.background = "transparent";
@@ -335,6 +337,19 @@ export default function CartPage() {
                     <Plus size={14} />
                   </button>
                 </div>
+
+                {item.quantity >= MAX_PER_GAME && (
+                  <span
+                    style={{
+                      fontSize: 10,
+                      color: "#ffd700",
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                    }}
+                  >
+                    ⚠ Tối đa {MAX_PER_GAME}/người
+                  </span>
+                )}
 
                 {/* Subtotal & Remove */}
                 <div

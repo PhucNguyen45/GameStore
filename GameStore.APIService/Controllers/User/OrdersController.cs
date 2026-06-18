@@ -10,6 +10,8 @@ using GameStore.Services.Interfaces.Users;
 using System.Security.Claims;
 using GameStore.DTOs.Orders;
 using GameStore.DTOs.Common;
+using GameStore.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameStore.APIService.Controllers;
 
@@ -43,8 +45,15 @@ public class OrdersController : ControllerBase
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var order = await _orderService.GetById(id);
         if (order == null) return NotFound(new { message = "Order not found" });
+        // Cho phép: admin, người mua, hoặc người nhận quà (theo email)
         if (!User.IsInRole("Admin") && order.UserId != userId)
-            return Forbid();
+        {
+            // Kiểm tra người nhận quà
+            var context = HttpContext.RequestServices.GetRequiredService<GameStoreDbContext>();
+            var currentUser = await context.Users.FindAsync(userId);
+            if (currentUser == null || order.RecipientEmail != currentUser.Email)
+                return Forbid();
+        }
         return Ok(order);
     }
 
@@ -59,7 +68,8 @@ public class OrdersController : ControllerBase
                 dto.Items.Select(i => (i.GameId, i.Quantity)).ToList(),
                 dto.PaymentMethod,   // thêm
                 dto.Email,           // thêm
-                dto.Phone            // thêm
+                dto.Phone,           // thêm
+                dto.RecipientEmail   // quà tặng
             );
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
         }

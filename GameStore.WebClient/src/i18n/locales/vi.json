@@ -158,7 +158,8 @@
     "infoRequired": "Vui lòng điền đầy đủ thông tin",
     "outOfStock": "Game đã hết hàng: {{games}}",
     "checkStockFailed": "Kiểm tra tồn kho thất bại",
-    "fillInfo": "Vui lòng nhập email và số điện thoại"
+    "fillInfo": "Vui lòng nhập email và số điện thoại",
+    "maxReached": "Bạn chỉ có thể mua tối đa 5 bản cho mỗi game"
   },
   "payment": {
     "title": "Thanh toán",
@@ -616,6 +617,23 @@
     "staff": "Nhân viên",
     "payments": "Thanh toán",
     "name": "Tên"
+  },
+  "gift": {
+    "title": "Mua tặng bạn bè",
+    "toggle": "Đây là quà tặng",
+    "desc": "Game sẽ được gửi đến email người nhận, không vào thư viện của bạn",
+    "recipientEmail": "Email người nhận",
+    "recipientPlaceholder": "Nhập email người nhận...",
+    "emailRequired": "Vui lòng nhập email người nhận",
+    "emailInvalid": "Email người nhận không hợp lệ",
+    "summary": "Toàn bộ đơn hàng sẽ được gửi đến {email}. Game sẽ không được thêm vào thư viện của bạn.",
+    "payNow": "Mua tặng ngay",
+    "success": "Đã mua tặng thành công! 🎁",
+    "badge": "🎁 Quà tặng cho {email}",
+    "notified": "Bạn nhận được quà tặng! 🎁",
+    "notifiedMessage": "Bạn vừa được tặng game '{game}'! Key đã có trong hóa đơn #{orderId}.",
+    "approvedBuyer": "Đơn hàng quà tặng đã được duyệt ✓",
+    "approvedBuyerMsg": "Đơn hàng #{orderId} đã được phê duyệt. Key game đã được gửi đến {email}."
   },
   "error": {
     "title": "Đã xảy ra lỗi",

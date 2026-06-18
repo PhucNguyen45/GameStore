@@ -15,6 +15,8 @@ using GameStore.Repository;
 namespace GameStore.Services.Implementations.Users;
 public class OrderService : IOrderService
 {
+    private const int MaxPurchasePerUser = 5;
+
     private readonly IOrderRepository _orderRepository;
     private readonly IGameRepository _gameRepository;
     private readonly IUserRepository _userRepository;
@@ -79,7 +81,7 @@ public class OrderService : IOrderService
         }).ToList();
     }
 
-    public async Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items, string paymentMethod = "Wallet", string? email = null, string? phone = null)
+    public async Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items, string paymentMethod = "Wallet", string? email = null, string? phone = null, string? recipientEmail = null)
     {
         // Ép buộc chỉ dùng Wallet
         if (!paymentMethod.Equals("Wallet", StringComparison.OrdinalIgnoreCase))
@@ -89,11 +91,18 @@ public class OrderService : IOrderService
         var orderDetails = new List<OrderDetail>();
         var user = await _userRepository.GetByIdAsync(userId);
 
-        // Kiểm tra số lượng key có sẵn
+        // Kiểm tra số lượng key có sẵn & giới hạn mua tối đa/người
         foreach (var (gameId, quantity) in items)
         {
             var game = await _gameRepository.GetByIdAsync(gameId)
                        ?? throw new Exception($"Game {gameId} not found");
+
+            // Kiểm tra giới hạn mua tối đa/người (tính cả đơn đã hoàn thành + đang chờ)
+            var alreadyPurchased = await _context.OrderDetails
+                .Where(od => od.Order.UserId == userId && od.GameId == gameId && od.Order.Status != "Cancelled")
+                .SumAsync(od => (int?)od.Quantity) ?? 0;
+            if (alreadyPurchased + quantity > MaxPurchasePerUser)
+                throw new Exception($"You can only purchase up to {MaxPurchasePerUser} copies of '{game.Title}'. You have already purchased {alreadyPurchased} copies.");
 
             int availableKeys = await _context.GameKeys
                 .CountAsync(k => k.GameId == gameId && !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
@@ -126,6 +135,7 @@ public class OrderService : IOrderService
             Status = "Pending",                PaymentMethod = "Wallet",
             Email = email,
             Phone = phone,
+            RecipientEmail = recipientEmail,
             OrderDate = DateTime.UtcNow,
             OrderDetails = orderDetails
         };
@@ -172,19 +182,60 @@ public class OrderService : IOrderService
                     _context.GameKeys.Update(key);
                 }
 
-                // Tạo Library entry nếu user chưa sở hữu game này
-                var owned = await _context.Libraries.AnyAsync(l => l.UserId == order.UserId && l.GameId == detail.GameId);
-                if (!owned)
+                // Xử lý Library entry
+                if (!string.IsNullOrEmpty(order.RecipientEmail))
                 {
-                    _context.Libraries.Add(new Library
+                    // Quà tặng: thêm vào thư viện người nhận (nếu họ có tài khoản)
+                    var recipient = await _userRepository.GetByEmailAsync(order.RecipientEmail);
+                    if (recipient != null)
                     {
-                        UserId = order.UserId,
-                        GameId = detail.GameId,
-                        AcquiredAt = DateTime.UtcNow
-                    });
+                        var recipientOwned = await _context.Libraries.AnyAsync(l => l.UserId == recipient.Id && l.GameId == detail.GameId);
+                        if (!recipientOwned)
+                        {
+                            _context.Libraries.Add(new Library
+                            {
+                                UserId = recipient.Id,
+                                GameId = detail.GameId,
+                                AcquiredAt = DateTime.UtcNow
+                            });
+                        }
+                        // Gửi thông báo cho người nhận
+                        await _notificationService.CreateNotificationAsync(recipient.Id,
+                            "Bạn nhận được quà tặng! 🎁",
+                            $"Bạn vừa được tặng game '{detail.Game?.Title}'! Key đã có trong hóa đơn #{order.Id}.",
+                            $"/invoice/{order.Id}");
+                    }
+                }
+                else
+                {
+                    // Mua cho bản thân: thêm vào thư viện người mua
+                    var owned = await _context.Libraries.AnyAsync(l => l.UserId == order.UserId && l.GameId == detail.GameId);
+                    if (!owned)
+                    {
+                        _context.Libraries.Add(new Library
+                        {
+                            UserId = order.UserId,
+                            GameId = detail.GameId,
+                            AcquiredAt = DateTime.UtcNow
+                        });
+                    }
                 }
             }
-            await _notificationService.CreateNotificationAsync(order.UserId, "Đơn hàng đã được duyệt", $"Đơn hàng #{order.Id} đã được phê duyệt. Kiểm tra email để nhận key game.", $"/invoice/{order.Id}");
+
+            if (!string.IsNullOrEmpty(order.RecipientEmail))
+            {
+                await _notificationService.CreateNotificationAsync(order.UserId,
+                    "Đơn hàng quà tặng đã được duyệt ✓",
+                    $"Đơn hàng #{order.Id} đã được phê duyệt. Key game đã được gửi đến {order.RecipientEmail}.",
+                    $"/invoice/{order.Id}");
+            }
+            else
+            {
+                await _notificationService.CreateNotificationAsync(order.UserId,
+                    "Đơn hàng đã được duyệt",
+                    $"Đơn hàng #{order.Id} đã được phê duyệt. Kiểm tra email để nhận key game.",
+                    $"/invoice/{order.Id}");
+            }
         }
 
         if (status.Equals("Cancelled", StringComparison.OrdinalIgnoreCase) && order.Status != "Cancelled")

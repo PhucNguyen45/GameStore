@@ -12,6 +12,7 @@ public class CreateOrderDto
     public string? Email { get; set; }
     public string? Phone { get; set; }
     public string PaymentMethod { get; set; } = "Wallet";
+    public string? RecipientEmail { get; set; } // Email người nhận nếu mua tặng
 }
 
 public class OrderItemDto

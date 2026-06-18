@@ -17,6 +17,7 @@ public class Order
     public string? Email { get; set; }          // thêm
     public string? Phone { get; set; }          // thêm
     public string PaymentMethod { get; set; } = "Wallet"; // thêm (đã có default)
+    public string? RecipientEmail { get; set; } // Email người nhận nếu đây là quà tặng
 
     public virtual User User { get; set; } = null!;
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new HashSet<OrderDetail>();

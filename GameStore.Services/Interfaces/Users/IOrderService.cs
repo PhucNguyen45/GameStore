@@ -15,7 +15,7 @@ public interface IOrderService
     Task<(List<Order> Items, int TotalCount)> GetAll(int page, int pageSize);
 
     // Đồng bộ signature với DTO checkout (có email, phone, paymentMethod)
-    Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items, string paymentMethod = "Wallet", string? email = null, string? phone = null);
+    Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items, string paymentMethod = "Wallet", string? email = null, string? phone = null, string? recipientEmail = null);
 
     Task<Order> UpdateStatus(int orderId, string status);
     Task CancelOrder(int orderId);

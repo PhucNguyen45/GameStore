@@ -205,13 +205,16 @@ export default function WishlistPage() {
                 ) : (
                   <button
                     onClick={() => {
-                      addItem({
+                      if (!addItem({
                         id: item.gameId,
                         title: item.title,
                         price: item.price,
                         discountPrice: item.discountPrice,
                         coverImageUrl: item.coverImageUrl,
-                      });
+                      }, 5)) {
+                        toast.error(t("cart.maxReached"));
+                        return;
+                      }
                       toast.success(t("wishlist.addedToCart"));
                     }}
                     className="btn btn-primary"

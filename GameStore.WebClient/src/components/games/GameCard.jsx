@@ -77,24 +77,27 @@ export default function GameCard({ game }) {
           -{discount}%
         </div>
       )}
-      {game.price > 0 && game.availableKeys !== undefined && game.availableKeys <= 0 && !owned && (
-        <div
-          style={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            background: "#e94560",
-            color: "#fff",
-            padding: "2px 8px",
-            borderRadius: 6,
-            fontSize: 11,
-            fontWeight: 700,
-            zIndex: 2,
-          }}
-        >
-          {t("gameDetail.outOfStock")}
-        </div>
-      )}
+      {game.price > 0 &&
+        game.availableKeys !== undefined &&
+        game.availableKeys <= 0 &&
+        !owned && (
+          <div
+            style={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              background: "#e94560",
+              color: "#fff",
+              padding: "2px 8px",
+              borderRadius: 6,
+              fontSize: 11,
+              fontWeight: 700,
+              zIndex: 2,
+            }}
+          >
+            {t("gameDetail.outOfStock")}
+          </div>
+        )}
       {owned && (
         <div
           style={{
@@ -123,11 +126,13 @@ export default function GameCard({ game }) {
         className="wishlist-heart-btn"
         style={{
           position: "absolute",
-          top: 8,
-          right: owned ? 90 : 8,
+          top: 86,
+          right: 6,
           zIndex: 10,
           background: wishlisted ? "#e94560" : "rgba(0,0,0,0.55)",
-          border: wishlisted ? "2px solid #e94560" : "2px solid rgba(255,255,255,0.3)",
+          border: wishlisted
+            ? "2px solid #e94560"
+            : "2px solid rgba(255,255,255,0.3)",
           borderRadius: "50%",
           width: 36,
           height: 36,
@@ -140,11 +145,13 @@ export default function GameCard({ game }) {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "scale(1.15)";
-          if (!wishlisted) e.currentTarget.style.background = "rgba(233,69,96,0.4)";
+          if (!wishlisted)
+            e.currentTarget.style.background = "rgba(233,69,96,0.4)";
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = "scale(1)";
-          if (!wishlisted) e.currentTarget.style.background = "rgba(0,0,0,0.55)";
+          if (!wishlisted)
+            e.currentTarget.style.background = "rgba(0,0,0,0.55)";
         }}
       >
         <Heart size={16} fill={wishlisted ? "#fff" : "none"} color="#fff" />
@@ -230,26 +237,9 @@ export default function GameCard({ game }) {
               {formatVND(game.discountPrice || game.price)}
             </span>
           </div>
-          {owned ? (
-            <button
-              disabled
-              style={{
-                background: "#4caf5020",
-                border: "1px solid #4caf50",
-                borderRadius: 10,
-                padding: "4px 10px",
-                cursor: "not-allowed",
-                display: "flex",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              <Check size={14} color="#4caf50" />
-              <span style={{ color: "#4caf50", fontSize: 11, fontWeight: 600 }}>
-                {t("gameDetail.purchased")}
-              </span>
-            </button>
-          ) : game.price > 0 && game.availableKeys !== undefined && game.availableKeys <= 0 ? (
+          {game.price > 0 &&
+            game.availableKeys !== undefined &&
+            game.availableKeys <= 0 ? (
             <button
               disabled
               style={{
@@ -270,7 +260,10 @@ export default function GameCard({ game }) {
           ) : (
             <button
               onClick={() => {
-                addItem(game);
+                if (!addItem(game, 5)) {
+                  toast.error(t("cart.maxReached"));
+                  return;
+                }
                 toast.success(t("cart.itemAdded"));
               }}
               style={{

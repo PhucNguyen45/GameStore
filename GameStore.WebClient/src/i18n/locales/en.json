@@ -158,7 +158,8 @@
     "infoRequired": "Please fill in all required information",
     "outOfStock": "Out of stock: {{games}}",
     "checkStockFailed": "Failed to check stock",
-    "fillInfo": "Please enter your email and phone number"
+    "fillInfo": "Please enter your email and phone number",
+    "maxReached": "You can only purchase up to 5 copies per game"
   },
   "payment": {
     "title": "Payment",
@@ -614,6 +615,23 @@
     "staff": "Staff",
     "payments": "Payments",
     "name": "Name"
+  },
+  "gift": {
+    "title": "Buy as Gift",
+    "toggle": "This is a gift",
+    "desc": "Game keys will be sent to the recipient's email, not added to your library",
+    "recipientEmail": "Recipient Email",
+    "recipientPlaceholder": "Enter recipient email...",
+    "emailRequired": "Please enter recipient email",
+    "emailInvalid": "Invalid recipient email",
+    "summary": "All items in this order will be sent to {email}. Games will not be added to your library.",
+    "payNow": "Buy as Gift",
+    "success": "Gift purchase successful! 🎁",
+    "badge": "🎁 Gift for {email}",
+    "notified": "You received a gift! 🎁",
+    "notifiedMessage": "You've been gifted '{game}'! Keys are in invoice #{orderId}.",
+    "approvedBuyer": "Gift order approved ✓",
+    "approvedBuyerMsg": "Order #{orderId} has been approved. Game keys have been sent to {email}."
   },
   "error": {
     "title": "An error occurred",

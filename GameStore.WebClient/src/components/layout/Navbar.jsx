@@ -571,43 +571,49 @@ export default function Navbar() {
                           {tn("noNotifications")}
                         </p>
                       ) : (
-                        notifications.slice(0, 5).map((n) => (
-                          <div
-                            key={n.id}
-                            onClick={() => {
-                              handleMarkRead(n);
-                              setMobileMenuOpen(false);
-                            }}
-                            className="nav-hover"
-                            style={{
-                              padding: "10px 16px",
-                              borderBottom: "1px solid #222",
-                              cursor: "pointer",
-                              background: n.isRead ? "transparent" : "#1e1e30",
-                              borderRadius: 4,
-                              marginBottom: 2,
-                            }}
-                          >
-                            <p
+                        notifications.slice(0, 5).map((n) => {
+                          const isGift = n.title?.includes("🎁");
+                          return (
+                            <div
+                              key={n.id}
+                              onClick={() => {
+                                handleMarkRead(n);
+                                setMobileMenuOpen(false);
+                              }}
+                              className="nav-hover"
                               style={{
-                                fontSize: 12,
-                                color: "#fff",
-                                fontWeight: n.isRead ? 400 : 600,
+                                padding: "10px 16px",
+                                borderBottom: "1px solid #222",
+                                cursor: "pointer",
+                                background: isGift
+                                  ? "linear-gradient(135deg, #e9456015, #ffd70010)"
+                                  : n.isRead ? "transparent" : "#1e1e30",
+                                borderRadius: 4,
+                                marginBottom: 2,
+                                borderLeft: isGift ? "3px solid #ffd700" : "none",
                               }}
                             >
-                              {n.title}
-                            </p>
-                            <p
-                              style={{
-                                fontSize: 11,
-                                color: "#888",
-                                marginTop: 2,
-                              }}
-                            >
-                              {n.message}
-                            </p>
-                          </div>
-                        ))
+                              <p
+                                style={{
+                                  fontSize: 12,
+                                  color: isGift ? "#ffd700" : "#fff",
+                                  fontWeight: n.isRead ? 400 : 600,
+                                }}
+                              >
+                                {n.title}
+                              </p>
+                              <p
+                                style={{
+                                  fontSize: 11,
+                                  color: isGift ? "#ddd" : "#888",
+                                  marginTop: 2,
+                                }}
+                              >
+                                {n.message}
+                              </p>
+                            </div>
+                          );
+                        })
                       )}
                     </div>
                   )}
@@ -861,35 +867,39 @@ export default function Navbar() {
                             {t("nav.noNotifications")}
                           </div>
                         ) : (
-                          notifications.map((n) => (
-                            <div
-                              key={n.id}
-                              onClick={() => handleMarkRead(n)}
-                              className="nav-hover-link"
-                              style={{
-                                padding: "10px 14px",
-                                borderBottom: "1px solid #222",
-                                cursor: "pointer",
-                                background: n.isRead
-                                  ? "transparent"
-                                  : "#1e1e30",
-                              }}
-                            >
-                              <p
+                          notifications.map((n) => {
+                            const isGift = n.title?.includes("🎁");
+                            return (
+                              <div
+                                key={n.id}
+                                onClick={() => handleMarkRead(n)}
+                                className="nav-hover-link"
                                 style={{
-                                  fontSize: 12,
-                                  color: "#fff",
-                                  fontWeight: n.isRead ? 400 : 600,
-                                  marginBottom: 2,
+                                  padding: "10px 14px",
+                                  borderBottom: "1px solid #222",
+                                  cursor: "pointer",
+                                  background: isGift
+                                    ? "linear-gradient(135deg, #e9456015, #ffd70010)"
+                                    : n.isRead ? "transparent" : "#1e1e30",
+                                  borderLeft: isGift ? "3px solid #ffd700" : "none",
                                 }}
                               >
-                                {n.title}
-                              </p>
-                              <p style={{ fontSize: 11, color: "#888" }}>
-                                {n.message}
-                              </p>
-                            </div>
-                          ))
+                                <p
+                                  style={{
+                                    fontSize: 12,
+                                    color: isGift ? "#ffd700" : "#fff",
+                                    fontWeight: n.isRead ? 400 : 600,
+                                    marginBottom: 2,
+                                  }}
+                                >
+                                  {n.title}
+                                </p>
+                                <p style={{ fontSize: 11, color: isGift ? "#ddd" : "#888" }}>
+                                  {n.message}
+                                </p>
+                              </div>
+                            );
+                          })
                         )}
                       </div>
                     )}
@@ -1330,44 +1340,48 @@ export default function Navbar() {
                             {t("nav.noNotifications")}
                           </div>
                         ) : (
-                          notifications.map((n) => (
-                            <div
-                              key={n.id}
-                              onClick={() => handleMarkRead(n)}
-                              className="nav-hover-link"
-                              style={{
-                                padding: "10px 16px",
-                                borderBottom: "1px solid #222",
-                                cursor: "pointer",
-                                background: n.isRead
-                                  ? "transparent"
-                                  : "#1e1e30",
-                              }}
-                            >
-                              <p
+                          notifications.map((n) => {
+                            const isGift = n.title?.includes("🎁");
+                            return (
+                              <div
+                                key={n.id}
+                                onClick={() => handleMarkRead(n)}
+                                className="nav-hover-link"
                                 style={{
-                                  fontSize: 12,
-                                  color: "#fff",
-                                  fontWeight: n.isRead ? 400 : 600,
-                                  marginBottom: 2,
+                                  padding: "10px 16px",
+                                  borderBottom: "1px solid #222",
+                                  cursor: "pointer",
+                                  background: isGift
+                                    ? "linear-gradient(135deg, #e9456015, #ffd70010)"
+                                    : n.isRead ? "transparent" : "#1e1e30",
+                                  borderLeft: isGift ? "3px solid #ffd700" : "none",
                                 }}
                               >
-                                {n.title}
-                              </p>
-                              <p style={{ fontSize: 11, color: "#888" }}>
-                                {n.message}
-                              </p>
-                              <p
-                                style={{
-                                  fontSize: 10,
-                                  color: "#555",
-                                  marginTop: 4,
-                                }}
-                              >
-                                {new Date(n.createdAt).toLocaleString()}
-                              </p>
-                            </div>
-                          ))
+                                <p
+                                  style={{
+                                    fontSize: 12,
+                                    color: isGift ? "#ffd700" : "#fff",
+                                    fontWeight: n.isRead ? 400 : 600,
+                                    marginBottom: 2,
+                                  }}
+                                >
+                                  {n.title}
+                                </p>
+                                <p style={{ fontSize: 11, color: isGift ? "#ddd" : "#888" }}>
+                                  {n.message}
+                                </p>
+                                <p
+                                  style={{
+                                    fontSize: 10,
+                                    color: "#555",
+                                    marginTop: 4,
+                                  }}
+                                >
+                                  {new Date(n.createdAt).toLocaleString()}
+                                </p>
+                              </div>
+                            );
+                          })
                         )}
                       </div>
                     )}

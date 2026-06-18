@@ -224,6 +224,25 @@ export default function InvoicePage() {
             <p style={{ color: "#6b6b8e", fontSize: 14 }}>
               {t("invoice.orderDate", { date: new Date(order.orderDate).toLocaleDateString() })}
             </p>
+            {order.recipientEmail && (
+              <div
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  marginTop: 8,
+                  padding: "6px 14px",
+                  borderRadius: 20,
+                  background: "linear-gradient(135deg, #e9456033, #ffd70022)",
+                  border: "1px solid #e9456055",
+                  fontSize: 13,
+                  color: "#ffd700",
+                  fontWeight: 600,
+                }}
+              >
+                🎁 Quà tặng cho {order.recipientEmail}
+              </div>
+            )}
           </div>
           <div
             style={{
