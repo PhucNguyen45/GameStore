@@ -1,7 +1,7 @@
 // GameStore.WebClient/src/pages/InvoicePage.jsx
 import { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
-import { orderAPI } from "../../services/api";
+import { orderAPI, userAPI } from "../../services/api";
 import { formatVND } from "../../utils/format";
 import {
   CheckCircle2,
@@ -17,9 +17,11 @@ import {
 import { InvoiceSkeleton, BackButton } from "../../components/common";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function InvoicePage() {
   const { t } = useTranslation();
+  const { updateUser } = useAuth();
   const { id } = useParams();
   const location = useLocation();
   const [order, setOrder] = useState(location.state?.order || null);
@@ -30,6 +32,14 @@ export default function InvoicePage() {
       try {
         const res = await orderAPI.getById(id);
         setOrder(res.data);
+        // Refresh wallet balance if order is cancelled or refunded
+        if (res.data?.status === "Cancelled" || res.data?.status === "Refunded" || res.data?.status === "Rejected") {
+          userAPI.getProfile().then(({ data }) => {
+            if (data.wallet !== undefined) {
+              updateUser({ wallet: data.wallet });
+            }
+          }).catch(() => {});
+        }
       } catch (err) {
         toast.error(t("invoice.loadError"));
       } finally {
@@ -275,12 +285,18 @@ export default function InvoicePage() {
                 <span
                   style={{
                     color: order.status === "Completed" || order.status === "Approved"
-                      ? "#10b981" : "#f59e0b",
+                      ? "#10b981" : order.status === "Cancelled" || order.status === "Rejected"
+                        ? "#ef4444" : order.status === "Refunded"
+                          ? "#ff9800" : "#f59e0b",
                   }}
                 >
                   {order.status === "Completed" || order.status === "Approved"
                     ? t("invoice.paid")
-                    : t("invoice.verifying")}
+                    : order.status === "Cancelled" || order.status === "Rejected"
+                      ? t("orders.statusCancelled")
+                      : order.status === "Refunded"
+                        ? t("orders.statusRefunded")
+                        : t("invoice.verifying")}
                 </span>
               </p>
               <p style={{ color: "#e0e0e0" }}>

@@ -7,7 +7,7 @@ import { useResponsive } from "../../hooks/useResponsive";
 import { useTranslation } from "react-i18next";
 import WalletModal from "../wallet/WalletModal";
 import useCartStore from "../../stores/cartStore";
-import { notificationAPI } from "../../services/api";
+import { notificationAPI, userAPI } from "../../services/api";
 import { formatVND } from "../../utils/format";
 import {
   ShoppingCart,
@@ -72,7 +72,7 @@ const hoverStyles = `
 export default function Navbar() {
   const { t } = useTranslation();
   const auth = useAuth();
-  const { user, logout, isAdmin } = auth || {};
+  const { user, logout, isAdmin, updateUser } = auth || {};
   const { count } = useCartStore();
   const [showWallet, setShowWallet] = useState(false);
   const location = useLocation();
@@ -154,6 +154,23 @@ export default function Navbar() {
   useEffect(() => {
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  // WALLET BALANCE POLLING — cập nhật real-time khi admin duyệt/hủy đơn
+  const fetchWalletBalance = async () => {
+    if (!user) return;
+    try {
+      const { data } = await userAPI.getWallet();
+      if (data.balance !== undefined && data.balance !== user.wallet) {
+        updateUser({ wallet: data.balance });
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    fetchWalletBalance();
+    const interval = setInterval(fetchWalletBalance, 15000);
     return () => clearInterval(interval);
   }, [user]);
 

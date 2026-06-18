@@ -125,14 +125,23 @@ if [ "$FORCE" = true ]; then
             continue
         fi
 
-        if [ "$QUIET" = false ]; then
-            echo -e "${YELLOW}  └─ Port $PORT has PIDs: $PIDS — killing...${NC}"
-        fi
         for PID in $PIDS; do
-            kill -9 "$PID" 2>/dev/null || true
+            # Only kill project-related processes (dotnet, node, vite) — skip system/WSL processes
+            CMD=$(ps -p "$PID" -o comm= 2>/dev/null || true)
+            case "$CMD" in
+                dotnet|node|vite)
+                    if [ "$QUIET" = false ]; then
+                        echo -e "${YELLOW}  └─ Port $PORT: Killing $CMD (PID $PID)${NC}"
+                    fi
+                    kill -9 "$PID" 2>/dev/null || true
+                    KILLED_ANY=true
+                    ;;
+                *)
+                    [ "$QUIET" = false ] && echo -e "${DIM}  └─ Port $PORT: Skipping $CMD (PID $PID) — not a project process${NC}"
+                    ;;
+            esac
         done
-        KILLED_ANY=true
-        [ "$QUIET" = false ] && echo -e "${GREEN}      └─ Port $PORT freed${NC}"
+        [ "$QUIET" = false ] && echo -e "${GREEN}      └─ Port $PORT done${NC}"
     done
 fi
 
