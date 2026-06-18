@@ -97,13 +97,8 @@ export default function InvoicePage() {
     <div className="container" style={{ paddingTop: 40, maxWidth: 800 }}>
       <Link
         to="/store"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-          color: "#6b6b8e",
-          marginBottom: 30,
-        }}
+        className="back-btn"
+        style={{ marginBottom: 30 }}
       >
         <ArrowLeft size={18} /> {t("invoice.backToStore")}
       </Link>

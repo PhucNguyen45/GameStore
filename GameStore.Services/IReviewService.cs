@@ -11,7 +11,8 @@ public interface IReviewService
 {
     Task<(IEnumerable<ReviewDto> Reviews, int TotalCount)> GetGameReviewsAsync(int gameId, int page = 1, int pageSize = 10);
     Task<ReviewDto> AddReviewAsync(int userId, CreateReviewDto dto);
-    Task UpdateReviewAsync(int reviewId, int userId, CreateReviewDto dto);
-    Task DeleteReviewAsync(int reviewId, int userId);
+    Task<ReviewDto?> GetReviewByIdAsync(int reviewId);
+    Task UpdateReviewAsync(int reviewId, int userId, CreateReviewDto dto, bool isAdmin = false);
+    Task DeleteReviewAsync(int reviewId, int userId, bool isAdmin = false);
     Task<bool> HasUserReviewedAsync(int userId, int gameId);
 }

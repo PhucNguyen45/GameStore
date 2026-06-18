@@ -1,7 +1,20 @@
 // GameStore.WebClient/src/components/games/TrailerPlayer.jsx
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { Play, Pause, Maximize, Volume2, VolumeX } from "lucide-react";
 import { useTranslation } from "react-i18next";
+
+function getYouTubeId(url) {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
 
 export default function TrailerPlayer({ trailerUrl, poster, title }) {
   const { t } = useTranslation();
@@ -16,8 +29,12 @@ export default function TrailerPlayer({ trailerUrl, poster, title }) {
   const [loading, setLoading] = useState(true);
   const controlsTimer = useRef(null);
 
+  const youtubeId = useMemo(() => getYouTubeId(trailerUrl), [trailerUrl]);
+  const isYouTube = !!youtubeId;
+
+  // ── HTML5 video player logic (non-YouTube) ──
   useEffect(() => {
-    if (!videoRef.current || !trailerUrl) return;
+    if (!videoRef.current || !trailerUrl || isYouTube) return;
 
     const video = videoRef.current;
     setLoading(true);
@@ -59,10 +76,10 @@ export default function TrailerPlayer({ trailerUrl, poster, title }) {
       video.removeEventListener("ended", handleEnded);
       if (controlsTimer.current) clearTimeout(controlsTimer.current);
     };
-  }, [trailerUrl]);
+  }, [trailerUrl, isYouTube]);
 
   const togglePlay = () => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || isYouTube) return;
     if (playing) {
       videoRef.current.pause();
     } else {
@@ -71,7 +88,7 @@ export default function TrailerPlayer({ trailerUrl, poster, title }) {
   };
 
   const toggleMute = () => {
-    if (!videoRef.current) return;
+    if (!videoRef.current || isYouTube) return;
     const newMuted = !muted;
     videoRef.current.muted = newMuted;
     setMuted(newMuted);
@@ -122,218 +139,237 @@ export default function TrailerPlayer({ trailerUrl, poster, title }) {
       <div
         ref={containerRef}
         className="trailer-container"
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => playing && setShowControls(false)}
+        onMouseMove={isYouTube ? undefined : handleMouseMove}
+        onMouseLeave={isYouTube ? undefined : () => playing && setShowControls(false)}
         style={{
           position: "relative",
           borderRadius: 8,
           overflow: "hidden",
           background: "#000",
           aspectRatio: "16 / 9",
-          cursor: "pointer",
+          cursor: isYouTube ? "default" : "pointer",
           width: "100%",
         }}
       >
-        {/* VIDEO ELEMENT */}
-        <video
-          ref={videoRef}
-          style={{
-            width: "100%",
-            height: "100%",
-            display: "block",
-            objectFit: "contain",
-            background: "#000",
-          }}
-          playsInline
-          onClick={togglePlay}
-          poster={poster || undefined}
-        />
-
-        {/* LOADING SPINNER */}
-        {loading && !error && (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "rgba(0,0,0,0.6)",
-              zIndex: 2,
-            }}
-          >
-            <div
-              style={{
-                width: 40,
-                height: 40,
-                border: "3px solid rgba(255,255,255,0.2)",
-                borderTopColor: "#fff",
-                borderRadius: "50%",
-                animation: "spin 1s linear infinite",
-              }}
-            />
-          </div>
-        )}
-
-        {/* ERROR STATE */}
-        {error && (
-          <div
-            style={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "#111",
-              color: "#555",
-              zIndex: 2,
-              gap: 8,
-            }}
-          >
-            <Play size={48} />
-            <span style={{ fontSize: 13 }}>{t("gameDetail.trailerError")}</span>
-          </div>
-        )}
-
-        {/* BIG PLAY OVERLAY (when paused) */}
-        {!playing && !loading && !error && (
-          <div
-            onClick={togglePlay}
-            style={{
-              position: "absolute",
-              inset: 0,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              background: "rgba(0,0,0,0.35)",
-              zIndex: 2,
-              transition: "background 0.3s",
-            }}
-          >
-            <div
-              style={{
-                width: 64,
-                height: 64,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,0.2)",
-                backdropFilter: "blur(4px)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "transform 0.2s",
-              }}
-              className="trailer-play-btn"
-            >
-              <Play
-                size={28}
-                fill="#fff"
-                color="#fff"
-                style={{ marginLeft: 3 }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* CONTROLS BAR */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            background: "linear-gradient(transparent, rgba(0,0,0,0.85))",
-            padding: "40px 16px 12px",
-            zIndex: 3,
-            opacity: showControls || !playing ? 1 : 0,
-            transition: "opacity 0.3s",
-          }}
-        >
-          {/* PROGRESS BAR */}
-          <div
-            onClick={(e) => {
-              if (!videoRef.current || !duration) return;
-              const rect = e.currentTarget.getBoundingClientRect();
-              const ratio = (e.clientX - rect.left) / rect.width;
-              videoRef.current.currentTime = ratio * duration;
-            }}
+        {isYouTube ? (
+          <iframe
+            src={`https://www.youtube.com/embed/${youtubeId}?autoplay=${playing ? 1 : 0}&mute=${muted ? 1 : 0}&origin=${window.location.origin}&rel=0`}
+            title={title || "YouTube trailer"}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
             style={{
               width: "100%",
-              height: 4,
-              background: "rgba(255,255,255,0.2)",
-              borderRadius: 2,
-              cursor: "pointer",
-              marginBottom: 10,
-              position: "relative",
+              height: "100%",
+              border: "none",
+              display: "block",
             }}
-          >
+            onLoad={() => setLoading(false)}
+            onError={() => setError(true)}
+          />
+        ) : (
+          <>
+            {/* VIDEO ELEMENT */}
+            <video
+              ref={videoRef}
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "block",
+                objectFit: "contain",
+                background: "#000",
+              }}
+              playsInline
+              onClick={togglePlay}
+              poster={poster || undefined}
+            />
+
+            {/* LOADING SPINNER */}
+            {loading && !error && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(0,0,0,0.6)",
+                  zIndex: 2,
+                }}
+              >
+                <div
+                  style={{
+                    width: 40,
+                    height: 40,
+                    border: "3px solid rgba(255,255,255,0.2)",
+                    borderTopColor: "#fff",
+                    borderRadius: "50%",
+                    animation: "spin 1s linear infinite",
+                  }}
+                />
+              </div>
+            )}
+
+            {/* ERROR STATE */}
+            {error && (
+              <div
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#111",
+                  color: "#555",
+                  zIndex: 2,
+                  gap: 8,
+                }}
+              >
+                <Play size={48} />
+                <span style={{ fontSize: 13 }}>{t("gameDetail.trailerError")}</span>
+              </div>
+            )}
+
+            {/* BIG PLAY OVERLAY (when paused) */}
+            {!playing && !loading && !error && (
+              <div
+                onClick={togglePlay}
+                style={{
+                  position: "absolute",
+                  inset: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "rgba(0,0,0,0.35)",
+                  zIndex: 2,
+                  transition: "background 0.3s",
+                }}
+              >
+                <div
+                  style={{
+                    width: 64,
+                    height: 64,
+                    borderRadius: "50%",
+                    background: "rgba(255,255,255,0.2)",
+                    backdropFilter: "blur(4px)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "transform 0.2s",
+                  }}
+                  className="trailer-play-btn"
+                >
+                  <Play
+                    size={28}
+                    fill="#fff"
+                    color="#fff"
+                    style={{ marginLeft: 3 }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* CONTROLS BAR */}
             <div
               style={{
-                width: `${progress * 100}%`,
-                height: "100%",
-                background: "#fff",
-                borderRadius: 2,
-                transition: "width 0.1s linear",
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                background: "linear-gradient(transparent, rgba(0,0,0,0.85))",
+                padding: "40px 16px 12px",
+                zIndex: 3,
+                opacity: showControls || !playing ? 1 : 0,
+                transition: "opacity 0.3s",
               }}
-            />
-          </div>
+            >
+              {/* PROGRESS BAR */}
+              <div
+                onClick={(e) => {
+                  if (!videoRef.current || !duration) return;
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const ratio = (e.clientX - rect.left) / rect.width;
+                  videoRef.current.currentTime = ratio * duration;
+                }}
+                style={{
+                  width: "100%",
+                  height: 4,
+                  background: "rgba(255,255,255,0.2)",
+                  borderRadius: 2,
+                  cursor: "pointer",
+                  marginBottom: 10,
+                  position: "relative",
+                }}
+              >
+                <div
+                  style={{
+                    width: `${progress * 100}%`,
+                    height: "100%",
+                    background: "#fff",
+                    borderRadius: 2,
+                    transition: "width 0.1s linear",
+                  }}
+                />
+              </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button
-              onClick={togglePlay}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "#fff",
-                padding: 0,
-                display: "flex",
-              }}
-            >
-              {playing ? (
-                <Pause size={16} fill="#fff" />
-              ) : (
-                <Play size={16} fill="#fff" />
-              )}
-            </button>
-            <button
-              onClick={toggleMute}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "#fff",
-                padding: 0,
-                display: "flex",
-              }}
-            >
-              {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-            </button>
-            <span
-              style={{
-                fontSize: 11,
-                color: "#ccc",
-                fontVariantNumeric: "tabular-nums",
-              }}
-            >
-              {formatTime(progress * duration)} / {formatTime(duration)}
-            </span>
-            <div style={{ flex: 1 }} />
-            <button
-              onClick={toggleFullscreen}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "#fff",
-                padding: 0,
-                display: "flex",
-              }}
-            >
-              <Maximize size={16} />
-            </button>
-          </div>
-        </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <button
+                  onClick={togglePlay}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#fff",
+                    padding: 0,
+                    display: "flex",
+                  }}
+                >
+                  {playing ? (
+                    <Pause size={16} fill="#fff" />
+                  ) : (
+                    <Play size={16} fill="#fff" />
+                  )}
+                </button>
+                <button
+                  onClick={toggleMute}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#fff",
+                    padding: 0,
+                    display: "flex",
+                  }}
+                >
+                  {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                </button>
+                <span
+                  style={{
+                    fontSize: 11,
+                    color: "#ccc",
+                    fontVariantNumeric: "tabular-nums",
+                  }}
+                >
+                  {formatTime(progress * duration)} / {formatTime(duration)}
+                </span>
+                <div style={{ flex: 1 }} />
+                <button
+                  onClick={toggleFullscreen}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    cursor: "pointer",
+                    color: "#fff",
+                    padding: 0,
+                    display: "flex",
+                  }}
+                >
+                  <Maximize size={16} />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* TRAILER TITLE */}

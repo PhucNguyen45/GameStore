@@ -3,12 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameStore.Entities.Games;
 using GameStore.Services;
-using GameStore.DTOs.Games;
 using GameStore.DTOs.Common;
 using GameStore.Repository;
 
@@ -49,52 +47,6 @@ public class GamesController : ControllerBase
     {
         var games = await _gameService.GetByGenre(genreId);
         return Ok(games);
-    }
-
-    [HttpPost]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create([FromBody] GameCreateDto dto)
-    {
-        var game = new Game
-        {
-            Title = dto.Title,
-            Description = dto.Description ?? "",
-            Price = dto.Price,
-            DiscountPrice = dto.DiscountPrice,
-            Developer = dto.Developer ?? "",
-            Publisher = dto.Publisher ?? "",
-            ReleaseDate = dto.ReleaseDate,
-            TrailerUrl = dto.TrailerUrl ?? "",
-            CoverImageUrl = dto.CoverImageUrl ?? "",
-            MinimumOS = dto.MinimumOS ?? "",
-            MinimumProcessor = dto.MinimumProcessor ?? "",
-            MinimumMemory = dto.MinimumMemory ?? "",
-            MinimumGraphics = dto.MinimumGraphics ?? "",
-            MinimumStorage = dto.MinimumStorage ?? ""
-        };
-        var created = await _gameService.Create(game);
-        return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-    }
-
-    [HttpPut("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Update(int id, [FromBody] GameUpdateDto dto)
-    {
-        var game = await _gameService.GetById(id);
-        if (game == null) return NotFound(new { message = "Game not found" });
-        game.Title = dto.Title ?? game.Title; game.Description = dto.Description ?? game.Description;
-        game.Price = dto.Price ?? game.Price; game.DiscountPrice = dto.DiscountPrice ?? game.DiscountPrice;
-        game.CoverImageUrl = dto.CoverImageUrl ?? game.CoverImageUrl; game.TrailerUrl = dto.TrailerUrl ?? game.TrailerUrl;
-        await _gameService.Update(game);
-        return Ok(game);
-    }
-
-    [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Delete(int id)
-    {
-        await _gameService.Delete(id);
-        return Ok(new { message = "Game deleted" });
     }
 
     // ── Stock check (kiểm tra tồn kho key) ──

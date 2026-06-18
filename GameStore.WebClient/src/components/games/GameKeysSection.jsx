@@ -1,9 +1,19 @@
 // GameStore.WebClient/src/components/games/GameKeysSection.jsx
-import { KeyRound, Check } from "lucide-react";
+import { KeyRound, Check, Copy } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 
 export default function GameKeysSection({ user, owned, gameKeys, keysLoading, handleBuyNow }) {
   const { t } = useTranslation();
+
+  const copyKey = async (keyCode) => {
+    try {
+      await navigator.clipboard.writeText(keyCode);
+      toast.success(t("gameDetail.keyCopied") || "Đã sao chép key!");
+    } catch {
+      toast.error("Không thể sao chép");
+    }
+  };
 
   return (
     <div style={{ maxWidth: 800, margin: "0 auto" }}>
@@ -69,21 +79,52 @@ export default function GameKeysSection({ user, owned, gameKeys, keysLoading, ha
                   style={{ borderBottom: i < gameKeys.length - 1 ? "1px solid #2a2a2a" : "none" }}
                 >
                   <td style={{ padding: "16px 20px" }}>
-                    <span
-                      style={{
-                        fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: "#10b981",
-                        background: "#10b98111",
-                        padding: "4px 10px",
-                        borderRadius: 4,
-                        letterSpacing: 1,
-                        userSelect: "all",
-                      }}
-                    >
-                      {key.keyCode}
-                    </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span
+                        style={{
+                          fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                          fontSize: 13,
+                          fontWeight: 600,
+                          color: "#10b981",
+                          background: "#10b98111",
+                          padding: "4px 10px",
+                          borderRadius: 4,
+                          letterSpacing: 1,
+                          userSelect: "all",
+                        }}
+                      >
+                        {key.keyCode}
+                      </span>
+                      <button
+                        onClick={() => copyKey(key.keyCode)}
+                        title="Copy key"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          width: 32,
+                          height: 32,
+                          borderRadius: 6,
+                          border: "1px solid #333",
+                          background: "#2a2a2a",
+                          color: "#aaa",
+                          cursor: "pointer",
+                          transition: "all 0.2s",
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = "#333";
+                          e.currentTarget.style.color = "#fff";
+                          e.currentTarget.style.borderColor = "#10b981";
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = "#2a2a2a";
+                          e.currentTarget.style.color = "#aaa";
+                          e.currentTarget.style.borderColor = "#333";
+                        }}
+                      >
+                        <Copy size={14} />
+                      </button>
+                    </div>
                   </td>
                   <td style={{ padding: "16px 20px", textAlign: "center" }}>
                     <span

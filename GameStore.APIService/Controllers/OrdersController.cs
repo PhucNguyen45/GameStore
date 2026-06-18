@@ -37,40 +37,15 @@ public class OrdersController : ControllerBase
         return Ok(history);
     }
 
-    [HttpGet("all")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
-    {
-        var (items, totalCount) = await _orderService.GetAll(page, pageSize);
-        return Ok(PagedResponse<Order>.Create(items, totalCount, page, pageSize));
-    }
-
-    [HttpGet("search")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> SearchOrders(
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 10,
-        [FromQuery] string? keyword = null, [FromQuery] DateTime? fromDate = null,
-        [FromQuery] DateTime? toDate = null, [FromQuery] string? status = null)
-    {
-        var result = await _orderService.SearchOrders(page, pageSize, keyword, fromDate, toDate, status);
-        var mappedOrders = result.Items.Select(o => new { o.Id, o.UserId, o.OrderDate, o.TotalAmount, o.Status, o.PaymentMethod, Username = o.User?.Username }).ToList();
-        return Ok(PagedResponse<object>.Create(mappedOrders, result.TotalCount, page, pageSize));
-    }
-
-    [HttpPut("{id}/status")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateStatusDto dto)
-    {
-        try { await _orderService.UpdateStatus(id, dto.Status); return Ok(new { message = "Status updated" }); }
-        catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
-    }
-
-
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var order = await _orderService.GetById(id);
-        return order == null ? NotFound(new { message = "Order not found" }) : Ok(order);
+        if (order == null) return NotFound(new { message = "Order not found" });
+        if (!User.IsInRole("Admin") && order.UserId != userId)
+            return Forbid();
+        return Ok(order);
     }
 
     [HttpPost]
@@ -93,7 +68,16 @@ public class OrdersController : ControllerBase
     [HttpPut("{id}/cancel")]
     public async Task<IActionResult> Cancel(int id)
     {
-        try { await _orderService.CancelOrder(id); return Ok(new { message = "Order cancelled" }); }
+        var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        try
+        {
+            var order = await _orderService.GetById(id);
+            if (order == null) return NotFound(new { message = "Order not found" });
+            if (!User.IsInRole("Admin") && order.UserId != userId)
+                return Forbid();
+            await _orderService.CancelOrder(id);
+            return Ok(new { message = "Order cancelled" });
+        }
         catch (Exception ex) { return BadRequest(new { message = ex.Message }); }
     }
 }

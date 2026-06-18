@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { wishlistAPI } from "../services/api";
-import { Heart, Trash2, ShoppingCart, Star } from "lucide-react";
+import { Heart, Trash2, ShoppingCart, Star, ArrowLeft } from "lucide-react";
 import useCartStore from "../stores/cartStore";
 import { GameCardSkeletonGrid } from "../components/games/GameCardSkeleton";
 import toast from "react-hot-toast";
@@ -98,6 +98,14 @@ export default function WishlistPage() {
 
   return (
     <div className="container" style={{ paddingTop: 30 }}>
+      <Link
+        to="/store"
+        className="back-btn"
+        style={{ marginBottom: 16 }}
+      >
+        <ArrowLeft size={16} />
+        Cửa hàng
+      </Link>
       <h1
         style={{
           display: "flex",

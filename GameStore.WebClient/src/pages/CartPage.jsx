@@ -151,8 +151,7 @@ export default function CartPage() {
       >
         <Link
           to="/store"
-          className="btn btn-ghost"
-          style={{ gap: 6, padding: "8px 16px", fontSize: 13 }}
+          className="back-btn"
         >
           <ArrowLeft size={16} /> {t("cart.continueShopping")}
         </Link>

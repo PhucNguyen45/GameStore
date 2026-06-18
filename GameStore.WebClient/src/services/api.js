@@ -69,7 +69,7 @@ export const userAPI = {
   updateProfile: (data) => api.put("/users/profile", data),
 };
 export const libraryAPI = {
-  getMyLibrary: () => api.get("/library"),
+  getMyLibrary: (params) => api.get("/library", { params }),
   checkOwned: (gameId) => api.get(`/library/check/${gameId}`),
   getGameKeys: (gameId) => api.get(`/library/${gameId}/keys`),
 };

@@ -6,7 +6,6 @@ import { useState, useEffect, useRef } from "react";
 import { useResponsive } from "../../hooks/useResponsive";
 import { useTranslation } from "react-i18next";
 import WalletModal from "../wallet/WalletModal";
-import LanguageSwitcher from "../common/LanguageSwitcher";
 import useCartStore from "../../stores/cartStore";
 import { gameAPI, notificationAPI } from "../../services/api";
 import { formatVND } from "../../utils/format";
@@ -298,9 +297,6 @@ export default function Navbar() {
 
             <div style={{ flex: 1 }} />
 
-            {/* Language Switcher */}
-            <LanguageSwitcher />
-
             {/* Search Icon */}
             <button
               onClick={() => setSearchOpen(!searchOpen)}
@@ -580,9 +576,6 @@ export default function Navbar() {
                 {searchSuggestions}
               </div>
 
-              {/* Language */}
-              <LanguageSwitcher />
-
               {/* Notifications */}
               {user && (
                 <div ref={notiRef} style={{ position: "relative" }}>
@@ -778,9 +771,6 @@ export default function Navbar() {
               )}
               {searchSuggestions}
             </div>
-
-            {/* Language Switcher */}
-            <LanguageSwitcher />
 
             {/* Notifications */}
             {user && (

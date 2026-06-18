@@ -21,9 +21,22 @@ public class LibraryController : ControllerBase
     public LibraryController(ILibraryService libraryService) => _libraryService = libraryService;
 
     [HttpGet]
-    public async Task<IActionResult> GetMyLibrary()
+    public async Task<IActionResult> GetMyLibrary(
+        [FromQuery] string? keyword = null,
+        [FromQuery] string? sortBy = "recent",
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 100)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+
+        // If keyword provided, use search with pagination
+        if (!string.IsNullOrWhiteSpace(keyword))
+        {
+            var (items, totalCount) = await _libraryService.SearchLibraryAsync(userId, keyword, sortBy, page, pageSize);
+            return Ok(new { data = items, totalCount, page, pageSize });
+        }
+
+        // Otherwise return all (backward compatible)
         return Ok(await _libraryService.GetMyLibraryAsync(userId));
     }
 

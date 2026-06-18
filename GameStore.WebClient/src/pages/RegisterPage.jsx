@@ -2,7 +2,7 @@
 import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { UserPlus, User, Lock, Mail, Phone, AlertCircle, CheckCircle2 } from "lucide-react";
+import { UserPlus, User, Lock, Mail, Phone, AlertCircle, CheckCircle2, ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -90,8 +90,6 @@ export default function RegisterPage() {
 
   const hasError = (field) => touched[field] && errors[field];
   const isValid = (field) => touched[field] && !errors[field] && form[field].length > 0;
-  const borderColor = (field) =>
-    hasError(field) ? "#e94560" : isValid(field) ? "#4caf50" : "#2a2a4a";
 
   return (
     <div
@@ -100,13 +98,28 @@ export default function RegisterPage() {
         justifyContent: "center",
         alignItems: "center",
         minHeight: "70vh",
-        paddingTop: 40,
+        padding: "40px 16px",
       }}
     >
       <div
         className="card"
-        style={{ padding: 40, maxWidth: 460 }}
+        style={{
+          padding: 40,
+          maxWidth: 460,
+          width: "100%",
+          position: "relative",
+        }}
       >
+        {/* Back button */}
+        <Link
+          to="/login"
+          className="back-btn"
+          style={{ marginBottom: 20 }}
+        >
+          <ArrowLeft size={16} />
+          {t("auth.loginLink")}
+        </Link>
+
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div
             style={{
@@ -122,7 +135,7 @@ export default function RegisterPage() {
           >
             <UserPlus size={28} color="#fff" />
           </div>
-          <h1 style={{ fontSize: 24, fontWeight: 700 }}>{t("auth.registerTitle")}</h1>
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#fff" }}>{t("auth.registerTitle")}</h1>
           <p style={{ color: "#6b6b8e", fontSize: 14, marginTop: 6 }}>
             {t("auth.registerSubtitle")}
           </p>
@@ -134,14 +147,14 @@ export default function RegisterPage() {
               display: "flex",
               alignItems: "center",
               gap: 8,
-              padding: 12,
+              padding: "12px 16px",
               background: "rgba(233,69,96,0.1)",
-              borderRadius: 8,
+              borderRadius: 10,
               marginBottom: 20,
               border: "1px solid rgba(233,69,96,0.3)",
             }}
           >
-            <AlertCircle size={18} color="#e94560" />
+            <AlertCircle size={18} color="#e94560" style={{ flexShrink: 0 }} />
             <span style={{ color: "#e94560", fontSize: 13 }}>{error}</span>
           </div>
         )}
@@ -154,7 +167,7 @@ export default function RegisterPage() {
             { icon: Mail, placeholder: t("auth.email"), key: "email", type: "email" },
             { icon: Phone, placeholder: t("auth.phone"), key: "phone" },
           ].map(({ icon: Icon, key, placeholder, type, required }) => (
-            <div key={key} style={{ marginBottom: 12 }}>
+            <div key={key} style={{ marginBottom: 4 }}>
               <div className="input-icon">
                 <Icon size={18} className="icon" />
                 <input
@@ -165,11 +178,14 @@ export default function RegisterPage() {
                   onChange={(e) => handleChange(key, e.target.value)}
                   onBlur={() => handleBlur(key)}
                   required={required}
+                  style={{
+                    paddingRight: isValid(key) || hasError(key) ? 40 : 42,
+                  }}
                 />
                 {isValid(key) && <CheckCircle2 size={16} color="#4caf50" className="icon-right" />}
                 {hasError(key) && <AlertCircle size={16} color="#e94560" className="icon-right" />}
               </div>
-              <div style={{ minHeight: 20, marginTop: 4 }}>
+              <div style={{ minHeight: 22, marginTop: 4 }}>
                 {hasError(key) && (
                   <p style={{ color: "#e94560", fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}>
                     <AlertCircle size={11} /> {errors[key]}
@@ -184,7 +200,23 @@ export default function RegisterPage() {
             className="btn btn-primary btn-block"
             style={{ marginTop: 8, padding: 14, fontSize: 15 }}
           >
-            {loading ? t("auth.creatingAccount") : t("auth.register")}
+            {loading ? (
+              <>
+                <div
+                  style={{
+                    width: 16,
+                    height: 16,
+                    border: "2px solid rgba(255,255,255,0.3)",
+                    borderTopColor: "#fff",
+                    borderRadius: "50%",
+                    animation: "spin 0.8s linear infinite",
+                  }}
+                />
+                {t("auth.creatingAccount")}
+              </>
+            ) : (
+              t("auth.register")
+            )}
           </button>
         </form>
         <p

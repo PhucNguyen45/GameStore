@@ -28,8 +28,6 @@ import {
   Users,
   Check,
   ChevronLeft,
-  ChevronRight,
-  Image,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -60,10 +58,6 @@ export default function GameDetailPage() {
     isRecommended: true,
   });
   const [submittingReview, setSubmittingReview] = useState(false);
-  const [screenshotIndex, setScreenshotIndex] = useState(0);
-  const [screenshotError, setScreenshotError] = useState(false);
-  const [thumbLoaded, setThumbLoaded] = useState(new Set());
-  const [thumbErrored, setThumbErrored] = useState(new Set());
 
   useEffect(() => {
     gameAPI
@@ -173,43 +167,6 @@ export default function GameDetailPage() {
     : 0, [game?.discountPrice, game?.price]);
   const finalPrice = useMemo(() => game?.discountPrice || game?.price, [game?.discountPrice, game?.price]);
 
-  const screenshots = useMemo(() => {
-    try {
-      const parsed = JSON.parse(game?.screenshots || "[]");
-      return Array.isArray(parsed) ? parsed : [];
-    } catch { return []; }
-  }, [game?.screenshots]);
-
-
-
-  // Reset screenshotIndex when game changes
-  useEffect(() => {
-    setScreenshotIndex(0);
-    setScreenshotError(false);
-    setThumbLoaded(new Set());
-    setThumbErrored(new Set());
-  }, [game?.id]);
-
-  const prevScreenshot = () => {
-    setScreenshotIndex((i) => (i <= 0 ? screenshots.length - 1 : i - 1));
-    setScreenshotError(false);
-  };
-  const nextScreenshot = () => {
-    setScreenshotIndex((i) => (i >= screenshots.length - 1 ? 0 : i + 1));
-    setScreenshotError(false);
-  };
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKey = (e) => {
-      if (activeTab !== "overview" || screenshots.length <= 1) return;
-      if (e.key === "ArrowLeft") { e.preventDefault(); prevScreenshot(); }
-      if (e.key === "ArrowRight") { e.preventDefault(); nextScreenshot(); }
-    };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [activeTab, screenshots.length]);
-
   if (loading) return <GameDetailSkeleton />;
   if (!game) return <GameNotFound />;
 
@@ -250,6 +207,21 @@ export default function GameDetailPage() {
             zIndex: 1,
           }}
         >
+          {/* Back to store */}
+          <div style={{ marginBottom: 20 }}>
+            <button
+              onClick={() => navigate("/store")}
+              className="back-btn"
+              style={{
+                background: "rgba(0,0,0,0.4)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                padding: "6px 14px",
+              }}
+            >
+              <ChevronLeft size={16} />
+              {t("gameDetail.backToStore")}
+            </button>
+          </div>
           <div style={{ marginBottom: 16 }}>
             <span
               style={{
@@ -437,87 +409,9 @@ export default function GameDetailPage() {
             {game.trailerUrl && (
               <TrailerPlayer
                 trailerUrl={game.trailerUrl}
-                poster={screenshots[0] || game.coverImageUrl}
+                poster={game.coverImageUrl}
                 title={game.title}
               />
-            )}
-
-            {/* SCREENSHOTS CAROUSEL */}
-            {screenshots.length > 0 && (
-              <div style={{ marginBottom: 40 }}>
-                <div
-                  className="carousel-container"
-                  style={{
-                    position: "relative",
-                    borderRadius: 8,
-                    overflow: "hidden",
-                    background: "#1a1a1a",
-                    aspectRatio: "16 / 9",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {screenshotError ? (
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", position: "absolute", inset: 0, color: "#555", flexDirection: "column", gap: 8 }}>
-                      <Image size={32} />
-                      <span style={{ fontSize: 12 }}>{t("gameDetail.screenshotNotFound")}</span>
-                    </div>
-                  ) : (
-                    <img
-                      src={screenshots[screenshotIndex]}
-                      alt={`Screenshot ${screenshotIndex + 1}`}
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "opacity 0.3s ease" }}
-                      onError={() => setScreenshotError(true)}
-                    />
-                  )}
-                  {screenshots.length > 1 && (
-                    <>
-                      <button onClick={prevScreenshot} className="carousel-arrow" style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", width: 40, height: 40, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.6)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s", opacity: 0, zIndex: 2 }}>
-                        <ChevronLeft size={20} />
-                      </button>
-                      <button onClick={nextScreenshot} className="carousel-arrow" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", width: 40, height: 40, borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.6)", color: "#fff", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s", opacity: 0, zIndex: 2 }}>
-                        <ChevronRight size={20} />
-                      </button>
-                    </>
-                  )}
-                  {screenshots.length > 1 && (
-                    <span style={{ position: "absolute", bottom: 12, right: 12, padding: "4px 10px", borderRadius: 4, fontSize: 11, fontWeight: 700, background: "rgba(0,0,0,0.7)", color: "#fff", letterSpacing: 0.5, zIndex: 2 }}>
-                      {screenshotIndex + 1} / {screenshots.length}
-                    </span>
-                  )}
-                </div>
-                {screenshots.length > 1 && (
-                  <div className="thumbnail-strip" style={{ display: "flex", gap: 8, marginTop: 10, overflowX: "auto", paddingBottom: 4 }}>
-                    {screenshots.map((url, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setScreenshotIndex(i)}
-                        style={{ position: "relative", flexShrink: 0, width: 120, height: 68, borderRadius: 4, overflow: "hidden", border: i === screenshotIndex ? "2px solid #fff" : "2px solid transparent", background: "#1a1a1a", cursor: "pointer", padding: 0, transition: "all 0.2s", opacity: i === screenshotIndex ? 1 : 0.5 }}
-                        onMouseEnter={(e) => { if (i !== screenshotIndex) e.currentTarget.style.opacity = "0.8"; }}
-                        onMouseLeave={(e) => { if (i !== screenshotIndex) e.currentTarget.style.opacity = "0.5"; }}
-                      >
-                        {!thumbLoaded.has(i) && !thumbErrored.has(i) && (
-                          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, #2a2a2a 25%, #333 50%, #2a2a2a 75%)", backgroundSize: "200% 100%", animation: "shimmer 1.5s ease-in-out infinite" }} />
-                        )}
-                        {thumbErrored.has(i) && (
-                          <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "#1a1a1a" }}>
-                            <Image size={16} color="#444" />
-                          </div>
-                        )}
-                        <img
-                          src={url}
-                          alt={`Thumbnail ${i + 1}`}
-                          loading="lazy"
-                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", opacity: thumbLoaded.has(i) || thumbErrored.has(i) ? 1 : 0, transition: "opacity 0.25s ease" }}
-                          onLoad={() => setThumbLoaded((prev) => new Set([...prev, i]))}
-                          onError={() => setThumbErrored((prev) => new Set([...prev, i]))}
-                        />
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
             )}
           </OverviewSection>
         )}

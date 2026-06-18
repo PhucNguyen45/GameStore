@@ -14,7 +14,7 @@ namespace GameStore.DTOs.Games
         public long? DiscountPrice { get; set; }
         public string? Developer { get; set; }
         public string? Publisher { get; set; }
-        public DateTime ReleaseDate { get; set; }
+        public DateTime? ReleaseDate { get; set; }
         public string? TrailerUrl { get; set; }
         public string? CoverImageUrl { get; set; }
         public string? MinimumOS { get; set; }

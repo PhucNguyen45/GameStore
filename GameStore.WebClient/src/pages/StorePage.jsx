@@ -13,12 +13,14 @@ import {
   ArrowUpDown,
   Filter,
 } from "lucide-react";
+import HeroBanner from "../components/store/HeroBanner";
 import { useTranslation } from "react-i18next";
 
 export default function StorePage() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const [games, setGames] = useState([]);
+  const [featured, setFeatured] = useState([]);
   const [genres, setGenres] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("keyword") || "");
@@ -36,6 +38,7 @@ export default function StorePage() {
 
   useEffect(() => {
     genreAPI.getAll().then((r) => setGenres(r.data));
+    gameAPI.getFeatured(6).then((r) => setFeatured(r.data || [])).catch(() => {});
   }, []);
 
   const toggleGenre = (id) => {
@@ -315,68 +318,73 @@ export default function StorePage() {
   );
 
   return (
-    <div className="container" style={{ paddingTop: 24 }}>
-      {isDesktop ? (
-        <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
-          <aside style={{ width: 260, flexShrink: 0 }}>
-            {renderFilterContent(true)}
-          </aside>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            {searchBar}
-            {resultsArea}
-          </div>
-        </div>
-      ) : (
-        <>
-          {searchBar}
-          {/* Filter toggle button */}
-          <button
-            type="button"
-            onClick={() => setShowFilters(!showFilters)}
-            style={{
-              padding: "14px 20px",
-              background: showFilters ? "var(--accent)" : "#16162a",
-              color: showFilters ? "#fff" : "#ccc",
-              border: showFilters ? "none" : "1px solid #2a2a4a",
-              borderRadius: 12,
-              cursor: "pointer",
-              fontSize: 14,
-              fontWeight: 600,
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              whiteSpace: "nowrap",
-              transition: "all 0.15s",
-              marginBottom: showFilters ? 0 : 20,
-            }}
-          >
-            <Filter size={18} />
-            {showFilters ? null : t("store.filters")}
-            {activeFilterCount > 0 && !showFilters && (
-              <span
-                style={{
-                  background: "var(--accent)",
-                  color: "#fff",
-                  borderRadius: 10,
-                  padding: "1px 7px",
-                  fontSize: 11,
-                  fontWeight: 700,
-                  marginLeft: 4,
-                }}
-              >
-                {activeFilterCount}
-              </span>
-            )}
-          </button>
-          {/* Collapsible Filter Panel */}
-          {showFilters && (
-            <div style={{ marginBottom: 20, marginTop: 10 }}>
-              {renderFilterContent()}
+    <div style={{ paddingTop: 24 }}>
+      {/* Hero Banner — full width */}
+      <HeroBanner games={featured} />
+
+      <div className="container">
+        {isDesktop ? (
+          <div style={{ display: "flex", gap: 24, alignItems: "flex-start" }}>
+            <aside style={{ width: 260, flexShrink: 0 }}>
+              {renderFilterContent(true)}
+            </aside>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              {searchBar}
+              {resultsArea}
             </div>
-          )}
-          {resultsArea}
-        </>
-      )}
+          </div>
+        ) : (
+          <>
+            {searchBar}
+            {/* Filter toggle button */}
+            <button
+              type="button"
+              onClick={() => setShowFilters(!showFilters)}
+              style={{
+                padding: "14px 20px",
+                background: showFilters ? "var(--accent)" : "#16162a",
+                color: showFilters ? "#fff" : "#ccc",
+                border: showFilters ? "none" : "1px solid #2a2a4a",
+                borderRadius: 12,
+                cursor: "pointer",
+                fontSize: 14,
+                fontWeight: 600,
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                whiteSpace: "nowrap",
+                transition: "all 0.15s",
+                marginBottom: showFilters ? 0 : 20,
+              }}
+            >
+              <Filter size={18} />
+              {showFilters ? null : t("store.filters")}
+              {activeFilterCount > 0 && !showFilters && (
+                <span
+                  style={{
+                    background: "var(--accent)",
+                    color: "#fff",
+                    borderRadius: 10,
+                    padding: "1px 7px",
+                    fontSize: 11,
+                    fontWeight: 700,
+                    marginLeft: 4,
+                  }}
+                >
+                  {activeFilterCount}
+                </span>
+              )}
+            </button>
+            {/* Collapsible Filter Panel */}
+            {showFilters && (
+              <div style={{ marginBottom: 20, marginTop: 10 }}>
+                {renderFilterContent()}
+              </div>
+            )}
+            {resultsArea}
+          </>
+        )}
+      </div>
     </div>
   );
 }

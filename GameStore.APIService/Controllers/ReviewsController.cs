@@ -40,7 +40,12 @@ public class ReviewsController : ControllerBase
     public async Task<IActionResult> Update(int reviewId, [FromBody] CreateReviewDto dto)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        await _reviewService.UpdateReviewAsync(reviewId, userId, dto);
+        var review = await _reviewService.GetReviewByIdAsync(reviewId);
+        if (review == null) return NotFound(new { message = "Review not found" });
+        if (!User.IsInRole("Admin") && review.UserId != userId)
+            return Forbid();
+        var isAdmin = User.IsInRole("Admin");
+        await _reviewService.UpdateReviewAsync(reviewId, userId, dto, isAdmin);
         return Ok(new { message = "Review updated" });
     }
 
@@ -49,7 +54,12 @@ public class ReviewsController : ControllerBase
     public async Task<IActionResult> Delete(int reviewId)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        await _reviewService.DeleteReviewAsync(reviewId, userId);
+        var review = await _reviewService.GetReviewByIdAsync(reviewId);
+        if (review == null) return NotFound(new { message = "Review not found" });
+        if (!User.IsInRole("Admin") && review.UserId != userId)
+            return Forbid();
+        var isAdmin = User.IsInRole("Admin");
+        await _reviewService.DeleteReviewAsync(reviewId, userId, isAdmin);
         return Ok(new { message = "Review deleted" });
     }
 

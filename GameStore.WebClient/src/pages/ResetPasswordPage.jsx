@@ -219,17 +219,7 @@ export default function ResetPasswordPage() {
         <div style={{ textAlign: "center", marginTop: 20 }}>
           <Link
             to="/login"
-            style={{
-              color: "#6b6b8e",
-              fontSize: 13,
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              textDecoration: "none",
-              transition: "color 0.2s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-            onMouseLeave={(e) => (e.currentTarget.style.color = "#6b6b8e")}
+            className="back-btn"
           >
             <ArrowLeft size={14} />
             {t("resetPassword.backToLogin")}

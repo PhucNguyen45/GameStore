@@ -16,6 +16,24 @@ public class ReviewService : IReviewService
 
     public ReviewService(GameStoreDbContext context) => _context = context;
 
+    public async Task<ReviewDto?> GetReviewByIdAsync(int reviewId)
+    {
+        return await _context.Reviews
+            .Where(r => r.Id == reviewId)
+            .Select(r => new ReviewDto
+            {
+                Id = r.Id,
+                UserId = r.UserId,
+                Username = r.User.Username,
+                Rating = r.Rating,
+                Content = r.Content,
+                IsRecommended = r.IsRecommended,
+                HelpfulCount = r.HelpfulCount,
+                CreatedAt = r.CreatedAt
+            })
+            .FirstOrDefaultAsync();
+    }
+
     public async Task<(IEnumerable<ReviewDto> Reviews, int TotalCount)> GetGameReviewsAsync(int gameId, int page = 1, int pageSize = 10)
     {
         var query = _context.Reviews
@@ -89,10 +107,11 @@ public class ReviewService : IReviewService
         };
     }
 
-    public async Task UpdateReviewAsync(int reviewId, int userId, CreateReviewDto dto)
+    public async Task UpdateReviewAsync(int reviewId, int userId, CreateReviewDto dto, bool isAdmin = false)
     {
         var review = await _context.Reviews.FindAsync(reviewId);
-        if (review == null || review.UserId != userId)
+        if (review == null) throw new InvalidOperationException("Review not found.");
+        if (!isAdmin && review.UserId != userId)
             throw new InvalidOperationException("Review not found or not yours.");
 
         review.Rating = dto.Rating;
@@ -115,10 +134,11 @@ public class ReviewService : IReviewService
         }
     }
 
-    public async Task DeleteReviewAsync(int reviewId, int userId)
+    public async Task DeleteReviewAsync(int reviewId, int userId, bool isAdmin = false)
     {
         var review = await _context.Reviews.FindAsync(reviewId);
-        if (review == null || review.UserId != userId)
+        if (review == null) throw new InvalidOperationException("Review not found.");
+        if (!isAdmin && review.UserId != userId)
             throw new InvalidOperationException("Review not found or not yours.");
         _context.Reviews.Remove(review);
         await _context.SaveChangesAsync();

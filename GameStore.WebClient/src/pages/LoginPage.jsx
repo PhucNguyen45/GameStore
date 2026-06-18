@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { LogIn, User, Lock, AlertCircle } from "lucide-react";
+import { LogIn, User, Lock, AlertCircle, ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 export default function LoginPage() {
@@ -80,6 +80,14 @@ export default function LoginPage() {
         className="card"
         style={{ padding: 40, maxWidth: 420 }}
       >
+        <Link
+          to="/store"
+          className="back-btn"
+          style={{ marginBottom: 20 }}
+        >
+          <ArrowLeft size={16} />
+          Cửa hàng
+        </Link>
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div
             style={{

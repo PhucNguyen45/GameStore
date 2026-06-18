@@ -8,8 +8,9 @@ namespace GameStore.Services
 {
     public interface ILibraryService
     {
-    Task<IEnumerable<object>> GetMyLibraryAsync(int userId);
-    Task<bool> CheckOwnedAsync(int userId, int gameId);
-    Task<IEnumerable<object>> GetGameKeysAsync(int userId, int gameId);
-}
+        Task<IEnumerable<object>> GetMyLibraryAsync(int userId);
+        Task<(IEnumerable<object> Items, int TotalCount)> SearchLibraryAsync(int userId, string? keyword, string? sortBy, int page, int pageSize);
+        Task<bool> CheckOwnedAsync(int userId, int gameId);
+        Task<IEnumerable<object>> GetGameKeysAsync(int userId, int gameId);
+    }
 }

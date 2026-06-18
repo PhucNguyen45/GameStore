@@ -1,17 +1,10 @@
 // GameStore.DTOs/Admin/AdminUserUpdateDto.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using GameStore.DTOs.Users;
 
 namespace GameStore.DTOs.Admin;
 
-public class AdminUserUpdateDto
+public class AdminUserUpdateDto : UpdateUserRequest
 {
-    public string? DisplayName { get; set; }
-    public string? Email { get; set; }
-    public string? Phone { get; set; }
-    public string? AvatarUrl { get; set; }
     public long? Wallet { get; set; }
     public bool? IsActive { get; set; }
 }

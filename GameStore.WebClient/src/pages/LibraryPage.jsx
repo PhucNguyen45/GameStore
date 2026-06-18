@@ -1,5 +1,5 @@
 // GameStore.WebClient/src/pages/LibraryPage.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { libraryAPI } from "../services/api";
@@ -11,6 +11,7 @@ import {
   Grid3X3,
   List,
   KeyRound,
+  X,
 } from "lucide-react";
 import { GameCardSkeletonGrid } from "../components/games/GameCardSkeleton";
 import { useTranslation } from "react-i18next";
@@ -24,32 +25,72 @@ export default function LibraryPage() {
   const [sortBy, setSortBy] = useState("recent");
   const [viewMode, setViewMode] = useState("grid");
   const [filter, setFilter] = useState("all");
+  const [totalResults, setTotalResults] = useState(0);
+  const [searching, setSearching] = useState(false);
+  const searchTimer = useRef(null);
+  const inputRef = useRef(null);
 
-  useEffect(() => {
-    if (user) {
-      libraryAPI
-        .getMyLibrary()
-        .then((res) => setGames(res.data || []))
-        .finally(() => setLoading(false));
+  // Fetch library — with debounced search
+  const fetchLibrary = useCallback(async (keyword, sort, page = 1) => {
+    if (!user) return;
+    setSearching(true);
+    try {
+      const params = { sortBy: sort, page, pageSize: 100 };
+      if (keyword && keyword.trim()) params.keyword = keyword.trim();
+      const res = await libraryAPI.getMyLibrary(params);
+      // Handle both paginated (with keyword) and non-paginated responses
+      const data = res.data.data || res.data || [];
+      const count = res.data.totalCount ?? data.length;
+      setGames(data);
+      setTotalResults(count);
+    } catch {
+      // Fallback: no-op
+    } finally {
+      setLoading(false);
+      setSearching(false);
     }
   }, [user]);
 
-  const filteredGames = games
-    .filter((g) => {
-      if (filter === "recent") {
-        const d = new Date(g.acquiredAt);
-        return d > new Date(Date.now() - 30 * 86400000);
-      }
-      return true;
-    })
-    .filter((g) => g.title?.toLowerCase().includes(search.toLowerCase()))
-    .sort((a, b) => {
-      if (sortBy === "name") return a.title?.localeCompare(b.title);
-      if (sortBy === "playtime") return (b.playTime || 0) - (a.playTime || 0);
-      return new Date(b.acquiredAt) - new Date(a.acquiredAt);
-    });
+  // Initial load
+  useEffect(() => {
+    if (user) {
+      fetchLibrary("", sortBy);
+    }
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Debounced search when keyword or sort changes
+  useEffect(() => {
+    if (!user) return;
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    // Don't debounce on initial load
+    if (loading) return;
+    searchTimer.current = setTimeout(() => {
+      fetchLibrary(search, sortBy);
+    }, 300);
+    return () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    };
+  }, [search, sortBy, user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const clearSearch = () => {
+    setSearch("");
+    setSearching(true);
+    fetchLibrary("", sortBy);
+    inputRef.current?.focus();
+  };
+
+  // Apply local "recent" filter on top of server results
+  const displayGames = games.filter((g) => {
+    if (filter === "recent") {
+      const d = new Date(g.acquiredAt);
+      return d > new Date(Date.now() - 30 * 86400000);
+    }
+    return true;
+  });
 
   if (!user) return <LoginPrompt />;
+
+  const hasActiveSearch = search.trim().length > 0;
 
   return (
     <div
@@ -73,7 +114,9 @@ export default function LibraryPage() {
             {t("library.title")}
           </h1>
           <p style={{ color: "#888", fontSize: 14, margin: 0 }}>
-            {t("library.gameCount", { count: games.length })}
+            {hasActiveSearch
+              ? `Tìm thấy ${totalResults} kết quả cho "${search}"`
+              : t("library.gameCount", { count: games.length })}
           </p>
         </div>
       </div>
@@ -100,27 +143,79 @@ export default function LibraryPage() {
           }}
         >
           <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            {/* Search input */}
             <div style={{ position: "relative" }}>
               <Search
                 size={14}
                 color="#666"
-                style={{ position: "absolute", left: 10, top: 10 }}
+                style={{ position: "absolute", left: 10, top: 10, pointerEvents: "none" }}
               />
               <input
+                ref={inputRef}
                 placeholder={t("library.searchPlaceholder")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 style={{
-                  width: 220,
-                  padding: "8px 12px 8px 32px",
+                  width: 260,
+                  padding: `8px ${search ? 32 : 12}px 8px 32px`,
                   background: "#2a2a2a",
                   border: "1px solid #333",
                   borderRadius: 10,
                   color: "#fff",
                   fontSize: 12,
                   outline: "none",
+                  transition: "border-color 0.2s, box-shadow 0.2s",
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.borderColor = "#666";
+                }}
+                onBlur={(e) => {
+                  e.currentTarget.style.borderColor = "#333";
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Escape") clearSearch();
                 }}
               />
+              {search && (
+                <button
+                  onClick={clearSearch}
+                  style={{
+                    position: "absolute",
+                    right: 6,
+                    top: 6,
+                    background: "none",
+                    border: "none",
+                    color: "#888",
+                    cursor: "pointer",
+                    padding: 2,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 4,
+                    transition: "all 0.15s",
+                  }}
+                  onMouseEnter={(e) => { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "#444"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.color = "#888"; e.currentTarget.style.background = "none"; }}
+                  title="Xoá tìm kiếm (Esc)"
+                >
+                  <X size={14} />
+                </button>
+              )}
+              {searching && search && (
+                <div
+                  style={{
+                    position: "absolute",
+                    right: search ? 32 : 8,
+                    top: 8,
+                    width: 14,
+                    height: 14,
+                    border: "2px solid #444",
+                    borderTopColor: "#fff",
+                    borderRadius: "50%",
+                    animation: "spin 0.6s linear infinite",
+                  }}
+                />
+              )}
             </div>
             <div style={{ display: "flex", gap: 4 }}>
               {[
@@ -195,12 +290,12 @@ export default function LibraryPage() {
       <div className="container" style={{ paddingTop: 24, paddingBottom: 24 }}>
         {loading ? (
           <GameCardSkeletonGrid count={12} compact />
-        ) : filteredGames.length === 0 ? (
+        ) : displayGames.length === 0 ? (
           <EmptyState gamesCount={games.length} search={search} />
         ) : viewMode === "grid" ? (
-          <GridView games={filteredGames} />
+          <GridView games={displayGames} />
         ) : (
-          <ListView games={filteredGames} />
+          <ListView games={displayGames} />
         )}
       </div>
     </div>
@@ -281,7 +376,7 @@ function GridView({ games }) {
                   opacity: 0,
                   transition: "opacity 0.2s",
                 }}
-                className="            hover-overlay"
+                className="hover-overlay"
               >
                 <KeyRound size={32} color="#10b981" />
               </div>
@@ -569,5 +664,3 @@ const viewBtnStyle = {
   alignItems: "center",
   transition: "all 0.2s",
 };
-
-

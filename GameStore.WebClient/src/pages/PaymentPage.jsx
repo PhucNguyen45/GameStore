@@ -5,9 +5,10 @@ import { useAuth } from "../contexts/AuthContext";
 import { orderAPI } from "../services/api";
 import useCartStore from "../stores/cartStore";
 import toast from "react-hot-toast";
-import { Wallet, ShieldCheck, Loader2 } from "lucide-react";
+import { Wallet, ShieldCheck, Loader2, ArrowLeft } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { formatVND } from "../utils/format";
+import { Link } from "react-router-dom";
 
 export default function PaymentPage() {
   const { t } = useTranslation();
@@ -76,6 +77,14 @@ export default function PaymentPage() {
 
   return (
     <div className="container" style={{ paddingTop: 40, maxWidth: 600 }}>
+      <Link
+        to="/cart"
+        className="back-btn"
+        style={{ marginBottom: 20 }}
+      >
+        <ArrowLeft size={16} />
+        Quay lại giỏ hàng
+      </Link>
       <h1
         style={{
           fontSize: 28,
