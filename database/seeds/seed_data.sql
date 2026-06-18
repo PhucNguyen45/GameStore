@@ -1194,7 +1194,6 @@ GO
         UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/322330/1654751406/ed2882d005578965c224fdd45423bf7afb38a3b8/1776356255/dash_h264.mpd?t=1776359429' WHERE Id = 66;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/394360/682731/bd7bbea629ccbef568dd3c4d8552ba6e05b3c0ed/1750525316/dash_h264.mpd?t=1712235668' WHERE Id = 67;
     UPDATE Games SET TrailerUrl = N'https://video.akamai.steamstatic.com/store_trailers/1326470/541725/76f298f949c4ae5b4257fa2056112f8d34285799/1750672622/dash_h264.mpd?t=1677175226' WHERE Id = 68;
-END
 GO
 
 PRINT N'✅ Seed data đã được insert thành công!';
@@ -1207,61 +1206,61 @@ IF NOT EXISTS (SELECT 1 FROM Reviews WHERE Id = 91)
 BEGIN
     SET IDENTITY_INSERT Reviews ON;
     INSERT INTO Reviews (Id, UserId, GameId, Rating, Content, IsRecommended, HelpfulCount, CreatedAt, UpdatedAt) VALUES
-    (91, 2, 1, 5, N'CS2 la game ban sung hay nhat. Source 2 dep, gameplay muot, ranking cong bang. Choi 5000 tieng van chua chan.', 1, 120, 2026-05-12 14:11:35.4000000, 2026-05-12 14:11:35.4000000),
-    (92, 2, 2, 4, N'Dota 2 qua hay, hero da dang, gameplay chien thuat. Cong dong hoi toxic nhung van la MOBA dinh nhat.', 1, 85, 2026-05-13 14:11:35.4000000, 2026-05-13 14:11:35.4000000),
-    (93, 2, 4, 5, N'Apex Legends la battle royale hay nhat. Movement muot ma, gunplay da tay, he thong ping qua tien loi.', 1, 76, 2026-05-14 14:11:35.4000000, 2026-05-14 14:11:35.4000000),
-    (94, 2, 7, 4, N'Cyberpunk 2077 bay gio da rat khac. Phantom Liberty la DLC xuat sac, cot truyen cam dong.', 1, 92, 2026-05-15 14:11:35.4000000, 2026-05-15 14:11:35.4000000),
-    (95, 2, 9, 5, N'RDR2 la tuyet tac. The gioi mo chi tiet nhat, cot truyen nhu phim cao boi epic.', 1, 88, 2026-05-16 14:11:35.4000000, 2026-05-16 14:11:35.4000000),
-    (96, 2, 11, 3, N'Monster Hunter World gameplay hay nhung do hoa khong qua an tuong. Hoi kho tiep can nguoi moi.', 1, 34, 2026-05-17 14:11:35.4000000, 2026-05-17 14:11:35.4000000),
-    (97, 2, 15, 4, N'Garry Mod sandbox vat ly vui nhon. Workshop hang ngan mode choi. Choi voi ban be cuc ky giai tri.', 1, 45, 2026-05-18 14:11:35.4000000, 2026-05-18 14:11:35.4000000),
-    (98, 2, 18, 5, N'Valheim la survival game bat ngo nhat. The gioi procedural rong lon, xay dung thu vi, boss an tuong.', 1, 67, 2026-05-19 14:11:35.4000000, 2026-05-19 14:11:35.4000000),
-    (99, 2, 21, 4, N'Hogwarts Legacy la giac mo fan Harry Potter. Hogwarts qua dep, combat phep thuat thu vi.', 1, 73, 2026-05-20 14:11:35.4000000, 2026-05-20 14:11:35.4000000),
-    (100, 2, 24, 5, N'Rainbow Six Siege du ra mat 2015 van rat hot. Tactical FPS dinh cao, destruction physics tuyet voi.', 1, 81, 2026-05-21 14:11:35.4000000, 2026-05-21 14:11:35.4000000),
-    (101, 2, 5, 5, N'GTA V online van soi dong sau gan 10 nam. The gioi Los Santos song dong. Rockstar la huyen thoai.', 1, 95, 2026-05-22 14:11:35.4000000, 2026-05-22 14:11:35.4000000),
-    (102, 2, 8, 5, N'Baldur Gate 3 xung dang 10/10. Larian da nang tam CRPG. Tu do trong moi quyet dinh.', 1, 104, 2026-05-23 14:11:35.4000000, 2026-05-23 14:11:35.4000000),
-    (103, 3, 5, 5, N'GTA V hay nhat moi thoi dai. Online van rat dong nguoi choi, heist moi lien tuc.', 1, 90, 2026-05-12 14:11:35.4000000, 2026-05-12 14:11:35.4000000),
-    (104, 3, 8, 5, N'Baldur Gate 3 la kiet tac. Tu do sang tao, nhan vat chieu sau, combat turn-based xuat sac.', 1, 102, 2026-05-13 14:11:35.4000000, 2026-05-13 14:11:35.4000000),
-    (105, 3, 10, 4, N'Witcher 3 cot truyen xuat sac. Side quest chat luong hon main game nhieu tua game khac.', 1, 78, 2026-05-14 14:11:35.4000000, 2026-05-14 14:11:35.4000000),
-    (106, 3, 12, 5, N'Stardew Valley chill nhat. Sau ngay lam viec met moi, ve farm trong trot thu gian.', 1, 56, 2026-05-15 14:11:35.4000000, 2026-05-15 14:11:35.4000000),
-    (107, 3, 16, 3, N'Among Us vui khi du 10 nguoi ban. Choi nguoi la de chan. Phu hop tiec tung.', 1, 28, 2026-05-16 14:11:35.4000000, 2026-05-16 14:11:35.4000000),
-    (108, 3, 19, 4, N'Rust survival hardcore nhat. Cam giac hoi hop khi nghe tieng buoc chan ngoai base.', 1, 49, 2026-05-17 14:11:35.4000000, 2026-05-17 14:11:35.4000000),
-    (109, 3, 22, 4, N'Civilization VI one more turn keo dai den sang. Rat thich hop cho ai yeu thich lich su.', 1, 42, 2026-05-18 14:11:35.4000000, 2026-05-18 14:11:35.4000000),
-    (110, 3, 25, 4, N'TF2 du cu van la class-based shooter vui nhat. 9 class, item phong phu.', 1, 37, 2026-05-19 14:11:35.4000000, 2026-05-19 14:11:35.4000000),
-    (111, 3, 30, 5, N'God of War 2018 la masterpiece. Cau chuyen cha con cam dong, combat da tay.', 1, 89, 2026-05-20 14:11:35.4000000, 2026-05-20 14:11:35.4000000),
-    (112, 3, 32, 4, N'Horizon Zero Dawn concept doc dao. The gioi hau tan the may moc khong lo.', 1, 54, 2026-05-21 14:11:35.4000000, 2026-05-21 14:11:35.4000000),
-    (113, 4, 6, 5, N'Elden Ring open world soulslike xuat sac. FromSoftware lam duoc dieu khong tuong.', 1, 98, 2026-05-14 14:11:35.4000000, 2026-05-14 14:11:35.4000000),
-    (114, 4, 13, 5, N'Terraria content nhieu hon 90% game 3D. Cap nhat mien phi 10 nam.', 1, 72, 2026-05-15 14:11:35.4000000, 2026-05-15 14:11:35.4000000),
-    (115, 4, 17, 4, N'Phasmophobia co-op horror dang so nhat. Choi dem khuya voi tai nghe ron toc gay.', 1, 61, 2026-05-16 14:11:35.4000000, 2026-05-16 14:11:35.4000000),
-    (116, 4, 20, 3, N'ARK tien nang lon nhung optimization qua te. Gameplay hay nhung technical issues.', 1, 25, 2026-05-17 14:11:35.4000000, 2026-05-17 14:11:35.4000000),
-    (117, 4, 23, 4, N'Euro Truck Simulator 2 nghe chan nhung thuc su thu gian. Lai xe chau Au nghe nhac.', 1, 39, 2026-05-18 14:11:35.4000000, 2026-05-18 14:11:35.4000000),
-    (118, 4, 26, 5, N'Fallout 4 exploration tuyet voi. The gioi post-apocalyptic rong lon, nhieu dia diem thu vi.', 1, 47, 2026-05-19 14:11:35.4000000, 2026-05-19 14:11:35.4000000),
-    (119, 4, 28, 4, N'Dark Souls III boss design xuat sac nhat series. Sister Friede, Nameless King kho quen.', 1, 82, 2026-05-20 14:11:35.4000000, 2026-05-20 14:11:35.4000000),
-    (120, 4, 31, 5, N'Spider-Man Remastered port PC xuat sac. Web-swinging muot, combat dep, cot truyen hay.', 1, 74, 2026-05-21 14:11:35.4000000, 2026-05-21 14:11:35.4000000),
-    (121, 4, 50, 5, N'Factorio gay nghien nhat. The factory must grow! 1000 gio van thay con nhieu thu lam.', 1, 68, 2026-05-22 14:11:35.4000000, 2026-05-22 14:11:35.4000000),
-    (122, 4, 54, 5, N'Slay the Spire deckbuilding roguelike hay nhat. 4 class, hang tram card, choi mai khong chan.', 1, 59, 2026-05-23 14:11:35.4000000, 2026-05-23 14:11:35.4000000),
-    (123, 5, 3, 2, N'PUBG gio loi thoi va day hack. Performance khong cai thien. Nhieu game BR khac tot hon.', 0, 15, 2026-05-16 14:11:35.4000000, 2026-05-16 14:11:35.4000000),
-    (124, 5, 4, 4, N'Apex Legends gameplay hay, ping xuat sac. Nhung matchmaking khong cong bang.', 1, 53, 2026-05-17 14:11:35.4000000, 2026-05-17 14:11:35.4000000),
-    (125, 5, 7, 5, N'Cyberpunk 2077 Phantom Liberty mot trong nhung game hay nhat. Cau chuyen lam toi khoc.', 1, 87, 2026-05-18 14:11:35.4000000, 2026-05-18 14:11:35.4000000),
-    (126, 5, 10, 5, N'Witcher 3 la chuan muc RPG. Side quest xuat sac. DLC Hearts of Stone kich ban hay nhat.', 1, 91, 2026-05-19 14:11:35.4000000, 2026-05-19 14:11:35.4000000),
-    (127, 5, 14, 5, N'L4D2 15 nam tuoi van la co-op zombie shooter hay nhat. Workshop campaign khong lo.', 1, 44, 2026-05-20 14:11:35.4000000, 2026-05-20 14:11:35.4000000),
-    (128, 5, 22, 3, N'Civ VI districts va governments thu vi. Nhung AI kem, diplomacy hoi hot.', 1, 35, 2026-05-22 14:11:35.4000000, 2026-05-22 14:11:35.4000000),
-    (129, 5, 27, 4, N'Skyrim SE remaster on dinh hon ban goc. Mod community van rat manh.', 1, 41, 2026-05-23 14:11:35.4000000, 2026-05-23 14:11:35.4000000),
-    (130, 5, 33, 4, N'Days Gone bi danh gia thap nhung zombie survival tot. Hoard mechanic an tuong.', 1, 43, 2026-05-25 14:11:35.4000000, 2026-05-25 14:11:35.4000000),
-    (131, 2, 49, 5, N'RimWorld la game ke chuyen xuat sac. Randy Random khong tha cho ai. 2000 gio van con bat ngo.', 1, 83, 2026-05-26 14:11:35.4000000, 2026-05-26 14:11:35.4000000),
-    (132, 2, 53, 4, N'Dead Cells roguelite platformer tuyet voi. Combat nhanh, muot, weapon da dang.', 1, 52, 2026-05-27 14:11:35.4000000, 2026-05-27 14:11:35.4000000),
-    (133, 2, 58, 5, N'Vampire Survivors gia 99k content vo tan. Gay nghien kinh khung. Indie hay nhat.', 1, 96, 2026-05-28 14:11:35.4000000, 2026-05-28 14:11:35.4000000),
-    (134, 2, 61, 5, N'Helldivers 2 co-op shooter hay nhat 2024. Gunplay da tay, friendly fire hai huoc.', 1, 105, 2026-05-29 14:11:35.4000000, 2026-05-29 14:11:35.4000000),
-    (135, 2, 63, 5, N'Resident Evil 4 Remake xuat sac toan dien. Capcom giu tinh than original va nang cap.', 1, 71, 2026-05-30 14:11:35.4000000, 2026-05-30 14:11:35.4000000),
-    (136, 3, 50, 5, N'Factorio game engineering hay nhat. Tu dong hoa, toi uu production line. Man nguyen.', 1, 64, 2026-05-26 14:11:35.4000000, 2026-05-26 14:11:35.4000000),
-    (137, 3, 59, 4, N'Stray goc nhin meo doc dao. Cyberpunk world dep, giai do thu vi. Hoi ngan.', 1, 57, 2026-05-28 14:11:35.4000000, 2026-05-28 14:11:35.4000000),
-    (138, 3, 65, 4, N'Warframe free-to-play cong bang nhat. Farm hau het moi thu. Space ninja!', 1, 46, 2026-05-30 14:11:35.4000000, 2026-05-30 14:11:35.4000000),
-    (139, 4, 52, 5, N'Hollow Knight metroidvania dinh cao. The gioi interconnected, boss kho. Silksong dau roi?', 1, 93, 2026-05-31 14:11:35.4000000, 2026-05-31 14:11:35.4000000),
-    (140, 4, 56, 4, N'Subnautica noi so dai duong len tam cao moi. Leviathan thuc su dang so.', 1, 48, 2026-06-01 14:11:35.4000000, 2026-06-01 14:11:35.4000000),
-    (141, 4, 60, 5, N'Dave the Diver ket hop lan bien va quan ly nha hang sang tao. Pixel art dep.', 1, 63, 2026-06-02 14:11:35.4000000, 2026-06-02 14:11:35.4000000),
-    (142, 4, 64, 4, N'Armored Core VI mech game hay nhat. Customization sau, combat toc do cao.', 1, 55, 2026-06-03 14:11:35.4000000, 2026-06-03 14:11:35.4000000),
-    (143, 4, 67, 4, N'Hearts of Iron IV grand strategy WWII hay nhat. Vo so mod, cong dong lon.', 1, 38, 2026-06-04 14:11:35.4000000, 2026-06-04 14:11:35.4000000),
-    (144, 5, 51, 5, N'Hades gameplay cuon hut, cot truyen qua moi lan chet. Supergiant tai nang nhat.', 1, 86, 2026-05-31 14:11:35.4000000, 2026-05-31 14:11:35.4000000),
-    (145, 5, 57, 5, N'Cult of the Lamb cute khong kem thu thach. Quan ly giao phai dungeon crawling sang tao.', 1, 44, 2026-06-02 14:11:35.4000000, 2026-06-02 14:11:35.4000000),
+    (91, 2, 1, 5, N'CS2 la game ban sung hay nhat. Source 2 dep, gameplay muot, ranking cong bang. Choi 5000 tieng van chua chan.', 1, 120, N'2026-05-12 14:11:35.4000000', N'2026-05-12 14:11:35.4000000'),
+    (92, 2, 2, 4, N'Dota 2 qua hay, hero da dang, gameplay chien thuat. Cong dong hoi toxic nhung van la MOBA dinh nhat.', 1, 85, N'2026-05-13 14:11:35.4000000', N'2026-05-13 14:11:35.4000000'),
+    (93, 2, 4, 5, N'Apex Legends la battle royale hay nhat. Movement muot ma, gunplay da tay, he thong ping qua tien loi.', 1, 76, N'2026-05-14 14:11:35.4000000', N'2026-05-14 14:11:35.4000000'),
+    (94, 2, 7, 4, N'Cyberpunk 2077 bay gio da rat khac. Phantom Liberty la DLC xuat sac, cot truyen cam dong.', 1, 92, N'2026-05-15 14:11:35.4000000', N'2026-05-15 14:11:35.4000000'),
+    (95, 2, 9, 5, N'RDR2 la tuyet tac. The gioi mo chi tiet nhat, cot truyen nhu phim cao boi epic.', 1, 88, N'2026-05-16 14:11:35.4000000', N'2026-05-16 14:11:35.4000000'),
+    (96, 2, 11, 3, N'Monster Hunter World gameplay hay nhung do hoa khong qua an tuong. Hoi kho tiep can nguoi moi.', 1, 34, N'2026-05-17 14:11:35.4000000', N'2026-05-17 14:11:35.4000000'),
+    (97, 2, 15, 4, N'Garry Mod sandbox vat ly vui nhon. Workshop hang ngan mode choi. Choi voi ban be cuc ky giai tri.', 1, 45, N'2026-05-18 14:11:35.4000000', N'2026-05-18 14:11:35.4000000'),
+    (98, 2, 18, 5, N'Valheim la survival game bat ngo nhat. The gioi procedural rong lon, xay dung thu vi, boss an tuong.', 1, 67, N'2026-05-19 14:11:35.4000000', N'2026-05-19 14:11:35.4000000'),
+    (99, 2, 21, 4, N'Hogwarts Legacy la giac mo fan Harry Potter. Hogwarts qua dep, combat phep thuat thu vi.', 1, 73, N'2026-05-20 14:11:35.4000000', N'2026-05-20 14:11:35.4000000'),
+    (100, 2, 24, 5, N'Rainbow Six Siege du ra mat 2015 van rat hot. Tactical FPS dinh cao, destruction physics tuyet voi.', 1, 81, N'2026-05-21 14:11:35.4000000', N'2026-05-21 14:11:35.4000000'),
+    (101, 2, 5, 5, N'GTA V online van soi dong sau gan 10 nam. The gioi Los Santos song dong. Rockstar la huyen thoai.', 1, 95, N'2026-05-22 14:11:35.4000000', N'2026-05-22 14:11:35.4000000'),
+    (102, 2, 8, 5, N'Baldur Gate 3 xung dang 10/10. Larian da nang tam CRPG. Tu do trong moi quyet dinh.', 1, 104, N'2026-05-23 14:11:35.4000000', N'2026-05-23 14:11:35.4000000'),
+    (103, 3, 5, 5, N'GTA V hay nhat moi thoi dai. Online van rat dong nguoi choi, heist moi lien tuc.', 1, 90, N'2026-05-12 14:11:35.4000000', N'2026-05-12 14:11:35.4000000'),
+    (104, 3, 8, 5, N'Baldur Gate 3 la kiet tac. Tu do sang tao, nhan vat chieu sau, combat turn-based xuat sac.', 1, 102, N'2026-05-13 14:11:35.4000000', N'2026-05-13 14:11:35.4000000'),
+    (105, 3, 10, 4, N'Witcher 3 cot truyen xuat sac. Side quest chat luong hon main game nhieu tua game khac.', 1, 78, N'2026-05-14 14:11:35.4000000', N'2026-05-14 14:11:35.4000000'),
+    (106, 3, 12, 5, N'Stardew Valley chill nhat. Sau ngay lam viec met moi, ve farm trong trot thu gian.', 1, 56, N'2026-05-15 14:11:35.4000000', N'2026-05-15 14:11:35.4000000'),
+    (107, 3, 16, 3, N'Among Us vui khi du 10 nguoi ban. Choi nguoi la de chan. Phu hop tiec tung.', 1, 28, N'2026-05-16 14:11:35.4000000', N'2026-05-16 14:11:35.4000000'),
+    (108, 3, 19, 4, N'Rust survival hardcore nhat. Cam giac hoi hop khi nghe tieng buoc chan ngoai base.', 1, 49, N'2026-05-17 14:11:35.4000000', N'2026-05-17 14:11:35.4000000'),
+    (109, 3, 22, 4, N'Civilization VI one more turn keo dai den sang. Rat thich hop cho ai yeu thich lich su.', 1, 42, N'2026-05-18 14:11:35.4000000', N'2026-05-18 14:11:35.4000000'),
+    (110, 3, 25, 4, N'TF2 du cu van la class-based shooter vui nhat. 9 class, item phong phu.', 1, 37, N'2026-05-19 14:11:35.4000000', N'2026-05-19 14:11:35.4000000'),
+    (111, 3, 30, 5, N'God of War 2018 la masterpiece. Cau chuyen cha con cam dong, combat da tay.', 1, 89, N'2026-05-20 14:11:35.4000000', N'2026-05-20 14:11:35.4000000'),
+    (112, 3, 32, 4, N'Horizon Zero Dawn concept doc dao. The gioi hau tan the may moc khong lo.', 1, 54, N'2026-05-21 14:11:35.4000000', N'2026-05-21 14:11:35.4000000'),
+    (113, 4, 6, 5, N'Elden Ring open world soulslike xuat sac. FromSoftware lam duoc dieu khong tuong.', 1, 98, N'2026-05-14 14:11:35.4000000', N'2026-05-14 14:11:35.4000000'),
+    (114, 4, 13, 5, N'Terraria content nhieu hon 90% game 3D. Cap nhat mien phi 10 nam.', 1, 72, N'2026-05-15 14:11:35.4000000', N'2026-05-15 14:11:35.4000000'),
+    (115, 4, 17, 4, N'Phasmophobia co-op horror dang so nhat. Choi dem khuya voi tai nghe ron toc gay.', 1, 61, N'2026-05-16 14:11:35.4000000', N'2026-05-16 14:11:35.4000000'),
+    (116, 4, 20, 3, N'ARK tien nang lon nhung optimization qua te. Gameplay hay nhung technical issues.', 1, 25, N'2026-05-17 14:11:35.4000000', N'2026-05-17 14:11:35.4000000'),
+    (117, 4, 23, 4, N'Euro Truck Simulator 2 nghe chan nhung thuc su thu gian. Lai xe chau Au nghe nhac.', 1, 39, N'2026-05-18 14:11:35.4000000', N'2026-05-18 14:11:35.4000000'),
+    (118, 4, 26, 5, N'Fallout 4 exploration tuyet voi. The gioi post-apocalyptic rong lon, nhieu dia diem thu vi.', 1, 47, N'2026-05-19 14:11:35.4000000', N'2026-05-19 14:11:35.4000000'),
+    (119, 4, 28, 4, N'Dark Souls III boss design xuat sac nhat series. Sister Friede, Nameless King kho quen.', 1, 82, N'2026-05-20 14:11:35.4000000', N'2026-05-20 14:11:35.4000000'),
+    (120, 4, 31, 5, N'Spider-Man Remastered port PC xuat sac. Web-swinging muot, combat dep, cot truyen hay.', 1, 74, N'2026-05-21 14:11:35.4000000', N'2026-05-21 14:11:35.4000000'),
+    (121, 4, 50, 5, N'Factorio gay nghien nhat. The factory must grow! 1000 gio van thay con nhieu thu lam.', 1, 68, N'2026-05-22 14:11:35.4000000', N'2026-05-22 14:11:35.4000000'),
+    (122, 4, 54, 5, N'Slay the Spire deckbuilding roguelike hay nhat. 4 class, hang tram card, choi mai khong chan.', 1, 59, N'2026-05-23 14:11:35.4000000', N'2026-05-23 14:11:35.4000000'),
+    (123, 5, 3, 2, N'PUBG gio loi thoi va day hack. Performance khong cai thien. Nhieu game BR khac tot hon.', 0, 15, N'2026-05-16 14:11:35.4000000', N'2026-05-16 14:11:35.4000000'),
+    (124, 5, 4, 4, N'Apex Legends gameplay hay, ping xuat sac. Nhung matchmaking khong cong bang.', 1, 53, N'2026-05-17 14:11:35.4000000', N'2026-05-17 14:11:35.4000000'),
+    (125, 5, 7, 5, N'Cyberpunk 2077 Phantom Liberty mot trong nhung game hay nhat. Cau chuyen lam toi khoc.', 1, 87, N'2026-05-18 14:11:35.4000000', N'2026-05-18 14:11:35.4000000'),
+    (126, 5, 10, 5, N'Witcher 3 la chuan muc RPG. Side quest xuat sac. DLC Hearts of Stone kich ban hay nhat.', 1, 91, N'2026-05-19 14:11:35.4000000', N'2026-05-19 14:11:35.4000000'),
+    (127, 5, 14, 5, N'L4D2 15 nam tuoi van la co-op zombie shooter hay nhat. Workshop campaign khong lo.', 1, 44, N'2026-05-20 14:11:35.4000000', N'2026-05-20 14:11:35.4000000'),
+    (128, 5, 22, 3, N'Civ VI districts va governments thu vi. Nhung AI kem, diplomacy hoi hot.', 1, 35, N'2026-05-22 14:11:35.4000000', N'2026-05-22 14:11:35.4000000'),
+    (129, 5, 27, 4, N'Skyrim SE remaster on dinh hon ban goc. Mod community van rat manh.', 1, 41, N'2026-05-23 14:11:35.4000000', N'2026-05-23 14:11:35.4000000'),
+    (130, 5, 33, 4, N'Days Gone bi danh gia thap nhung zombie survival tot. Hoard mechanic an tuong.', 1, 43, N'2026-05-25 14:11:35.4000000', N'2026-05-25 14:11:35.4000000'),
+    (131, 2, 49, 5, N'RimWorld la game ke chuyen xuat sac. Randy Random khong tha cho ai. 2000 gio van con bat ngo.', 1, 83, N'2026-05-26 14:11:35.4000000', N'2026-05-26 14:11:35.4000000'),
+    (132, 2, 53, 4, N'Dead Cells roguelite platformer tuyet voi. Combat nhanh, muot, weapon da dang.', 1, 52, N'2026-05-27 14:11:35.4000000', N'2026-05-27 14:11:35.4000000'),
+    (133, 2, 58, 5, N'Vampire Survivors gia 99k content vo tan. Gay nghien kinh khung. Indie hay nhat.', 1, 96, N'2026-05-28 14:11:35.4000000', N'2026-05-28 14:11:35.4000000'),
+    (134, 2, 61, 5, N'Helldivers 2 co-op shooter hay nhat 2024. Gunplay da tay, friendly fire hai huoc.', 1, 105, N'2026-05-29 14:11:35.4000000', N'2026-05-29 14:11:35.4000000'),
+    (135, 2, 63, 5, N'Resident Evil 4 Remake xuat sac toan dien. Capcom giu tinh than original va nang cap.', 1, 71, N'2026-05-30 14:11:35.4000000', N'2026-05-30 14:11:35.4000000'),
+    (136, 3, 50, 5, N'Factorio game engineering hay nhat. Tu dong hoa, toi uu production line. Man nguyen.', 1, 64, N'2026-05-26 14:11:35.4000000', N'2026-05-26 14:11:35.4000000'),
+    (137, 3, 59, 4, N'Stray goc nhin meo doc dao. Cyberpunk world dep, giai do thu vi. Hoi ngan.', 1, 57, N'2026-05-28 14:11:35.4000000', N'2026-05-28 14:11:35.4000000'),
+    (138, 3, 65, 4, N'Warframe free-to-play cong bang nhat. Farm hau het moi thu. Space ninja!', 1, 46, N'2026-05-30 14:11:35.4000000', N'2026-05-30 14:11:35.4000000'),
+    (139, 4, 52, 5, N'Hollow Knight metroidvania dinh cao. The gioi interconnected, boss kho. Silksong dau roi?', 1, 93, N'2026-05-31 14:11:35.4000000', N'2026-05-31 14:11:35.4000000'),
+    (140, 4, 56, 4, N'Subnautica noi so dai duong len tam cao moi. Leviathan thuc su dang so.', 1, 48, N'2026-06-01 14:11:35.4000000', N'2026-06-01 14:11:35.4000000'),
+    (141, 4, 60, 5, N'Dave the Diver ket hop lan bien va quan ly nha hang sang tao. Pixel art dep.', 1, 63, N'2026-06-02 14:11:35.4000000', N'2026-06-02 14:11:35.4000000'),
+    (142, 4, 64, 4, N'Armored Core VI mech game hay nhat. Customization sau, combat toc do cao.', 1, 55, N'2026-06-03 14:11:35.4000000', N'2026-06-03 14:11:35.4000000'),
+    (143, 4, 67, 4, N'Hearts of Iron IV grand strategy WWII hay nhat. Vo so mod, cong dong lon.', 1, 38, N'2026-06-04 14:11:35.4000000', N'2026-06-04 14:11:35.4000000'),
+    (144, 5, 51, 5, N'Hades gameplay cuon hut, cot truyen qua moi lan chet. Supergiant tai nang nhat.', 1, 86, N'2026-05-31 14:11:35.4000000', N'2026-05-31 14:11:35.4000000'),
+    (145, 5, 57, 5, N'Cult of the Lamb cute khong kem thu thach. Quan ly giao phai dungeon crawling sang tao.', 1, 44, N'2026-06-02 14:11:35.4000000', N'2026-06-02 14:11:35.4000000');
     SET IDENTITY_INSERT Reviews OFF;
 END
 GO
@@ -1297,7 +1296,7 @@ BEGIN
     (21, 5, 64, N'2026-03-26 14:37:16.6300000'),
     (22, 5, 7, N'2026-01-21 14:37:16.6300000'),
     (23, 5, 19, N'2025-12-18 14:37:16.6300000'),
-    (24, 5, 30, N'2026-04-25 14:37:16.6300000'),
+    (24, 5, 30, N'2026-04-25 14:37:16.6300000');
     SET IDENTITY_INSERT Wishlists OFF;
 END
 GO
@@ -1326,7 +1325,7 @@ BEGIN
     (15, 4, N'2026-04-29 14:35:07.8600000', 649800, N'Completed', N'Momo'),
     (16, 4, N'2026-04-21 14:35:07.8600000', 499800, N'Pending', N'Wallet'),
     (17, 5, N'2026-04-01 14:35:07.8600000', 879800, N'Completed', N'Momo'),
-    (18, 5, N'2026-02-23 14:35:07.8600000', 749700, N'Cancelled', N'Wallet'),
+    (18, 5, N'2026-02-23 14:35:07.8600000', 749700, N'Cancelled', N'Wallet');
     SET IDENTITY_INSERT Orders OFF;
 END
 GO
@@ -1370,7 +1369,7 @@ BEGIN
     (31, 17, 60, 1, 279900),
     (32, 18, 15, 1, 49900),
     (33, 18, 26, 1, 399900),
-    (34, 18, 20, 1, 299900),
+    (34, 18, 20, 1, 299900);
     SET IDENTITY_INSERT OrderDetails OFF;
 END
 GO
@@ -1395,7 +1394,7 @@ BEGIN
     (11, 12, 899800, N'Momo', N'Completed', N'TXN000011', NULL, N'2026-02-17 14:36:30.9000000', N'2026-02-17 14:36:30.9000000'),
     (12, 13, 799800, N'VnPay', N'Completed', N'TXN000012', NULL, N'2026-05-08 14:36:30.9000000', N'2026-05-08 14:36:30.9000000'),
     (13, 14, 499900, N'VnPay', N'Pending', N'TXN000013', N'Payment for Order #14', N'2026-03-31 14:36:30.9000000', N'2026-03-31 14:36:30.9000000'),
-    (14, 15, 949800, N'VnPay', N'Completed', N'TXN000014', NULL, N'2026-05-27 14:36:30.9000000', N'2026-05-27 14:36:30.9000000'),
+    (14, 15, 949800, N'VnPay', N'Completed', N'TXN000014', NULL, N'2026-05-27 14:36:30.9000000', N'2026-05-27 14:36:30.9000000');
     SET IDENTITY_INSERT Payments OFF;
 END
 GO
@@ -1428,7 +1427,7 @@ BEGIN
     (20, 5, 51, NULL, N'2026-05-08 14:36:30.9233333', N'2026-05-27 14:36:30.9233333', 306),
     (21, 5, 26, NULL, N'2026-05-08 14:36:30.9233333', N'2026-05-11 14:36:30.9233333', 4611),
     (22, 5, 8, NULL, N'2026-05-27 14:36:30.9233333', N'2026-06-07 14:36:30.9233333', 4495),
-    (23, 5, 15, NULL, N'2026-05-27 14:36:30.9233333', N'2026-05-27 14:36:30.9233333', 1993),
+    (23, 5, 15, NULL, N'2026-05-27 14:36:30.9233333', N'2026-05-27 14:36:30.9233333', 1993);
     SET IDENTITY_INSERT Libraries OFF;
 END
 GO
@@ -1455,7 +1454,7 @@ BEGIN
     (13, 2, N'Welcome to GameStore!', N'Thank you for joining GameStore! Start building your game library today.', NULL, 0, N'2025-12-13 14:36:30.9933333'),
     (14, 3, N'Welcome to GameStore!', N'Thank you for joining GameStore! Start building your game library today.', NULL, 0, N'2026-01-12 14:36:30.9933333'),
     (15, 4, N'Welcome to GameStore!', N'Thank you for joining GameStore! Start building your game library today.', NULL, 0, N'2026-02-11 14:36:30.9933333'),
-    (16, 5, N'Welcome to GameStore!', N'Thank you for joining GameStore! Start building your game library today.', NULL, 0, N'2026-03-13 14:36:30.9933333'),
+    (16, 5, N'Welcome to GameStore!', N'Thank you for joining GameStore! Start building your game library today.', NULL, 0, N'2026-03-13 14:36:30.9933333');
     SET IDENTITY_INSERT Notifications OFF;
 END
 GO
