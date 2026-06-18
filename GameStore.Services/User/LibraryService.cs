@@ -34,11 +34,12 @@ public class LibraryService : ILibraryService
             .ToListAsync();
     }
 
-    public async Task<(IEnumerable<object> Items, int TotalCount)> SearchLibraryAsync(int userId, string? keyword, string? sortBy, int page, int pageSize)
+    public async Task<(IEnumerable<object> Items, int TotalCount)> SearchLibraryAsync(int userId, string? keyword, string? sortBy, int page, int pageSize, int? genreId = null)
     {
         var query = _context.Libraries
             .Where(l => l.UserId == userId)
             .Include(l => l.Game)
+                .ThenInclude(g => g.GameGenres)
             .AsQueryable();
 
         // Filter by keyword (search title + developer)
@@ -49,6 +50,12 @@ public class LibraryService : ILibraryService
                 l.Game.Title.ToLower().Contains(kw) ||
                 (l.Game.Developer != null && l.Game.Developer.ToLower().Contains(kw))
             );
+        }
+
+        // Filter by genre
+        if (genreId.HasValue && genreId.Value > 0)
+        {
+            query = query.Where(l => l.Game.GameGenres.Any(gg => gg.GenreId == genreId.Value));
         }
 
         // Count total before paging
@@ -73,7 +80,8 @@ public class LibraryService : ILibraryService
                 l.Game.CoverImageUrl,
                 l.Game.Developer,
                 l.Game.Rating,
-                AcquiredAt = l.AcquiredAt
+                AcquiredAt = l.AcquiredAt,
+                Genres = l.Game.GameGenres.Select(gg => gg.Genre.Name).ToList()
             })
             .ToListAsync();
 

@@ -33,6 +33,10 @@ public class UserController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
+        var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        if (!User.IsInRole("Admin") && id != currentUserId)
+            return Forbid();
+
         var user = await _userService.GetById(id);
         if (user == null) return NotFound(new { message = "User not found" });
         return Ok(new { user.Id, user.Username, user.DisplayName, user.Email, user.Phone, user.AvatarUrl, user.Wallet, user.IsActive, user.CreatedAt });
@@ -41,6 +45,10 @@ public class UserController : ControllerBase
     [HttpPut("{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateUserRequest request)
     {
+        var currentUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
+        if (!User.IsInRole("Admin") && id != currentUserId)
+            return Forbid();
+
         var user = await _userService.GetById(id);
         if (user == null) return NotFound(new { message = "User not found" });
         user.DisplayName = request.DisplayName ?? user.DisplayName;

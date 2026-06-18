@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
-import { libraryAPI } from "../services/api";
+import { libraryAPI, genreAPI } from "../services/api";
+import Pagination from "../components/common/Pagination";
 import {
   Library,
   Gamepad2,
@@ -27,55 +28,66 @@ export default function LibraryPage() {
   const [filter, setFilter] = useState("all");
   const [totalResults, setTotalResults] = useState(0);
   const [searching, setSearching] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pageSize] = useState(12);
+  const [genres, setGenres] = useState([]);
+  const [selectedGenreId, setSelectedGenreId] = useState(0);
+  const [resultKey, setResultKey] = useState(0);
   const searchTimer = useRef(null);
   const inputRef = useRef(null);
 
-  // Fetch library — with debounced search
-  const fetchLibrary = useCallback(async (keyword, sort, page = 1) => {
+  // Fetch library — with pagination + genre filter
+  const fetchLibrary = useCallback(async (keyword, sort, genreId, p = 1) => {
     if (!user) return;
     setSearching(true);
     try {
-      const params = { sortBy: sort, page, pageSize: 100 };
+      const params = { sortBy: sort, page: p, pageSize };
       if (keyword && keyword.trim()) params.keyword = keyword.trim();
+      if (genreId && genreId > 0) params.genreId = genreId;
       const res = await libraryAPI.getMyLibrary(params);
-      // Handle both paginated (with keyword) and non-paginated responses
-      const data = res.data.data || res.data || [];
+      const data = res.data.data || [];
       const count = res.data.totalCount ?? data.length;
+      const pages = res.data.totalPages ?? (Math.ceil(count / pageSize) || 1);
       setGames(data);
       setTotalResults(count);
+      setTotalPages(pages);
+      setPage(p);
+      setResultKey((k) => k + 1);
     } catch {
       // Fallback: no-op
     } finally {
       setLoading(false);
       setSearching(false);
     }
-  }, [user]);
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Initial load
+  // Initial load + fetch genres
   useEffect(() => {
     if (user) {
-      fetchLibrary("", sortBy);
+      fetchLibrary("", sortBy, selectedGenreId);
+      genreAPI.getAll().then((r) => setGenres(r.data || [])).catch(() => {});
     }
   }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Debounced search when keyword or sort changes
+  // Debounced search when keyword or sort changes — resets to page 1
   useEffect(() => {
     if (!user) return;
     if (searchTimer.current) clearTimeout(searchTimer.current);
     // Don't debounce on initial load
     if (loading) return;
     searchTimer.current = setTimeout(() => {
-      fetchLibrary(search, sortBy);
+      fetchLibrary(search, sortBy, selectedGenreId, 1);
     }, 300);
     return () => {
       if (searchTimer.current) clearTimeout(searchTimer.current);
     };
-  }, [search, sortBy, user]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [search, sortBy, selectedGenreId, user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const clearSearch = () => {
     setSearch("");
     setSearching(true);
-    fetchLibrary("", sortBy);
+    fetchLibrary("", sortBy, selectedGenreId, 1);
     inputRef.current?.focus();
   };
 
@@ -245,6 +257,36 @@ export default function LibraryPage() {
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            {/* Genre filter */}
+            <select
+              value={selectedGenreId}
+              onChange={(e) => {
+                setSelectedGenreId(Number(e.target.value));
+                setSearching(true);
+                fetchLibrary(search, sortBy, Number(e.target.value), 1);
+              }}
+              style={{
+                padding: "8px 12px",
+                background: "#2a2a2a",
+                border: "1px solid #333",
+                borderRadius: 10,
+                color: "#ccc",
+                fontSize: 11,
+                fontWeight: 600,
+                cursor: "pointer",
+                outline: "none",
+                letterSpacing: 0.5,
+                maxWidth: 150,
+              }}
+            >
+              <option value={0}>Tất cả thể loại</option>
+              {genres.map((g) => (
+                <option key={g.id} value={g.id}>
+                  {g.name}
+                </option>
+              ))}
+            </select>
+
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
@@ -289,13 +331,26 @@ export default function LibraryPage() {
 
       <div className="container" style={{ paddingTop: 24, paddingBottom: 24 }}>
         {loading ? (
-          <GameCardSkeletonGrid count={12} compact />
+          <GameCardSkeletonGrid count={pageSize} compact />
         ) : displayGames.length === 0 ? (
           <EmptyState gamesCount={games.length} search={search} />
         ) : viewMode === "grid" ? (
-          <GridView games={displayGames} />
+          <GridView key={resultKey} games={displayGames} />
         ) : (
-          <ListView games={displayGames} />
+          <ListView key={resultKey} games={displayGames} />
+        )}
+
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div style={{ marginTop: 32 }}>
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              totalItems={totalResults}
+              pageSize={pageSize}
+              setPage={(p) => fetchLibrary(search, sortBy, selectedGenreId, p)}
+            />
+          </div>
         )}
       </div>
     </div>
@@ -313,7 +368,7 @@ function GridView({ games }) {
         gap: 16,
       }}
     >
-      {games.map((game) => (
+      {games.map((game, i) => (
         <Link
           to={`/game/${game.id}`}
           key={game.id}
@@ -327,6 +382,8 @@ function GridView({ games }) {
               border: "1px solid #2a2a2a",
               transition: "all 0.2s ease",
               cursor: "pointer",
+              animation: `cardFadeInUp 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) both`,
+              animationDelay: `${i * 40}ms`,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = "#fff";
@@ -491,6 +548,8 @@ function ListView({ games }) {
               background: i % 2 === 0 ? "#1a1a1a" : "#151515",
               transition: "background 0.15s",
               cursor: "pointer",
+              animation: `cardFadeInUp 0.35s cubic-bezier(0.25, 0.1, 0.25, 1) both`,
+              animationDelay: `${i * 30}ms`,
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = "#222")}
             onMouseLeave={(e) =>
