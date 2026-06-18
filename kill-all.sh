@@ -185,12 +185,6 @@ for PORT in "${TARGET_PORTS[@]}"; do
     kill_port "$PORT"
 done
 
-# ===== Clean up any remaining processes =====
-if [ "$DRY_RUN" = false ] && [ ${#TARGET_PORTS[@]} -eq 4 ]; then
-    pkill -f "dotnet.*GameStore" 2>/dev/null || true
-    pkill -f "vite" 2>/dev/null || true
-fi
-
 # ===== Clean logs =====
 if [ "$CLEAN_LOGS" = true ]; then
     if [ "$DRY_RUN" = true ]; then
