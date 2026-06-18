@@ -214,7 +214,7 @@ if [ "$FRONTEND" = true ]; then
             else
                 nohup npm run dev >> "$WEB_LOG" 2>&1 &
             fi
-            local FPID=$!
+            FPID=$!
             echo "$FPID" >> "$PID_FILE"
             sleep 3
             if kill -0 "$FPID" 2>/dev/null; then

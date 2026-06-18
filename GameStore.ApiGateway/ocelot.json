@@ -7,14 +7,6 @@
       "UpstreamPathTemplate": "/api/auth/{everything}",
       "UpstreamHttpMethod": ["Get", "Post", "Put", "Delete"]
     },
-  "Routes": [
-    {
-      "DownstreamPathTemplate": "/api/auth/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [{ "Host": "localhost", "Port": 5002 }],
-      "UpstreamPathTemplate": "/api/auth/{everything}",
-      "UpstreamHttpMethod": ["Get", "Post", "Put", "Delete"]
-    },
     {
       "DownstreamPathTemplate": "/api/games/{everything}",
       "DownstreamScheme": "http",

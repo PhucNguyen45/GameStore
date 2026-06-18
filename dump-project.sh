@@ -124,7 +124,6 @@ EXCLUDE_ARGS+=(-not -name ".DS_Store")
 EXCLUDE_ARGS+=(-not -name "*.sql")
 EXCLUDE_ARGS+=(-not -name "*.bak")
 EXCLUDE_ARGS+=(-not -name "$OUTPUT_FILE")
-EXCLUDE_ARGS+=(-not -name "GameStore.sln")
 EXCLUDE_ARGS+=(-not -name "*.sh")
 
 # Extra user exclusions — properly array-based, no quoting issues
