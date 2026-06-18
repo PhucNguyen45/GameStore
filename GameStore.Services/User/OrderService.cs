@@ -77,27 +77,6 @@ public class OrderService : IOrderService
         }).ToList();
     }
 
-    public async Task<(List<Order> Items, int TotalCount)> SearchOrders(int page, int pageSize, string? keyword, DateTime? fromDate, DateTime? toDate, string? status)
-    {
-        var query = _context.Orders.Include(o => o.User).AsQueryable();
-
-        if (!string.IsNullOrEmpty(keyword))
-        {
-            var isNumeric = int.TryParse(keyword, out int orderId);
-            query = query.Where(o => o.User.Username.Contains(keyword) || (isNumeric && o.Id == orderId));
-        }
-        if (fromDate.HasValue) query = query.Where(o => o.OrderDate >= fromDate.Value);
-        if (toDate.HasValue) query = query.Where(o => o.OrderDate <= toDate.Value);
-        if (!string.IsNullOrEmpty(status)) query = query.Where(o => o.Status == status);
-
-        int totalCount = await query.CountAsync();
-        var items = await query.OrderByDescending(o => o.OrderDate)
-                               .Skip((page - 1) * pageSize)
-                               .Take(pageSize)
-                               .ToListAsync();
-        return (items, totalCount);
-    }
-
     public async Task<Order> CreateOrder(int userId, List<(int GameId, int Quantity)> items, string paymentMethod = "Wallet", string? email = null, string? phone = null)
     {
         // Ép buộc chỉ dùng Wallet
@@ -142,8 +121,7 @@ public class OrderService : IOrderService
         {
             UserId = userId,
             TotalAmount = totalAmount,
-            Status = "Pending",
-            PaymentMethod = "Wallet",
+            Status = "Pending",                PaymentMethod = "Wallet",
             Email = email,
             Phone = phone,
             OrderDate = DateTime.UtcNow,
@@ -153,6 +131,7 @@ public class OrderService : IOrderService
 
         // Lưu tất cả
         await _context.SaveChangesAsync();
+
         return order;
     }
 
@@ -168,13 +147,17 @@ public class OrderService : IOrderService
             // Gán key cho từng game + tạo Library entries
             foreach (var detail in order.OrderDetails)
             {
-                for (int i = 0; i < detail.Quantity; i++)
-                {
-                    var key = await _context.GameKeys
-                        .FirstOrDefaultAsync(k => k.GameId == detail.GameId && !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
-                    if (key == null)
-                        throw new Exception($"No available keys for game: {detail.Game?.Title}");
+                // Lấy tất cả key sẵn có cùng lúc để tránh lấy trùng key
+                var availableKeys = await _context.GameKeys
+                    .Where(k => k.GameId == detail.GameId && !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow))
+                    .Take(detail.Quantity)
+                    .ToListAsync();
 
+                if (availableKeys.Count < detail.Quantity)
+                    throw new Exception($"Not enough keys for '{detail.Game?.Title}'. Need {detail.Quantity}, available {availableKeys.Count}");
+
+                foreach (var key in availableKeys)
+                {
                     key.IsUsed = true;
                     key.UsedAt = DateTime.UtcNow;
                     key.OrderDetailId = detail.Id;
@@ -204,8 +187,7 @@ public class OrderService : IOrderService
                 user.Wallet += order.TotalAmount;
                 _context.Users.Update(user);
             }
-            await _notificationService.CreateNotificationAsync(order.UserId, "Đơn hàng đã bị hủy", $"Đơn hàng #{order.Id} đã bị hủy. Nếu bạn đã thanh toán, tiền sẽ được hoàn vào ví.", $"/invoice/{order.Id}"
-    );
+            await _notificationService.CreateNotificationAsync(order.UserId, "Đơn hàng đã bị hủy", $"Đơn hàng #{order.Id} đã bị hủy. Nếu bạn đã thanh toán, tiền sẽ được hoàn vào ví.", $"/invoice/{order.Id}");
         }
 
         order.Status = status;
@@ -216,16 +198,10 @@ public class OrderService : IOrderService
 
     public async Task CancelOrder(int orderId)
     {
-        var order = await _orderRepository.GetByIdAsync(orderId) ?? throw new Exception("Order not found");
+        // Delegate to UpdateStatus to ensure WalletTransaction Refund + notification are recorded.
+        // Guard: không cho hủy đơn đã hoàn thành (đã gán key)
+        var order = await _context.Orders.FindAsync(orderId) ?? throw new Exception("Order not found");
         if (order.Status == "Completed") throw new Exception("Cannot cancel completed order");
-
-        var user = await _userRepository.GetByIdAsync(order.UserId);
-        if (user != null)
-        {
-            user.Wallet += order.TotalAmount;
-            await _userRepository.UpdateAsync(user);
-        }
-        order.Status = "Cancelled";
-        await _orderRepository.UpdateAsync(order);
+        await UpdateStatus(orderId, "Cancelled");
     }
 }

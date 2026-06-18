@@ -1,10 +1,11 @@
 // GameStore.WebClient/src/pages/ForgotPasswordPage.jsx
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { authAPI } from "../services/api";
+import { authAPI } from "../../services/api";
 import toast from "react-hot-toast";
-import { Mail, ArrowLeft, Send, CheckCircle, Copy } from "lucide-react";
+import { Mail, Send, CheckCircle, Copy } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import BackButton from "../../components/common/BackButton";
 
 export default function ForgotPasswordPage() {
   const { t } = useTranslation();
@@ -43,7 +44,7 @@ export default function ForgotPasswordPage() {
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
         alignItems: "center",
         minHeight: "70vh",
         paddingTop: 40,
@@ -53,6 +54,7 @@ export default function ForgotPasswordPage() {
         className="card"
         style={{ padding: 40, maxWidth: 440 }}
       >
+        <BackButton fallback="/login" label={t("forgotPassword.backToLogin")} />
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div
             style={{
@@ -183,15 +185,7 @@ export default function ForgotPasswordPage() {
           </div>
         )}
 
-        <div style={{ textAlign: "center", marginTop: 20 }}>
-          <Link
-            to="/login"
-            className="back-btn"
-          >
-            <ArrowLeft size={14} />
-            {t("forgotPassword.backToLogin")}
-          </Link>
-        </div>
+
       </div>
     </div>
   );

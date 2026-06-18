@@ -1,20 +1,21 @@
 // GameStore.WebClient/src/pages/InvoicePage.jsx
 import { useState, useEffect } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
-import { orderAPI } from "../services/api";
-import { formatVND } from "../utils/format";
+import { orderAPI } from "../../services/api";
+import { formatVND } from "../../utils/format";
 import {
   CheckCircle2,
   Clock,
   XCircle,
-  ArrowLeft,
   Download,
   Printer,
   CreditCard,
   PackageCheck,
   Send,
+  RefreshCw,
 } from "lucide-react";
-import { InvoiceSkeleton } from "../components/common/PageSkeleton";
+import { InvoiceSkeleton } from "../../components/common/PageSkeleton";
+import BackButton from "../../components/common/BackButton";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
@@ -65,28 +66,43 @@ export default function InvoicePage() {
     );
   }
 
-  const steps = [
-    { label: t("invoice.stepPlaced"), icon: PackageCheck, completed: true },
-    { label: t("invoice.stepPayment"), icon: CreditCard, completed: true },
-    {
-      label: t("invoice.stepReview"),
-      icon: Clock,
-      completed: order.status !== "Pending" && order.status !== "Cancelled",
-      active: order.status === "Pending",
-    },
-    {
-      label: t("invoice.stepDelivery"),
-      icon: Send,
-      completed: order.status === "Completed" || order.status === "Approved",
-      active: false,
-    },
-  ];
+  const isCancelled = order.status === "Cancelled" || order.status === "Rejected" || order.status === "Refunded";
+
+  const steps = isCancelled
+    ? [
+        { label: t("invoice.stepPlaced"), icon: PackageCheck, completed: true },
+        { label: t("invoice.stepPayment"), icon: CreditCard, completed: true },
+        {
+          label: t("orders.statusCancelled"),
+          icon: XCircle,
+          completed: true,
+          cancelled: true,
+        },
+      ]
+    : [
+        { label: t("invoice.stepPlaced"), icon: PackageCheck, completed: true },
+        { label: t("invoice.stepPayment"), icon: CreditCard, completed: true },
+        {
+          label: t("invoice.stepReview"),
+          icon: Clock,
+          completed: order.status !== "Pending",
+          active: order.status === "Pending",
+        },
+        {
+          label: t("invoice.stepDelivery"),
+          icon: Send,
+          completed: order.status === "Completed" || order.status === "Approved",
+          active: false,
+        },
+      ];
 
   const getStatusBadge = () => {
     if (order.status === "Completed" || order.status === "Approved") {
       return { text: t("invoice.approved"), color: "#10b981", icon: CheckCircle2 };
     } else if (order.status === "Cancelled" || order.status === "Rejected") {
-      return { text: t("invoice.rejected"), color: "#ef4444", icon: XCircle };
+      return { text: t("orders.statusCancelled"), color: "#ef4444", icon: XCircle };
+    } else if (order.status === "Refunded") {
+      return { text: t("orders.statusRefunded"), color: "#ff9800", icon: RefreshCw };
     }
     return { text: t("invoice.waiting"), color: "#f59e0b", icon: Clock };
   };
@@ -95,16 +111,8 @@ export default function InvoicePage() {
 
   return (
     <div className="container" style={{ paddingTop: 40, maxWidth: 800 }}>
-      <Link
-        to="/store"
-        className="back-btn"
-        style={{ marginBottom: 30 }}
-      >
-        <ArrowLeft size={18} /> {t("invoice.backToStore")}
-      </Link>
-
-      <div          className="invoice-stepper"
-          style={{
+      <BackButton fallback="/store" label={t("invoice.backToStore")} />
+      <div className="invoice-stepper" style={{
           background: "#16162a",
           padding: "30px 40px",
           borderRadius: 20,
@@ -131,11 +139,13 @@ export default function InvoicePage() {
                 width: 50,
                 height: 50,
                 borderRadius: "50%",
-                background: step.completed
-                  ? "#10b981"
-                  : step.active
-                    ? "#f59e0b"
-                    : "#1a1a3e",
+                background: step.cancelled
+                  ? "#ef4444"
+                  : step.completed
+                    ? "#10b981"
+                    : step.active
+                      ? "#f59e0b"
+                      : "#1a1a3e",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -146,14 +156,14 @@ export default function InvoicePage() {
             >
               <step.icon
                 size={24}
-                color={step.completed || step.active ? "#fff" : "#6b6b8e"}
+                color={step.cancelled || step.completed || step.active ? "#fff" : "#6b6b8e"}
               />
             </div>
             <span
               style={{
                 fontSize: 12,
                 fontWeight: 600,
-                color: step.completed || step.active ? "#fff" : "#6b6b8e",
+                color: step.cancelled ? "#ef4444" : step.completed || step.active ? "#fff" : "#6b6b8e",
                 textAlign: "center",
               }}
             >
@@ -168,7 +178,7 @@ export default function InvoicePage() {
                   left: "50%",
                   width: "100%",
                   height: 2,
-                  background: step.completed ? "#10b981" : "#2a2a4a",
+                  background: step.cancelled ? "#ef4444" : step.completed ? "#10b981" : "#2a2a4a",
                   zIndex: 1,
                 }}
               />

@@ -1,8 +1,8 @@
 // GameStore.WebClient/src/pages/ProfilePage.jsx
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { userAPI } from "../services/api";
+import { useAuth } from "../../contexts/AuthContext";
+import { userAPI } from "../../services/api";
 import toast from "react-hot-toast";
 import {
   User,
@@ -14,7 +14,7 @@ import {
   EyeOff,
   CheckCircle,
 } from "lucide-react";
-import { ProfileSkeleton } from "../components/common/PageSkeleton";
+import { ProfileSkeleton } from "../../components/common/PageSkeleton";
 import { useTranslation } from "react-i18next";
 
 export default function ProfilePage() {
@@ -643,13 +643,6 @@ export default function ProfilePage() {
               flexWrap: "wrap",
             }}
           >
-          <button
-            type="button"
-            onClick={() => navigate(-1)}
-            className="btn btn-outline"
-          >
-            {t("profile.cancel")}
-          </button>
           <button
             type="submit"
             disabled={saving}

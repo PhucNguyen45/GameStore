@@ -1,8 +1,9 @@
 // GameStore.WebClient/src/pages/LoginPage.jsx
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { LogIn, User, Lock, AlertCircle, ArrowLeft } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { LogIn, User, Lock, AlertCircle } from "lucide-react";
+import BackButton from "../../components/common/BackButton";
 import { useTranslation } from "react-i18next";
 
 export default function LoginPage() {
@@ -50,7 +51,7 @@ export default function LoginPage() {
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
         alignItems: "center",
         minHeight: "70vh",
         paddingTop: 40,
@@ -80,14 +81,8 @@ export default function LoginPage() {
         className="card"
         style={{ padding: 40, maxWidth: 420 }}
       >
-        <Link
-          to="/store"
-          className="back-btn"
-          style={{ marginBottom: 20 }}
-        >
-          <ArrowLeft size={16} />
-          Cửa hàng
-        </Link>
+
+        <BackButton fallback="/store" label="Cửa hàng" />
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div
             style={{

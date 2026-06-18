@@ -35,10 +35,10 @@
   --border-subtle: #1a1a2e;
 
   /* Shadows */
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 16px rgba(0,0,0,0.25);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.35);
-  --shadow-xl: 0 12px 48px rgba(0,0,0,0.5);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 12px 48px rgba(0, 0, 0, 0.5);
 
   /* Typography */
   --font-xs: 11px;
@@ -146,19 +146,19 @@ a {
 
 /* Ripple effect pseudo-element */
 .btn::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
-  background: rgba(255,255,255,0);
+  background: rgba(255, 255, 255, 0);
   border-radius: inherit;
   transition: background 0.3s ease;
   pointer-events: none;
 }
 .btn:hover::after {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
 }
 .btn:active::after {
-  background: rgba(255,255,255,0.12);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 /* Primary — accent filled with depth */
@@ -184,58 +184,58 @@ a {
 .btn-outline {
   background: transparent;
   color: var(--text-secondary);
-  border: 1.5px solid rgba(255,255,255,0.15);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
   box-shadow: none;
 }
 .btn-outline:hover {
   color: var(--text-primary);
-  border-color: rgba(255,255,255,0.4);
-  background: rgba(255,255,255,0.04);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.04);
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 .btn-outline:active {
   transform: translateY(0) scale(0.97);
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
 }
 .btn-outline:focus-visible {
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
 }
 
 /* Danger — soft red */
 .btn-danger {
   background: linear-gradient(135deg, #e94560, #c23152);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(233,69,96,0.25);
+  box-shadow: 0 4px 12px rgba(233, 69, 96, 0.25);
 }
 .btn-danger:hover {
   background: linear-gradient(135deg, #ff5a77, #d63a5a);
-  box-shadow: 0 6px 20px rgba(233,69,96,0.35);
+  box-shadow: 0 6px 20px rgba(233, 69, 96, 0.35);
   transform: translateY(-2px);
 }
 .btn-danger:active {
   transform: translateY(0) scale(0.97);
-  box-shadow: 0 2px 6px rgba(233,69,96,0.3);
+  box-shadow: 0 2px 6px rgba(233, 69, 96, 0.3);
 }
 .btn-danger:focus-visible {
-  box-shadow: 0 0 0 4px rgba(233,69,96,0.4);
+  box-shadow: 0 0 0 4px rgba(233, 69, 96, 0.4);
 }
 
 /* Success — green */
 .btn-success {
   background: linear-gradient(135deg, #00c853, #009624);
   color: #000;
-  box-shadow: 0 4px 12px rgba(0,200,83,0.25);
+  box-shadow: 0 4px 12px rgba(0, 200, 83, 0.25);
 }
 .btn-success:hover {
-  box-shadow: 0 6px 20px rgba(0,200,83,0.35);
+  box-shadow: 0 6px 20px rgba(0, 200, 83, 0.35);
   transform: translateY(-2px);
 }
 .btn-success:active {
   transform: translateY(0) scale(0.97);
 }
 .btn-success:focus-visible {
-  box-shadow: 0 0 0 4px rgba(0,200,83,0.4);
+  box-shadow: 0 0 0 4px rgba(0, 200, 83, 0.4);
 }
 
 /* Ghost — subtle, minimal */
@@ -246,16 +246,16 @@ a {
   box-shadow: none;
 }
 .btn-ghost:hover {
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   color: #e0e0e0;
   transform: translateY(-1px);
 }
 .btn-ghost:active {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   transform: translateY(0) scale(0.97);
 }
 .btn-ghost:focus-visible {
-  box-shadow: 0 0 0 3px rgba(255,255,255,0.15);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15);
 }
 
 /* Sizes — all rounded */
@@ -299,7 +299,7 @@ a {
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.8);
+  background: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
@@ -352,24 +352,24 @@ a {
   white-space: nowrap;
 }
 .badge-accent {
-  background: rgba(0,120,242,0.15);
+  background: rgba(0, 120, 242, 0.15);
   color: var(--accent);
-  border: 1px solid rgba(0,120,242,0.3);
+  border: 1px solid rgba(0, 120, 242, 0.3);
 }
 .badge-success {
-  background: rgba(0,200,83,0.15);
+  background: rgba(0, 200, 83, 0.15);
   color: #10b981;
-  border: 1px solid rgba(0,200,83,0.3);
+  border: 1px solid rgba(0, 200, 83, 0.3);
 }
 .badge-danger {
-  background: rgba(233,69,96,0.15);
+  background: rgba(233, 69, 96, 0.15);
   color: #e94560;
-  border: 1px solid rgba(233,69,96,0.3);
+  border: 1px solid rgba(233, 69, 96, 0.3);
 }
 .badge-warning {
-  background: rgba(255,193,7,0.15);
+  background: rgba(255, 193, 7, 0.15);
   color: #f59e0b;
-  border: 1px solid rgba(255,193,7,0.3);
+  border: 1px solid rgba(255, 193, 7, 0.3);
 }
 
 /* ────────────────────────────────────────
@@ -382,20 +382,32 @@ a {
   font-size: 11px;
 }
 .status-dot::before {
-  content: '';
+  content: "";
   width: 7px;
   height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
 }
-.status-dot.active::before { background: #4caf50; }
-.status-dot.active { color: #4caf50; }
+.status-dot.active::before {
+  background: #4caf50;
+}
+.status-dot.active {
+  color: #4caf50;
+}
 .status-dot.inactive::before,
-.status-dot.locked::before { background: #e94560; }
+.status-dot.locked::before {
+  background: #e94560;
+}
 .status-dot.inactive,
-.status-dot.locked { color: #e94560; }
-.status-dot.pending::before { background: #f59e0b; }
-.status-dot.pending { color: #f59e0b; }
+.status-dot.locked {
+  color: #e94560;
+}
+.status-dot.pending::before {
+  background: #f59e0b;
+}
+.status-dot.pending {
+  color: #f59e0b;
+}
 
 /* ────────────────────────────────────────
    Empty State
@@ -444,11 +456,11 @@ a {
   transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 .input:hover {
-  border-color: rgba(255,255,255,0.2);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 .input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(0,120,242,0.15);
+  box-shadow: 0 0 0 3px rgba(0, 120, 242, 0.15);
 }
 .input::placeholder {
   color: #555;
@@ -471,8 +483,12 @@ a {
 }
 
 /* Input validation states */
-.input-error { border-color: #e94560 !important; }
-.input-success { border-color: #4caf50 !important; }
+.input-error {
+  border-color: #e94560 !important;
+}
+.input-success {
+  border-color: #4caf50 !important;
+}
 
 /* Textarea variant */
 textarea.input {
@@ -586,7 +602,9 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes langFadeIn {
@@ -673,7 +691,7 @@ button.back-btn {
 a.back-btn:hover,
 button.back-btn:hover {
   color: #fff;
-  background: rgba(255,255,255,0.06);
+  background: rgba(255, 255, 255, 0.06);
   transform: translateX(2px);
   text-decoration: none;
 }
@@ -697,7 +715,6 @@ button.back-btn:hover svg {
 .hero-banner {
   position: relative;
   width: 100%;
-  border-radius: 16px;
   overflow: hidden;
   background: #1a1a1a;
   margin-bottom: 32px;
@@ -732,14 +749,19 @@ button.back-btn:hover svg {
 .hero-gradient-left {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(18,18,18,0.92) 0%, rgba(18,18,18,0.7) 35%, transparent 60%);
+  background: linear-gradient(
+    90deg,
+    rgba(18, 18, 18, 0.92) 0%,
+    rgba(18, 18, 18, 0.7) 35%,
+    transparent 60%
+  );
   z-index: 1;
 }
 
 .hero-gradient-bottom {
   position: absolute;
   inset: 0;
-  background: linear-gradient(0deg, rgba(18,18,18,0.6) 0%, transparent 50%);
+  background: linear-gradient(0deg, rgba(18, 18, 18, 0.6) 0%, transparent 50%);
   z-index: 1;
 }
 
@@ -779,7 +801,7 @@ button.back-btn:hover svg {
 .hero-discount-price {
   font-size: 13px;
   font-weight: 600;
-  color: rgba(255,255,255,0.85);
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .hero-rating {
@@ -828,9 +850,9 @@ button.back-btn:hover svg {
   border-radius: 20px;
   font-size: 11px;
   font-weight: 500;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   color: #aaa;
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .hero-actions {
@@ -857,7 +879,7 @@ button.back-btn:hover svg {
 }
 .hero-btn-primary:hover {
   background: linear-gradient(135deg, #ff5a77, #d63a5a);
-  box-shadow: 0 6px 20px rgba(233,69,96,0.35);
+  box-shadow: 0 6px 20px rgba(233, 69, 96, 0.35);
   transform: translateY(-2px);
 }
 .hero-btn-primary:active {
@@ -869,9 +891,9 @@ button.back-btn:hover svg {
   align-items: center;
   gap: 6px;
   padding: 10px 22px;
-  border: 1.5px solid rgba(255,255,255,0.2);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
   border-radius: 10px;
-  background: rgba(0,0,0,0.3);
+  background: rgba(0, 0, 0, 0.3);
   color: #ddd;
   font-size: 13px;
   font-weight: 600;
@@ -881,8 +903,8 @@ button.back-btn:hover svg {
   white-space: nowrap;
 }
 .hero-btn-secondary:hover {
-  border-color: rgba(255,255,255,0.4);
-  background: rgba(255,255,255,0.06);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
   color: #fff;
   transform: translateY(-2px);
 }
@@ -900,7 +922,7 @@ button.back-btn:hover svg {
   height: 40px;
   border: none;
   border-radius: 50%;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -914,11 +936,15 @@ button.back-btn:hover svg {
   opacity: 1;
 }
 .hero-arrow:hover {
-  background: rgba(0,0,0,0.75);
+  background: rgba(0, 0, 0, 0.75);
   transform: translateY(-50%) scale(1.1);
 }
-.hero-arrow-left { left: 16px; }
-.hero-arrow-right { right: 16px; }
+.hero-arrow-left {
+  left: 16px;
+}
+.hero-arrow-right {
+  right: 16px;
+}
 
 @media (hover: none) {
   .hero-arrow {
@@ -941,7 +967,7 @@ button.back-btn:hover svg {
   height: 8px;
   border-radius: 50%;
   border: none;
-  background: rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 0;
@@ -952,7 +978,7 @@ button.back-btn:hover svg {
   border-radius: 4px;
 }
 .hero-dot:hover {
-  background: rgba(255,255,255,0.6);
+  background: rgba(255, 255, 255, 0.6);
 }
 
 /* Counter */
@@ -1016,8 +1042,12 @@ button.back-btn:hover svg {
     width: 32px;
     height: 32px;
   }
-  .hero-arrow-left { left: 8px; }
-  .hero-arrow-right { right: 8px; }
+  .hero-arrow-left {
+    left: 8px;
+  }
+  .hero-arrow-right {
+    right: 8px;
+  }
 }
 
 /* ────────────────────────────────────────
@@ -1039,8 +1069,12 @@ button.back-btn:hover svg {
    Shimmer animation for lazy-loaded thumbnails
    ──────────────────────────────────────── */
 @keyframes shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 /* Fullscreen trailer */

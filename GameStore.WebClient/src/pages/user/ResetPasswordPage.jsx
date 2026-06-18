@@ -1,9 +1,10 @@
 // GameStore.WebClient/src/pages/ResetPasswordPage.jsx
 import { useState } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import { authAPI } from "../services/api";
+import { authAPI } from "../../services/api";
 import toast from "react-hot-toast";
-import { Lock, Eye, EyeOff, CheckCircle, ArrowLeft, KeyRound } from "lucide-react";
+import { Lock, Eye, EyeOff, CheckCircle, KeyRound } from "lucide-react";
+import BackButton from "../../components/common/BackButton";
 import { useTranslation } from "react-i18next";
 
 export default function ResetPasswordPage() {
@@ -92,11 +93,12 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "70vh", paddingTop: 40 }}>
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", minHeight: "70vh", paddingTop: 40 }}>
       <div
         className="card"
         style={{ padding: 40, maxWidth: 440 }}
       >
+        <BackButton fallback="/login" label={t("resetPassword.backToLogin")} />
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div
             style={{
@@ -216,15 +218,7 @@ export default function ResetPasswordPage() {
           </button>
         </form>
 
-        <div style={{ textAlign: "center", marginTop: 20 }}>
-          <Link
-            to="/login"
-            className="back-btn"
-          >
-            <ArrowLeft size={14} />
-            {t("resetPassword.backToLogin")}
-          </Link>
-        </div>
+
       </div>
     </div>
   );

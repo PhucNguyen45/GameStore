@@ -3,11 +3,13 @@ import { useState } from "react";
 import { X, Wallet, CreditCard } from "lucide-react";
 import { userAPI } from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
-import { formatVND, formatVNDRaw } from "../../utils/format";
+import { formatVND } from "../../utils/format";
+import { useTranslation } from "react-i18next";
 
 const AMOUNTS = [10000, 20000, 50000, 100000, 200000, 500000];
 
 export default function WalletModal({ onClose }) {
+  const { t } = useTranslation();
   const [amount, setAmount] = useState(50000);
   const [customAmount, setCustomAmount] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,10 +32,10 @@ export default function WalletModal({ onClose }) {
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
 
-      setMessage(`✅ Đã nạp ${formatVND(finalAmount)}!`);
+      setMessage(`✅ ${t("wallet.success", { amount: formatVND(finalAmount) })}`);
       setTimeout(() => onClose(), 1000);
     } catch (err) {
-      setMessage("❌ Nạp tiền thất bại");
+      setMessage(`❌ ${t("wallet.failed")}`);
     } finally {
       setLoading(false);
     }
@@ -61,7 +63,7 @@ export default function WalletModal({ onClose }) {
               color: "#fff",
             }}
           >
-            <Wallet size={24} color="#4fc3f7" /> Nạp tiền
+            <Wallet size={24} color="#4fc3f7" /> {t("wallet.title")}
           </h2>
           <button
             onClick={onClose}
@@ -87,7 +89,7 @@ export default function WalletModal({ onClose }) {
           }}
         >
           <p style={{ color: "#888", fontSize: 13, marginBottom: 4 }}>
-            Số dư hiện tại
+            {t("wallet.balance")}
           </p>
           <p style={{ fontSize: 28, fontWeight: 800, color: "#4fc3f7" }}>
             {formatVND(user?.wallet)}
@@ -96,7 +98,7 @@ export default function WalletModal({ onClose }) {
 
         {/* Quick Amounts */}
         <p style={{ color: "#888", fontSize: 13, marginBottom: 10 }}>
-          Chọn số tiền
+          {t("wallet.selectAmount")}
         </p>
         <div
           style={{
@@ -138,7 +140,7 @@ export default function WalletModal({ onClose }) {
           <span style={{ position: "absolute", left: 14, top: 14, color: "#888", fontSize: 16, fontWeight: 600 }}>₫</span>
           <input
             type="number"
-            placeholder="Nhập số tiền"
+            placeholder={t("wallet.customAmount")}
             value={customAmount}
             onChange={(e) => {
               setCustomAmount(e.target.value);
@@ -181,8 +183,8 @@ export default function WalletModal({ onClose }) {
           className="btn btn-primary btn-block btn-lg"
         >
           {loading
-            ? "Đang xử lý..."
-            : `Nạp ${formatVND(customAmount || amount)}`}
+            ? t("wallet.processing")
+            : `${t("wallet.topUp", { amount: formatVND(customAmount || amount) })}`}
         </button>
 
         {/* Payment Methods */}
@@ -203,7 +205,7 @@ export default function WalletModal({ onClose }) {
               fontSize: 12,
             }}
           >
-            <CreditCard size={14} /> Thẻ
+            <CreditCard size={14} /> {t("wallet.card")}
           </span>
         </div>
       </div>

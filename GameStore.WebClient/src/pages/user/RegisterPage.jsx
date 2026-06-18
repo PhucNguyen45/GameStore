@@ -1,8 +1,9 @@
 // GameStore.WebClient/src/pages/RegisterPage.jsx
 import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../contexts/AuthContext";
-import { UserPlus, User, Lock, Mail, Phone, AlertCircle, CheckCircle2, ArrowLeft } from "lucide-react";
+import { useAuth } from "../../contexts/AuthContext";
+import { UserPlus, User, Lock, Mail, Phone, AlertCircle, CheckCircle2 } from "lucide-react";
+import BackButton from "../../components/common/BackButton";
 import { useTranslation } from "react-i18next";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -95,7 +96,7 @@ export default function RegisterPage() {
     <div
       style={{
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
         alignItems: "center",
         minHeight: "70vh",
         padding: "40px 16px",
@@ -110,16 +111,8 @@ export default function RegisterPage() {
           position: "relative",
         }}
       >
-        {/* Back button */}
-        <Link
-          to="/login"
-          className="back-btn"
-          style={{ marginBottom: 20 }}
-        >
-          <ArrowLeft size={16} />
-          {t("auth.loginLink")}
-        </Link>
 
+        <BackButton fallback="/login" label={t("auth.loginLink")} />
         <div style={{ textAlign: "center", marginBottom: 30 }}>
           <div
             style={{
@@ -168,7 +161,7 @@ export default function RegisterPage() {
             { icon: Phone, placeholder: t("auth.phone"), key: "phone" },
           ].map(({ icon: Icon, key, placeholder, type, required }) => (
             <div key={key} style={{ marginBottom: 4 }}>
-              <div className="input-icon">
+              <div className="input-icon input-with-icon">
                 <Icon size={18} className="icon" />
                 <input
                   className={`input ${hasError(key) ? 'input-error' : isValid(key) ? 'input-success' : ''}`}
@@ -178,9 +171,6 @@ export default function RegisterPage() {
                   onChange={(e) => handleChange(key, e.target.value)}
                   onBlur={() => handleBlur(key)}
                   required={required}
-                  style={{
-                    paddingRight: isValid(key) || hasError(key) ? 40 : 42,
-                  }}
                 />
                 {isValid(key) && <CheckCircle2 size={16} color="#4caf50" className="icon-right" />}
                 {hasError(key) && <AlertCircle size={16} color="#e94560" className="icon-right" />}

@@ -1,25 +1,25 @@
 // GameStore.WebClient/src/pages/GameDetailPage.jsx
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { formatVND } from "../utils/format";
-import { useResponsive } from "../hooks/useResponsive";
+import { formatVND } from "../../utils/format";
+import { useResponsive } from "../../hooks/useResponsive";
 import {
   gameAPI,
   libraryAPI,
   orderAPI,
   wishlistAPI,
   reviewAPI,
-} from "../services/api";
-import useCartStore from "../stores/cartStore";
-import { useAuth } from "../contexts/AuthContext";
+} from "../../services/api";
+import useCartStore from "../../stores/cartStore";
+import { useAuth } from "../../contexts/AuthContext";
 import toast from "react-hot-toast";
-import TrailerPlayer from "../components/games/TrailerPlayer";
-import GameDetailSkeleton from "../components/games/GameDetailSkeleton";
-import GameNotFound from "../components/games/GameNotFound";
-import RequirementsSection from "../components/games/RequirementsSection";
-import GameKeysSection from "../components/games/GameKeysSection";
-import ReviewSection from "../components/games/ReviewSection";
-import OverviewSection from "../components/games/OverviewSection";
+import TrailerPlayer from "../../components/games/TrailerPlayer";
+import GameDetailSkeleton from "../../components/games/GameDetailSkeleton";
+import GameNotFound from "../../components/games/GameNotFound";
+import RequirementsSection from "../../components/games/RequirementsSection";
+import GameKeysSection from "../../components/games/GameKeysSection";
+import ReviewSection from "../../components/games/ReviewSection";
+import OverviewSection from "../../components/games/OverviewSection";
 import {
   Star,
   ShoppingCart,
@@ -27,9 +27,9 @@ import {
   Heart,
   Users,
   Check,
-  ChevronLeft,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import BackButton from "../../components/common/BackButton";
 
 export default function GameDetailPage() {
   const { t } = useTranslation();
@@ -207,21 +207,8 @@ export default function GameDetailPage() {
             zIndex: 1,
           }}
         >
-          {/* Back to store */}
-          <div style={{ marginBottom: 20 }}>
-            <button
-              onClick={() => navigate("/store")}
-              className="back-btn"
-              style={{
-                background: "rgba(0,0,0,0.4)",
-                border: "1px solid rgba(255,255,255,0.15)",
-                padding: "6px 14px",
-              }}
-            >
-              <ChevronLeft size={16} />
-              {t("gameDetail.backToStore")}
-            </button>
-          </div>
+
+          <BackButton fallback="/store" label={t("gameDetail.backToStore")} />
           <div style={{ marginBottom: 16 }}>
             <span
               style={{

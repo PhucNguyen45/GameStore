@@ -96,31 +96,13 @@ public class UserController : ControllerBase
     public async Task<IActionResult> GetProfile()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var user = await _userService.GetById(userId);
-        if (user == null) return NotFound();
-        return Ok(new { user.Id, user.Username, user.DisplayName, user.Email, user.Phone, user.AvatarUrl, user.Wallet, user.IsActive, user.CreatedAt });
+        return await GetById(userId);
     }
 
     [HttpPut("profile")]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserRequest request)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var user = await _userService.GetById(userId);
-        if (user == null) return NotFound(new { message = "User not found" });
-
-        user.DisplayName = request.DisplayName ?? user.DisplayName;
-        user.Email = request.Email ?? user.Email;
-        user.Phone = request.Phone ?? user.Phone;
-        user.AvatarUrl = !string.IsNullOrEmpty(request.AvatarUrl) ? request.AvatarUrl : user.AvatarUrl;
-
-        try
-        {
-            await _userService.Update(user, request.Password, request.CurrentPassword);
-            return Ok(new { message = "Profile updated" });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        return await Update(userId, request);
     }
 }

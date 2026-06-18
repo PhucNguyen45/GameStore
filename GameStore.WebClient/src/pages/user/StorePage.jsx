@@ -1,19 +1,13 @@
 // GameStore.WebClient/src/pages/StorePage.jsx
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
-import { useResponsive } from "../hooks/useResponsive";
-import { gameAPI, genreAPI } from "../services/api";
-import GameCard from "../components/games/GameCard";
-import { GameCardSkeletonGrid } from "../components/games/GameCardSkeleton";
-import Pagination from "../components/common/Pagination";
-import {
-  Search,
-  Check,
-  X,
-  ArrowUpDown,
-  Filter,
-} from "lucide-react";
-import HeroBanner from "../components/store/HeroBanner";
+import { useResponsive } from "../../hooks/useResponsive";
+import { gameAPI, genreAPI } from "../../services/api";
+import GameCard from "../../components/games/GameCard";
+import { GameCardSkeletonGrid } from "../../components/games/GameCardSkeleton";
+import Pagination from "../../components/common/Pagination";
+import { Search, Check, X, ArrowUpDown, Filter } from "lucide-react";
+import HeroBanner from "../../components/store/HeroBanner";
 import { useTranslation } from "react-i18next";
 
 export default function StorePage() {
@@ -38,14 +32,15 @@ export default function StorePage() {
 
   useEffect(() => {
     genreAPI.getAll().then((r) => setGenres(r.data));
-    gameAPI.getFeatured(6).then((r) => setFeatured(r.data || [])).catch(() => {});
+    gameAPI
+      .getFeatured(6)
+      .then((r) => setFeatured(r.data || []))
+      .catch(() => {});
   }, []);
 
   const toggleGenre = (id) => {
     setSelectedGenres((prev) =>
-      prev.includes(id)
-        ? prev.filter((gid) => gid !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((gid) => gid !== id) : [...prev, id],
     );
     setPage(1);
   };
@@ -100,15 +95,26 @@ export default function StorePage() {
   const isDesktop = breakpoint !== "xs" && breakpoint !== "sm";
 
   const renderFilterContent = (sidebar = false) => (
-    <div style={{
-      background: "#16162a",
-      border: "1px solid #2a2a4a",
-      borderRadius: 12,
-      padding: sidebar ? 20 : "clamp(14px, 2.5vw, 20px)",
-    }}>
+    <div
+      style={{
+        background: "#16162a",
+        border: "1px solid #2a2a4a",
+        borderRadius: 12,
+        padding: sidebar ? 20 : "clamp(14px, 2.5vw, 20px)",
+      }}
+    >
       {/* Genre chips */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: "#6b6b8e", textTransform: "uppercase", letterSpacing: 1, marginBottom: 10 }}>
+        <div
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            color: "#6b6b8e",
+            textTransform: "uppercase",
+            letterSpacing: 1,
+            marginBottom: 10,
+          }}
+        >
           {t("store.genres")}
         </div>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -125,8 +131,12 @@ export default function StorePage() {
                   gap: 4,
                   padding: "6px 12px",
                   borderRadius: 20,
-                  border: isSelected ? "1px solid var(--accent)" : "1px solid #2a2a4a",
-                  background: isSelected ? "rgba(0,120,242,0.15)" : "transparent",
+                  border: isSelected
+                    ? "1px solid var(--accent)"
+                    : "1px solid #2a2a4a",
+                  background: isSelected
+                    ? "rgba(0,120,242,0.15)"
+                    : "transparent",
                   color: isSelected ? "#fff" : "#999",
                   cursor: "pointer",
                   fontSize: 12,
@@ -144,29 +154,65 @@ export default function StorePage() {
       </div>
 
       {/* Price + Sort + Clear */}
-      <div style={{
-        display: "flex",
-        flexDirection: sidebar ? "column" : "row",
-        flexWrap: "wrap",
-        gap: 10,
-        alignItems: sidebar ? "stretch" : "center",
-      }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: sidebar ? "column" : "row",
+          flexWrap: "wrap",
+          gap: 10,
+          alignItems: sidebar ? "stretch" : "center",
+        }}
+      >
         {/* Price Range */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6, background: "#0a0a15", borderRadius: 10, padding: "6px 12px", border: "1px solid #2a2a4a" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            background: "#0a0a15",
+            borderRadius: 10,
+            padding: "6px 12px",
+            border: "1px solid #2a2a4a",
+          }}
+        >
           <input
             type="number"
             placeholder={t("store.minPrice")}
             value={minPrice}
-            onChange={(e) => { setMinPrice(e.target.value); setPage(1); }}
-            style={{ width: 72, padding: "4px 0", background: "transparent", border: "none", color: "#e0e0e0", fontSize: 13, outline: "none", MozAppearance: "textfield" }}
+            onChange={(e) => {
+              setMinPrice(e.target.value);
+              setPage(1);
+            }}
+            style={{
+              width: 80,
+              padding: "4px 0",
+              background: "transparent",
+              border: "none",
+              color: "#e0e0e0",
+              fontSize: 13,
+              outline: "none",
+              MozAppearance: "textfield",
+            }}
           />
           <span style={{ color: "#555", fontSize: 13 }}>—</span>
           <input
             type="number"
             placeholder={t("store.maxPrice")}
             value={maxPrice}
-            onChange={(e) => { setMaxPrice(e.target.value); setPage(1); }}
-            style={{ width: 72, padding: "4px 0", background: "transparent", border: "none", color: "#e0e0e0", fontSize: 13, outline: "none", MozAppearance: "textfield" }}
+            onChange={(e) => {
+              setMaxPrice(e.target.value);
+              setPage(1);
+            }}
+            style={{
+              width: 80,
+              padding: "4px 0",
+              background: "transparent",
+              border: "none",
+              color: "#e0e0e0",
+              fontSize: 13,
+              outline: "none",
+              MozAppearance: "textfield",
+            }}
           />
         </div>
 
@@ -180,10 +226,20 @@ export default function StorePage() {
             else setDesc(true);
             handleFilterChange();
           }}
-          style={{ padding: "8px 12px", background: "#0a0a15", border: "1px solid #2a2a4a", borderRadius: 10, color: "#e0e0e0", fontSize: 13, cursor: "pointer", outline: "none" }}
+          style={{
+            padding: "8px 12px",
+            background: "#0a0a15",
+            border: "1px solid #2a2a4a",
+            borderRadius: 10,
+            color: "#e0e0e0",
+            fontSize: 13,
+            cursor: "pointer",
+            outline: "none",
+          }}
         >
           <option value="totalSales">{t("store.bestSelling")}</option>
           <option value="rating">{t("store.highestRated")}</option>
+          <option value="price">{t("store.priceLowToHigh")}</option>
           <option value="releaseDate">{t("store.newest")}</option>
           <option value="title">{t("store.nameAZ")}</option>
         </select>
@@ -191,8 +247,24 @@ export default function StorePage() {
         {/* Asc/Desc */}
         <button
           type="button"
-          onClick={() => { setDesc(!desc); handleFilterChange(); }}
-          style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 12px", background: "#0a0a15", border: "1px solid #2a2a4a", borderRadius: 10, color: "#ccc", cursor: "pointer", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}
+          onClick={() => {
+            setDesc(!desc);
+            handleFilterChange();
+          }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 4,
+            padding: "8px 12px",
+            background: "#0a0a15",
+            border: "1px solid #2a2a4a",
+            borderRadius: 10,
+            color: "#ccc",
+            cursor: "pointer",
+            fontSize: 12,
+            fontWeight: 600,
+            whiteSpace: "nowrap",
+          }}
         >
           <ArrowUpDown size={14} />
           {desc ? t("store.desc") : t("store.asc")}
@@ -203,7 +275,20 @@ export default function StorePage() {
           <button
             type="button"
             onClick={clearFilters}
-            style={{ display: "flex", alignItems: "center", gap: 4, padding: "8px 14px", background: "transparent", border: "1px solid rgba(233,69,96,0.3)", borderRadius: 10, color: "#e94560", cursor: "pointer", fontSize: 12, fontWeight: 600, whiteSpace: "nowrap" }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              padding: "8px 14px",
+              background: "transparent",
+              border: "1px solid rgba(233,69,96,0.3)",
+              borderRadius: 10,
+              color: "#e94560",
+              cursor: "pointer",
+              fontSize: 12,
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+            }}
           >
             <X size={14} /> {t("store.clearAll")}
           </button>
@@ -253,7 +338,10 @@ export default function StorePage() {
         {search && (
           <button
             type="button"
-            onClick={() => { setSearch(""); setPage(1); }}
+            onClick={() => {
+              setSearch("");
+              setPage(1);
+            }}
             style={{
               background: "none",
               border: "none",
@@ -318,7 +406,7 @@ export default function StorePage() {
   );
 
   return (
-    <div style={{ paddingTop: 24 }}>
+    <div>
       {/* Hero Banner — full width */}
       <HeroBanner games={featured} />
 
@@ -388,4 +476,3 @@ export default function StorePage() {
     </div>
   );
 }
-

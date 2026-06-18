@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using GameStore.Common.Auth;
 using GameStore.Entities.Users;
+using GameStore.Repository;
 using GameStore.Repository.EFCore;
 
 namespace GameStore.Services.Authen;
@@ -12,10 +14,12 @@ namespace GameStore.Services.Authen;
 public class UserService : IUserService
 {
     private readonly IUserRepository _userRepository;
+    private readonly GameStoreDbContext _context;
 
-    public UserService(IUserRepository userRepository)
+    public UserService(IUserRepository userRepository, GameStoreDbContext context)
     {
         _userRepository = userRepository;
+        _context = context;
     }
 
     public async Task<User?> Authenticate(string username, string password)

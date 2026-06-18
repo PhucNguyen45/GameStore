@@ -1,16 +1,15 @@
 // GameStore.WebClient/src/pages/CartPage.jsx
 import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import useCartStore from "../stores/cartStore";
-import { useAuth } from "../contexts/AuthContext";
-import { gameAPI } from "../services/api";
+import useCartStore from "../../stores/cartStore";
+import { useAuth } from "../../contexts/AuthContext";
+import { gameAPI } from "../../services/api";
 import toast from "react-hot-toast";
-import { formatVND } from "../utils/format";
+import { formatVND } from "../../utils/format";
 import {
   ShoppingCart,
   Trash2,
   ShoppingBag,
-  ArrowLeft,
   AlertCircle,
   CheckCircle2,
   Minus,
@@ -19,6 +18,7 @@ import {
   Tag,
   Package,
 } from "lucide-react";
+import BackButton from "../../components/common/BackButton";
 import { useTranslation } from "react-i18next";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -43,7 +43,7 @@ export default function CartPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState(user?.email || "");
-  const [phone, setPhone] = useState(user?.phoneNumber || "");
+  const [phone, setPhone] = useState(user?.phone || "");
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
 
@@ -149,12 +149,7 @@ export default function CartPage() {
           gap: 12,
         }}
       >
-        <Link
-          to="/store"
-          className="back-btn"
-        >
-          <ArrowLeft size={16} /> {t("cart.continueShopping")}
-        </Link>
+        <BackButton fallback="/store" label={t("cart.continueShopping")} />
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <ShoppingBag size={26} color="#e94560" />
           <div>

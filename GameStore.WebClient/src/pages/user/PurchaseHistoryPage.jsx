@@ -1,12 +1,13 @@
 // GameStore.WebClient/src/pages/PurchaseHistoryPage.jsx
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { orderAPI } from "../services/api";
-import { useAuth } from "../contexts/AuthContext";
-import { Eye, Clock, CheckCircle, XCircle, RefreshCw, ArrowLeft } from "lucide-react";
-import { OrderHistorySkeleton } from "../components/common/PageSkeleton";
+import { orderAPI } from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext";
+import { Eye, Clock, CheckCircle, XCircle, RefreshCw } from "lucide-react";
+import { OrderHistorySkeleton } from "../../components/common/PageSkeleton";
+import BackButton from "../../components/common/BackButton";
 import { useTranslation } from "react-i18next";
-import { formatVND } from "../utils/format";
+import { formatVND } from "../../utils/format";
 
 const statusConfig = {
   Pending: { color: "#ffc107", icon: Clock },
@@ -50,14 +51,7 @@ export default function PurchaseHistoryPage() {
 
   return (
     <div className="container" style={{ paddingTop: 30, maxWidth: 1000 }}>
-      <Link
-        to="/store"
-        className="back-btn"
-        style={{ marginBottom: 16 }}
-      >
-        <ArrowLeft size={16} />
-        Cửa hàng
-      </Link>
+      <BackButton fallback="/store" label="Cửa hàng" />
       <h1 style={{ fontSize: 26, fontWeight: 700, marginBottom: 24 }}>
         {t("orders.title")}
       </h1>

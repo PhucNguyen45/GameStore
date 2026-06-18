@@ -7,14 +7,13 @@ import { useResponsive } from "../../hooks/useResponsive";
 import { useTranslation } from "react-i18next";
 import WalletModal from "../wallet/WalletModal";
 import useCartStore from "../../stores/cartStore";
-import { gameAPI, notificationAPI } from "../../services/api";
+import { notificationAPI } from "../../services/api";
 import { formatVND } from "../../utils/format";
 import {
   ShoppingCart,
   Gamepad2,
   LogOut,
   User,
-  Search,
   X,
   Wallet,
   Shield,
@@ -90,12 +89,6 @@ export default function Navbar() {
   const [tabletUserOpen, setTabletUserOpen] = useState(false);
   const tabletUserRef = useRef(null);
 
-  // SEARCH STATE
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
-  const searchRef = useRef(null);
-
   // NOTIFICATION STATE
   const [showNoti, setShowNoti] = useState(false);
   const [notifications, setNotifications] = useState([]);
@@ -123,30 +116,8 @@ export default function Navbar() {
     setMobileUserOpen(false);
   }, [location.pathname]);
 
-  // SEARCH LOGIC
-  useEffect(() => {
-    if (searchQuery.length < 2) {
-      setSuggestions([]);
-      return;
-    }
-    const timer = setTimeout(async () => {
-      try {
-        const { data } = await gameAPI.getAll({
-          keyword: searchQuery,
-          pageSize: 5,
-        });
-        setSuggestions(data.data || []);
-      } catch {
-        setSuggestions([]);
-      }
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
-
   useEffect(() => {
     const handleClick = (e) => {
-      if (searchRef.current && !searchRef.current.contains(e.target))
-        setSearchOpen(false);
       if (notiRef.current && !notiRef.current.contains(e.target))
         setShowNoti(false);
       if (menuRef.current && !menuRef.current.contains(e.target))
@@ -183,86 +154,7 @@ export default function Navbar() {
     if (noti.link) navigate(noti.link);
   };
 
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/store?keyword=${encodeURIComponent(searchQuery.trim())}`);
-      setSearchOpen(false);
-      setSearchQuery("");
-    }
-  };
-
   const tn = (key) => t(`nav.${key}`);
-
-  const searchInput = (
-    <form onSubmit={handleSearchSubmit} style={{ display: "flex", alignItems: "center", width: "100%" }}>
-      <input
-        autoFocus
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder={tn("search")}
-        style={{
-          width: "100%",
-          padding: "8px 36px 8px 12px",
-          background: "#1a1a1a",
-          border: "1px solid #444",
-          borderRadius: 10,
-          color: "#fff",
-          fontSize: 13,
-          outline: "none",
-        }}
-      />
-      <button
-        type="button"
-        onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
-        style={{
-          position: "absolute", right: 6, top: 6,
-          background: "none", border: "none", color: "#888", cursor: "pointer", padding: 2,
-        }}
-      >
-        <X size={16} />
-      </button>
-    </form>
-  );
-
-  const searchSuggestions = searchOpen && suggestions.length > 0 && (
-    <div
-      style={{
-        position: "absolute", top: "100%", right: 0, marginTop: 8,
-        width: isMobile ? "100%" : 260,
-        background: "#1a1a1a", border: "1px solid #333", borderRadius: 8,
-        overflow: "hidden", zIndex: 1001,
-        boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-      }}
-    >
-      {suggestions.map((game) => (
-        <Link
-          key={game.id}
-          to={`/game/${game.id}`}
-          onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
-          className="nav-hover-link"
-          style={{
-            display: "flex", alignItems: "center", gap: 10,
-            padding: "10px 14px",
-          }}
-        >
-          <div style={{ width: 40, height: 30, borderRadius: 4, background: "#333", overflow: "hidden", flexShrink: 0 }}>
-            {game.coverImageUrl ? (
-              <img src={game.coverImageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            ) : (
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%" }}>🎮</div>
-            )}
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <p style={{ fontSize: 12, color: "#ddd", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {game.title}
-            </p>
-            <p style={{ fontSize: 10, color: "#888" }}>{formatVND(game.discountPrice || game.price)}</p>
-          </div>
-        </Link>
-      ))}
-    </div>
-  );
 
   const compact = breakpoint === "md";
   const layoutTransition = { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] };
@@ -297,18 +189,6 @@ export default function Navbar() {
 
             <div style={{ flex: 1 }} />
 
-            {/* Search Icon */}
-            <button
-              onClick={() => setSearchOpen(!searchOpen)}
-              className="nav-hover"
-              style={{
-                display: "flex", alignItems: "center", justifyContent: "center",
-                background: "none", border: "none", color: "#999", cursor: "pointer", padding: 8,
-              }}
-            >
-              <Search size={18} />
-            </button>
-
             {/* Cart */}
             <Link to="/cart" className="nav-hover" style={{ display: "flex", alignItems: "center", color: "#999", position: "relative", padding: 8 }}>
               <ShoppingCart size={18} />
@@ -342,16 +222,6 @@ export default function Navbar() {
               </Link>
             )}
           </div>
-
-          {/* Mobile Search Bar (expanded) */}
-          {searchOpen && (
-            <div style={{ padding: "8px 16px 12px", borderTop: "1px solid #2a2a2a" }}>
-              <div ref={searchRef} style={{ position: "relative" }}>
-                {searchInput}
-                {searchSuggestions}
-              </div>
-            </div>
-          )}
 
           {/* Mobile Nav Drawer */}
           {mobileMenuOpen && (
@@ -564,18 +434,6 @@ export default function Navbar() {
 
             {/* Right Section */}
             <div style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 12 }}>
-              {/* Search */}
-              <div ref={searchRef} style={{ position: "relative" }}>
-                {!searchOpen ? (
-                  <button onClick={() => setSearchOpen(true)} className="nav-hover" style={{ display: "flex", alignItems: "center", color: "#999", background: "none", border: "none", cursor: "pointer", padding: 6 }}>
-                    <Search size={16} />
-                  </button>
-                ) : (
-                  <div style={{ position: "relative", width: 160 }}>{searchInput}</div>
-                )}
-                {searchSuggestions}
-              </div>
-
               {/* Notifications */}
               {user && (
                 <div ref={notiRef} style={{ position: "relative" }}>
@@ -760,18 +618,6 @@ export default function Navbar() {
 
           {/* Right Section */}
           <div style={{ display: "flex", alignItems: "center", gap: compact ? 10 : 16, fontSize: compact ? 12 : 13 }}>
-            {/* SEARCH */}
-            <div ref={searchRef} style={{ position: "relative" }}>
-              {!searchOpen ? (
-                <button onClick={() => setSearchOpen(true)} className="nav-hover" style={{ display: "flex", alignItems: "center", gap: 6, color: "#999", background: "none", border: "none", cursor: "pointer", padding: 2 }}>
-                  <Search size={compact ? 16 : 18} />
-                </button>
-              ) : (
-                <div style={{ position: "relative", width: compact ? 160 : 200 }}>{searchInput}</div>
-              )}
-              {searchSuggestions}
-            </div>
-
             {/* Notifications */}
             {user && (
               <div ref={notiRef} style={{ position: "relative" }}>

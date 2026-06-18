@@ -65,6 +65,7 @@ public class AuthController : ControllerBase
             username = user.Username,
             displayName = user.DisplayName,
             email = user.Email,
+            phone = user.Phone,
             wallet = user.Wallet,
             role = roleName,
             expiresIn = expireMinutes * 60
