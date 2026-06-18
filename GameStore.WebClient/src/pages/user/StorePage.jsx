@@ -26,7 +26,7 @@ export default function StorePage() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const { value: resp, breakpoint } = useResponsive();
-  const pageSize = 12;
+  const pageSize = 16;
   const gridMinWidth = resp(160, 180, 200, 220);
 
   useEffect(() => {

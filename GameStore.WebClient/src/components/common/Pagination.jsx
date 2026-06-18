@@ -149,7 +149,9 @@ export default function Pagination({
     alignItems: "center",
     justifyContent: "center",
     gap: 4,
-    border: isStore ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(255,255,255,0.06)",
+    border: isStore
+      ? "1px solid rgba(255,255,255,0.08)"
+      : "1px solid rgba(255,255,255,0.06)",
     borderRadius: 8,
     cursor: "pointer",
     fontWeight: 600,
@@ -219,15 +221,15 @@ export default function Pagination({
             <span>
               {totalItems > 0 ? (
                 <>
-                  {t("pagination.showing")}{" "}
+                  {t("pagination.showing")}
                   <strong style={{ color: "#ccc", fontWeight: 700 }}>
                     {(page - 1) * pageSize + 1}
                   </strong>
                   {" \u2013 "}
                   <strong style={{ color: "#ccc", fontWeight: 700 }}>
                     {Math.min(page * pageSize, totalItems)}
-                  </strong>{" "}
-                  {t("pagination.of")}{" "}
+                  </strong>
+                  {t("pagination.of")}
                   <strong style={{ color: "#ccc", fontWeight: 700 }}>
                     {totalItems}
                   </strong>
@@ -377,7 +379,8 @@ export default function Pagination({
                   fontWeight: p === page ? 700 : 500,
                 }}
                 onMouseEnter={(e) => {
-                  if (p !== page) Object.assign(e.currentTarget.style, btnHover);
+                  if (p !== page)
+                    Object.assign(e.currentTarget.style, btnHover);
                 }}
                 onMouseLeave={(e) => {
                   if (p !== page) {
@@ -391,7 +394,8 @@ export default function Pagination({
                 }}
                 onFocus={(e) => {
                   if (p !== page)
-                    e.currentTarget.style.boxShadow = "0 0 0 2px rgba(233,69,96,0.4)";
+                    e.currentTarget.style.boxShadow =
+                      "0 0 0 2px rgba(233,69,96,0.4)";
                 }}
                 onBlur={(e) => {
                   if (p !== page) e.currentTarget.style.boxShadow = "none";
@@ -447,7 +451,11 @@ export default function Pagination({
               {showJump ? (
                 <form
                   onSubmit={handleJump}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 4,
+                  }}
                 >
                   <input
                     type="number"
@@ -523,7 +531,8 @@ export default function Pagination({
                     transition: "all 0.15s",
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = "rgba(255,255,255,0.25)";
+                    e.currentTarget.style.borderColor =
+                      "rgba(255,255,255,0.25)";
                     e.currentTarget.style.color = "#888";
                   }}
                   onMouseLeave={(e) => {
@@ -537,8 +546,6 @@ export default function Pagination({
             </div>
           )}
         </div>
-
-
       </div>
     </nav>
   );
