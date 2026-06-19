@@ -170,7 +170,7 @@ export default function PaymentPage() {
         </div>
 
         {/* ── Gift Toggle ── */}
-        <div style={{ marginBottom: 24 }}>
+        {/* <div style={{ marginBottom: 24 }}>
           <h3 style={{ fontSize: 18, marginBottom: 16, color: "#e94560" }}>
             <Gift size={18} style={{ marginRight: 6, verticalAlign: "middle" }} />
             Mua tặng bạn bè
@@ -259,7 +259,7 @@ export default function PaymentPage() {
               )}
             </div>
           )}
-        </div>
+        </div> */}
 
         <div style={{ marginBottom: 30 }}>
           <h3 style={{ fontSize: 18, marginBottom: 16, color: "#e94560" }}>

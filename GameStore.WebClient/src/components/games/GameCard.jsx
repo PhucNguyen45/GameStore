@@ -126,7 +126,7 @@ export default function GameCard({ game }) {
         className="wishlist-heart-btn"
         style={{
           position: "absolute",
-          top: 86,
+          top: 95,
           right: 6,
           zIndex: 10,
           background: wishlisted ? "#e94560" : "rgba(0,0,0,0.55)",

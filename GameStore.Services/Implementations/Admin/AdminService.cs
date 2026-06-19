@@ -15,6 +15,7 @@ using GameStore.Entities.Users;
 using GameStore.Repository;
 
 namespace GameStore.Services.Implementations.Admin;
+
 public class AdminService : IAdminService
 {
     private readonly GameStoreDbContext _context;
@@ -38,11 +39,20 @@ public class AdminService : IAdminService
     public async Task<object> GetDashboardAsync()
     {
         var totalGames = await _context.Games.CountAsync();
+        var averageGamePrice = await _gameService.GetAveragePriceAsync();
         var totalUsers = await _context.Users.CountAsync();
         var totalOrders = await _context.Orders.CountAsync();
+        var completedOrdersCount = await _context.Orders.CountAsync(o => o.Status == "Completed");
+        var cancelledOrdersCount = await _context.Orders.CountAsync(o => o.Status == "Cancelled");
+        var availableKeysCount = await _context.GameKeys.CountAsync(k => !k.IsUsed && (k.ExpiresAt == null || k.ExpiresAt > DateTime.UtcNow));
         var revenue = await _context.Orders
             .Where(o => o.Status == "Completed")
             .SumAsync(o => o.TotalAmount);
+        var averageOrderValue = totalOrders > 0
+            ? await _context.Orders
+                .Where(o => o.Status == "Completed")
+                .AverageAsync(o => (decimal)o.TotalAmount)
+            : 0m;
 
         var currentYear = DateTime.UtcNow.Year;
         var completedOrders = await _context.Orders
@@ -73,11 +83,25 @@ public class AdminService : IAdminService
             })
             .ToListAsync();
 
+        var completedRate = totalOrders > 0
+            ? Math.Round((double)completedOrdersCount / totalOrders * 100, 1)
+            : 0d;
+        var cancelledRate = totalOrders > 0
+            ? Math.Round((double)cancelledOrdersCount / totalOrders * 100, 1)
+            : 0d;
+
         return new
         {
             totalGames,
+            averageGamePrice,
             totalUsers,
             totalOrders,
+            completedOrdersCount,
+            cancelledOrdersCount,
+            completedRate,
+            cancelledRate,
+            averageOrderValue,
+            availableKeysCount,
             totalRevenue = revenue,
             monthlyRevenue,
             recentOrders
@@ -845,7 +869,7 @@ public class AdminService : IAdminService
         else
         {
             var targetYear = year ?? DateTime.UtcNow.Year;
-            var monthNames = new[] { "T1","T2","T3","T4","T5","T6","T7","T8","T9","T10","T11","T12" };
+            var monthNames = new[] { "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12" };
 
             var ordersThisYear = completedOrders.Where(o => o.OrderDate.Year == targetYear).ToList();
 

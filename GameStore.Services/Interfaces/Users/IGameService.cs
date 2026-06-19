@@ -14,6 +14,7 @@ public interface IGameService
     Task<List<Game>> GetFeatured(int count = 10);
     Task<List<Game>> GetByGenre(int genreId);
     Task<(List<Game> Games, int TotalCount)> Search(string? keyword, int[]? genreIds, long? minPrice, long? maxPrice, string? sortBy, bool descending, int page, int pageSize);
+    Task<decimal> GetAveragePriceAsync();
     Task<Game> Create(Game game);
     Task Update(Game game);
     Task Delete(int id);

@@ -51,6 +51,33 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
     return Number(value.toString().replace(/,/g, ""));
   };
 
+  // Ví dụ validation (đang comment để bạn bật sau):
+  // const validateGameForm = (data) => {
+  //   if (!data.title.trim()) return "Tên game không được để trống.";
+  //   if (!data.price || Number(data.price) <= 0) return "Giá gốc phải lớn hơn 0.";
+  //   if (data.discountPrice && Number(data.discountPrice) < 0) return "Giá giảm không được âm.";
+  //   if (data.coverImageUrl && !/^https?:\/\//i.test(data.coverImageUrl))
+  //     return "URL ảnh bìa phải bắt đầu bằng http:// hoặc https://.";
+  //   if (data.trailerUrl && !/^https?:\/\//i.test(data.trailerUrl))
+  //     return "URL trailer phải bắt đầu bằng http:// hoặc https://.";
+  //   return "";
+  // };
+
+  // có thể dùng helper này để chuyển file thành base64 rồi gán vào form.
+  // const handleLocalImageSelect = (event) => {
+  //   const file = event.target.files?.[0];
+  //   if (!file) return;
+  //
+  //   const reader = new FileReader();
+  //   reader.onload = () => {
+  //     setForm((prev) => ({
+  //       ...prev,
+  //       coverImageUrl: reader.result,
+  //     }));
+  //   };
+  //   reader.readAsDataURL(file);
+  // };
+
   // Xử lý submit form: parse giá tiền, gọi API tạo mới hoặc cập nhật game
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -168,6 +195,14 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               }
               style={inputStyle}
             />
+            {/*
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleLocalImageSelect}
+              style={inputStyle}
+            />
+            */}
             <input
               placeholder="URL trailer"
               value={form.trailerUrl}
@@ -188,8 +223,16 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
               <img
                 src={form.coverImageUrl}
                 alt="Preview"
-                style={{ width: "100%", maxHeight: 220, objectFit: "cover", display: "block" }}
-                onError={(e) => { e.target.src = "https://via.placeholder.com/600x300?text=Image+Not+Found"; }}
+                style={{
+                  width: "100%",
+                  maxHeight: 220,
+                  objectFit: "cover",
+                  display: "block",
+                }}
+                onError={(e) => {
+                  e.target.src =
+                    "https://via.placeholder.com/600x300?text=Image+Not+Found";
+                }}
               />
             </div>
           )}

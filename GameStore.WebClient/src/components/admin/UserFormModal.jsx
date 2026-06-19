@@ -28,9 +28,23 @@ export default function UserFormModal({ user, onClose, onSave }) {
     }
   }, [user]);
 
+  // Ví dụ validation (đang comment để bạn bật sau):
+  // const validateUserForm = (data) => {
+  //   if (!data.displayName.trim()) return "Tên hiển thị không được để trống.";
+  //   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return "Email không hợp lệ.";
+  //   if (data.phone && !/^[0-9]{9,11}$/.test(data.phone.replace(/\s+/g, "")))
+  //     return "Số điện thoại không hợp lệ.";
+  //   if (data.wallet < 0) return "Số dư ví không được âm.";
+  //   return "";
+  // };
+
   // Chuyển dữ liệu form lên component cha xử lý (không tự gọi API)
   const handleSubmit = (e) => {
     e.preventDefault();
+    // if (const error = validateUserForm(form)) {
+    //   toast.error(error);
+    //   return;
+    // }
     onSave(form);
   };
 
@@ -159,11 +173,12 @@ export default function UserFormModal({ user, onClose, onSave }) {
                   background: "#111",
                 }}
                 onError={(e) => {
-                  e.target.src =
-                    "https://via.placeholder.com/72x72?text=?";
+                  e.target.src = "https://via.placeholder.com/72x72?text=?";
                 }}
               />
-              <span style={{ color: "#666", fontSize: 11 }}>Preview ảnh đại diện</span>
+              <span style={{ color: "#666", fontSize: 11 }}>
+                Preview ảnh đại diện
+              </span>
             </div>
           )}
 

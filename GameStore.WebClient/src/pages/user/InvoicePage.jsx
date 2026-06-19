@@ -33,12 +33,19 @@ export default function InvoicePage() {
         const res = await orderAPI.getById(id);
         setOrder(res.data);
         // Refresh wallet balance if order is cancelled or refunded
-        if (res.data?.status === "Cancelled" || res.data?.status === "Refunded" || res.data?.status === "Rejected") {
-          userAPI.getProfile().then(({ data }) => {
-            if (data.wallet !== undefined) {
-              updateUser({ wallet: data.wallet });
-            }
-          }).catch(() => {});
+        if (
+          res.data?.status === "Cancelled" ||
+          res.data?.status === "Refunded" ||
+          res.data?.status === "Rejected"
+        ) {
+          userAPI
+            .getProfile()
+            .then(({ data }) => {
+              if (data.wallet !== undefined) {
+                updateUser({ wallet: data.wallet });
+              }
+            })
+            .catch(() => {});
         }
       } catch (err) {
         toast.error(t("invoice.loadError"));
@@ -68,14 +75,18 @@ export default function InvoicePage() {
         className="container"
         style={{ textAlign: "center", paddingTop: 100 }}
       >
-        <h2>{t("invoice.notFound")}</h2>            <Link to="/store" className="btn btn-primary" style={{ marginTop: 20 }}>
+        <h2>{t("invoice.notFound")}</h2>{" "}
+        <Link to="/store" className="btn btn-primary" style={{ marginTop: 20 }}>
           {t("invoice.goToStore")}
         </Link>
       </div>
     );
   }
 
-  const isCancelled = order.status === "Cancelled" || order.status === "Rejected" || order.status === "Refunded";
+  const isCancelled =
+    order.status === "Cancelled" ||
+    order.status === "Rejected" ||
+    order.status === "Refunded";
 
   const steps = isCancelled
     ? [
@@ -100,18 +111,31 @@ export default function InvoicePage() {
         {
           label: t("invoice.stepDelivery"),
           icon: Send,
-          completed: order.status === "Completed" || order.status === "Approved",
+          completed:
+            order.status === "Completed" || order.status === "Approved",
           active: false,
         },
       ];
 
   const getStatusBadge = () => {
     if (order.status === "Completed" || order.status === "Approved") {
-      return { text: t("invoice.approved"), color: "#10b981", icon: CheckCircle2 };
+      return {
+        text: t("invoice.approved"),
+        color: "#10b981",
+        icon: CheckCircle2,
+      };
     } else if (order.status === "Cancelled" || order.status === "Rejected") {
-      return { text: t("orders.statusCancelled"), color: "#ef4444", icon: XCircle };
+      return {
+        text: t("orders.statusCancelled"),
+        color: "#ef4444",
+        icon: XCircle,
+      };
     } else if (order.status === "Refunded") {
-      return { text: t("orders.statusRefunded"), color: "#ff9800", icon: RefreshCw };
+      return {
+        text: t("orders.statusRefunded"),
+        color: "#ff9800",
+        icon: RefreshCw,
+      };
     }
     return { text: t("invoice.waiting"), color: "#f59e0b", icon: Clock };
   };
@@ -121,7 +145,9 @@ export default function InvoicePage() {
   return (
     <div className="container" style={{ paddingTop: 40, maxWidth: 800 }}>
       <BackButton fallback="/store" label={t("invoice.backToStore")} />
-      <div className="invoice-stepper" style={{
+      <div
+        className="invoice-stepper"
+        style={{
           background: "#16162a",
           padding: "30px 40px",
           borderRadius: 20,
@@ -132,7 +158,8 @@ export default function InvoicePage() {
           alignItems: "center",
         }}
       >
-        {steps.map((step, idx) => (            <div
+        {steps.map((step, idx) => (
+          <div
             key={idx}
             className="step"
             style={{
@@ -165,14 +192,22 @@ export default function InvoicePage() {
             >
               <step.icon
                 size={24}
-                color={step.cancelled || step.completed || step.active ? "#fff" : "#6b6b8e"}
+                color={
+                  step.cancelled || step.completed || step.active
+                    ? "#fff"
+                    : "#6b6b8e"
+                }
               />
             </div>
             <span
               style={{
                 fontSize: 12,
                 fontWeight: 600,
-                color: step.cancelled ? "#ef4444" : step.completed || step.active ? "#fff" : "#6b6b8e",
+                color: step.cancelled
+                  ? "#ef4444"
+                  : step.completed || step.active
+                    ? "#fff"
+                    : "#6b6b8e",
                 textAlign: "center",
               }}
             >
@@ -187,7 +222,11 @@ export default function InvoicePage() {
                   left: "50%",
                   width: "100%",
                   height: 2,
-                  background: step.cancelled ? "#ef4444" : step.completed ? "#10b981" : "#2a2a4a",
+                  background: step.cancelled
+                    ? "#ef4444"
+                    : step.completed
+                      ? "#10b981"
+                      : "#2a2a4a",
                   zIndex: 1,
                 }}
               />
@@ -222,7 +261,9 @@ export default function InvoicePage() {
               {t("invoice.invoiceTitle", { id })}
             </h2>
             <p style={{ color: "#6b6b8e", fontSize: 14 }}>
-              {t("invoice.orderDate", { date: new Date(order.orderDate).toLocaleDateString() })}
+              {t("invoice.orderDate", {
+                date: new Date(order.orderDate).toLocaleDateString(),
+              })}
             </p>
             {order.recipientEmail && (
               <div
@@ -285,7 +326,9 @@ export default function InvoicePage() {
               <p style={{ fontWeight: 600, fontSize: 16, marginBottom: 5 }}>
                 Email: {order.email || "N/A"}
               </p>
-              <p style={{ color: "#e0e0e0" }}>{t("payment.phoneLabel")}: {order.phone || "N/A"}</p>
+              <p style={{ color: "#e0e0e0" }}>
+                {t("payment.phoneLabel")}: {order.phone || "N/A"}
+              </p>
             </div>
             <div style={{ textAlign: "right" }}>
               <h4
@@ -303,15 +346,22 @@ export default function InvoicePage() {
                 {t("invoice.status")}{" "}
                 <span
                   style={{
-                    color: order.status === "Completed" || order.status === "Approved"
-                      ? "#10b981" : order.status === "Cancelled" || order.status === "Rejected"
-                        ? "#ef4444" : order.status === "Refunded"
-                          ? "#ff9800" : "#f59e0b",
+                    color:
+                      order.status === "Completed" ||
+                      order.status === "Approved"
+                        ? "#10b981"
+                        : order.status === "Cancelled" ||
+                            order.status === "Rejected"
+                          ? "#ef4444"
+                          : order.status === "Refunded"
+                            ? "#ff9800"
+                            : "#f59e0b",
                   }}
                 >
                   {order.status === "Completed" || order.status === "Approved"
                     ? t("invoice.paid")
-                    : order.status === "Cancelled" || order.status === "Rejected"
+                    : order.status === "Cancelled" ||
+                        order.status === "Rejected"
                       ? t("orders.statusCancelled")
                       : order.status === "Refunded"
                         ? t("orders.statusRefunded")
@@ -333,16 +383,44 @@ export default function InvoicePage() {
           >
             <thead>
               <tr style={{ borderBottom: "1px solid #2a2a4a" }}>
-                <th style={{ textAlign: "left", padding: "15px 0", color: "#6b6b8e", fontWeight: 500 }}>
+                <th
+                  style={{
+                    textAlign: "left",
+                    padding: "15px 0",
+                    color: "#6b6b8e",
+                    fontWeight: 500,
+                  }}
+                >
                   {t("invoice.description")}
                 </th>
-                <th style={{ textAlign: "center", padding: "15px 0", color: "#6b6b8e", fontWeight: 500 }}>
+                <th
+                  style={{
+                    textAlign: "center",
+                    padding: "15px 0",
+                    color: "#6b6b8e",
+                    fontWeight: 500,
+                  }}
+                >
                   {t("invoice.qty")}
                 </th>
-                <th style={{ textAlign: "right", padding: "15px 0", color: "#6b6b8e", fontWeight: 500 }}>
+                <th
+                  style={{
+                    textAlign: "right",
+                    padding: "15px 0",
+                    color: "#6b6b8e",
+                    fontWeight: 500,
+                  }}
+                >
                   {t("invoice.price")}
                 </th>
-                <th style={{ textAlign: "right", padding: "15px 0", color: "#6b6b8e", fontWeight: 500 }}>
+                <th
+                  style={{
+                    textAlign: "right",
+                    padding: "15px 0",
+                    color: "#6b6b8e",
+                    fontWeight: 500,
+                  }}
+                >
                   {t("invoice.amount")}
                 </th>
               </tr>
@@ -375,7 +453,9 @@ export default function InvoicePage() {
                     {formatVND(item.unitPrice || item.price || 0)}
                   </td>
                   <td style={{ padding: "20px 0", textAlign: "right" }}>
-                    {formatVND((item.unitPrice || item.price || 0) * item.quantity)}
+                    {formatVND(
+                      (item.unitPrice || item.price || 0) * item.quantity,
+                    )}
                   </td>
                 </tr>
               ))}
@@ -384,32 +464,61 @@ export default function InvoicePage() {
 
           <div style={{ display: "flex", justifyContent: "flex-end" }}>
             <div style={{ width: 250 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
-                <span style={{ color: "#6b6b8e" }}>{t("invoice.subtotal")}</span>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                }}
+              >
+                <span style={{ color: "#6b6b8e" }}>
+                  {t("invoice.subtotal")}
+                </span>
                 <span>{formatVND(order.totalAmount || order.total || 0)}</span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                }}
+              >
                 <span style={{ color: "#6b6b8e" }}>{t("invoice.tax")}</span>
                 <span>0₫</span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 15, paddingTop: 15, borderTop: "2px solid #2a2a4a" }}>
-                <span style={{ fontSize: 18, fontWeight: 700 }}>{t("invoice.total")}</span>
-                <span style={{ fontSize: 24, fontWeight: 800, color: "#e94560" }}>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: 15,
+                  paddingTop: 15,
+                  borderTop: "2px solid #2a2a4a",
+                }}
+              >
+                <span style={{ fontSize: 18, fontWeight: 700 }}>
+                  {t("invoice.total")}
+                </span>
+                <span
+                  style={{ fontSize: 24, fontWeight: 800, color: "#e94560" }}
+                >
                   {formatVND(order.totalAmount || order.total || 0)}
                 </span>
               </div>
             </div>
           </div>
 
-          <div style={{ marginTop: 50, display: "flex", gap: 15, flexWrap: "wrap" }}>
-            <button
-              className="btn btn-outline"
-            >
+          <div
+            style={{
+              marginTop: 50,
+              display: "flex",
+              gap: 15,
+              flexWrap: "wrap",
+            }}
+          >
+            <button className="btn btn-outline">
               <Printer size={18} /> {t("invoice.printInvoice")}
             </button>
-            <button
-              className="btn btn-outline"
-            >
+            <button className="btn btn-outline">
               <Download size={18} /> {t("invoice.downloadPdf")}
             </button>
           </div>
@@ -427,9 +536,15 @@ export default function InvoicePage() {
                 gap: 15,
               }}
             >
-              <Clock size={24} color="#f59e0b" style={{ flexShrink: 0, marginTop: 3 }} />
+              <Clock
+                size={24}
+                color="#f59e0b"
+                style={{ flexShrink: 0, marginTop: 3 }}
+              />
               <div>
-                <p style={{ fontWeight: 600, color: "#f59e0b", marginBottom: 5 }}>
+                <p
+                  style={{ fontWeight: 600, color: "#f59e0b", marginBottom: 5 }}
+                >
                   {t("invoice.notice")}
                 </p>
                 <p style={{ fontSize: 14, color: "#6b6b8e", lineHeight: 1.5 }}>

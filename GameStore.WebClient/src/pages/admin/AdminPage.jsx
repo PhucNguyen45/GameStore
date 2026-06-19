@@ -6,12 +6,21 @@ import { useAuth } from "../../contexts/AuthContext";
 import api from "../../services/api";
 import { adminAPI } from "../../services/api";
 
-
 import {
-  AdminSidebar, tabs, DashboardTab, GamesTab, UsersTab,
-  OrdersTab, CategoriesTab, GameKeysTab, StaffRolesTab,
-  RevenueTab, GameFormModal, DeleteConfirmModal,
-  UserFormModal, DeleteUserModal,
+  AdminSidebar,
+  tabs,
+  DashboardTab,
+  GamesTab,
+  UsersTab,
+  OrdersTab,
+  CategoriesTab,
+  GameKeysTab,
+  StaffRolesTab,
+  RevenueTab,
+  GameFormModal,
+  DeleteConfirmModal,
+  UserFormModal,
+  DeleteUserModal,
 } from "../../components/admin";
 import { AdminSkeleton } from "../../components/common";
 
@@ -28,8 +37,15 @@ export default function AdminPage() {
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const [stats, setStats] = useState({
     totalGames: 0,
+    averageGamePrice: 0,
     totalUsers: 0,
     totalOrders: 0,
+    completedOrdersCount: 0,
+    cancelledOrdersCount: 0,
+    completedRate: 0,
+    cancelledRate: 0,
+    averageOrderValue: 0,
+    availableKeysCount: 0,
     revenue: 0,
   });
 
@@ -209,8 +225,15 @@ export default function AdminPage() {
       setAllOrders(recentOrders);
       setStats({
         totalGames: dashboard.totalGames ?? 0,
+        averageGamePrice: dashboard.averageGamePrice ?? 0,
         totalUsers: dashboard.totalUsers ?? 0,
         totalOrders: dashboard.totalOrders ?? 0,
+        completedOrdersCount: dashboard.completedOrdersCount ?? 0,
+        cancelledOrdersCount: dashboard.cancelledOrdersCount ?? 0,
+        completedRate: dashboard.completedRate ?? 0,
+        cancelledRate: dashboard.cancelledRate ?? 0,
+        averageOrderValue: dashboard.averageOrderValue ?? 0,
+        availableKeysCount: dashboard.availableKeysCount ?? 0,
         revenue: dashboard.totalRevenue ?? 0,
       });
       const months = [

@@ -13,4 +13,5 @@ public interface IGameRepository : IRepository<Game>
     Task<List<Game>> GetFeaturedAsync(int count = 10);
     Task<List<Game>> GetByGenreAsync(int genreId);
     Task<Game?> GetWithDetailsAsync(int id);
+    Task<decimal> GetAveragePriceAsync();
 }

@@ -163,7 +163,7 @@ export default function StorePage() {
         }}
       >
         {/* Price Range */}
-        <div
+        {/* <div
           style={{
             display: "flex",
             alignItems: "center",
@@ -213,7 +213,7 @@ export default function StorePage() {
               MozAppearance: "textfield",
             }}
           />
-        </div>
+        </div> */}
 
         {/* Sort */}
         <select

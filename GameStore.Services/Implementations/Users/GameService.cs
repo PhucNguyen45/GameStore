@@ -8,6 +8,7 @@ using GameStore.Entities.Games;
 using GameStore.Repository.Interfaces;
 
 namespace GameStore.Services.Implementations.Users;
+
 public class GameService : IGameService
 {
     private readonly IGameRepository _gameRepository;
@@ -26,6 +27,11 @@ public class GameService : IGameService
         long? minPrice, long? maxPrice, string? sortBy, bool descending, int page, int pageSize)
     {
         return await _gameRepository.SearchAsync(keyword, genreIds, minPrice, maxPrice, sortBy, descending, page, pageSize);
+    }
+
+    public async Task<decimal> GetAveragePriceAsync()
+    {
+        return await _gameRepository.GetAveragePriceAsync();
     }
 
     public async Task<Game> Create(Game game)

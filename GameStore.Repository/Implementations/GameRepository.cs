@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using GameStore.Entities.Games;
 
 namespace GameStore.Repository.Implementations;
+
 public class GameRepository : Repository<Game>, IGameRepository
 {
     public GameRepository(GameStoreDbContext context) : base(context) { }
@@ -114,6 +115,19 @@ public class GameRepository : Repository<Game>, IGameRepository
 
         return games;
     }
+
+    public async Task<decimal> GetAveragePriceAsync()
+    {
+        var average = await _dbSet
+            .AsNoTracking()
+            .Select(g => (decimal?)(g.DiscountPrice ?? g.Price))
+            .DefaultIfEmpty(0m)
+            .AverageAsync();
+
+        return average ?? 0m;
+    }
+
+    
 
     public async Task<Game?> GetWithDetailsAsync(int id)
     {

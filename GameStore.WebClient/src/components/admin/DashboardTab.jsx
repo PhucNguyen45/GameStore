@@ -7,6 +7,9 @@ import {
   ShoppingBag,
   DollarSign,
   TrendingUp,
+  BadgeCheck,
+  Ticket,
+  Percent,
 } from "lucide-react";
 
 export default function DashboardTab({
@@ -61,6 +64,24 @@ export default function DashboardTab({
       value: formatVND(stats.revenue),
       color: "#e94560",
     },
+    // {
+    //   icon: BadgeCheck,
+    //   label: "Đơn hoàn thành",
+    //   value: `${stats.completedOrdersCount || 0}`,
+    //   color: "#4ade80",
+    // },
+    // {
+    //   icon: Ticket,
+    //   label: "Key còn lại",
+    //   value: `${stats.availableKeysCount || 0}`,
+    //   color: "#38bdf8",
+    // },
+    // {
+    //   icon: Percent,
+    //   label: "Tỷ lệ hoàn thành",
+    //   value: `${stats.completedRate || 0}%`,
+    //   color: "#f97316",
+    // },
   ];
 
   return (
@@ -132,6 +153,23 @@ export default function DashboardTab({
           </div>
         ))}
       </div>
+
+      {/* <div
+        style={{
+          background: "#111118",
+          borderRadius: 10,
+          padding: 18,
+          border: "1px solid #1a1a2e",
+          marginBottom: 24,
+        }}
+      >
+        <p style={{ fontSize: 12, color: "#666", marginBottom: 6 }}>
+          Giá trung bình kho game
+        </p>
+        <p style={{ fontSize: 22, fontWeight: 800, color: "#fff" }}>
+          {formatVND(stats.averageGamePrice)}
+        </p>
+      </div> */}
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
         {/* REVENUE CHART */}
@@ -410,12 +448,18 @@ export default function DashboardTab({
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div className={`status-dot ${
-                    o.status === 'Completed' ? 'active' :
-                    o.status === 'Cancelled' ? 'locked' :
-                    o.status === 'Refunded' ? 'pending' :
-                    'pending'
-                  }`} style={{ gap: 0 }} />
+                  <div
+                    className={`status-dot ${
+                      o.status === "Completed"
+                        ? "active"
+                        : o.status === "Cancelled"
+                          ? "locked"
+                          : o.status === "Refunded"
+                            ? "pending"
+                            : "pending"
+                    }`}
+                    style={{ gap: 0 }}
+                  />
                   <span style={{ color: "#fff", fontWeight: 500 }}>
                     #{o.id}
                   </span>
