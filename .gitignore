@@ -1,52 +1,95 @@
-# .gitignore
-# .NET
-bin/
-obj/
-*.user
-*.suo
-*.cache
+# =========================
+# GameStore project ignore rules
+# =========================
 
-# Build
+# ---------- .NET / ASP.NET ----------
+**/bin/
+**/obj/
+**/out/
 *.dll
-*.pdb
 *.exe
+*.pdb
+*.cache
+*.deps.json
+*.runtimeconfig.json
+*.runtimeconfig.dev.json
+*.AssemblyInfo.cs
 
-# Logs
-logs/
-*.log
+# NuGet / package restore artifacts
+*.nupkg
+*.snupkg
+packages/
 
-# Node / React
+# ---------- Frontend (React/Vite) ----------
 node_modules/
 dist/
 build/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 
-# IDE
+# ---------- Environment & secret config ----------
+.env
+.env.*
+!.env.example
+*.local
+*.local.json
+
+# Ignore all appsettings files that may contain secrets
+**/appsettings.json
+**/appsettings.*.json
+!**/appsettings.Example.json
+!**/appsettings.template.json
+
+# Keep common local overrides ignored explicitly
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+appsettings.Production.json
+appsettings.*.production.json
+
+# Optional: ignore local launch settings if they contain machine-specific ports/keys
+**/Properties/launchSettings.json
+
+# ---------- Database / storage ----------
+database/
+*.db
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+*.bak
+
+# ---------- Logs / temp files ----------
+logs/
+*.log
+*.tmp
+*.temp
+*.pid
+*.swp
+
+# ---------- IDE / editor ----------
 .vs/
 .vscode/
 .idea/
+*.suo
+*.user
+*.userosscache
+*.rsuser
+*.sln.docstates
 
-# OS
+# ---------- OS files ----------
 .DS_Store
 Thumbs.db
 
-#appsetting.json
-appsettings.Development.json
-appsettings.*.local.json
-
-# project dump files
+# ---------- Project dump / tooling ----------
 project_dump.txt
-
-# Codebuff / AI tooling
 .codegraph/
 
-# Shell scripts output
-*.pid
-
-# Environment files (keep template if any)
-*.env.local
-*.env.development.local
-*.env.test.local
-*.env.production.local
-
-# Database schema
-database/
+# ---------- Test results ----------
+TestResults/
+coverage/
+*.trx
