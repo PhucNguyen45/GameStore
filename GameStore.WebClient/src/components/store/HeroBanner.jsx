@@ -6,8 +6,10 @@ import useCartStore from "../../stores/cartStore";
 import { useAuth } from "../../contexts/AuthContext";
 import { formatVND } from "../../utils/format";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 export default function HeroBanner({ games }) {
+  const { t } = useTranslation();
   const [current, setCurrent] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const timerRef = useRef(null);
@@ -62,7 +64,10 @@ export default function HeroBanner({ games }) {
       toast.error("Game đã hết hàng");
       return;
     }
-    addItem(g);
+    if (!addItem(g, 5)) {
+      toast.error(t("cart.maxReached"));
+      return;
+    }
     toast.success("Đã thêm vào giỏ hàng!");
   };
 

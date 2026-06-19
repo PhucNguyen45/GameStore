@@ -13,7 +13,9 @@ namespace GameStore.Entities.Games
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
+        /// <summary>Giá gốc (VND)</summary>
         public long Price { get; set; }
+        /// <summary>Giá khuyến mãi (VND), null nếu không giảm giá</summary>
         public long? DiscountPrice { get; set; }
         public string Developer { get; set; } = string.Empty;
         public string Publisher { get; set; } = string.Empty;
@@ -27,11 +29,16 @@ namespace GameStore.Entities.Games
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // System Requirements
+        // System Requirements (giới hạn 255 ký tự mỗi trường)
+        [System.ComponentModel.DataAnnotations.MaxLength(255)]
         public string MinimumOS { get; set; } = string.Empty;
+        [System.ComponentModel.DataAnnotations.MaxLength(255)]
         public string MinimumProcessor { get; set; } = string.Empty;
+        [System.ComponentModel.DataAnnotations.MaxLength(255)]
         public string MinimumMemory { get; set; } = string.Empty;
+        [System.ComponentModel.DataAnnotations.MaxLength(255)]
         public string MinimumGraphics { get; set; } = string.Empty;
+        [System.ComponentModel.DataAnnotations.MaxLength(255)]
         public string MinimumStorage { get; set; } = string.Empty;
 
         // Navigation

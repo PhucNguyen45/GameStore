@@ -17,8 +17,8 @@ public class User
     public string DisplayName { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string Phone { get; set; } = string.Empty;
-    public string AvatarUrl { get; set; } = string.Empty;
-    public long Wallet { get; set; } = 0;
+    public string AvatarUrl { get; set; } = string.Empty;        /// <summary>Số dư ví (VND)</summary>
+        public long Wallet { get; set; } = 0;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

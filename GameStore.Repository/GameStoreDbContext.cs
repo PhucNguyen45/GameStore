@@ -40,6 +40,9 @@ public class GameStoreDbContext : DbContext
   public DbSet<Payment> Payments => Set<Payment>();
   public DbSet<Notification> Notifications => Set<Notification>();
 
+  // ── Wallet ──
+  public DbSet<WalletTransaction> WalletTransactions => Set<WalletTransaction>();
+
   // ── Admin ──
   public DbSet<Setting> Settings => Set<Setting>();
   public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
@@ -60,6 +63,8 @@ public class GameStoreDbContext : DbContext
       entity.HasKey(e => e.Id);
       entity.HasIndex(e => e.Username).IsUnique();
       entity.HasIndex(e => e.Email).IsUnique();
+      // All money columns (Price, DiscountPrice, Wallet, TotalAmount, UnitPrice, Amount,
+      // BalanceBefore, BalanceAfter) use bigint which stores values in VND (no decimals).
       entity.Property(e => e.Wallet).HasColumnType("bigint").HasDefaultValue(0L);
       entity.Property(e => e.IsActive).HasDefaultValue(true);
       entity.ToTable(t => t.HasCheckConstraint("CK_User_Wallet_NonNegative", "Wallet >= 0"));
@@ -123,6 +128,11 @@ public class GameStoreDbContext : DbContext
             t.HasCheckConstraint("CK_Game_DiscountPrice_NonNegative", "DiscountPrice >= 0");
             t.HasCheckConstraint("CK_Game_Rating_Range", "Rating >= 0 AND Rating <= 5");
           });
+      entity.Property(e => e.MinimumOS).HasMaxLength(255);
+      entity.Property(e => e.MinimumProcessor).HasMaxLength(255);
+      entity.Property(e => e.MinimumMemory).HasMaxLength(255);
+      entity.Property(e => e.MinimumGraphics).HasMaxLength(255);
+      entity.Property(e => e.MinimumStorage).HasMaxLength(255);
       entity.HasIndex(e => e.Title);
       entity.HasIndex(e => e.IsActive);
       entity.HasIndex(e => e.ReleaseDate);
@@ -248,6 +258,21 @@ public class GameStoreDbContext : DbContext
       entity.HasIndex(e => new { e.RoleId, e.Permission }).IsUnique();
     });
 
+    // ──────────────── WALLET TRANSACTION ────────────────
+    modelBuilder.Entity<WalletTransaction>(entity =>
+    {
+      entity.HasKey(e => e.Id);
+      entity.HasOne(e => e.User).WithMany().HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.Cascade);
+      entity.Property(e => e.Amount).HasColumnType("bigint");
+      entity.Property(e => e.BalanceBefore).HasColumnType("bigint");
+      entity.Property(e => e.BalanceAfter).HasColumnType("bigint");
+      entity.Property(e => e.Type).HasMaxLength(50).IsRequired();
+      entity.Property(e => e.Description).HasMaxLength(500);
+      entity.HasIndex(e => e.UserId);
+      entity.HasIndex(e => e.CreatedAt);
+      entity.HasIndex(e => e.Type);
+    });
+
     // ──────────────── SETTING ────────────────
     modelBuilder.Entity<Setting>(entity =>
     {
@@ -318,9 +343,6 @@ public class GameStoreDbContext : DbContext
       Modified = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc),
       IsDeleted = false
     });
-
-        // Seed data cho Genre, Game, GameGenre duoc chuyen sang file SQL rieng: database/seeds/seed_data.sql
-
   }
 }
 

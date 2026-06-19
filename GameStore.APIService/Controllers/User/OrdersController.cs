@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.Entities.Store;
-using GameStore.Services;
+using GameStore.Services.Interfaces.Users;
 using System.Security.Claims;
 using GameStore.DTOs.Orders;
 using GameStore.DTOs.Common;
+using GameStore.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameStore.APIService.Controllers;
 
@@ -43,8 +45,29 @@ public class OrdersController : ControllerBase
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var order = await _orderService.GetById(id);
         if (order == null) return NotFound(new { message = "Order not found" });
-        if (!User.IsInRole("Admin") && order.UserId != userId)
+
+        var context = HttpContext.RequestServices.GetRequiredService<GameStoreDbContext>();
+        var currentUser = await context.Users.FindAsync(userId);
+
+        var isAdmin = User.IsInRole("Admin");
+        var isBuyer = order.UserId == userId;
+        var isRecipient = currentUser != null &&
+            !string.IsNullOrWhiteSpace(order.RecipientEmail) &&
+            string.Equals(order.RecipientEmail, currentUser.Email, StringComparison.OrdinalIgnoreCase);
+
+        // Cho phép: admin, người mua, hoặc người nhận quà (theo email)
+        if (!isAdmin && !isBuyer && !isRecipient)
             return Forbid();
+
+        // Nếu người mua xem đơn quà tặng, ẩn key để tránh lộ thông tin cho người không được phép.
+        if (!isAdmin && isBuyer && !string.IsNullOrWhiteSpace(order.RecipientEmail))
+        {
+            foreach (var detail in order.OrderDetails)
+            {
+                detail.GameKeys = new List<GameKey>();
+            }
+        }
+
         return Ok(order);
     }
 
@@ -59,7 +82,8 @@ public class OrdersController : ControllerBase
                 dto.Items.Select(i => (i.GameId, i.Quantity)).ToList(),
                 dto.PaymentMethod,   // thêm
                 dto.Email,           // thêm
-                dto.Phone            // thêm
+                dto.Phone,           // thêm
+                dto.RecipientEmail   // quà tặng
             );
             return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
         }

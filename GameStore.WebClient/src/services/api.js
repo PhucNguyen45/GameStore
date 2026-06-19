@@ -65,6 +65,7 @@ export const orderAPI = {
 export const userAPI = {
   getWallet: () => api.get("/users/wallet"),
   topUp: (amount) => api.post("/users/wallet/topup", { amount }),
+  getTransactions: (page = 1, pageSize = 20) => api.get("/users/wallet/transactions", { params: { page, pageSize } }),
   getProfile: () => api.get("/users/profile"),
   updateProfile: (data) => api.put("/users/profile", data),
 };

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameStore.Repository;
-using GameStore.Services;
+using GameStore.Services.Interfaces.Admin;
 using GameStore.Entities.Games;
 using GameStore.Entities.Store;
 using GameStore.Entities.Users;

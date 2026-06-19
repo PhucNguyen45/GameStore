@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using GameStore.Common.Auth;
-using GameStore.Services.Authen;
+using GameStore.Services.Interfaces.Authen;
 using GameStore.Entities.Auth;
 using GameStore.Entities.Users;
 using GameStore.Repository;
@@ -65,6 +65,7 @@ public class AuthController : ControllerBase
             username = user.Username,
             displayName = user.DisplayName,
             email = user.Email,
+            phone = user.Phone,
             wallet = user.Wallet,
             role = roleName,
             expiresIn = expireMinutes * 60

@@ -1,0 +1,132 @@
+using GameStore.Services.Interfaces.Users;
+// GameStore.Services/LibraryService.cs
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GameStore.Repository;
+
+namespace GameStore.Services.Implementations.Users;
+
+public class LibraryService : ILibraryService
+{
+    private readonly GameStoreDbContext _context;
+
+    public LibraryService(GameStoreDbContext context)
+    {
+        _context = context;
+    }
+
+    public async Task<IEnumerable<object>> GetMyLibraryAsync(int userId)
+    {
+        return await _context.Libraries
+            .Where(l => l.UserId == userId)
+            .Include(l => l.Game)
+            .Select(l => new
+            {
+                l.Game.Id,
+                l.Game.Title,
+                l.Game.CoverImageUrl,
+                l.Game.Developer,
+                l.Game.Rating,
+                AcquiredAt = l.AcquiredAt
+            })
+            .ToListAsync();
+    }
+
+    public async Task<(IEnumerable<object> Items, int TotalCount)> SearchLibraryAsync(int userId, string? keyword, string? sortBy, int page, int pageSize, int? genreId = null)
+    {
+        var query = _context.Libraries
+            .Where(l => l.UserId == userId)
+            .Include(l => l.Game)
+                .ThenInclude(g => g.GameGenres)
+            .AsQueryable();
+
+        // Filter by keyword (search title + developer)
+        if (!string.IsNullOrWhiteSpace(keyword))
+        {
+            var kw = keyword.Trim().ToLower();
+            query = query.Where(l =>
+                l.Game.Title.ToLower().Contains(kw) ||
+                (l.Game.Developer != null && l.Game.Developer.ToLower().Contains(kw))
+            );
+        }
+
+        // Filter by genre
+        if (genreId.HasValue && genreId.Value > 0)
+        {
+            query = query.Where(l => l.Game.GameGenres.Any(gg => gg.GenreId == genreId.Value));
+        }
+
+        // Count total before paging
+        var totalCount = await query.CountAsync();
+
+        // Sort
+        query = sortBy switch
+        {
+            "name" => query.OrderBy(l => l.Game.Title),
+            "playtime" => query.OrderByDescending(l => l.TotalPlayTime),
+            _ => query.OrderByDescending(l => l.AcquiredAt),
+        };
+
+        // Paginate
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(l => new
+            {
+                l.Game.Id,
+                l.Game.Title,
+                l.Game.CoverImageUrl,
+                l.Game.Developer,
+                l.Game.Rating,
+                AcquiredAt = l.AcquiredAt,
+                Genres = l.Game.GameGenres.Select(gg => gg.Genre.Name).ToList()
+            })
+            .ToListAsync();
+
+        return (items, totalCount);
+    }
+
+    public async Task<bool> CheckOwnedAsync(int userId, int gameId)
+    {
+        return await _context.Libraries.AnyAsync(l => l.UserId == userId && l.GameId == gameId);
+    }
+
+    public async Task<IEnumerable<object>> GetGameKeysAsync(int userId, int gameId)
+    {
+        var userEmail = await _context.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.Email)
+            .FirstOrDefaultAsync();
+
+        if (string.IsNullOrWhiteSpace(userEmail))
+            return Enumerable.Empty<object>();
+
+        return await _context.OrderDetails
+            .Where(od => od.GameId == gameId
+                && od.Order.Status != "Pending"
+                && od.Order.Status != "Cancelled"
+                && od.Order.Status != "Rejected"
+                && od.Order.Status != "Refunded"
+                && (
+                    od.Order.UserId == userId ||
+                    (
+                        !string.IsNullOrWhiteSpace(od.Order.RecipientEmail) &&
+                        od.Order.RecipientEmail.ToLower() == userEmail.ToLower()
+                    )
+                ))
+            .SelectMany(od => od.GameKeys)
+            .Select(gk => new
+            {
+                gk.Id,
+                gk.KeyCode,
+                gk.IsUsed,
+                gk.UsedAt,
+                gk.ExpiresAt,
+                AcquiredAt = gk.UsedAt ?? gk.CreatedAt
+            })
+            .ToListAsync();
+    }
+}

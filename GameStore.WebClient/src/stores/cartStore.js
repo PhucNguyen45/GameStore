@@ -1,20 +1,28 @@
 // GameStore.WebClient/src/stores/cartStore.js
 import { create } from "zustand";
 
+
+
 const useCartStore = create((set, get) => ({
   items: [],
-  addItem: (game) =>
+  addItem: (game, maxQuantity = Infinity) => {
+    const state = get();
+    const exists = state.items.find((i) => i.id === game.id);
+    if (exists && exists.quantity >= maxQuantity) {
+      return false;
+    }
     set((state) => {
-      // Nếu đã có trong cart thì không thêm nữa
-      const exists = state.items.find((i) => i.id === game.id);
-      return exists
+      const existing = state.items.find((i) => i.id === game.id);
+      return existing
         ? {
             items: state.items.map((i) =>
               i.id === game.id ? { ...i, quantity: i.quantity + 1 } : i,
             ),
           }
         : { items: [...state.items, { ...game, quantity: 1 }] };
-    }),
+    });
+    return true;
+  },
   removeItem: (id) =>
     set((state) => ({ items: state.items.filter((i) => i.id !== id) })),
   updateQuantity: (id, qty) =>

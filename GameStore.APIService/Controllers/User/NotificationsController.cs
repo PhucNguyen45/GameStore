@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using GameStore.Services;
+using GameStore.Services.Interfaces.Users;
 
 namespace GameStore.APIService.Controllers;
 

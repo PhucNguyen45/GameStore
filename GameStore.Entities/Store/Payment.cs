@@ -10,6 +10,7 @@ namespace GameStore.Entities.Store
     {
         public int Id { get; set; }
         public int OrderId { get; set; }
+        /// <summary>Số tiền thanh toán (VND)</summary>
         public long Amount { get; set; }
         public string PaymentMethod { get; set; } = "Wallet"; // Wallet, CreditCard, PayPal
         public string Status { get; set; } = "Completed"; // Completed, Failed, Refunded, Pending

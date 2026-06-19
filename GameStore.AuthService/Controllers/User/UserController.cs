@@ -1,3 +1,4 @@
+using GameStore.Services.Interfaces.Users;
 // GameStore.AuthService/Controllers/UserController.cs
 using System;
 using System.Collections.Generic;
@@ -6,20 +7,25 @@ using System.Threading.Tasks;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using GameStore.Services.Authen;
+using GameStore.Services;
+using GameStore.Services.Interfaces.Authen;
 using GameStore.DTOs.Users;
 using GameStore.DTOs.Common;
 
 namespace GameStore.AuthService.Controllers;
-
 [Route("api/users")]
 [ApiController]
 [Authorize]
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IWalletTransactionService _walletTransactionService;
 
-    public UserController(IUserService userService) => _userService = userService;
+    public UserController(IUserService userService, IWalletTransactionService walletTransactionService)
+    {
+        _userService = userService;
+        _walletTransactionService = walletTransactionService;
+    }
 
     [HttpGet]
     [Authorize(Roles = "Admin")]
@@ -92,35 +98,25 @@ public class UserController : ControllerBase
         return Ok(new { message = "Wallet topped up", balance });
     }
 
+    [HttpGet("wallet/transactions")]
+    public async Task<IActionResult> GetWalletTransactions([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    {
+        var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)!.Value);
+        var transactions = await _walletTransactionService.GetUserTransactionsAsync(userId, page, pageSize);
+        return Ok(transactions);
+    }
+
     [HttpGet("profile")]
     public async Task<IActionResult> GetProfile()
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var user = await _userService.GetById(userId);
-        if (user == null) return NotFound();
-        return Ok(new { user.Id, user.Username, user.DisplayName, user.Email, user.Phone, user.AvatarUrl, user.Wallet, user.IsActive, user.CreatedAt });
+        return await GetById(userId);
     }
 
     [HttpPut("profile")]
     public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserRequest request)
     {
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
-        var user = await _userService.GetById(userId);
-        if (user == null) return NotFound(new { message = "User not found" });
-
-        user.DisplayName = request.DisplayName ?? user.DisplayName;
-        user.Email = request.Email ?? user.Email;
-        user.Phone = request.Phone ?? user.Phone;
-        user.AvatarUrl = !string.IsNullOrEmpty(request.AvatarUrl) ? request.AvatarUrl : user.AvatarUrl;
-
-        try
-        {
-            await _userService.Update(user, request.Password, request.CurrentPassword);
-            return Ok(new { message = "Profile updated" });
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            return BadRequest(new { message = ex.Message });
-        }
+        return await Update(userId, request);
     }
 }

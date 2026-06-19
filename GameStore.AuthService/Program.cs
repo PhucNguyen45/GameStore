@@ -3,8 +3,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using GameStore.Repository;
-using GameStore.Repository.EFCore;
-using GameStore.Services.Authen;
+using GameStore.Repository.Interfaces;
+using GameStore.Repository.Implementations;
+using GameStore.Services;
+using GameStore.Services.Interfaces.Users;
+using GameStore.Services.Implementations.Users;
+using GameStore.Services.Interfaces.Authen;
+using GameStore.Services.Implementations.Authen;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -29,6 +34,7 @@ builder.Services.AddDbContext<GameStoreDbContext>(options =>
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IWalletTransactionService, WalletTransactionService>();
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:SecretKey"]!);
 builder.Services.AddAuthentication(x =>

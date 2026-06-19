@@ -2,14 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using GameStore.Common;
+using System.Threading.Tasks;using GameStore.Common;
 using GameStore.Entities.Audit;
 
 namespace GameStore.Entities.Settings;
 
-public class Setting : Entity, IAuditable
-{
+public class Setting : EntityBase, IAuditable
+    {
     public string Name { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;

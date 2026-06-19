@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using GameStore.Entities.Games;
-using GameStore.Services;
+using GameStore.Services.Interfaces.Users;
 using GameStore.DTOs.Genres;
 
 namespace GameStore.APIService.Controllers;

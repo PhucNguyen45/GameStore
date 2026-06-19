@@ -11,12 +11,13 @@ public class Order
 {
     public int Id { get; set; }
     public int UserId { get; set; }
-    public DateTime OrderDate { get; set; } = DateTime.UtcNow;
-    public long TotalAmount { get; set; }
+    public DateTime OrderDate { get; set; } = DateTime.UtcNow;        /// <summary>Tổng tiền đơn hàng (VND)</summary>
+        public long TotalAmount { get; set; }
     public string Status { get; set; } = "Pending"; // Pending, Completed, Cancelled, Refunded
     public string? Email { get; set; }          // thêm
     public string? Phone { get; set; }          // thêm
     public string PaymentMethod { get; set; } = "Wallet"; // thêm (đã có default)
+    public string? RecipientEmail { get; set; } // Email người nhận nếu đây là quà tặng
 
     public virtual User User { get; set; } = null!;
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new HashSet<OrderDetail>();
