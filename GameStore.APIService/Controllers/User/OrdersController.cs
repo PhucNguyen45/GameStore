@@ -45,16 +45,29 @@ public class OrdersController : ControllerBase
         var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
         var order = await _orderService.GetById(id);
         if (order == null) return NotFound(new { message = "Order not found" });
+
+        var context = HttpContext.RequestServices.GetRequiredService<GameStoreDbContext>();
+        var currentUser = await context.Users.FindAsync(userId);
+
+        var isAdmin = User.IsInRole("Admin");
+        var isBuyer = order.UserId == userId;
+        var isRecipient = currentUser != null &&
+            !string.IsNullOrWhiteSpace(order.RecipientEmail) &&
+            string.Equals(order.RecipientEmail, currentUser.Email, StringComparison.OrdinalIgnoreCase);
+
         // Cho phép: admin, người mua, hoặc người nhận quà (theo email)
-        if (!User.IsInRole("Admin") && order.UserId != userId)
+        if (!isAdmin && !isBuyer && !isRecipient)
+            return Forbid();
+
+        // Nếu người mua xem đơn quà tặng, ẩn key để tránh lộ thông tin cho người không được phép.
+        if (!isAdmin && isBuyer && !string.IsNullOrWhiteSpace(order.RecipientEmail))
         {
-            // Kiểm tra người nhận quà
-            var context = HttpContext.RequestServices.GetRequiredService<GameStoreDbContext>();
-            var currentUser = await context.Users.FindAsync(userId);
-            if (currentUser == null ||
-                !string.Equals(order.RecipientEmail, currentUser.Email, StringComparison.OrdinalIgnoreCase))
-                return Forbid();
+            foreach (var detail in order.OrderDetails)
+            {
+                detail.GameKeys = new List<GameKey>();
+            }
         }
+
         return Ok(order);
     }
 

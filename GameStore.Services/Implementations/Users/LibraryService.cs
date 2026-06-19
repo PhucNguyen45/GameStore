@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using GameStore.Repository;
 
 namespace GameStore.Services.Implementations.Users;
+
 public class LibraryService : ILibraryService
 {
     private readonly GameStoreDbContext _context;
@@ -95,9 +96,27 @@ public class LibraryService : ILibraryService
 
     public async Task<IEnumerable<object>> GetGameKeysAsync(int userId, int gameId)
     {
-        // Query keys from OrderDetail → GameKeys relationship
+        var userEmail = await _context.Users
+            .Where(u => u.Id == userId)
+            .Select(u => u.Email)
+            .FirstOrDefaultAsync();
+
+        if (string.IsNullOrWhiteSpace(userEmail))
+            return Enumerable.Empty<object>();
+
         return await _context.OrderDetails
-            .Where(od => od.Order.UserId == userId && od.GameId == gameId)
+            .Where(od => od.GameId == gameId
+                && od.Order.Status != "Pending"
+                && od.Order.Status != "Cancelled"
+                && od.Order.Status != "Rejected"
+                && od.Order.Status != "Refunded"
+                && (
+                    od.Order.UserId == userId ||
+                    (
+                        !string.IsNullOrWhiteSpace(od.Order.RecipientEmail) &&
+                        od.Order.RecipientEmail.ToLower() == userEmail.ToLower()
+                    )
+                ))
             .SelectMany(od => od.GameKeys)
             .Select(gk => new
             {
