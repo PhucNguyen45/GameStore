@@ -57,8 +57,14 @@ public class OrderService : IOrderService
 
     public async Task<List<OrderHistoryDto>> GetOrderHistoryAsync(int userId)
     {
+        var user = await _userRepository.GetByIdAsync(userId);
+        var userEmail = user?.Email;
+
         var orders = await _context.Orders
-            .Where(o => o.UserId == userId)
+            .Where(o => o.UserId == userId
+                     || (userEmail != null
+                         && o.RecipientEmail != null
+                         && o.RecipientEmail.ToLower() == userEmail.ToLower()))
             .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Game)
             .OrderByDescending(o => o.OrderDate)
@@ -86,6 +92,16 @@ public class OrderService : IOrderService
         // Ép buộc chỉ dùng Wallet
         if (!paymentMethod.Equals("Wallet", StringComparison.OrdinalIgnoreCase))
             throw new Exception("Only Wallet payment method is accepted.");
+
+        // Validate người nhận quà trước khi làm bất cứ điều gì
+        if (!string.IsNullOrEmpty(recipientEmail))
+        {
+            var recipient = await _userRepository.GetByEmailAsync(recipientEmail);
+            if (recipient == null)
+                throw new Exception($"Không tìm thấy tài khoản với email '{recipientEmail}'.");
+            if (recipient.Id == userId)
+                throw new Exception("Không thể tặng game cho chính mình.");
+        }
 
         long totalAmount = 0;
         var orderDetails = new List<OrderDetail>();
@@ -190,15 +206,15 @@ public class OrderService : IOrderService
                     if (recipient != null)
                     {
                         var recipientOwned = await _context.Libraries.AnyAsync(l => l.UserId == recipient.Id && l.GameId == detail.GameId);
-                        if (!recipientOwned)
+                        if (recipientOwned)
+                            throw new Exception($"Người nhận đã sở hữu '{detail.Game?.Title}'. Hủy đơn để hoàn tiền cho người tặng.");
+
+                        _context.Libraries.Add(new Library
                         {
-                            _context.Libraries.Add(new Library
-                            {
-                                UserId = recipient.Id,
-                                GameId = detail.GameId,
-                                AcquiredAt = DateTime.UtcNow
-                            });
-                        }
+                            UserId = recipient.Id,
+                            GameId = detail.GameId,
+                            AcquiredAt = DateTime.UtcNow
+                        });
                         // Gửi thông báo cho người nhận
                         await _notificationService.CreateNotificationAsync(recipient.Id,
                             "Bạn nhận được quà tặng! 🎁",

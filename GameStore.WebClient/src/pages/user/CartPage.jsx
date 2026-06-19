@@ -75,8 +75,8 @@ export default function CartPage() {
       return;
     }
 
-    const emailErr = validateEmail(email);
-    const phoneErr = validatePhone(phone);
+    const emailErr = validateEmail(email, t);
+    const phoneErr = validatePhone(phone, t);
     const newErrors = { email: emailErr, phone: phoneErr };
     setErrors(newErrors);
     setTouched({ email: true, phone: true });

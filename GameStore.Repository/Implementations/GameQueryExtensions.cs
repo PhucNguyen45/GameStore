@@ -78,4 +78,25 @@ public static class GameQueryExtensions
             game.AvailableKeys = availableKeyCounts.GetValueOrDefault(game.Id, 0);
         }
     }
+
+    /// <summary>
+    /// Overwrites TotalSales with the actual count from completed orders in a single round-trip.
+    /// </summary>
+    public static async Task FillTotalSalesAsync(
+        this ICollection<Game> games,
+        GameStoreDbContext context,
+        CancellationToken ct = default)
+    {
+        var gameIds = games.Select(g => g.Id).ToList();
+        if (gameIds.Count == 0) return;
+
+        var salesByGame = await context.OrderDetails
+            .Where(od => gameIds.Contains(od.GameId) && od.Order.Status == "Completed")
+            .GroupBy(od => od.GameId)
+            .Select(g => new { GameId = g.Key, Total = g.Sum(od => od.Quantity) })
+            .ToDictionaryAsync(g => g.GameId, g => g.Total, ct);
+
+        foreach (var game in games)
+            game.TotalSales = salesByGame.GetValueOrDefault(game.Id, 0);
+    }
 }

@@ -49,8 +49,6 @@ export default function PaymentPage() {
 
     setIsProcessing(true);
 
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
     try {
       if (paymentMethod === "wallet") {
         if (user.wallet < orderData.total) {
@@ -71,7 +69,8 @@ export default function PaymentPage() {
         recipientEmail: isGift ? recipientEmail.trim() : null,
       });
 
-      const orderId = response.data?.id || Math.floor(Math.random() * 100000);
+      const orderId = response.data?.id;
+      if (!orderId) throw new Error("Server không trả về order ID hợp lệ.");
 
       if (paymentMethod === "wallet") {
         updateUser({ wallet: user.wallet - orderData.total });

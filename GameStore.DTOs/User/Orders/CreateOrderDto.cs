@@ -1,6 +1,7 @@
 // GameStore.DTOs/Orders/CreateOrderDto.cs
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ public class CreateOrderDto
     public string? Email { get; set; }
     public string? Phone { get; set; }
     public string PaymentMethod { get; set; } = "Wallet";
+    [EmailAddress]
     public string? RecipientEmail { get; set; } // Email người nhận nếu mua tặng
 }
 

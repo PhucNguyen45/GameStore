@@ -51,7 +51,8 @@ public class OrdersController : ControllerBase
             // Kiểm tra người nhận quà
             var context = HttpContext.RequestServices.GetRequiredService<GameStoreDbContext>();
             var currentUser = await context.Users.FindAsync(userId);
-            if (currentUser == null || order.RecipientEmail != currentUser.Email)
+            if (currentUser == null ||
+                !string.Equals(order.RecipientEmail, currentUser.Email, StringComparison.OrdinalIgnoreCase))
                 return Forbid();
         }
         return Ok(order);

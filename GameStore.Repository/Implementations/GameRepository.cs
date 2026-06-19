@@ -40,8 +40,13 @@ public class GameRepository : Repository<Game>, IGameRepository
                                   : query.OrderBy(g => g.DiscountPrice ?? g.Price),
             "rating" => descending ? query.OrderByDescending(g => g.Rating)
                                    : query.OrderBy(g => g.Rating),
-            "sales" or "totalsales" => descending ? query.OrderByDescending(g => g.TotalSales)
-                                                  : query.OrderBy(g => g.TotalSales),
+            "sales" or "totalsales" => descending
+                ? query.OrderByDescending(g => g.OrderDetails
+                    .Where(od => od.Order.Status == "Completed")
+                    .Sum(od => (int?)od.Quantity) ?? 0)
+                : query.OrderBy(g => g.OrderDetails
+                    .Where(od => od.Order.Status == "Completed")
+                    .Sum(od => (int?)od.Quantity) ?? 0),
             "release" or "releasedate" => descending ? query.OrderByDescending(g => g.ReleaseDate)
                                                      : query.OrderBy(g => g.ReleaseDate),
             "title" => descending ? query.OrderByDescending(g => g.Title)
@@ -53,7 +58,9 @@ public class GameRepository : Repository<Game>, IGameRepository
                 : query.OrderBy(g => g.Price - (g.DiscountPrice ?? g.Price)),
             "createdat" or "created" => descending ? query.OrderByDescending(g => g.CreatedAt)
                                                     : query.OrderBy(g => g.CreatedAt),
-            _ => query.OrderByDescending(g => g.TotalSales)
+            _ => query.OrderByDescending(g => g.OrderDetails
+                    .Where(od => od.Order.Status == "Completed")
+                    .Sum(od => (int?)od.Quantity) ?? 0)
         };
 
         var gameIds = await query
@@ -68,6 +75,7 @@ public class GameRepository : Repository<Game>, IGameRepository
             .ToListAsync();
 
         await games.FillAvailableKeysAsync(_context);
+        await games.FillTotalSalesAsync(_context);
 
         return (games, totalCount);
     }
@@ -77,12 +85,15 @@ public class GameRepository : Repository<Game>, IGameRepository
         var games = await _dbSet
             .AsNoTracking()
             .Where(g => g.IsActive)
-            .OrderByDescending(g => g.TotalSales)
+            .OrderByDescending(g => g.OrderDetails
+                .Where(od => od.Order.Status == "Completed")
+                .Sum(od => (int?)od.Quantity) ?? 0)
             .Take(count)
             .SelectGameWithGenres()
             .ToListAsync();
 
         await games.FillAvailableKeysAsync(_context);
+        await games.FillTotalSalesAsync(_context);
 
         return games;
     }
@@ -92,11 +103,14 @@ public class GameRepository : Repository<Game>, IGameRepository
         var games = await _dbSet
             .AsNoTracking()
             .Where(g => g.IsActive && g.GameGenres.Any(gg => gg.GenreId == genreId))
-            .OrderByDescending(g => g.TotalSales)
+            .OrderByDescending(g => g.OrderDetails
+                .Where(od => od.Order.Status == "Completed")
+                .Sum(od => (int?)od.Quantity) ?? 0)
             .SelectGameWithGenres()
             .ToListAsync();
 
         await games.FillAvailableKeysAsync(_context);
+        await games.FillTotalSalesAsync(_context);
 
         return games;
     }
