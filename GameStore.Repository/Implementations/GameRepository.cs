@@ -127,8 +127,6 @@ public class GameRepository : Repository<Game>, IGameRepository
         return average ?? 0m;
     }
 
-    
-
     public async Task<Game?> GetWithDetailsAsync(int id)
     {
         var game = await _dbSet

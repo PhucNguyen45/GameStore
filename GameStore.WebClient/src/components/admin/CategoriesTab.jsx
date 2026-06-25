@@ -5,7 +5,7 @@ import { Plus, Edit, Trash2, X, Tag } from "lucide-react";
 import SortableHeader from "./SortableHeader";
 import Pagination from "../common/Pagination";
 import { thStyle, filterInputStyle } from "./adminStyles";
-import { adminAPI } from "../../services/api";
+import { adminAPI, genreAPI } from "../../services/api";
 
 // Modal dùng chung để tạo mới hoặc chỉnh sửa danh mục (category/genre)
 // Nếu truyền prop `category` vào → chế độ chỉnh sửa; không truyền → chế độ tạo mới
@@ -168,6 +168,7 @@ function CategoryModal({ category, onClose, onSave }) {
 export default function CategoriesTab() {
   const [categories, setCategories] = useState([]);
   const [total, setTotal] = useState(0);
+  const [totalGenres, setTotalGenres] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState({
@@ -202,6 +203,16 @@ export default function CategoriesTab() {
     }
   };
 
+  const loadTotalGenres = async () => {
+    try {
+      const res = await genreAPI.getTotal();
+      setTotalGenres(res.data?.total ?? 0);
+    } catch (err) {
+      console.error("[CategoriesTab] loadTotalGenres error:", err);
+      setTotalGenres(0);
+    }
+  };
+
   // Reset về trang 1 mỗi khi thay đổi bộ lọc, cỡ trang hoặc sắp xếp
   useEffect(() => {
     setPage(1);
@@ -211,6 +222,10 @@ export default function CategoriesTab() {
     const t = setTimeout(load, 300);
     return () => clearTimeout(t);
   }, [page, pageSize, search, sort]);
+
+  useEffect(() => {
+    loadTotalGenres();
+  }, []);
 
   // Gọi API xóa danh mục được chọn, rồi tải lại danh sách
   const handleDelete = async () => {
@@ -230,8 +245,30 @@ export default function CategoriesTab() {
   return (
     <div>
       <div
-        style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}
+        style={{
+          display: "flex",
+          gap: 10,
+          marginBottom: 16,
+          flexWrap: "wrap",
+          alignItems: "center",
+        }}
       >
+        {/* <div
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "7px 10px",
+            background: "#0a0a10",
+            border: "1px solid #1a1a2e",
+            borderRadius: 6,
+            color: "#ccc",
+            fontSize: 12,
+          }}
+        >
+          <Tag size={12} color="#4caf50" />
+          <span>Tổng danh mục: {totalGenres}</span>
+        </div> */}
         <input
           placeholder="Tìm danh mục..."
           value={search.keyword}

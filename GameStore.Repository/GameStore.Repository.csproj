@@ -4,6 +4,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GameStore.Entities\GameStore.Entities.csproj" />
     <ProjectReference Include="..\GameStore.Common\GameStore.Common.csproj" />
+    <ProjectReference Include="..\GameStore.DTOs\GameStore.DTOs.csproj" />
   </ItemGroup>
 
   <ItemGroup>

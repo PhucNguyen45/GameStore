@@ -21,6 +21,9 @@ public class GenresController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAll() => Ok(await _genreService.GetAll());
 
+    [HttpGet("total")]
+    public async Task<IActionResult> GetTotal() => Ok(new { total = await _genreService.GetTotalGenreAsync() });
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {

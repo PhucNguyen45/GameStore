@@ -311,9 +311,9 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                   <label
                     key={g.id}
                     style={{
-                      display: "flex",
+                      display: "inline-flex",
                       alignItems: "center",
-                      gap: 6,
+                      gap: 8,
                       color: "#ccc",
                       fontSize: 13,
                       cursor: "pointer",
@@ -325,7 +325,30 @@ export default function GameFormModal({ game, genres, onClose, onSave }) {
                       onChange={() => toggleGenre(g.id)}
                       style={{ accentColor: "var(--accent)" }}
                     />
-                    {g.name}
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
+                      <span>{g.name}</span>
+                      <span
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          minWidth: 22,
+                          padding: "1px 6px",
+                          borderRadius: 999,
+                          background: "#1a1a2e",
+                          color: "#9bb3ff",
+                          fontSize: 11,
+                        }}
+                      >
+                        {g.gameCount ?? 0}
+                      </span>
+                    </span>
                   </label>
                 ))}
             </div>

@@ -1,5 +1,4 @@
 // GameStore.WebClient/src/services/api.js
-// src/services/api.js
 import axios from "axios";
 
 const api = axios.create({
@@ -54,7 +53,10 @@ export const gameAPI = {
   checkStock: (gameIds) =>
     api.get("/games/stock", { params: { gameIds: gameIds.join(",") } }),
 };
-export const genreAPI = { getAll: () => api.get("/genres") };
+export const genreAPI = {
+  getAll: () => api.get("/genres"),
+  getTotal: () => api.get("/genres/total"),
+};
 export const orderAPI = {
   create: (d) => api.post("/orders", d),
   getAll: () => api.get("/orders"),
@@ -65,7 +67,8 @@ export const orderAPI = {
 export const userAPI = {
   getWallet: () => api.get("/users/wallet"),
   topUp: (amount) => api.post("/users/wallet/topup", { amount }),
-  getTransactions: (page = 1, pageSize = 20) => api.get("/users/wallet/transactions", { params: { page, pageSize } }),
+  getTransactions: (page = 1, pageSize = 20) =>
+    api.get("/users/wallet/transactions", { params: { page, pageSize } }),
   getProfile: () => api.get("/users/profile"),
   updateProfile: (data) => api.put("/users/profile", data),
 };

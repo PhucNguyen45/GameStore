@@ -6,6 +6,8 @@ import SortableHeader from "./SortableHeader";
 import Pagination from "../common/Pagination";
 import { thStyle, filterInputStyle } from "./adminStyles";
 import { formatVND } from "../../utils/format";
+import { adminAPI, genreAPI } from "../../services/api";
+import CategoriesTab from "./CategoriesTab";
 
 export default function GamesTab({
   games,
@@ -48,7 +50,7 @@ export default function GamesTab({
           <option value="">{t("admin.allGenres")}</option>
           {genres.map((g) => (
             <option key={g.id} value={g.id}>
-              {g.name}
+              {g.name} ({g.gameCount ?? 0})
             </option>
           ))}
         </select>
